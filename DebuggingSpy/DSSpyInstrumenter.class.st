@@ -75,6 +75,28 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentInspector [
 
+	self instrumentRawInspection
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentMetaInspection [
+
+	StMetaBrowser compile: 'updateSourceWith: method
+
+	source userActionDuring: [
+		method
+			ifNotNil: [ 
+				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+				source text: method sourceCode; beForMethod: method  ]
+			ifNil: [ 
+				source text: ''''; clearInteractionModel ] ]'.
+	
+	
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentRawInspection [
+
 	FTBasicItem compile: 'expandAndRefresh
 	[DSSpy log: data key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
 	self expand.
@@ -94,22 +116,6 @@ DSSpyInstrumenter >> instrumentInspector [
 	StInspector class compile: 'onObject: anObject
 	DSSpy log: anObject key: #INSPECTOR_INSPECT.
 	^ self on: (StInspectorModel on: anObject)'
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentMetaInspection [
-
-	StMetaBrowser compile: 'updateSourceWith: method
-
-	source userActionDuring: [
-		method
-			ifNotNil: [ 
-				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
-				source text: method sourceCode; beForMethod: method  ]
-			ifNil: [ 
-				source text: ''''; clearInteractionModel ] ]'.
-	
-	
 ]
 
 { #category : #'system-queries' }
