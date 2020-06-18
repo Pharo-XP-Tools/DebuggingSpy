@@ -89,7 +89,11 @@ DSSpyInstrumenter >> instrumentInspector [
 	self outputSelectionPort transmitDo:[:val| 
 		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].
 	self outputActivationPort transmitDo:[:val| 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].'
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].'.
+
+	StInspector class compile: 'onObject: anObject
+	DSSpy log: anObject key: #INSPECTOR_INSPECT.
+	^ self on: (StInspectorModel on: anObject)'
 ]
 
 { #category : #'system-queries' }
