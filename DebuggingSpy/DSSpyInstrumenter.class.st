@@ -72,6 +72,26 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 			c compile: sourceStream contents ]
 ]
 
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentInspector [
+
+	FTBasicItem compile: 'expandAndRefresh
+	[DSSpy log: data key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+	self expand.
+	self refreshTable'.
+	
+	StRawInspection compile: 'setAttributeTable
+
+	attributeTable
+		roots: self inspectorNodes;
+		children: [ :node | node children ].
+		
+	self outputSelectionPort transmitDo:[:val| 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].
+	self outputActivationPort transmitDo:[:val| 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].'
+]
+
 { #category : #'system-queries' }
 DSSpyInstrumenter >> instrumentSystemQueries [
 	(SystemNavigation allSelectorsInProtocol: '*Tool-Base')
