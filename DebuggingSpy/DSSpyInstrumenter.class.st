@@ -76,7 +76,8 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 DSSpyInstrumenter >> instrumentInspector [
 
 	self instrumentRawInspection.
-	self instrumentMetaInspection
+	self instrumentMetaInspection.
+	self instrumentNotebooks
 ]
 
 { #category : #inspector }
@@ -96,6 +97,21 @@ DSSpyInstrumenter >> instrumentMetaInspection [
 	aClass ifNil: [ ^ #() ].
 	[DSSpy log: aClass key: #INSPECTOR_META_CLASS] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
 	^ aClass methods sorted: #selector ascending'
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentNotebooks [
+
+	StObjectInspector compile: 'initializePresenters
+	header := self instantiate: StHeaderBar.
+	views := self newNotebook.	
+	views whenSelectedPageChangedDo: [ :page | 
+		[DSSpy log: page title key: #INSPECTOR_VIEW] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
+	evaluator := self newCode
+		beForObject: self model inspectedObject;
+		yourself.
+	evaluator text: self evaluatorInitialText.
+	self refresh'.
 ]
 
 { #category : #inspector }
