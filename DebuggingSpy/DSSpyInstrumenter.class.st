@@ -96,6 +96,22 @@ DSSpyInstrumenter >> instrumentInspector [
 	^ self on: (StInspectorModel on: anObject)'
 ]
 
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentMetaInspection [
+
+	StMetaBrowser compile: 'updateSourceWith: method
+
+	source userActionDuring: [
+		method
+			ifNotNil: [ 
+				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+				source text: method sourceCode; beForMethod: method  ]
+			ifNil: [ 
+				source text: ''''; clearInteractionModel ] ]'.
+	
+	
+]
+
 { #category : #'system-queries' }
 DSSpyInstrumenter >> instrumentSystemQueries [
 	(SystemNavigation allSelectorsInProtocol: '*Tool-Base')
