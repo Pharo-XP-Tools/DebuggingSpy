@@ -31,13 +31,14 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 				<<
 					(self instrumentationSourceTemplate
 						format:
-							{c name.
-							#DEBUGGERACTION}).
+							{c defaultName printString.
+							#DEBUGGERACTION printString}).
 			(c >> #execute) ast statements
 				do: [ :ast | 
 					sourceStream cr.
 					sourceStream << ast sourceCode.
-					sourceStream << '.' ] ]
+					sourceStream << '.' ].
+			c compile: sourceStream contents ]
 ]
 
 { #category : #helpers }
