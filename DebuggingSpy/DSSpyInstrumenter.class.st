@@ -75,23 +75,27 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentInspector [
 
-	self instrumentRawInspection
+	self instrumentRawInspection.
+	self instrumentMetaInspection
 ]
 
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentMetaInspection [
 
 	StMetaBrowser compile: 'updateSourceWith: method
-
 	source userActionDuring: [
 		method
 			ifNotNil: [ 
-				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
 				source text: method sourceCode; beForMethod: method  ]
 			ifNil: [ 
 				source text: ''''; clearInteractionModel ] ]'.
 	
 	
+	StMetaBrowser compile: 'methodsOf: aClass
+	aClass ifNil: [ ^ #() ].
+	[DSSpy log: aClass key: #INSPECTOR_META_CLASS] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
+	^ aClass methods sorted: #selector ascending'
 ]
 
 { #category : #inspector }
