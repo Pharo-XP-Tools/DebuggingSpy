@@ -29,7 +29,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	newTitle := self buildTitleFromSelections.
 	self systemScope isCurrentImage ifFalse: [ 
 		newTitle := newTitle , '' in '', self systemScope description ].
-	DSSpy log: newTitle key: BROWSE.
+	DSSpy log: newTitle key: #BROWSE.
 	^newTitle'.
 	
 	ClyQueryBrowser compile: 'newWindowTitle
@@ -41,7 +41,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	
 	self systemScope isCurrentImage ifFalse: [ 
 		title := title , '' in '', self systemScope description ].
-	DSSpy log: title key: BROWSE.
+	DSSpy log: title key: #BROWSE.
 	^title'.
 	
 	TabGroupMorph compile: 'updatePageIndex: index
@@ -49,7 +49,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 
 	self pageMorph ifNotNil: [:p | self contentMorph removeMorph: p].
 	index > 0 ifTrue: [self contentMorph addMorph: (self pages at: index). 
-			DSSpy log: (self pages at: index) labelString key: BROWSE. ].
+			DSSpy log: (self pages at: index) labelString key: #BROWSE. ].
 
 	self pageMorph ifNotNil: [:pm | pm layoutChanged].
 	self adoptPaneColor: self paneColor'
