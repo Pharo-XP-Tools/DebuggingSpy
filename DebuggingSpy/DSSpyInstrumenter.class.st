@@ -56,6 +56,35 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 ]
 
 { #category : #debugger }
+DSSpyInstrumenter >> instrumentDebugger [
+	self instrumentDebuggerCode.
+	self instrumentDebuggerStack 
+]
+
+{ #category : #debugger }
+DSSpyInstrumenter >> instrumentDebuggerCode [
+
+	StDebugger compile: 'initializeCode
+	self flag: #DBG_IMPROVE.
+	 "Add metalink information in the gutter!"
+	
+	code := self newCode.
+	code whenSubmitDo: [ :text | 
+		self
+			recompileMethodTo: text string
+			inContext: self stackTable selection selectedItem
+			notifying: nil.
+			[DSSpy log: self currentContext key: #DEBUGGER_CODE_ACCEPT] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_ACCEPT ] ].
+	code whenResetDo: [ self updateCodeFromContext ].	
+	code whenTextChangedDo: [[DSSpy log: self currentContext key: #DEBUGGER_CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_WRITE ]  ].
+			
+	codeHeader := self instantiate: StHeaderBar.	
+	codeHeader removeStyleFromLabel: ''label.header''.	
+	codeHeader applyStyleToLabel: ''label.headerError''.
+	codeHeader label: self session name'
+]
+
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
