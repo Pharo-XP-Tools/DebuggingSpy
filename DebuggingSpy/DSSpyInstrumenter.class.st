@@ -76,8 +76,13 @@ DSSpyInstrumenter >> instrumentDebuggerCode [
 			notifying: nil.
 			[DSSpy log: self currentContext key: #DEBUGGER_CODE_ACCEPT] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_ACCEPT ] ].
 	code whenResetDo: [ self updateCodeFromContext ].	
-	code whenTextChangedDo: [[DSSpy log: self currentContext key: #DEBUGGER_CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_WRITE ]  ].
-			
+		
+	code eventHandler whenKeyDownDo:[:evt| 
+		[DSSpy log: self currentContext key: #DEBUGGER_CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_WRITE ] ].
+
+	code eventHandler whenMouseEnterDo:[:evt| 
+		[DSSpy log: self currentContext key: #DEBUGGER_CODE_READ] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_READ ] ].
+				
 	codeHeader := self instantiate: StHeaderBar.	
 	codeHeader removeStyleFromLabel: ''label.header''.	
 	codeHeader applyStyleToLabel: ''label.headerError''.
