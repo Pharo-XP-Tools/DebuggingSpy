@@ -55,6 +55,36 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self adoptPaneColor: self paneColor'
 ]
 
+{ #category : #debugger }
+DSSpyInstrumenter >> instrumentDebuggerStack [
+
+	StDebugger compile: 'initializeStack
+	stackTable := self newTable.
+	stackTable
+		addColumn:
+			(SpStringTableColumn
+				title: ''Class''
+				evaluated: [ :item | item receiver class ]);
+		addColumn:
+			(SpStringTableColumn
+				title: ''Method''
+				evaluated: [ :item | item method selector ]);
+		addColumn:
+			(SpStringTableColumn
+				title: ''Context''
+				evaluated: [ :item | item sender stDisplayString ]).
+	stackTable
+		transmitDo: [ :context | 
+			stackTable selection isEmpty
+				ifFalse: [ self updateInspectorFromContext: context.
+					self updateCodeFromContext: context.
+					self updateTitle.
+					self expandStackIfLastItemIsSelected.
+					[DSSpy log: context key: #DEBUGGER_VIEW] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_VIEW ] ] ].
+	stackHeader := self instantiate: StHeaderBar.
+	stackHeader label: ''Stack'''
+]
+
 { #category : #'debugger- actions' }
 DSSpyInstrumenter >> instrumentDebuggingActions [
 	self debuggerActionClasses
