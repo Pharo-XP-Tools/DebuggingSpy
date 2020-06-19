@@ -178,6 +178,34 @@ DSSpyInstrumenter >> instrumentNotebooks [
 	self refresh'.
 ]
 
+{ #category : #playground }
+DSSpyInstrumenter >> instrumentPlaygroundCode [
+
+	StPlayground compile: 'initializePresenters
+	text := self newCode
+		interactionModel: StPlaygroundInteractionModel new;
+		lineNumbers: self showLineNumbers;
+		contextMenu: [ self menuActions asMenuPresenter ];
+		contextKeyBindings: self menuActions asKMCategory;
+		whenTextChangedDo: [ :aString | page contents: aString ];
+		yourself.		
+		
+	text eventHandler
+		whenKeyUpDo: [ :event | self updateLineNumber ];
+		whenMouseUpDo: [ :event | self updateLineNumber ];
+		"before taking focus position will be nil, ensure I have the correct one"
+		whenFocusReceivedDo: [ self updateLineNumber ].
+		
+	text eventHandler whenKeyDownDo:[:evt| 
+		[DSSpy log: #SCRIPTING_WRITE key: #PLAYGROUND_WRITE] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ].
+
+	text eventHandler whenMouseEnterDo:[:evt| 
+		[DSSpy log: #SCRIPTING_START key: #PLAYGROUND_READ] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ].
+		
+	self updatePresenter'
+	
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentRawInspection [
 
