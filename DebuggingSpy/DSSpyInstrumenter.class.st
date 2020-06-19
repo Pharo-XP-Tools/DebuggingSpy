@@ -179,6 +179,11 @@ DSSpyInstrumenter >> instrumentNotebooks [
 ]
 
 { #category : #playground }
+DSSpyInstrumenter >> instrumentPlayground [
+	self instrumentPlaygroundCode
+]
+
+{ #category : #playground }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
 	StPlayground compile: 'initializePresenters
