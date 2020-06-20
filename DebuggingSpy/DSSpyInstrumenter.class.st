@@ -235,6 +235,29 @@ DSSpyInstrumenter >> instrumentRawInspection [
 	^ self on: (StInspectorModel on: anObject)'
 ]
 
+{ #category : #playground }
+DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
+	RubScrolledTextMorph compile: 'whenKeystrokeInTextArea: anAnnouncement   
+		[DSSpy log: anAnnouncement key: #CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #CODE_WRITE ].
+		self announcer announce: (anAnnouncement copy morph: self)'.
+		
+	RubKeystroke compile:'printString
+	| location |
+	location := [ morph textArea model owner owner ]
+		on: Error
+		do: [ morph ].
+	location class = ClyTextEditor
+		ifTrue: [ location := [ morph textArea model interactionModel browser ]
+				on: Error
+				do: [ morph ] ].
+	location class = RubTextEditor
+		ifTrue: [ location := [ morph textArea model ]
+				on: Error
+				do: [ morph ] ].
+	^ location printString'
+	
+]
+
 { #category : #'system-queries' }
 DSSpyInstrumenter >> instrumentSystemQueries [
 	(SystemNavigation allSelectorsInProtocol: '*Tool-Base')
