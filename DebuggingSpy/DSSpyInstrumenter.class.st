@@ -309,6 +309,10 @@ DSSpyInstrumenter >> listenToBreakpointChanges [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointHits [
+	self halt.
+	self haltOnce.
+	self halt: 'test'.
+	self haltIf:["with comment" true]
 ]
 
 { #category : #breakpoints }
@@ -330,6 +334,32 @@ DSSpyInstrumenter >> listenToHaltsChanges [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToHaltsHits [
+	Halt class compile: 'signalIn: ctx	
+	[|sender log|
+		sender := thisContext sender sender sender sender sender sender sender sender sender sender.
+		log := {sender method. sender sourceNodeExecuted sourceCode}.	
+		DSSpy log: log key: #HALT_HIT] 
+		on: Error 
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+	super signalIn: ctx'.
+	
+	Halt class compile: 'signal: s
+		[|sender log|
+		sender := thisContext sender sender sender sender sender .
+		log := {sender method. sender sourceNodeExecuted sourceCode}.	
+		DSSpy log: log key: #HALT_HIT] 
+		on: Error 
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+	super signal: s'.
+	
+	Halt class compile: 'signal
+		[|sender log|
+		sender := thisContext sender sender sender sender sender .
+		log := {sender method. sender sourceNodeExecuted sourceCode}.	
+		DSSpy log: log key: #HALT_HIT] 
+		on: Error 
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+	super signal'.
 ]
 
 { #category : #methods }
