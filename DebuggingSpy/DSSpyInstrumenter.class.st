@@ -308,6 +308,10 @@ DSSpyInstrumenter >> listenToBreakpointChanges [
 ]
 
 { #category : #breakpoints }
+DSSpyInstrumenter >> listenToBreakpointHits [
+]
+
+{ #category : #breakpoints }
 DSSpyInstrumenter >> listenToHaltsChanges [
 	StHaltCache compile: 'setNodeCache: haltAndBreakpointNodes forSelector: aSelector
 	|nodeSelectors|
@@ -322,6 +326,10 @@ DSSpyInstrumenter >> listenToHaltsChanges [
 	methodsWithHalts removeKey: aMethodSelector.
 	[DSSpy log: aMethodSelector key: #HALT_REMOVED] on: Error do:[ DSSpy log: #ERROR key: #HALT_REMOVED ].
 	self cacheChanged'
+]
+
+{ #category : #breakpoints }
+DSSpyInstrumenter >> listenToHaltsHits [
 ]
 
 { #category : #methods }
