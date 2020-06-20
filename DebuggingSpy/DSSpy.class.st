@@ -7,7 +7,7 @@ Class {
 	#category : #DebuggingSpy
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #logging }
 DSSpy class >> log: elements key: key [
 	Transcript show: '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
 	Transcript cr
@@ -39,4 +39,19 @@ DSSpy class >> logWindowOpenEvent: anEvent [
 		when: MouseButtonEvent
 		send: #logMouseDownEvent:
 		to: self
+]
+
+{ #category : #events }
+DSSpy class >> methodAdded: evt [
+	self log: evt method key: #METHOD_ADDED
+]
+
+{ #category : #events }
+DSSpy class >> methodChanged: evt [
+	self log: evt method key: #METHOD_MODIFIED
+]
+
+{ #category : #events }
+DSSpy class >> methodRemoved: evt [
+	self log: evt method key: #METHOD_REMOVED
 ]

@@ -290,6 +290,13 @@ DSSpyInstrumenter >> instrumentationSourceTemplate [
 	^'DSSpy log: {1} key: {2}.'
 ]
 
+{ #category : #methods }
+DSSpyInstrumenter >> listenToMethodChanges [
+	SystemAnnouncer uniqueInstance weak when: MethodModified send: #methodChanged: to: DSSpy.
+	SystemAnnouncer uniqueInstance weak when: MethodRemoved send: #methodRemoved: to: DSSpy.
+	SystemAnnouncer uniqueInstance weak when: MethodAdded send: #methodAdded: to: DSSpy
+]
+
 { #category : #logging }
 DSSpyInstrumenter >> logArray: anArray key: aKey [
 	| stream |
