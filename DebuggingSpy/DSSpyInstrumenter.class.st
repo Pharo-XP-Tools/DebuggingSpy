@@ -205,6 +205,16 @@ DSSpyInstrumenter >> instrumentMetaInspection [
 	^ aClass methods sorted: #selector ascending'
 ]
 
+{ #category : #windows }
+DSSpyInstrumenter >> instrumentMouseEnterWindow [
+
+	SystemWindow compile: 'handleMouseEnter: anEvent
+	|log|
+	log := DSSpy windowName: self.
+	[DSSpy log: log key: #WINDOW_ENTER] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
+	^super handleMouseEnter: anEvent'
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentNotebooks [
 
@@ -356,6 +366,13 @@ DSSpyInstrumenter >> instrumentSystemQueries [
 						key: #SYSTEMQUERY printString).
 			self rewriteSourceFrom: ast in: sourceStream.
 			class compile: sourceStream contents ]
+]
+
+{ #category : #windows }
+DSSpyInstrumenter >> instrumentWindows [
+
+	self instrumentMouseEnterWindow.
+	self listenToWindowEvents 
 ]
 
 { #category : #helpers }

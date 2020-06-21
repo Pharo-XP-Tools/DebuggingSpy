@@ -13,12 +13,6 @@ DSSpy class >> log: elements key: key [
 	Transcript cr
 ]
 
-{ #category : #'as yet unclassified' }
-DSSpy class >> logMouseDownEvent: anEvent [
-	(anEvent handler isKindOf: SystemWindow)
-		ifTrue: [ anEvent handler labelString crTrace ]
-]
-
 { #category : #events }
 DSSpy class >> logWindowActivated: anEvent [
 
@@ -43,11 +37,7 @@ DSSpy class >> logWindowOpened: anEvent [
 	window announcer
 		when: WindowClosed
 		send: #logWindowClosed:
-		to: self.
-	"window announcer
-		when: MouseButtonEvent
-		send: #logMouseDownEvent:
-		to: self"
+		to: self
 ]
 
 { #category : #events }
@@ -66,9 +56,15 @@ DSSpy class >> methodRemoved: evt [
 ]
 
 { #category : #helpers }
-DSSpy class >> windowNameFromEvent: anEvent [
-	|win label|
-	win := anEvent window.
+DSSpy class >> windowName: win [
+	|label|	
 	label := [win labelString ] on: Error do:['window '].
 	^label, ' (', win hash printString, ')'
+]
+
+{ #category : #helpers }
+DSSpy class >> windowNameFromEvent: anEvent [
+	|win|
+	win := anEvent window.
+	^self windowName: win
 ]
