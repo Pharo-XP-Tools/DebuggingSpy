@@ -56,6 +56,13 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 ]
 
 { #category : #interactions }
+DSSpyInstrumenter >> instrumentCodeActions [
+	self instrumentDebugIt.
+	self instrumentDoIt.
+	self instrumentPrintIt
+]
+
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentDebugIt [
 
 RubSmalltalkEditor compile: 'debugSelection
