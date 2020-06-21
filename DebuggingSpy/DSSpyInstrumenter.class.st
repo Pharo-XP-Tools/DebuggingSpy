@@ -55,6 +55,25 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self adoptPaneColor: self paneColor'
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentDebugIt [
+
+RubSmalltalkEditor compile: 'debugSelection
+	"Treat the current selection as an expression; evaluate and debugg it in a new debugger."
+
+	self lineSelectAndEmptyCheck: [ ^ self ].
+	[DSSpy log: self selection asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+	self debug: self selectionAsStream'.
+	
+SpCodeDebugItCommand compile: 'execute
+	| selection |
+	
+	selection := self selectedTextOrLine.
+	selection ifEmpty: [ ^ String new ].
+	[DSSpy log: selection asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+	self debug: selection readStream'.
+]
+
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentDebugger [
 	self instrumentDebuggerCode.
