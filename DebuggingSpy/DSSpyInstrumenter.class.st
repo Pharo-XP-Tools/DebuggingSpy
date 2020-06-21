@@ -246,6 +246,37 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 	
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentPrintIt [
+	ClyTextEditor compile: 'printIt
+	| printString |
+	[DSSpy log: self selection asString key: #ACTION_PRINTIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	self
+		evaluateSelectionAndDo: [ :result | 
+			printString := [ result asScriptResultStringInCalypso ]
+				on: Error
+				do: [ ''<error in printString: try ''''Inspect it'''' to debug>'' ].
+			self afterSelectionInsertAndSelect: printString ]'.
+		
+	RubSmalltalkEditor compile: 'printIt
+	| printString |
+	[DSSpy log: self selection asString key: #ACTION_PRINTIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	self
+		evaluateSelectionAndDo: [ :result | 
+			printString := [ result printString ]
+				on: Error
+				do: [ ''<error in printString: try ''''Inspect it'''' to debug>'' ].
+			self afterSelectionInsertAndSelect: printString ]'.
+	
+SpCodePrintItCommand compile: 'execute
+	"Treat the current text selection as an expression; evaluate it."
+	| selection |	
+	selection := self selectedTextOrLine.
+	[DSSpy log: selection asString key: #ACTION_PRINTIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	self evaluateSelectionAndDo: [ :result | 
+		self printObject: result ]'.
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentRawInspection [
 
