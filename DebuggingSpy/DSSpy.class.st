@@ -9,8 +9,21 @@ Class {
 
 { #category : #logging }
 DSSpy class >> log: elements key: key [
-	Transcript show: '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
-	Transcript cr
+	|log|
+	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
+	Transcript show: log.
+	Transcript cr.
+	self logToFile: log
+]
+
+{ #category : #helpers }
+DSSpy class >> logToFile: aString [
+	|str|
+	str := self stream.
+	str setToEnd.
+	str nextPutAll: aString.
+	str cr.
+	str close 
 ]
 
 { #category : #events }
@@ -53,6 +66,14 @@ DSSpy class >> methodChanged: evt [
 { #category : #events }
 DSSpy class >> methodRemoved: evt [
 	self log: evt method key: #METHOD_REMOVED
+]
+
+{ #category : #helpers }
+DSSpy class >> stream [
+	|rf|
+	rf := 	'test' asFileReference. "do a lazy accessor"
+	rf ensureCreateFile.
+	^rf writeStream
 ]
 
 { #category : #helpers }
