@@ -25,19 +25,10 @@ DSSpy class >> logWindowActivated: anEvent [
 	self log: (self windowNameFromEvent: anEvent) key: #WINDOW_ACTIVATED
 ]
 
-{ #category : #'as yet unclassified' }
-DSSpy class >> logWindowOpenEvent: anEvent [
-	| window |
-	window := anEvent window.
-	window labelString crTrace.
-	window announcer
-		when: WindowActivated
-		send: #logWindowActivated:
-		to: self.
-	window announcer
-		when: MouseButtonEvent
-		send: #logMouseDownEvent:
-		to: self
+{ #category : #events }
+DSSpy class >> logWindowClosed: anEvent [
+
+	self log: (self windowNameFromEvent: anEvent) key: #WINDOW_CLOSED
 ]
 
 { #category : #events }
@@ -48,6 +39,10 @@ DSSpy class >> logWindowOpened: anEvent [
 	window announcer
 		when: WindowActivated
 		send: #logWindowActivated:
+		to: self.
+	window announcer
+		when: WindowClosed
+		send: #logWindowClosed:
 		to: self.
 	"window announcer
 		when: MouseButtonEvent
