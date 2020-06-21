@@ -443,6 +443,12 @@ DSSpyInstrumenter >> listenToMethodChanges [
 	SystemAnnouncer uniqueInstance weak when: MethodAdded send: #methodAdded: to: DSSpy
 ]
 
+{ #category : #windows }
+DSSpyInstrumenter >> listenToWindowEvents [
+
+	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
+]
+
 { #category : #logging }
 DSSpyInstrumenter >> logArray: anArray key: aKey [
 	| stream |
