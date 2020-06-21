@@ -155,6 +155,22 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 			c compile: sourceStream contents ]
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentDoIt [
+
+	RubSmalltalkEditor compile: 'doIt
+	"Set the context to include pool vars of the model.  Then evaluate."
+	[DSSpy log: self selection asString key: #ACTION_DOIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DOIT ].
+	^ self evaluateSelection'.
+	
+SpCodeDoItCommand compile: 'execute
+	"Treat the current text selection as an expression; evaluate it."
+	| selection |	
+	selection := self selectedTextOrLine.
+	[DSSpy log: selection asString key: #ACTION_DOIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DOIT ].
+	self evaluateSelectionAndDo: [ :result | ]'.
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentInspector [
 
