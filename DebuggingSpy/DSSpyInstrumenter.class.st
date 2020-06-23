@@ -223,7 +223,7 @@ DSSpyInstrumenter >> instrumentGTMetaInspection [
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentGTRawInspection [
 
-	GLMCompositePresentation compile: 'compose
+	GTRawObjectVariablesBrowser compile: 'compose
 	self title: ''Raw''.
 	self tabulator with: [ :browser |
 		browser row: #variables; row: #evaluator.
