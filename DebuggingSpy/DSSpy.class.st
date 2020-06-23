@@ -8,6 +8,12 @@ Class {
 }
 
 { #category : #logging }
+DSSpy class >> log: e [
+	'log ' crTrace.
+	e crTrace
+]
+
+{ #category : #logging }
 DSSpy class >> log: elements key: key [
 	|log|
 	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.

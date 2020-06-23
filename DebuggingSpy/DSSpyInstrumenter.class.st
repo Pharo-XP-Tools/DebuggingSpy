@@ -179,6 +179,48 @@ SpCodeDoItCommand compile: 'execute
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentGTMetaInspection [
+
+	GTSimpleMethodsBrowser compile: 'methodsIn: a
+	^ a list
+		title: ''Methods'';
+		display: [ :object :class | 
+			[DSSpy log: class key: #INSPECTOR_META_CLASS] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS]. 			
+			class methods collect: [:each | each asRingDefinition]];
+		filterOn: [ :text :each | (text , ''*'') match: each selector ];
+		helpMessage:  ''Wildcard filtering (e.g., "*pattern*")'';
+		tags: [ :method | method category ];
+		sorted: [ :method1 :method2 | method1 selector < method2 selector ];
+		format: [ :method | method selector ];
+		morphicSelectionAct: [ :list :object :class | 
+			Smalltalk tools browser 
+				openOnClass: class 
+				selector: list selection selector ]
+			icon: GLMUIThemeExtraIcons glamorousBrowse
+			on: $b
+			entitled: ''Browse'';
+		dynamicActionsOnSelection: [ :list | self methodActionsFor: list selection ]'.	
+	
+
+	GTSimpleMethodsBrowser compile: 'sourceOf: method for: object in: composite
+	^ composite pharoMethod 
+		display: [ :m | 
+			[DSSpy log: m name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
+			m sourceCode ];
+		smalltalkClass: [ :m | m methodClass ];
+		doItReceiver: [ object ];
+		selectionPopulate: #evaluatedObject
+			on: $g
+			entitled: ''Do it and go''
+			with: [ :text | Smalltalk compiler receiver: object; evaluate: text selectedText ];
+		installDefaultSelectionActions;
+		selectionAct: [ :text | self updateOuterPaneFrom: text for: method ]
+			icon: GLMUIThemeExtraIcons glamorousAccept
+			on: $s
+			entitled: ''Accept'''
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspector [
 
 	self instrumentRawInspection.
