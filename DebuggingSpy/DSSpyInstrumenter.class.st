@@ -221,6 +221,31 @@ DSSpyInstrumenter >> instrumentGTMetaInspection [
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentGTRawInspection [
+
+	GLMCompositePresentation compile: 'compose
+	self title: ''Raw''.
+	self tabulator with: [ :browser |
+		browser row: #variables; row: #evaluator.
+		browser transmit 
+			to: #variables; 
+			andShow: [:a | self variablesIn: a ].
+		browser transmit 
+			to: #evaluator; 
+			andShow: [:a | self evaluatorIn: a ].
+		browser transmit 
+			from: #variables; 
+			toOutsidePort: #selection; 
+			transformed: [ :aNode | 
+				[DSSpy log: aNode value key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].			
+				aNode ifNotNil: [aNode value]].
+		browser transmit 
+			from: #evaluator; 
+			toOutsidePort: #selection ].
+	self wantsAutomaticRefresh: true'
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspector [
 
 	self instrumentRawInspection.
