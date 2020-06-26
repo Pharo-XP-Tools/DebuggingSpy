@@ -22,6 +22,15 @@ DSSpy class >> log: elements key: key [
 	self logToFile: log
 ]
 
+{ #category : #logging }
+DSSpy class >> logMouseEnter: anArrayOfMorphs [
+	[ self
+		log: (self printStringMorphs: anArrayOfMorphs)
+		key: #MOUSE_OVER ]
+		on: Error
+		do: [ self log: #ERROR key: #MOUSE_OVER ]
+]
+
 { #category : #helpers }
 DSSpy class >> logToFile: aString [
 	|str|
@@ -72,6 +81,18 @@ DSSpy class >> methodChanged: evt [
 { #category : #events }
 DSSpy class >> methodRemoved: evt [
 	self log: evt method key: #METHOD_REMOVED
+]
+
+{ #category : #logging }
+DSSpy class >> printStringMorphs: anArrayOfMorphs [
+	| str |
+	str := WriteStream on: String new.
+	anArrayOfMorphs
+		do: [ :m | 
+			((m isKindOf: StringMorph) and: [ m contents ~= '...' ])
+				ifTrue: [ str << m contents asString.
+					str << ' ' ] ].
+	^ str contents
 ]
 
 { #category : #helpers }

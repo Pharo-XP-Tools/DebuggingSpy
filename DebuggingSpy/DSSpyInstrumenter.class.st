@@ -404,6 +404,15 @@ DSSpyInstrumenter >> instrumentInspector [
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorMouseEnter [
+
+	FTSelectableMorph compile: 'mouseEnter: evt
+
+	DSSpy logMouseEnter: self allMorphs.
+	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'.
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectorTabs [
 
 	GTInspector compile: 'addPaneFromOuter: aPort 
