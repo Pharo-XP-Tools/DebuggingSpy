@@ -424,6 +424,18 @@ DSSpyInstrumenter >> instrumentInspectorTabs [
 		addActiveOrigin: aPort; 
 		destination: (newPane port: #entity); 
 		transmit'.
+		
+	GLMTabSelectorBrick compile: 'selectedIndex: index
+	"Set the value of selectedIndex"
+
+	| oldIndex |
+	self selectedIndex == index
+		ifTrue: [ ^ self ].
+	oldIndex := self selectedIndex.
+	selectedIndex := index min: self tabs size.
+	DSSpy logInspectorTabChange: self selectedTab label allMorphs.
+	self updateTabs.
+	self changed: #selectedIndex with: oldIndex'
 ]
 
 { #category : #inspector }

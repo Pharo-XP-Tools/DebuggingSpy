@@ -23,6 +23,15 @@ DSSpy class >> log: elements key: key [
 ]
 
 { #category : #logging }
+DSSpy class >> logInspectorTabChange: anArrayOfMorphs [
+	[ self
+		log: (self printGLMStringMorphs: anArrayOfMorphs)
+		key: #INSPECTOR_TAB_SELECTION ]
+		on: Error
+		do: [ self log: #ERROR key: #INSPECTOR_TAB_SELECTION ]
+]
+
+{ #category : #logging }
 DSSpy class >> logMouseEnter: anArrayOfMorphs [
 	[ self
 		log: (self printStringMorphs: anArrayOfMorphs)
@@ -81,6 +90,18 @@ DSSpy class >> methodChanged: evt [
 { #category : #events }
 DSSpy class >> methodRemoved: evt [
 	self log: evt method key: #METHOD_REMOVED
+]
+
+{ #category : #logging }
+DSSpy class >> printGLMStringMorphs: anArrayOfMorphs [
+	| str |
+	str := WriteStream on: String new.
+	anArrayOfMorphs
+		do: [ :m | 
+			(m isKindOf: GLMStringBrick)
+				ifTrue: [ str << m text asString.
+					str << ' ' ] ].
+	^ str contents
 ]
 
 { #category : #logging }
