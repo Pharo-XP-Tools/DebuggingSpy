@@ -254,6 +254,20 @@ DSSpyInstrumenter >> instrumentInspector [
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorTabs [
+
+	GTInspector compile: 'addPaneFromOuter: aPort 
+	"This method adds a new pane at the end of the finder."
+	|newPane |
+	newPane := self panes addLast: (GLMPane named: (self panes size + 1) asString in: self).
+	[DSSpy log: (newPane port: #entity) value value key: #INSPECTOR_NAVIGATE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_NAVIGATE].	
+	self newFirstTransmission
+		addActiveOrigin: aPort; 
+		destination: (newPane port: #entity); 
+		transmit'.
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentMetaInspection [
 
 	StMetaBrowser compile: 'updateSourceWith: method
@@ -463,14 +477,6 @@ DSSpyInstrumenter >> listenToBreakpointChanges [
 	methodsWithHalts removeKey: aMethodSelector.
 	[DSSpy log: aMethodSelector key: #HALT_REMOVED] on: Error do:[ DSSpy log: #ERROR key: #HALT_REMOVED ].
 	self cacheChanged'
-]
-
-{ #category : #breakpoints }
-DSSpyInstrumenter >> listenToBreakpointHits [
-	self halt.
-	self haltOnce.
-	self halt: 'test'.
-	self haltIf:["with comment" true]
 ]
 
 { #category : #breakpoints }

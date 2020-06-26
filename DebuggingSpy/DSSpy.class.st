@@ -9,7 +9,7 @@ Class {
 
 { #category : #logging }
 DSSpy class >> log: e [
-	'log ' crTrace.
+	self halt.
 	e crTrace
 ]
 
