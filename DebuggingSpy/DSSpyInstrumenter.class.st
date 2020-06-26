@@ -65,12 +65,19 @@ DSSpyInstrumenter >> instrumentCodeActions [
 { #category : #interactions }
 DSSpyInstrumenter >> instrumentDebugIt [
 
-RubSmalltalkEditor compile: 'debugSelection
-	"Treat the current selection as an expression; evaluate and debugg it in a new debugger."
-
-	self lineSelectAndEmptyCheck: [ ^ self ].
-	[DSSpy log: self selection asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	self debug: self selectionAsStream'.
+RubSmalltalkEditor compile: 'debug: aStream
+	| method receiver context |
+	[DSSpy log: aStream contents asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+	(self model respondsTo: #doItReceiver)
+		ifTrue: [ receiver := self model doItReceiver.
+			context := self model doItContext ]
+		ifFalse: [ receiver := context := nil ].
+	method := self compile: aStream for: receiver in: context.
+	method isReturnSpecial
+		ifTrue: [ self inform: ''Nothing to debug, the expression is optimized''.
+			^ self ].
+	method notNil
+		ifTrue: [ self debug: method receiver: receiver in: context ]'.
 	
 SpCodeDebugItCommand compile: 'execute
 	| selection |
@@ -169,13 +176,98 @@ DSSpyInstrumenter >> instrumentDoIt [
 	"Set the context to include pool vars of the model.  Then evaluate."
 	[DSSpy log: self selection asString key: #ACTION_DOIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DOIT ].
 	^ self evaluateSelection'.
-	
+		
 SpCodeDoItCommand compile: 'execute
 	"Treat the current text selection as an expression; evaluate it."
 	| selection |	
 	selection := self selectedTextOrLine.
 	[DSSpy log: selection asString key: #ACTION_DOIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DOIT ].
 	self evaluateSelectionAndDo: [ :result | ]'.
+]
+
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentGTCodeActions [
+	
+	Announcement subclass: #GLMHighlightAndEvaluate
+	instanceVariableNames: 'action key'
+	classVariableNames: ''
+	package: 'Glamour-Presentations-Announcements'.
+	
+	GLMHighlightAndEvaluate compile: 'key ^key'.
+	GLMHighlightAndEvaluate compile: 'key: k key := k'.
+	
+	GLMRubricTextPresentation compile: 'highlightEvaluateAndDo: aBlock key: k
+					self announce: (GLMHighlightAndEvaluate new action: aBlock; key: k)'.
+					
+	GLMMorphicPharoCodeRenderer compile: 'popupPrint
+	"Evaluates selected code and prints it in a popper"
+	textMorph textArea editor highlightEvaluateAndDo: [ :result | 
+		[DSSpy log: textMorph text asString key: #ACTION_PRINTIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+		textMorph shoutStyler style: textMorph text.
+		GLMPrintPopper new 
+			openFromRubric: textMorph textArea withResult: result ]'.
+		
+	GLMMorphicPharoCodeRenderer compile: 'debugHighlightedText
+
+	UIManager default defer: [ 
+		[DSSpy log: textMorph text asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+		textMorph textArea editor debugHighlight.
+		textMorph shoutStyler style: textMorph text. ]'.
+					
+	GLMMorphicPharoCodeRenderer compile: 'actOnHighlightAndEvaluate: ann 
+
+	"We get here as a result of an announcement.
+	If we do not defer the execution and an exception is triggered by the execution of the code
+	then resuming the execution in the debugger will trigger an error when unwinding the stack."
+	UIManager default defer: [ 
+		textMorph textArea handleEdit: [
+			textMorph textArea editor highlightEvaluateAndDo: ann action.
+			[DSSpy log: textMorph text asString key: ann key asString] on: Error do:[ DSSpy log: #ERROR key: #ACTION_GT ].
+			textMorph shoutStyler style: textMorph text. ] ] '.
+					
+	GLMRubricSmalltalkCodePresentation compile: 'executionSelectionActions
+
+	^ { 
+		GLMGenericAction new 
+				title: ''Do it'';
+				action: [ :aPresentation |
+					aPresentation highlightEvaluateAndDo: [ :result | ] key: #ACTION_DOIT]; 
+				keymap: PharoShortcuts current doItShortcut; 
+				icon: GLMUIThemeExtraIcons glamorousSpawn;
+				yourself.
+		GLMGenericAction new 
+				title: ''Print it'';
+				action: [ :aPresentation |					
+					aPresentation printSelection ]; 
+				keymap: PharoShortcuts current printItShortcut; 
+				yourself.
+		GLMGenericAction new 
+				title: ''Inspect it''; 
+				action: [ :aPresentation |					
+					aPresentation highlightEvaluateAndDo: [ :result | result inspect ] key: #ACTION_INSPECT ]; 
+				keymap: PharoShortcuts current inspectItShortcut; 
+				icon: GLMUIThemeExtraIcons glamorousInspect;
+				yourself.
+		GLMGenericAction new 
+				title: ''Basic Inspect it''; 
+				action: [ :aPresentation |
+					aPresentation highlightEvaluateAndDo: [ :result | result basicInspect ] key: #ACTION_INSPECT ]; 
+				shortcut: $I; 
+				icon: GLMUIThemeExtraIcons glamorousInspect;
+				yourself.
+		GLMGenericAction new 
+				title: ''Debug it''; 
+				action: [ :aPresentation |					
+					aPresentation debugSelection ]; 
+				shortcut: $D;
+				yourself.
+		GLMGenericAction new 
+				title: ''Profile it''; 
+				action: [ :aPresentation |
+					aPresentation profileSelection ]; 
+				withSeparatorAfter;
+				yourself.
+		 }'
 ]
 
 { #category : #inspector }
