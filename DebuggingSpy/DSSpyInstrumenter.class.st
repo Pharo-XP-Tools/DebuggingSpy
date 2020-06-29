@@ -635,6 +635,10 @@ DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointChanges [
+	Breakpoint compile: 'install
+	self node link: self link.
+	self class addBreakpoint: self'.
+	
 	Breakpoint registerObserver: DSSpy
 ]
 

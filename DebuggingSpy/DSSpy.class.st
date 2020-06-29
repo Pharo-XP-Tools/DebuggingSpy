@@ -131,8 +131,9 @@ DSSpy class >> stream [
 
 { #category : #events }
 DSSpy class >> update: aBreakpointEvent [
-
-	[ self breakpointEvent: aBreakpointEvent ] on: Error do:[self log: #ERROR key: #BREAKPOINT_EVENT]
+	[ self breakpointEvent: aBreakpointEvent ]
+		on: Error
+		do: [ :err | self log: #ERROR key: #BREAKPOINT_EVENT ]
 ]
 
 { #category : #helpers }
