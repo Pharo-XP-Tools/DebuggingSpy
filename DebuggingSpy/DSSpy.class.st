@@ -7,6 +7,11 @@ Class {
 	#category : #DebuggingSpy
 }
 
+{ #category : #events }
+DSSpy class >> breakpointEvent: aBreakpointEvent [
+	aBreakpointEvent logBreakpointEventOn: self
+]
+
 { #category : #logging }
 DSSpy class >> log: e [
 	self halt.
@@ -122,6 +127,12 @@ DSSpy class >> stream [
 	rf := 	'test' asFileReference. "do a lazy accessor"
 	rf ensureCreateFile.
 	^rf writeStream
+]
+
+{ #category : #events }
+DSSpy class >> update: aBreakpointEvent [
+
+	[ self breakpointEvent: aBreakpointEvent ] on: Error do:[self log: #ERROR key: #BREAKPOINT_EVENT]
 ]
 
 { #category : #helpers }
