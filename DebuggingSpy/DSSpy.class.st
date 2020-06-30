@@ -4,12 +4,20 @@ I collect spy informations
 Class {
 	#name : #DSSpy,
 	#superclass : #Object,
+	#classVars : [
+		'monitor'
+	],
 	#category : #DebuggingSpy
 }
 
 { #category : #events }
 DSSpy class >> breakpointEvent: aBreakpointEvent [
 	aBreakpointEvent logBreakpointEventOn: self
+]
+
+{ #category : #'mutual exclusion' }
+DSSpy class >> critical: aBlock [
+	self monitor critical: aBlock
 ]
 
 { #category : #logging }
@@ -24,7 +32,7 @@ DSSpy class >> log: elements key: key [
 	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
 	Transcript show: log.
 	Transcript cr.
-	self logToFile: log
+	self critical: [self logToFile: log]
 ]
 
 { #category : #logging }
@@ -95,6 +103,11 @@ DSSpy class >> methodChanged: evt [
 { #category : #events }
 DSSpy class >> methodRemoved: evt [
 	self log: evt method key: #METHOD_REMOVED
+]
+
+{ #category : #accessing }
+DSSpy class >> monitor [
+	^monitor ifNil:[monitor := Monitor new]
 ]
 
 { #category : #logging }
