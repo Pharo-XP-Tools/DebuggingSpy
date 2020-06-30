@@ -464,6 +464,7 @@ DSSpyInstrumenter >> instrumentMouseEnterWindow [
 	|log|
 	log := DSSpy windowName: self.
 	[DSSpy log: log key: #WINDOW_ENTER] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
+	self activate.
 	^super handleMouseEnter: anEvent'
 ]
 
