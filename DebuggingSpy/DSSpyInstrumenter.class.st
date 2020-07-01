@@ -25,6 +25,19 @@ DSSpyInstrumenter >> debuggerActionClasses [
 	StProceedCommand}
 ]
 
+{ #category : #'debugger- actions' }
+DSSpyInstrumenter >> debuggerActionGTClasses [
+	^ {StepIntoDebugAction.
+	StepOverDebugAction.
+	StepThroughDebugAction.
+	WhereIsDebugAction.
+	RunToSelectionDebugAction.
+	ReturnValueDebugAction.
+	ResumeDebugAction.
+	RestartDebugAction
+	}
+]
+
 { #category : #browsers }
 DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	ClyFullBrowser compile: 'newWindowTitle
@@ -185,7 +198,7 @@ DSSpyInstrumenter >> instrumentDebuggingActions [
 				<<
 					(self
 						logString: c defaultName printString
-						key: #DEBUGGERACTION printString).
+						key: #DEBUGGER_ACTION printString).
 			self rewriteSourceFrom: (c >> #execute) ast in: sourceStream.
 			c compile: sourceStream contents ]
 ]
@@ -347,6 +360,23 @@ DSSpyInstrumenter >> instrumentGTCodeActions [
 				withSeparatorAfter;
 				yourself.
 		 }'
+]
+
+{ #category : #'debugger- actions' }
+DSSpyInstrumenter >> instrumentGTDebuggingActions [
+	self debuggerActionGTClasses
+		do: [ :c | 
+			| sourceStream |
+			sourceStream := WriteStream on: String new.
+			self rewriteSelector: #executeAction withArguments: #() in: sourceStream.
+			self rewriteTempsFrom: (c >> #executeAction) ast in: sourceStream.
+			sourceStream
+				<<
+					(self
+						logString: c new defaultLabel printString
+						key: #DEBUGGER_ACTION printString).
+			self rewriteSourceFrom: (c >> #executeAction) ast in: sourceStream.
+			c compile: sourceStream contents ]
 ]
 
 { #category : #inspector }
@@ -645,6 +675,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self instrumentCalypsoBrowsers.
 	self instrumentDebugger.
 	self instrumentDebuggingActions.
+	self instrumentGTDebuggingActions.
 	self instrumentInspector.
 	self instrumentCodeActions.
 	self listenToMethodChanges.
@@ -689,7 +720,7 @@ DSSpyInstrumenter >> instrumentWindows [
 { #category : #helpers }
 DSSpyInstrumenter >> instrumentationSourceTemplate [
 
-	^'DSSpy log: {1} key: {2}.'
+	^'[DSSpy log: {1} key: {2}] on: Error do:[DSSpy log: #ERROR key: {2}].'
 ]
 
 { #category : #breakpoints }
