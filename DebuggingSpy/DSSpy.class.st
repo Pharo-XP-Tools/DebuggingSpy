@@ -25,9 +25,9 @@ DSSpy class >> critical: aBlock [
 
 { #category : #logging }
 DSSpy class >> log: elements key: key [
-	|log|
-	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
-	self critical: [self logToFile: log]
+	| log |
+	log := '[' , DateAndTime now asString , ']:' , key , ':', elements printString.
+	self critical: [ self logToFile: log ]
 ]
 
 { #category : #helpers }
