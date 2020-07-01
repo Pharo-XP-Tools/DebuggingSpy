@@ -52,7 +52,7 @@ DSSpy class >> logToFile: aString [
 	str setToEnd.
 	str crlf.
 	str nextPutAll: aString.	
-	str close 
+	str close
 ]
 
 { #category : #events }
