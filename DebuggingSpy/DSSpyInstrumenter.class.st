@@ -103,10 +103,9 @@ DSSpyInstrumenter >> instrumentDebugger [
 
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCode [
-
+"
 	StDebugger compile: 'initializeCode
 	self flag: #DBG_IMPROVE.
-	 "Add metalink information in the gutter!"
 	
 	code := self newCode.
 	code whenSubmitDo: [ :text | 
@@ -126,7 +125,7 @@ DSSpyInstrumenter >> instrumentDebuggerCode [
 	codeHeader := self instantiate: StHeaderBar.	
 	codeHeader removeStyleFromLabel: ''label.header''.	
 	codeHeader applyStyleToLabel: ''label.headerError''.
-	codeHeader label: self session name'
+	codeHeader label: self session name'"
 ]
 
 { #category : #debugger }
