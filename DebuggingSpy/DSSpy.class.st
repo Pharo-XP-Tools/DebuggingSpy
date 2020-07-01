@@ -53,8 +53,11 @@ DSSpy class >> logFileReference [
 ]
 
 { #category : #logging }
-DSSpy class >> logInspectorTabChange: anArrayOfMorphs [
-	[ self
+DSSpy class >> logInspectorTabChange: selectedTab [
+	[ 
+	|anArrayOfMorphs |
+	anArrayOfMorphs :=  selectedTab label allMorphs.
+	self
 		log: (self printGLMStringMorphs: anArrayOfMorphs)
 		key: #INSPECTOR_TAB_SELECTION ]
 		on: Error
