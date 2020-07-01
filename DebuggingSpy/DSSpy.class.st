@@ -21,17 +21,9 @@ DSSpy class >> critical: aBlock [
 ]
 
 { #category : #logging }
-DSSpy class >> log: e [
-	self halt.
-	e crTrace
-]
-
-{ #category : #logging }
 DSSpy class >> log: elements key: key [
 	|log|
 	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
-	Transcript show: log.
-	Transcript cr.
 	self critical: [self logToFile: log]
 ]
 
