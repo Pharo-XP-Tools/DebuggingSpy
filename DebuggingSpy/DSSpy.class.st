@@ -58,8 +58,8 @@ DSSpy class >> logToFile: aString [
 	|str|
 	str := self stream.
 	str setToEnd.
-	str nextPutAll: aString.
-	str cr.
+	str crlf.
+	str nextPutAll: aString.	
 	str close 
 ]
 
