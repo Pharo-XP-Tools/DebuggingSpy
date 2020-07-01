@@ -48,7 +48,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	newTitle := self buildTitleFromSelections.
 	self systemScope isCurrentImage ifFalse: [ 
 		newTitle := newTitle , '' in '', self systemScope description ].
-	DSSpy log: newTitle key: #BROWSE.
+	[DSSpy log: newTitle key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
 	^newTitle'.
 	
 	ClyQueryBrowser compile: 'newWindowTitle
@@ -60,15 +60,15 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	
 	self systemScope isCurrentImage ifFalse: [ 
 		title := title , '' in '', self systemScope description ].
-	DSSpy log: title key: #BROWSE.
+	[DSSpy log: title key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
 	^title'.
 	
 	TabGroupMorph compile: 'updatePageIndex: index
 	"Change to the given page index."
 
 	self pageMorph ifNotNil: [:p | self contentMorph removeMorph: p].
-	index > 0 ifTrue: [self contentMorph addMorph: (self pages at: index). 
-			DSSpy log: (self pages at: index) labelString key: #BROWSE. ].
+	index > 0 ifTrue: [self contentMorph addMorph: (self pages at: index). 			
+			[DSSpy log: (self pages at: index) key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE] ].
 
 	self pageMorph ifNotNil: [:pm | pm layoutChanged].
 	self adoptPaneColor: self paneColor'
@@ -630,7 +630,7 @@ DSSpyInstrumenter >> instrumentRawInspection [
 		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].'.
 
 	StInspector class compile: 'onObject: anObject
-	DSSpy log: anObject key: #INSPECTOR_INSPECT.
+	[DSSpy log: anObject key: #INSPECTOR_INSPECT.] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
 	^ self on: (StInspectorModel on: anObject)'
 ]
 

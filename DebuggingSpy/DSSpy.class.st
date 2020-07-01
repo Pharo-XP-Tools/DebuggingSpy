@@ -82,44 +82,53 @@ DSSpy class >> logToFile: aString [
 
 { #category : #events }
 DSSpy class >> logWindowActivated: anEvent [
-
-	self log: (self windowNameFromEvent: anEvent) key: #WINDOW_ACTIVATED
+	[ self
+		log: (self windowNameFromEvent: anEvent)
+		key: #WINDOW_ACTIVATED ]
+		on: Error
+		do: [ self log: #ERROR key: #WINDOW_ACTIVATED ]
 ]
 
 { #category : #events }
 DSSpy class >> logWindowClosed: anEvent [
-
-	self log: (self windowNameFromEvent: anEvent) key: #WINDOW_CLOSED
+	[ self log: (self windowNameFromEvent: anEvent) key: #WINDOW_CLOSED ]
+		on: Error
+		do: [ self log: #ERROR key: #WINDOW_CLOSED ]
 ]
 
 { #category : #events }
 DSSpy class >> logWindowOpened: anEvent [
 	| window |
 	window := anEvent window.
-	self log: (self windowNameFromEvent: anEvent) key: #WINDOW_OPENED.
+	[ self log: (self windowNameFromEvent: anEvent) key: #WINDOW_OPENED ]
+		on: Error
+		do: [ self log: #ERROR key: #WINDOW_OPENED ].
 	window announcer
 		when: WindowActivated
 		send: #logWindowActivated:
 		to: self.
-	window announcer
-		when: WindowClosed
-		send: #logWindowClosed:
-		to: self
+	window announcer when: WindowClosed send: #logWindowClosed: to: self
 ]
 
 { #category : #events }
 DSSpy class >> methodAdded: evt [
-	self log: evt method key: #METHOD_ADDED
+	[ self log: evt method key: #METHOD_ADDED ]
+		on: Error
+		do: [ self log: #ERROR key: #METHOD_ADDED ]
 ]
 
 { #category : #events }
 DSSpy class >> methodChanged: evt [
-	self log: evt method key: #METHOD_MODIFIED
+	[ self log: evt method key: #METHOD_MODIFIED ]
+		on: Error
+		do: [ self log: #ERROR key: #METHOD_MODIFIED ]
 ]
 
 { #category : #events }
 DSSpy class >> methodRemoved: evt [
-	self log: evt method key: #METHOD_REMOVED
+	[ self log: evt method key: #METHOD_REMOVED ]
+		on: Error
+		do: [ self log: #ERROR key: #METHOD_REMOVED ]
 ]
 
 { #category : #accessing }
