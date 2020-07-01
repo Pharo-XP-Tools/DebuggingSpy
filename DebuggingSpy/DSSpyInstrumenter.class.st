@@ -154,9 +154,24 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 					self updateCodeFromContext: context.
 					self updateTitle.
 					self expandStackIfLastItemIsSelected.
-					[DSSpy log: context key: #DEBUGGER_VIEW] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_VIEW ] ] ].
+					[DSSpy log: context key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
-	stackHeader label: ''Stack'''
+	stackHeader label: ''Stack'''.
+	
+	GTGenericStackDebugger compile: 'selectionChanged: aContext
+
+	[DSSpy log: aContext printString key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ]	.
+	aContext isNotNil ifTrue: [ self announce: (GTGenericStackDebuggerSelectionChanged forDebugger: self) ].
+
+	UIManager default defer: [ 
+		self session ifNotNil: [
+			(self browser paneNamed: #stack) presentations updateToolbar ] ].
+	
+	self class enableStackColoring ifFalse: [ ^ self ].  
+
+	UIManager default defer: [
+		(self browser paneNamed: #stack) presentations presentations ifNotEmpty: [ :p | 
+			self session interruptedProcess ifNotNil: [ p first update ] ] ]'
 ]
 
 { #category : #'debugger- actions' }
