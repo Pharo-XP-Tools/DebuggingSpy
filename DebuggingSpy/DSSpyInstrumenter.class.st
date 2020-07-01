@@ -7,6 +7,12 @@ Class {
 	#category : #DebuggingSpy
 }
 
+{ #category : #'system instrumentation' }
+DSSpyInstrumenter class >> instrumentSystem [
+	<script>
+	self new instrumentSystem
+]
+
 { #category : #'debugger- actions' }
 DSSpyInstrumenter >> debuggerActionClasses [
 	^ {StStepIntoCommand.
@@ -611,7 +617,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self instrumentCodeActions.
 	self listenToMethodChanges.
 	self instrumentPlayground.
-	self instrumentSystemQueries.
+	"self instrumentSystemQueries."
 	self instrumentWindows
 ]
 
@@ -740,7 +746,7 @@ DSSpyInstrumenter >> logArray: anArray key: aKey [
 			aKey}
 ]
 
-{ #category : #'system instrumentation' }
+{ #category : #breakpoints }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self listenToHaltsHits.
 	self listenToHaltsChanges.
