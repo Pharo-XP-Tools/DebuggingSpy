@@ -59,7 +59,8 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 DSSpyInstrumenter >> instrumentCodeActions [
 	self instrumentDebugIt.
 	self instrumentDoIt.
-	self instrumentPrintIt
+	self instrumentPrintIt.
+	self instrumentGTCodeActions
 ]
 
 { #category : #interactions }
@@ -400,7 +401,11 @@ DSSpyInstrumenter >> instrumentInspector [
 
 	self instrumentRawInspection.
 	self instrumentMetaInspection.
-	self instrumentNotebooks
+	self instrumentNotebooks.
+	self instrumentGTMetaInspection.
+	self instrumentGTRawInspection.
+	self instrumentInspectorTabs.
+	self instrumentInspectorMouseEnter.	
 ]
 
 { #category : #inspector }
@@ -485,7 +490,8 @@ DSSpyInstrumenter >> instrumentNotebooks [
 
 { #category : #playground }
 DSSpyInstrumenter >> instrumentPlayground [
-	self instrumentPlaygroundCode
+	self instrumentPlaygroundCode.
+	self instrumentRubScrolledTextMorph
 ]
 
 { #category : #playground }
@@ -593,6 +599,20 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 				do: [ morph ] ].
 	^ location printString'
 	
+]
+
+{ #category : #'system instrumentation' }
+DSSpyInstrumenter >> instrumentSystem [
+	self logHaltAndBreakpointEvents.
+	self instrumentCalypsoBrowsers.
+	self instrumentDebugger.
+	self instrumentDebuggingActions.
+	self instrumentInspector.
+	self instrumentCodeActions.
+	self listenToMethodChanges.
+	self instrumentPlayground.
+	self instrumentSystemQueries.
+	self instrumentWindows
 ]
 
 { #category : #'system-queries' }
@@ -718,6 +738,13 @@ DSSpyInstrumenter >> logArray: anArray key: aKey [
 		format:
 			{stream contents.
 			aKey}
+]
+
+{ #category : #'system instrumentation' }
+DSSpyInstrumenter >> logHaltAndBreakpointEvents [
+	self listenToHaltsHits.
+	self listenToHaltsChanges.
+	self listenToBreakpointChanges 
 ]
 
 { #category : #logging }
