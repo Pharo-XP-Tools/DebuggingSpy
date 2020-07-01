@@ -476,7 +476,13 @@ DSSpyInstrumenter >> instrumentMouseEnterWindow [
 	log := DSSpy windowName: self.
 	[DSSpy log: log key: #WINDOW_ENTER] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
 	self submorphsDo: [:m | m unlock].
-	^super handleMouseEnter: anEvent'
+	^super handleMouseEnter: anEvent'.
+	
+	SystemWindow compile: 'handleMouseLeave: anEvent
+	|log|
+	log := DSSpy windowName: self.
+	[DSSpy log: log key: #WINDOW_LEAVE] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_LEAVE ]	.
+	^super handleMouseLeave: anEvent'
 ]
 
 { #category : #inspector }
