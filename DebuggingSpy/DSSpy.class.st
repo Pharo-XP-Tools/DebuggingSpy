@@ -7,6 +7,9 @@ Class {
 	#classVars : [
 		'monitor'
 	],
+	#classInstVars : [
+		'logDir'
+	],
 	#category : #DebuggingSpy
 }
 
@@ -25,6 +28,23 @@ DSSpy class >> log: elements key: key [
 	|log|
 	log :=  '[', Time now asSeconds printString, '] ', key , ' -> ' , elements printString.
 	self critical: [self logToFile: log]
+]
+
+{ #category : #helpers }
+DSSpy class >> logDir: aString [
+	logDir := aString asFileReference.
+	logDir ensureCreateDirectory
+]
+
+{ #category : #helpers }
+DSSpy class >> logFileReference [
+	| fname fr |
+	fname := SessionManager default currentSession id asString.
+	fr := logDir
+		ifNil: [ fname asFileReference ]
+		ifNotNil: [ logDir / fname ].
+	fr ensureCreateFile.
+	^ fr
 ]
 
 { #category : #logging }
@@ -128,10 +148,7 @@ DSSpy class >> printStringMorphs: anArrayOfMorphs [
 
 { #category : #helpers }
 DSSpy class >> stream [
-	|rf|
-	rf := 	'test' asFileReference. "do a lazy accessor"
-	rf ensureCreateFile.
-	^rf writeStream
+	^ self logFileReference writeStream
 ]
 
 { #category : #events }
