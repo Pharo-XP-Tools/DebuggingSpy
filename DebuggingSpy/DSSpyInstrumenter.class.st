@@ -611,6 +611,18 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 		[DSSpy log: anAnnouncement key: #CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #CODE_WRITE ].
 		self announcer announce: (anAnnouncement copy morph: self)'.
 		
+	RubScrolledTextMorph compile: 'whenGotForcus: anAnnouncement
+	[DSSpy log: anAnnouncement key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
+	self announcer announce: anAnnouncement.
+	self changed'.
+	
+	RubScrolledTextMorph compile: 'handlesMouseOver: evt
+	^true'.
+	
+	RubScrolledTextMorph compile: 'mouseEnter: evt
+	[DSSpy log: evt key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
+	^super mouseEnter: evt'.
+		
 	RubKeystroke compile:'printString
 	| location |
 	location := [ morph textArea model owner owner ]
