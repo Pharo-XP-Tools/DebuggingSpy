@@ -147,26 +147,22 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 	StDebugger compile: 'initializeStack
 	stackTable := self newTable.
 	stackTable
+		addColumn: (SpStringTableColumn
+				 title: ''Class''
+				 evaluated: [ :item | item receiver class ]);
 		addColumn:
-			(SpStringTableColumn
-				title: ''Class''
-				evaluated: [ :item | item receiver class ]);
-		addColumn:
-			(SpStringTableColumn
-				title: ''Method''
-				evaluated: [ :item | item method selector ]);
-		addColumn:
-			(SpStringTableColumn
-				title: ''Context''
-				evaluated: [ :item | item sender stDisplayString ]).
-	stackTable
-		transmitDo: [ :context | 
-			stackTable selection isEmpty
-				ifFalse: [ self updateInspectorFromContext: context.
-					self updateCodeFromContext: context.
-					self updateTitle.
-					self expandStackIfLastItemIsSelected.
-					[DSSpy log: context key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
+			(SpStringTableColumn title: ''Method'' evaluated: [ :item | 
+					 | method |
+					 method := item method.
+					 method isCompiledBlock
+						 ifTrue: [ method sourceNode sourceCode ]
+						 ifFalse: [ method selector ] ]).
+	stackTable transmitDo: [ :context | 
+		stackTable selection isEmpty ifFalse: [ 
+			self updateInspectorFromContext: context.
+			self updateCodeFromContext: context.
+			self expandStackIfLastItemIsSelected.
+			[DSSpy log: context key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack'''.
 	
@@ -470,7 +466,7 @@ DSSpyInstrumenter >> instrumentInspectorMouseEnter [
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectorTabs [
 
-	GTInspector compile: 'addPaneFromOuter: aPort 
+	GLMFinder compile: 'addPaneFromOuter: aPort 
 	"This method adds a new pane at the end of the finder."
 	|newPane |
 	newPane := self panes addLast: (GLMPane named: (self panes size + 1) asString in: self).
@@ -488,7 +484,7 @@ DSSpyInstrumenter >> instrumentInspectorTabs [
 		ifTrue: [ ^ self ].
 	oldIndex := self selectedIndex.
 	selectedIndex := index min: self tabs size.
-	DSSpy logInspectorTabChange: self selectedTab label allMorphs.
+	DSSpy logInspectorTabChange: self selectedTab.
 	self updateTabs.
 	self changed: #selectedIndex with: oldIndex'
 ]
@@ -725,7 +721,6 @@ DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointChanges [
-	
 	Breakpoint registerObserver: DSSpy
 ]
 
