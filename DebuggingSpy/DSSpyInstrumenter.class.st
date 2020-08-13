@@ -621,9 +621,10 @@ DSSpyInstrumenter >> instrumentRawInspection [
 		children: [ :node | node children ].
 		
 	self outputSelectionPort transmitDo:[:val| 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].
+		val ifNotNil: [ 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
 	self outputActivationPort transmitDo:[:val| 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]].'.
+			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'.
 
 	StInspector class compile: 'onObject: anObject
 	[DSSpy log: anObject key: #INSPECTOR_INSPECT.] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
