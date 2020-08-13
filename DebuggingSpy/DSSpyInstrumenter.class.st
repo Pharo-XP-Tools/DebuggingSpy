@@ -744,30 +744,31 @@ DSSpyInstrumenter >> listenToHaltsChanges [
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToHaltsHits [
 	Halt class compile: 'signalIn: ctx	
+	self = Halt ifTrue:[
 	[|sender log|
 		sender := thisContext sender sender sender sender sender sender sender sender sender sender.
 		log := {sender method. sender sourceNodeExecuted sourceCode}.	
 		DSSpy log: log key: #HALT_HIT] 
 		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
 	super signalIn: ctx'.
 	
 	Halt class compile: 'signal: s
-		[|sender log|
+	self = Halt ifTrue:[	[|sender log|
 		sender := thisContext sender sender sender sender sender .
 		log := {sender method. sender sourceNodeExecuted sourceCode}.	
 		DSSpy log: log key: #HALT_HIT] 
 		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
 	super signal: s'.
 	
 	Halt class compile: 'signal
-		[|sender log|
+		self = Halt ifTrue:[	[|sender log| 
 		sender := thisContext sender sender sender sender sender .
 		log := {sender method. sender sourceNodeExecuted sourceCode}.	
 		DSSpy log: log key: #HALT_HIT] 
 		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ].
+		do:[  DSSpy log: #ERROR key: #HALT_HIT ]].
 	super signal'.
 ]
 
