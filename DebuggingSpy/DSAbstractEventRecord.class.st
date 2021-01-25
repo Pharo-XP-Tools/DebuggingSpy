@@ -2,7 +2,7 @@
 I represent a recorded event, that happened from a tool.
 "
 Class {
-	#name : #DSAbstractRecord,
+	#name : #DSAbstractEventRecord,
 	#superclass : #Object,
 	#instVars : [
 		'dateTime'
@@ -11,32 +11,32 @@ Class {
 }
 
 { #category : #comparing }
-DSAbstractRecord >> < aDSAbstractRecord [
+DSAbstractEventRecord >> < aDSAbstractRecord [
 	^self dateTime < aDSAbstractRecord dateTime
 ]
 
 { #category : #comparing }
-DSAbstractRecord >> <= aDSAbstractRecord [
+DSAbstractEventRecord >> <= aDSAbstractRecord [
 	^self dateTime <= aDSAbstractRecord dateTime
 ]
 
 { #category : #comparing }
-DSAbstractRecord >> > aDSAbstractRecord [
+DSAbstractEventRecord >> > aDSAbstractRecord [
 	^self dateTime > aDSAbstractRecord dateTime
 ]
 
 { #category : #comparing }
-DSAbstractRecord >> >= aDSAbstractRecord [
+DSAbstractEventRecord >> >= aDSAbstractRecord [
 	^self dateTime >= aDSAbstractRecord dateTime
 ]
 
 { #category : #accessing }
-DSAbstractRecord >> dateTime [
+DSAbstractEventRecord >> dateTime [
 
 	^ dateTime
 ]
 
 { #category : #initialization }
-DSAbstractRecord >> initialize [
+DSAbstractEventRecord >> initialize [
 	dateTime := DateAndTime now
 ]
