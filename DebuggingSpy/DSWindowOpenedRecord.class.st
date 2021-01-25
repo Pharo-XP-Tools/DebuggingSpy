@@ -6,3 +6,8 @@ Class {
 	#superclass : #DSWindowEventRecord,
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSWindowOpenedRecord >> eventName [
+	^'Window opened'
+]

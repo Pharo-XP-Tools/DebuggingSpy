@@ -47,6 +47,11 @@ DSAbstractEventRecord >> dateTime: anObject [
 	dateTime := anObject
 ]
 
+{ #category : #accessing }
+DSAbstractEventRecord >> eventName [
+	^self subclassResponsibility 
+]
+
 { #category : #initialization }
 DSAbstractEventRecord >> initialize [
 	dateTime := DateAndTime now

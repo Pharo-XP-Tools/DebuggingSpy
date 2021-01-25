@@ -6,3 +6,8 @@ Class {
 	#superclass : #DSCodeActionRecord,
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSDoItRecord >> eventName [ 
+	^'Do it'
+]
