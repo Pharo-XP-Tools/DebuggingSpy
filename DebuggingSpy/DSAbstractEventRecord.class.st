@@ -10,6 +10,11 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
+{ #category : #'instance creation' }
+DSAbstractEventRecord class >> for: anObject [
+	^self new record: anObject 
+]
+
 { #category : #comparing }
 DSAbstractEventRecord >> < aDSAbstractRecord [
 	^self dateTime < aDSAbstractRecord dateTime
@@ -45,4 +50,9 @@ DSAbstractEventRecord >> dateTime: anObject [
 { #category : #initialization }
 DSAbstractEventRecord >> initialize [
 	dateTime := DateAndTime now
+]
+
+{ #category : #'actions api' }
+DSAbstractEventRecord >> record: anObject [ 
+	self subclassResponsibility 
 ]

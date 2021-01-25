@@ -14,15 +14,10 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : #'instance creation' }
-DSWindowEventRecord class >> forWindowEvent: aWindowEvent [
-	^self new 
-]
-
-{ #category : #recording }
-DSWindowEventRecord >> recordFromEvent: anEvent [
-	self recordWindowIdFromEvent: anEvent.
-	self recordWindowNameFromEvent: anEvent
+{ #category : #'actions api' }
+DSWindowEventRecord >> record: aWindowEvent [
+	self recordWindowIdFromEvent: aWindowEvent.
+	self recordWindowNameFromEvent: aWindowEvent
 ]
 
 { #category : #recording }
