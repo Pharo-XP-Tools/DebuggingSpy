@@ -12,7 +12,11 @@ Class {
 
 { #category : #'instance creation' }
 DSAbstractEventRecord class >> for: anObject [
-	^self new record: anObject 
+
+	| rec |
+	rec := self new record: anObject.
+	DSRecordRegistry current addRecord: rec.
+	^ rec
 ]
 
 { #category : #comparing }
