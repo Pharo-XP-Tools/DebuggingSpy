@@ -58,19 +58,19 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	resultView areItemsLoaded 
 		ifTrue: [title := title capitalized , '' ['' ,  self itemCount asString, '']'']
 		ifFalse: [title := ''Loading: '', title ].
-	
 	self systemScope isCurrentImage ifFalse: [ 
 		title := title , '' in '', self systemScope description ].
-	[DSSpy log: title key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
 	^title'.
 	
+	self flag: 'this one does not record the tab changing in the query browser'.
+	self flag: 'also: there is no record when the user selects a method in the browser, see that later'.
 	TabGroupMorph compile: 'updatePageIndex: index
 	"Change to the given page index."
 
 	self pageMorph ifNotNil: [:p | self contentMorph removeMorph: p].
 	index > 0 ifTrue: [self contentMorph addMorph: (self pages at: index). 			
 			[DSSpy log: (self pages at: index) key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE] ].
-
 	self pageMorph ifNotNil: [:pm | pm layoutChanged].
 	self adoptPaneColor: self paneColor'
 ]
@@ -677,8 +677,8 @@ DSSpyInstrumenter >> instrumentSystem [
 	self instrumentInspector.
 	self instrumentCodeActions.
 	self listenToMethodChanges.
-	self instrumentPlayground.
-	"self instrumentSystemQueries."
+	self instrumentPlayground."
+	self instrumentSystemQueries."
 	self instrumentWindows
 ]
 
