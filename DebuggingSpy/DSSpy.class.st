@@ -32,6 +32,7 @@ DSSpy class >> dateTimeString [
 DSSpy class >> log: elements key: key [
 	| log |
 	log := key , ':', self dateTimeString, elements printString, ':END_', key, ':'.
+	log crTrace.
 	self critical: [ self logToFile: log ]
 ]
 
@@ -65,10 +66,15 @@ DSSpy class >> logInspectorTabChange: selectedTab [
 ]
 
 { #category : #logging }
-DSSpy class >> logMouseEnter: anArrayOfMorphs [
+DSSpy class >> logMouseEnter: morphsAndWindow [
+	
 	[ self
-		log: (self printStringMorphs: anArrayOfMorphs)
-		key: #MOUSE_OVER ]
+		log: (self printStringMorphs: morphsAndWindow first)
+		key: #MOUSE_OVER .
+		
+		self
+		log: (morphsAndWindow second hash printString)
+		key: #MOUSE_OVER_WINDOW]
 		on: Error
 		do: [ self log: #ERROR key: #MOUSE_OVER ]
 ]

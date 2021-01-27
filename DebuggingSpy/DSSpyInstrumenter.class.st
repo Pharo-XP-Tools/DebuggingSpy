@@ -193,8 +193,6 @@ DSSpyInstrumenter >> instrumentInspector [
 	self instrumentRawInspection.
 	self instrumentMetaInspection.
 	self instrumentNotebooks.
-	self instrumentGTMetaInspection.
-	self instrumentGTRawInspection.
 	self instrumentInspectorTabs.
 	self instrumentInspectorMouseEnter.	
 ]
@@ -204,7 +202,7 @@ DSSpyInstrumenter >> instrumentInspectorMouseEnter [
 
 	FTSelectableMorph compile: 'mouseEnter: evt
 
-	DSSpy logMouseEnter: self allMorphs.
+	DSSpy logMouseEnter: {self allMorphs. self window}.
 	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'.
 ]
 
