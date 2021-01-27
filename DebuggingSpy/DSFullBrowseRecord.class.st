@@ -1,8 +1,10 @@
 "
 I record user browsing code action.
-I store the browsed package, class, method and the window id in which it happened.
+I store the browsed package, class and method names, and the window id in which it happened.
 Elements are browsed in order `package>class>method`.
 If one of them is nil, for instance, `package>class>nil`, it means that the user is browsing the class and possibly looking at its methods, or at the list of classes in the package, or at the packages list.
+
+I have to register names instead of objects, as there are no guarantees that the image that analyzes the record has these package/class/method.
 "
 Class {
 	#name : #DSFullBrowseRecord,
@@ -61,20 +63,20 @@ DSFullBrowseRecord >> packageBrowsed: anObject [
 DSFullBrowseRecord >> record: aClyFullBrowser [
 
 	packageBrowsed := aClyFullBrowser packageSelection isEmpty
-		                  ifTrue: [ nil ]
+		                  ifTrue: [ '' ]
 		                  ifFalse: [ 
 		                  aClyFullBrowser packageSelection lastSelectedItem
-			                  actualObject ].
+			                  actualObject name ].
 	classBrowsed := aClyFullBrowser classSelection isEmpty
-		                ifTrue: [ nil ]
+		                ifTrue: [ '' ]
 		                ifFalse: [ 
 		                aClyFullBrowser classSelection lastSelectedItem
-			                actualObject ].
+			                actualObject name ].
 	methodBrowsed := aClyFullBrowser methodSelection isEmpty
-		                 ifTrue: [ nil ]
+		                 ifTrue: [ '' ]
 		                 ifFalse: [ 
 		                 aClyFullBrowser methodSelection lastSelectedItem
-			                 actualObject ].
+			                 actualObject name ].
 	windowId := aClyFullBrowser window hash
 ]
 
