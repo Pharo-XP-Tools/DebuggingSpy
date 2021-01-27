@@ -17,6 +17,18 @@ Class {
 }
 
 { #category : #accessing }
+DSFullBrowseRecord >> classBrowsed [
+
+	^ classBrowsed
+]
+
+{ #category : #accessing }
+DSFullBrowseRecord >> classBrowsed: anObject [
+
+	classBrowsed := anObject
+]
+
+{ #category : #accessing }
 DSFullBrowseRecord >> eventName [
 	^'Browse'
 ]
@@ -31,6 +43,18 @@ DSFullBrowseRecord >> methodBrowsed [
 DSFullBrowseRecord >> methodBrowsed: anObject [
 
 	methodBrowsed := anObject
+]
+
+{ #category : #accessing }
+DSFullBrowseRecord >> packageBrowsed [
+
+	^ packageBrowsed
+]
+
+{ #category : #accessing }
+DSFullBrowseRecord >> packageBrowsed: anObject [
+
+	packageBrowsed := anObject
 ]
 
 { #category : #'actions api' }
@@ -52,4 +76,16 @@ DSFullBrowseRecord >> record: aClyFullBrowser [
 		                 aClyFullBrowser methodSelection lastSelectedItem
 			                 actualObject ].
 	windowId := aClyFullBrowser window hash
+]
+
+{ #category : #accessing }
+DSFullBrowseRecord >> windowId [
+
+	^ windowId
+]
+
+{ #category : #accessing }
+DSFullBrowseRecord >> windowId: anObject [
+
+	windowId := anObject
 ]
