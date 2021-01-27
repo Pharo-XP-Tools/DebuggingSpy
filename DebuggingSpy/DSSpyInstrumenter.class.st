@@ -48,7 +48,8 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	newTitle := self buildTitleFromSelections.
 	self systemScope isCurrentImage ifFalse: [ 
 		newTitle := newTitle , '' in '', self systemScope description ].
-	[DSSpy log: newTitle key: #BROWSE] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+
+	[DSBrowseMethodRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
 	^newTitle'.
 	
 	ClyQueryBrowser compile: 'newWindowTitle
