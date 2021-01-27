@@ -203,7 +203,9 @@ DSSpyInstrumenter >> instrumentInspectorMouseEnter [
 	FTSelectableMorph compile: 'mouseEnter: evt
 
 	DSSpy logMouseEnter: {self allMorphs. self window}.
-	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'.
+	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'; compile: 'mouseDown: evt 
+	DSSpy logMouseEnter: {self allMorphs. self window}.
+	^super mouseDown: evt '
 ]
 
 { #category : #inspector }
