@@ -25,19 +25,6 @@ DSSpyInstrumenter >> debuggerActionClasses [
 	StProceedCommand}
 ]
 
-{ #category : #'debugger- actions' }
-DSSpyInstrumenter >> debuggerActionGTClasses [
-	^ {StepIntoDebugAction.
-	StepOverDebugAction.
-	StepThroughDebugAction.
-	WhereIsDebugAction.
-	RunToSelectionDebugAction.
-	ReturnValueDebugAction.
-	ResumeDebugAction.
-	RestartDebugAction
-	}
-]
-
 { #category : #browsers }
 DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	ClyFullBrowser compile: 'newWindowTitle
@@ -79,8 +66,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 DSSpyInstrumenter >> instrumentCodeActions [
 	self instrumentDebugIt.
 	self instrumentDoIt.
-	self instrumentPrintIt.
-	self instrumentGTCodeActions
+	self instrumentPrintIt
 ]
 
 { #category : #interactions }
@@ -165,22 +151,7 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			self expandStackIfLastItemIsSelected.
 			[DSSpy log: context key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
-	stackHeader label: ''Stack'''.
-	
-	GTGenericStackDebugger compile: 'selectionChanged: aContext
-
-	[DSSpy log: aContext printString key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ]	.
-	aContext isNotNil ifTrue: [ self announce: (GTGenericStackDebuggerSelectionChanged forDebugger: self) ].
-
-	UIManager default defer: [ 
-		self session ifNotNil: [
-			(self browser paneNamed: #stack) presentations updateToolbar ] ].
-	
-	self class enableStackColoring ifFalse: [ ^ self ].  
-
-	UIManager default defer: [
-		(self browser paneNamed: #stack) presentations presentations ifNotEmpty: [ :p | 
-			self session interruptedProcess ifNotNil: [ p first update ] ] ]'
+	stackHeader label: ''Stack'''
 ]
 
 { #category : #'debugger- actions' }
@@ -214,233 +185,6 @@ SpCodeDoItCommand compile: 'execute
 	selection := self selectedTextOrLine.
 	[DSSpy log: selection asString key: #ACTION_DOIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DOIT ].
 	self evaluateSelectionAndDo: [ :result | ]'.
-]
-
-{ #category : #interactions }
-DSSpyInstrumenter >> instrumentGTCodeActions [
-	
-	Announcement subclass: #GLMHighlightAndEvaluate
-	instanceVariableNames: 'action key'
-	classVariableNames: ''
-	package: 'Glamour-Presentations-Announcements'.
-	
-	GLMHighlightAndEvaluate compile: 'key ^key'.
-	GLMHighlightAndEvaluate compile: 'key: k key := k'.
-	
-	GLMRubricTextPresentation compile: 'highlightEvaluateAndDo: aBlock key: k
-					self announce: (GLMHighlightAndEvaluate new action: aBlock; key: k)'.
-					
-	GLMMorphicPharoCodeRenderer compile: 'popupPrint
-	"Evaluates selected code and prints it in a popper"
-	textMorph textArea editor highlightEvaluateAndDo: [ :result | 
-		[DSSpy log: textMorph text asString key: #ACTION_PRINTIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-		textMorph shoutStyler style: textMorph text.
-		GLMPrintPopper new 
-			openFromRubric: textMorph textArea withResult: result ]'.
-		
-	GLMMorphicPharoCodeRenderer compile: 'debugHighlightedText
-
-	UIManager default defer: [ 
-		[DSSpy log: textMorph text asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-		textMorph textArea editor debugHighlight.
-		textMorph shoutStyler style: textMorph text. ]'.
-					
-	GLMMorphicPharoCodeRenderer compile: 'actOnHighlightAndEvaluate: ann 
-
-	"We get here as a result of an announcement.
-	If we do not defer the execution and an exception is triggered by the execution of the code
-	then resuming the execution in the debugger will trigger an error when unwinding the stack."
-	UIManager default defer: [ 
-		textMorph textArea handleEdit: [
-			textMorph textArea editor highlightEvaluateAndDo: ann action.
-			[DSSpy log: textMorph text asString key: ann key asString] on: Error do:[ DSSpy log: #ERROR key: #ACTION_GT ].
-			textMorph shoutStyler style: textMorph text. ] ] '.
-	
-	GLMPharoScriptPresentation compile: 'goAction
-	^ GLMGenericAction new
-				title: ''Do it and go'';
-				action: [ :t :entity |
-					t highlightEvaluateAndDo: [ :result | t selection: result ] key: #ACTION_GO]; 
-				shortcut: $g; 
-				yourself.'.
-	GTPlayground compile: 'codeIn: a
-	^ (self codePresentationIn: a)
-		title: [ :page | 
-			GTPlaygroundEditableTabLabel new
-				text: page title;
-				when: #accepted
-					do: [ :text | page setTitleAndEnsureInStash: text asString ];
-				yourself ];
-		format: [ :page | page content ];
-		act: [ :text :page | 
-				text selectionInterval: (1 to: text text size).
-				text highlightEvaluateAndDo: [ :result | text selection: result ] key: #ACTION_GO ]
-			icon: GLMUIThemeExtraIcons glamorousGo
-			on: $G
-			entitled: ''Do it all and go'';
-		act: [ :text :page | page publish ]
-			iconName: #glamorousSaveToUrl
-			entitled: ''Remote publish'';
-		addAction:
-			(GLMPopupAction new
-				action: [ :text :page :popup | 
-					GTPlaygroundBindingsList new
-						on: self currentBindingsSorted;
-						when: #bindingRemoved
-							do: [ :binding | self removeBinding: binding ];
-						when: #inspect do: [ :binding | binding value inspect ];
-						when: #go do: [ :binding | text selection: binding value ];
-						yourself ];
-				iconName: #glamorousTable;
-				title: ''Bindings'';
-				yourself);
-		addAction:
-			(GLMPopupAction new
-				action: [ :text :page :popup | 
-					GTPlaygroundPlayPagesList new
-						on: GTPlayBook instance;
-						when: #pageAccepted
-							do: [ :playPage | 
-							text entity saveContent: playPage content.
-							text update ];
-						yourself ];
-				iconName: #glamorousMore;
-				title: ''Play pages'';
-				yourself);
-		with: [ :presentation | self pageActionsIn: presentation ];
-		dynamicActionsOnSelection: [ self contextMenuActions ];
-		onChangeOfPort: #text
-			act: [ :text :page | 
-			page saveContent: text text.
-			text clearUserEdits ]'.
-					
-	GLMRubricSmalltalkCodePresentation compile: 'executionSelectionActions
-
-	^ { 
-		GLMGenericAction new 
-				title: ''Do it'';
-				action: [ :aPresentation |
-					aPresentation highlightEvaluateAndDo: [ :result | ] key: #ACTION_DOIT]; 
-				keymap: PharoShortcuts current doItShortcut; 
-				icon: GLMUIThemeExtraIcons glamorousSpawn;
-				yourself.
-		GLMGenericAction new 
-				title: ''Print it'';
-				action: [ :aPresentation |					
-					aPresentation printSelection ]; 
-				keymap: PharoShortcuts current printItShortcut; 
-				yourself.
-		GLMGenericAction new 
-				title: ''Inspect it''; 
-				action: [ :aPresentation |					
-					aPresentation highlightEvaluateAndDo: [ :result | result inspect ] key: #ACTION_INSPECT ]; 
-				keymap: PharoShortcuts current inspectItShortcut; 
-				icon: GLMUIThemeExtraIcons glamorousInspect;
-				yourself.
-		GLMGenericAction new 
-				title: ''Basic Inspect it''; 
-				action: [ :aPresentation |
-					aPresentation highlightEvaluateAndDo: [ :result | result basicInspect ] key: #ACTION_INSPECT ]; 
-				shortcut: $I; 
-				icon: GLMUIThemeExtraIcons glamorousInspect;
-				yourself.
-		GLMGenericAction new 
-				title: ''Debug it''; 
-				action: [ :aPresentation |					
-					aPresentation debugSelection ]; 
-				shortcut: $D;
-				yourself.
-		GLMGenericAction new 
-				title: ''Profile it''; 
-				action: [ :aPresentation |
-					aPresentation profileSelection ]; 
-				withSeparatorAfter;
-				yourself.
-		 }'
-]
-
-{ #category : #'debugger- actions' }
-DSSpyInstrumenter >> instrumentGTDebuggingActions [
-	self debuggerActionGTClasses
-		do: [ :c | 
-			| sourceStream |
-			sourceStream := WriteStream on: String new.
-			self rewriteSelector: #executeAction withArguments: #() in: sourceStream.
-			self rewriteTempsFrom: (c >> #executeAction) ast in: sourceStream.
-			sourceStream
-				<<
-					(self
-						logString: c new defaultLabel printString
-						key: #DEBUGGER_ACTION printString).
-			self rewriteSourceFrom: (c >> #executeAction) ast in: sourceStream.
-			c compile: sourceStream contents ]
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentGTMetaInspection [
-
-	GTSimpleMethodsBrowser compile: 'methodsIn: a
-	^ a list
-		title: ''Methods'';
-		display: [ :object :class | 
-			[DSSpy log: class key: #INSPECTOR_META_CLASS] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS]. 			
-			class methods collect: [:each | each asRingDefinition]];
-		filterOn: [ :text :each | (text , ''*'') match: each selector ];
-		helpMessage:  ''Wildcard filtering (e.g., "*pattern*")'';
-		tags: [ :method | method category ];
-		sorted: [ :method1 :method2 | method1 selector < method2 selector ];
-		format: [ :method | method selector ];
-		morphicSelectionAct: [ :list :object :class | 
-			Smalltalk tools browser 
-				openOnClass: class 
-				selector: list selection selector ]
-			icon: GLMUIThemeExtraIcons glamorousBrowse
-			on: $b
-			entitled: ''Browse'';
-		dynamicActionsOnSelection: [ :list | self methodActionsFor: list selection ]'.	
-	
-
-	GTSimpleMethodsBrowser compile: 'sourceOf: method for: object in: composite
-	^ composite pharoMethod 
-		display: [ :m | 
-			[DSSpy log: m name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
-			m sourceCode ];
-		smalltalkClass: [ :m | m methodClass ];
-		doItReceiver: [ object ];
-		selectionPopulate: #evaluatedObject
-			on: $g
-			entitled: ''Do it and go''
-			with: [ :text | Smalltalk compiler receiver: object; evaluate: text selectedText ];
-		installDefaultSelectionActions;
-		selectionAct: [ :text | self updateOuterPaneFrom: text for: method ]
-			icon: GLMUIThemeExtraIcons glamorousAccept
-			on: $s
-			entitled: ''Accept'''
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentGTRawInspection [
-
-	GTRawObjectVariablesBrowser compile: 'compose
-	self title: ''Raw''.
-	self tabulator with: [ :browser |
-		browser row: #variables; row: #evaluator.
-		browser transmit 
-			to: #variables; 
-			andShow: [:a | self variablesIn: a ].
-		browser transmit 
-			to: #evaluator; 
-			andShow: [:a | self evaluatorIn: a ].
-		browser transmit 
-			from: #variables; 
-			toOutsidePort: #selection; 
-			transformed: [ :aNode | 
-				[DSSpy log: aNode value key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].			
-				aNode ifNotNil: [aNode value]].
-		browser transmit 
-			from: #evaluator; 
-			toOutsidePort: #selection ].
-	self wantsAutomaticRefresh: true'
 ]
 
 { #category : #inspector }
@@ -529,7 +273,7 @@ DSSpyInstrumenter >> instrumentMouseEnterWindow [
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentNotebooks [
 
-	StObjectInspector compile: 'initializePresenters
+	StObjectInspectorPresenter compile: 'initializePresenters
 	header := self instantiate: StHeaderBar.
 	views := self newNotebook.	
 	views whenSelectedPageChangedDo: [ :page | 
@@ -673,12 +417,10 @@ DSSpyInstrumenter >> instrumentSystem [
 	self instrumentCalypsoBrowsers.
 	self instrumentDebugger.
 	self instrumentDebuggingActions.
-	self instrumentGTDebuggingActions.
 	self instrumentInspector.
 	self instrumentCodeActions.
 	self listenToMethodChanges.
-	self instrumentPlayground."
-	self instrumentSystemQueries."
+	self instrumentPlayground.
 	self instrumentWindows
 ]
 
