@@ -209,32 +209,6 @@ DSSpyInstrumenter >> instrumentInspectorMouseEnter [
 ]
 
 { #category : #inspector }
-DSSpyInstrumenter >> instrumentInspectorTabs [
-
-	GLMFinder compile: 'addPaneFromOuter: aPort 
-	"This method adds a new pane at the end of the finder."
-	|newPane |
-	newPane := self panes addLast: (GLMPane named: (self panes size + 1) asString in: self).
-	[DSSpy log: (newPane port: #entity) value value key: #INSPECTOR_NAVIGATE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_NAVIGATE].	
-	self newFirstTransmission
-		addActiveOrigin: aPort; 
-		destination: (newPane port: #entity); 
-		transmit'.
-		
-	GLMTabSelectorBrick compile: 'selectedIndex: index
-	"Set the value of selectedIndex"
-
-	| oldIndex |
-	self selectedIndex == index
-		ifTrue: [ ^ self ].
-	oldIndex := self selectedIndex.
-	selectedIndex := index min: self tabs size.
-	DSSpy logInspectorTabChange: self selectedTab.
-	self updateTabs.
-	self changed: #selectedIndex with: oldIndex'
-]
-
-{ #category : #inspector }
 DSSpyInstrumenter >> instrumentMetaInspection [
 
 	StMetaBrowser compile: 'updateSourceWith: method
