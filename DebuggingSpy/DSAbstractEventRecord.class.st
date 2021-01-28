@@ -19,6 +19,18 @@ DSAbstractEventRecord class >> for: anObject [
 	^ rec
 ]
 
+{ #category : #printing }
+DSAbstractEventRecord class >> printStringMorphs: anArrayOfMorphs [
+
+	| str |
+	str := WriteStream on: String new.
+	anArrayOfMorphs do: [ :m | 
+		((m isKindOf: StringMorph) and: [ m contents ~= '...' ]) ifTrue: [ 
+			str << m contents asString.
+			m == anArrayOfMorphs last ifFalse: [ str << ' ' ] ] ].
+	^ str contents
+]
+
 { #category : #comparing }
 DSAbstractEventRecord >> < aDSAbstractRecord [
 	^self dateTime < aDSAbstractRecord dateTime

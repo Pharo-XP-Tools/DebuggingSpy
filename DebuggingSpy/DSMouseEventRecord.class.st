@@ -8,5 +8,40 @@ means the user is currently browsing the method foo (and we assume there she rea
 Class {
 	#name : #DSMouseEventRecord,
 	#superclass : #DSAbstractEventRecord,
+	#instVars : [
+		'itemElement',
+		'windowId'
+	],
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSMouseEventRecord >> itemElement [
+
+	^ itemElement
+]
+
+{ #category : #accessing }
+DSMouseEventRecord >> itemElement: anObject [
+
+	itemElement := anObject
+]
+
+{ #category : #'actions api' }
+DSMouseEventRecord >> record: morphsAndWindow [
+
+	itemElement := self class printStringMorphs: morphsAndWindow first.
+	windowId := morphsAndWindow last hash
+]
+
+{ #category : #accessing }
+DSMouseEventRecord >> windowId [
+
+	^ windowId
+]
+
+{ #category : #accessing }
+DSMouseEventRecord >> windowId: anObject [
+
+	windowId := anObject
+]
