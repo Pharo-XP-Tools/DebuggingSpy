@@ -365,6 +365,7 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	^true'.
 	
 	RubScrolledTextMorph compile: 'mouseEnter: evt
+	self haltOnce.
 	[DSSpy log: evt key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
 	^super mouseEnter: evt'.
 		

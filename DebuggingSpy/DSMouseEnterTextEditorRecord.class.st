@@ -1,3 +1,6 @@
+"
+This record is generated when the mouse enters an item in a text editor.
+"
 Class {
 	#name : #DSMouseEnterTextEditorRecord,
 	#superclass : #DSMouseEventRecord,
