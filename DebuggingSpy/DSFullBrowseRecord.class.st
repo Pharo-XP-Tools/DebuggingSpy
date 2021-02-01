@@ -11,7 +11,6 @@ Class {
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'methodBrowsed',
-		'windowId',
 		'packageBrowsed',
 		'classBrowsed'
 	],
@@ -78,16 +77,4 @@ DSFullBrowseRecord >> record: aClyFullBrowser [
 		                 aClyFullBrowser methodSelection lastSelectedItem
 			                 actualObject name ].
 	windowId := aClyFullBrowser window hash
-]
-
-{ #category : #accessing }
-DSFullBrowseRecord >> windowId [
-
-	^ windowId
-]
-
-{ #category : #accessing }
-DSFullBrowseRecord >> windowId: anObject [
-
-	windowId := anObject
 ]

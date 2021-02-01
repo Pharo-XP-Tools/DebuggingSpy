@@ -6,8 +6,7 @@ Class {
 	#name : #DSQueryBrowseRecord,
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
-		'queryName',
-		'windowId'
+		'queryName'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -34,16 +33,4 @@ DSQueryBrowseRecord >> record: aClyQueryBrowser [
 
 	queryName := aClyQueryBrowser systemQuery description.
 	windowId := aClyQueryBrowser window hash
-]
-
-{ #category : #accessing }
-DSQueryBrowseRecord >> windowId [
-
-	^ windowId
-]
-
-{ #category : #accessing }
-DSQueryBrowseRecord >> windowId: anObject [
-
-	windowId := anObject
 ]

@@ -8,8 +8,7 @@ Class {
 	#name : #DSWindowEventRecord,
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
-		'windowName',
-		'windowId'
+		'windowName'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -38,18 +37,6 @@ DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 { #category : #comparing }
 DSWindowEventRecord >> sameWindowAsIn: aDSWindowEventRecord [
 	^self windowId = aDSWindowEventRecord windowId
-]
-
-{ #category : #accessing }
-DSWindowEventRecord >> windowId [
-
-	^ windowId
-]
-
-{ #category : #accessing }
-DSWindowEventRecord >> windowId: anObject [
-
-	windowId := anObject
 ]
 
 { #category : #accessing }

@@ -5,7 +5,8 @@ Class {
 	#name : #DSAbstractEventRecord,
 	#superclass : #Object,
 	#instVars : [
-		'dateTime'
+		'dateTime',
+		'windowId'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -76,4 +77,16 @@ DSAbstractEventRecord >> initialize [
 { #category : #'actions api' }
 DSAbstractEventRecord >> record: anObject [ 
 	self subclassResponsibility 
+]
+
+{ #category : #accessing }
+DSAbstractEventRecord >> windowId [
+
+	^ windowId
+]
+
+{ #category : #accessing }
+DSAbstractEventRecord >> windowId: anObject [
+
+	windowId := anObject
 ]

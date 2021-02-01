@@ -9,8 +9,7 @@ Class {
 	#name : #DSMouseEventRecord,
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
-		'itemElement',
-		'windowId'
+		'itemElement'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -32,16 +31,4 @@ DSMouseEventRecord >> record: morphsAndWindow [
 
 	itemElement := self class printStringMorphs: morphsAndWindow first.
 	windowId := morphsAndWindow last hash
-]
-
-{ #category : #accessing }
-DSMouseEventRecord >> windowId [
-
-	^ windowId
-]
-
-{ #category : #accessing }
-DSMouseEventRecord >> windowId: anObject [
-
-	windowId := anObject
 ]
