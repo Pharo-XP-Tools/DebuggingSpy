@@ -106,12 +106,6 @@ SpCodeDebugItCommand compile: 'execute
 ]
 
 { #category : #debugger }
-DSSpyInstrumenter >> instrumentDebugger [
-	self instrumentDebuggerCode.
-	self instrumentDebuggerStack 
-]
-
-{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCode [
 "
 	StDebugger compile: 'initializeCode
@@ -215,14 +209,6 @@ SpCodeDoItCommand compile: 'execute
 ]
 
 { #category : #inspector }
-DSSpyInstrumenter >> instrumentInspector [
-
-	self instrumentRawInspection.
-	self instrumentMetaInspection.
-	self instrumentNotebooks
-]
-
-{ #category : #inspector }
 DSSpyInstrumenter >> instrumentMetaInspection [
 
 	StMetaBrowser compile: 'updateSourceWith: method
@@ -288,12 +274,6 @@ DSSpyInstrumenter >> instrumentNotebooks [
 		yourself.
 	evaluator text: self evaluatorInitialText.
 	self refresh'.
-]
-
-{ #category : #playground }
-DSSpyInstrumenter >> instrumentPlayground [
-	self instrumentPlaygroundCode.
-	self instrumentRubScrolledTextMorph
 ]
 
 { #category : #playground }
@@ -417,21 +397,9 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	
 ]
 
-{ #category : #'system instrumentation' }
-DSSpyInstrumenter >> instrumentSystem [
-	self logHaltAndBreakpointEvents.
-	self instrumentCalypsoBrowsers.
-	self instrumentDebugger.
-	self instrumentDebuggingActions.
-	self instrumentInspector.
-	self instrumentCodeActions.
-	self listenToMethodChanges.
-	self instrumentPlayground.
-	self instrumentWindows
-]
-
 { #category : #'system-queries' }
 DSSpyInstrumenter >> instrumentSystemQueries [
+	self deprecated: 'That is not used anymore I think'.
 	(SystemNavigation allSelectorsInProtocol: '*Tool-Base')
 		do: [ :selector | 
 			| method ast class sourceStream |
@@ -454,13 +422,6 @@ DSSpyInstrumenter >> instrumentSystemQueries [
 						key: #SYSTEMQUERY printString).
 			self rewriteSourceFrom: ast in: sourceStream.
 			class compile: sourceStream contents ]
-]
-
-{ #category : #windows }
-DSSpyInstrumenter >> instrumentWindows [
-
-	self instrumentMouseEnterWindow.
-	self listenToWindowEvents 
 ]
 
 { #category : #helpers }
