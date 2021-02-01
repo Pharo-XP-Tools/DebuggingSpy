@@ -65,20 +65,6 @@ DSSpy class >> logInspectorTabChange: selectedTab [
 		do: [ self log: #ERROR key: #INSPECTOR_TAB_SELECTION ]
 ]
 
-{ #category : #logging }
-DSSpy class >> logMouseEnter: morphsAndWindow [
-	
-	[ self
-		log: (self printStringMorphs: morphsAndWindow first)
-		key: #MOUSE_OVER .
-		
-		self
-		log: (morphsAndWindow second hash printString)
-		key: #MOUSE_OVER_WINDOW]
-		on: Error
-		do: [ self log: #ERROR key: #MOUSE_OVER ]
-]
-
 { #category : #helpers }
 DSSpy class >> logToFile: aString [
 	|str|
