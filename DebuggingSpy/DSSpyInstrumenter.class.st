@@ -363,6 +363,21 @@ DSSpyInstrumenter >> instrumentRawInspection [
 	^ self on: (StInspectorModel on: anObject)'
 ]
 
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
+
+	RubScrolledTextMorph compile: 'handlesMouseOver: evt
+	^true'
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
+
+	RubScrolledTextMorph compile: 'mouseEnter: evt
+	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
+	^super mouseEnter: evt'
+]
+
 { #category : #playground }
 DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	RubScrolledTextMorph compile: 'whenKeystrokeInTextArea: anAnnouncement   

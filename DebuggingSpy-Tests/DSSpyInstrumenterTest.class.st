@@ -197,3 +197,31 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 	self assert: record windowId equals: window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
 ]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseEnter [
+	|morph|
+
+	modifiedClass := RubScrolledTextMorph.
+	modifiedMethodSource := (RubScrolledTextMorph >> #mouseEnter:) sourceCode.
+	instrumenter instrumentRubScrollTextMorphMouseEnter.
+	
+	morph := RubScrolledTextMorph new.
+	morph mouseEnter: nil.
+	
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseEnterTextEditorRecord.
+	self assert: record windowId equals: morph window hash.
+	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
+	
+	self should: [RubScrolledTextMorph >> #handlesMouseOver: ] raise: KeyNotFound.
+	instrumenter instrumentRubScrollTextMorphHandleMouseOver.
+	methodToRemove := (RubScrolledTextMorph >> #handlesMouseOver:).
+		
+	self assert: (RubScrolledTextMorph new handlesMouseOver: nil)
+]
