@@ -30,7 +30,6 @@ DSQueryBrowseRecord >> queryName: anObject [
 
 { #category : #'actions api' }
 DSQueryBrowseRecord >> record: aClyQueryBrowser [
-
-	queryName := aClyQueryBrowser systemQuery description.
-	windowId := aClyQueryBrowser window hash
+	super record: aClyQueryBrowser window.
+	queryName := aClyQueryBrowser systemQuery description
 ]

@@ -75,8 +75,8 @@ DSAbstractEventRecord >> initialize [
 ]
 
 { #category : #'actions api' }
-DSAbstractEventRecord >> record: anObject [ 
-	self subclassResponsibility 
+DSAbstractEventRecord >> record: aWindow [
+	windowId := aWindow hash
 ]
 
 { #category : #accessing }

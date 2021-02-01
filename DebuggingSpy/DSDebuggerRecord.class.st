@@ -26,12 +26,14 @@ DSDebuggerRecord >> contextName: anObject [
 ]
 
 { #category : #'actions api' }
-DSDebuggerRecord >> record: aContext [ 
-	|sourceNode|
+DSDebuggerRecord >> record: aContextAndWindow [ 
+	|aContext sourceNode|
+	super record: aContextAndWindow second.
+	aContext := aContextAndWindow first.
 	contextName := aContext method name.
 	sourceNode :=  aContext sourceNodeExecuted .
 	sourceNodeClass := sourceNode class name.
-	sourceNodeCode := sourceNode sourceCode 
+	sourceNodeCode := sourceNode sourceCode
 ]
 
 { #category : #accessing }

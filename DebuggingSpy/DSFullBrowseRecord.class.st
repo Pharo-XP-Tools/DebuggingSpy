@@ -60,7 +60,7 @@ DSFullBrowseRecord >> packageBrowsed: anObject [
 
 { #category : #'actions api' }
 DSFullBrowseRecord >> record: aClyFullBrowser [
-
+	super record: aClyFullBrowser window.
 	packageBrowsed := aClyFullBrowser packageSelection isEmpty
 		                  ifTrue: [ '' ]
 		                  ifFalse: [ 
@@ -76,5 +76,5 @@ DSFullBrowseRecord >> record: aClyFullBrowser [
 		                 ifFalse: [ 
 		                 aClyFullBrowser methodSelection lastSelectedItem
 			                 actualObject name ].
-	windowId := aClyFullBrowser window hash
+	
 ]
