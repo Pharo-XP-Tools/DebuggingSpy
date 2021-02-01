@@ -244,20 +244,22 @@ DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
-{ #category : #windows }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseEnterWindow [
 
 	SystemWindow compile: 'handleMouseEnter: anEvent
-	|log|
-	log := DSSpy windowName: self.
-	[DSSpy log: log key: #WINDOW_ENTER] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
+	
+	[DSMouseEnterWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
 	self submorphsDo: [:m | m unlock].
-	^super handleMouseEnter: anEvent'.
+	^super handleMouseEnter: anEvent'
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	
 	SystemWindow compile: 'handleMouseLeave: anEvent
-	|log|
-	log := DSSpy windowName: self.
-	[DSSpy log: log key: #WINDOW_LEAVE] on: Error do:[ DSSpy log: #ERROR key: #WINDOW_LEAVE ]	.
+	
+	[DSMouseLeaveWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_LEAVE ]	.
 	^super handleMouseLeave: anEvent'
 ]
 

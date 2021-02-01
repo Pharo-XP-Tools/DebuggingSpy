@@ -2,12 +2,12 @@
 This record is generated when the mouse enters a window (with or without focus).
 "
 Class {
-	#name : #DSMouseEnterWindow,
+	#name : #DSMouseEnterWindowRecord,
 	#superclass : #DSMouseEventRecord,
 	#category : #'DebuggingSpy-Records'
 }
 
 { #category : #accessing }
-DSMouseEnterWindow >> eventName [
+DSMouseEnterWindowRecord >> eventName [
 	^'Enter window'
 ]

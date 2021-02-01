@@ -34,6 +34,19 @@ DSSpyInstrumenterTest >> setUp [
 	DSRecordRegistry current reset
 ]
 
+{ #category : #helpers }
+DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
+
+	^ MouseMoveEvent new
+		  setType: #mouseMove
+		  startPoint: 4
+		  endPoint: 2
+		  trail: nil
+		  buttons: 0
+		  hand: (HandMorph new mouseFocus: morph; yourself)
+		  stamp: 0
+]
+
 { #category : #running }
 DSSpyInstrumenterTest >> tearDown [
 
@@ -147,4 +160,40 @@ DSSpyInstrumenterTest >> testInstrumentMouseEnterFTSelectableMorph [
 	self assert: record class identicalTo: DSMouseEnterTableItemRecord.
 	self assert: record windowId equals: morph window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
+	
+	|window|
+	self should: [SystemWindow >> #handleMouseEnter: ] raise: KeyNotFound.
+	instrumenter instrumentMouseEnterWindow.
+	methodToRemove := (SystemWindow >> #handleMouseEnter:).
+	
+	window := SystemWindow new.
+	window handleMouseEnter: (self simulatedMouseEventFor: window).
+	
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseEnterWindowRecord.
+	self assert: record windowId equals: window hash.
+	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
+	
+	|window|
+	self should: [SystemWindow >> #handleMouseLeave: ] raise: KeyNotFound.
+	instrumenter instrumentMouseLeaveWindow.
+	methodToRemove := (SystemWindow >> #handleMouseLeave:).
+	
+	window := SystemWindow new.
+	window handleMouseLeave: (self simulatedMouseEventFor: window).
+	
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseLeaveWindowRecord.
+	self assert: record windowId equals: window hash.
+	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
 ]
