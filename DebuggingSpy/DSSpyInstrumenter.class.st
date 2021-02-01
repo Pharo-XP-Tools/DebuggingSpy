@@ -62,6 +62,22 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self adoptPaneColor: self paneColor'
 ]
 
+{ #category : #Browsers }
+DSSpyInstrumenter >> instrumentClyFullBrowserWindowTitle [
+
+	ClyFullBrowser compile: 'newWindowTitle
+	| newTitle |
+	
+	packageView selection isEmpty ifTrue: [ ^self systemScope description].	
+	
+	newTitle := self buildTitleFromSelections.
+	self systemScope isCurrentImage ifFalse: [ 
+		newTitle := newTitle , '' in '', self systemScope description ].
+
+	[DSFullBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+	^newTitle'
+]
+
 { #category : #interactions }
 DSSpyInstrumenter >> instrumentCodeActions [
 	self instrumentDebugIt.

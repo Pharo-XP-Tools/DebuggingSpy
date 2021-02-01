@@ -27,3 +27,14 @@ DSRecordRegistry >> addRecord: aRecord [
 DSRecordRegistry >> initialize [
 	records := OrderedCollection new
 ]
+
+{ #category : #accessing }
+DSRecordRegistry >> records [
+
+	^ records
+]
+
+{ #category : #initialization }
+DSRecordRegistry >> reset [
+	records removeAll
+]
