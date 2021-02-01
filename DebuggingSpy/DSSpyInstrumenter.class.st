@@ -219,20 +219,7 @@ DSSpyInstrumenter >> instrumentInspector [
 
 	self instrumentRawInspection.
 	self instrumentMetaInspection.
-	self instrumentNotebooks.
-	self instrumentInspectorTabs.
-	self instrumentInspectorMouseEnter.	
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentInspectorMouseEnter [
-
-	FTSelectableMorph compile: 'mouseEnter: evt
-
-	DSSpy logMouseEnter: {self allMorphs. self window}.
-	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'; compile: 'mouseDown: evt 
-	DSSpy logMouseEnter: {self allMorphs. self window}.
-	^super mouseDown: evt '
+	self instrumentNotebooks
 ]
 
 { #category : #inspector }
@@ -252,6 +239,23 @@ DSSpyInstrumenter >> instrumentMetaInspection [
 	aClass ifNil: [ ^ #() ].
 	[DSSpy log: aClass key: #INSPECTOR_META_CLASS] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
 	^ aClass methods sorted: #selector ascending'
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
+
+	FTSelectableMorph compile:'mouseDown: evt 
+	DSMouseDownTableItemRecord for: {self allMorphs. self window}.
+	^super mouseDown: evt '
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
+
+	FTSelectableMorph compile: 'mouseEnter: evt
+
+	DSMouseEnterTableItemRecord for: {self allMorphs. self window}.
+	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
 { #category : #windows }
