@@ -7,7 +7,8 @@ Class {
 		'instrumenter',
 		'record',
 		'debugger',
-		'browser'
+		'browser',
+		'methodToRemove'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -38,7 +39,12 @@ DSSpyInstrumenterTest >> tearDown [
 
 	(modifiedClass notNil and: [ 
 		 (#( nil '' ) includes: modifiedMethodSource) not ]) ifTrue: [ 
-		modifiedClass compile: modifiedMethodSource ].
+		modifiedClass compile: modifiedMethodSource.
+		modifiedClass := nil.
+		modifiedMethodSource := nil ].
+	methodToRemove ifNotNil: [ 
+		methodToRemove removeFromSystem.
+		methodToRemove := nil ].
 	DSRecordRegistry current reset.
 	super tearDown
 ]
@@ -103,4 +109,42 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: record sourceNodeCode equals: selectedItem sourceNodeExecuted sourceCode.
 	self assert: record receiver equals: selectedItem receiver printString.
 	self assert: record selector equals: selectedItem selector
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
+	
+	|morph|
+	self should: [FTSelectableMorph >> #mouseDown: ] raise: KeyNotFound.
+	instrumenter instrumentMouseDownFTSelectableMorph.
+	methodToRemove := (FTSelectableMorph >> #mouseDown:).
+	
+	morph := FTSelectableMorph new.
+	morph privateOwner: SystemWindow new.
+	morph mouseDown: nil.
+	
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseDownTableItemRecord.
+	self assert: record windowId equals: morph window hash.
+	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentMouseEnterFTSelectableMorph [
+	
+	|morph|
+	modifiedClass := FTSelectableMorph.
+	modifiedMethodSource := (FTSelectableMorph >> #mouseEnter:) sourceCode.
+	instrumenter instrumentMouseEnterFTSelectableMorph.
+	
+	morph := FTSelectableMorph new.
+	morph privateOwner: SystemWindow new.
+	morph mouseEnter: nil.
+	
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseEnterTableItemRecord.
+	self assert: record windowId equals: morph window hash.
+	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
 ]
