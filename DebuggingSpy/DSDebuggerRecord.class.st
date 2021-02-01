@@ -27,11 +27,12 @@ DSDebuggerRecord >> contextName: anObject [
 
 { #category : #'actions api' }
 DSDebuggerRecord >> record: aContextAndWindow [ 
-	|aContext sourceNode|
+	|aContext method sourceNode|
 	super record: aContextAndWindow second.
 	aContext := aContextAndWindow first.
-	contextName := aContext method name.
-	sourceNode :=  aContext sourceNodeExecuted .
+	method := aContext method.
+	contextName := method isCompiledBlock ifTrue:[method printString] ifFalse:[method name].
+	sourceNode := aContext sourceNodeExecuted.
 	sourceNodeClass := sourceNode class name.
 	sourceNodeCode := sourceNode sourceCode
 ]

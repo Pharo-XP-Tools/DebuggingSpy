@@ -31,10 +31,12 @@ DSBrowseContextRecord >> receiver: anObject [
 ]
 
 { #category : #'actions api' }
-DSBrowseContextRecord >> record: aContext [ 
-	super record: aContext.
-	receiver := aContext receiver printString.
-	selector := aContext selector
+DSBrowseContextRecord >> record: aContextAndWindow [ 
+	|ctx|
+	super record: aContextAndWindow.
+	ctx := aContextAndWindow first.
+	receiver := ctx receiver printString.
+	selector := ctx selector
 ]
 
 { #category : #accessing }

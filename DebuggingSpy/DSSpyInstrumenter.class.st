@@ -27,28 +27,7 @@ DSSpyInstrumenter >> debuggerActionClasses [
 
 { #category : #browsers }
 DSSpyInstrumenter >> instrumentCalypsoBrowsers [
-	ClyFullBrowser compile: 'newWindowTitle
-	| newTitle |
-	
-	packageView selection isEmpty ifTrue: [ ^self systemScope description].	
-	
-	newTitle := self buildTitleFromSelections.
-	self systemScope isCurrentImage ifFalse: [ 
-		newTitle := newTitle , '' in '', self systemScope description ].
-
-	[DSBrowseMethodRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
-	^newTitle'.
-	
-	ClyQueryBrowser compile: 'newWindowTitle
-	| title | 
-	title := systemQuery description.
-	resultView areItemsLoaded 
-		ifTrue: [title := title capitalized , '' ['' ,  self itemCount asString, '']'']
-		ifFalse: [title := ''Loading: '', title ].
-	self systemScope isCurrentImage ifFalse: [ 
-		title := title , '' in '', self systemScope description ].
-	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
-	^title'.
+	self deprecated: 'Instrumentation of tabs?'.
 	
 	self flag: 'this one does not record the tab changing in the query browser'.
 	self flag: 'also: there is no record when the user selects a method in the browser, see that later'.
@@ -62,8 +41,8 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self adoptPaneColor: self paneColor'
 ]
 
-{ #category : #Browsers }
-DSSpyInstrumenter >> instrumentClyFullBrowserWindowTitle [
+{ #category : #browsers }
+DSSpyInstrumenter >> instrumentClyFullBrowser [
 
 	ClyFullBrowser compile: 'newWindowTitle
 	| newTitle |
@@ -76,6 +55,21 @@ DSSpyInstrumenter >> instrumentClyFullBrowserWindowTitle [
 
 	[DSFullBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
 	^newTitle'
+]
+
+{ #category : #browsers }
+DSSpyInstrumenter >> instrumentClyQueryBrowser [
+
+	ClyQueryBrowser compile: 'newWindowTitle
+	| title | 
+	title := systemQuery description.
+	resultView areItemsLoaded 
+		ifTrue: [title := title capitalized , '' ['' ,  self itemCount asString, '']'']
+		ifFalse: [title := ''Loading: '', title ].
+	self systemScope isCurrentImage ifFalse: [ 
+		title := title , '' in '', self systemScope description ].
+	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+	^title'
 ]
 
 { #category : #interactions }
@@ -150,22 +144,39 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 	StDebugger compile: 'initializeStack
 	stackTable := self newTable.
 	stackTable
-		addColumn: (SpStringTableColumn
-				 title: ''Class''
-				 evaluated: [ :item | item receiver class ]);
+		addColumn: ((SpImageTableColumn
+				  title: ''''
+				  evaluated: [ :context | self stackIconForContext: context ])
+				 width: 8;
+				 sortFunction: nil;
+				 yourself);
+		addColumn: ((SpStringTableColumn
+				  title: ''Class''
+				  evaluated: [ :item | self printReceiverClassInContext: item ])
+				 sortFunction: nil;
+				 yourself);
 		addColumn:
-			(SpStringTableColumn title: ''Method'' evaluated: [ :item | 
-					 | method |
-					 method := item method.
-					 method isCompiledBlock
-						 ifTrue: [ method sourceNode sourceCode ]
-						 ifFalse: [ method selector ] ]).
+			((SpStringTableColumn title: ''Method'' evaluated: [ :item | 
+					  | method |
+					  method := item method.
+					  method isCompiledBlock
+						  ifTrue: [ method sourceNode sourceCode ]
+						  ifFalse: [ method selector ] ])
+				 sortFunction: nil;
+				 yourself);
+		addColumn: ((SpStringTableColumn
+				  title: ''Package''
+				  evaluated: [ :item | 
+					  item method methodClass package name asString ])
+				 sortFunction: nil;
+				 yourself).
 	stackTable transmitDo: [ :context | 
 		stackTable selection isEmpty ifFalse: [ 
 			self updateInspectorFromContext: context.
 			self updateCodeFromContext: context.
 			self expandStackIfLastItemIsSelected.
-			[DSSpy log: context key: #DEBUGGER_STACK] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
+			self updateWindowTitle.
+			[DSBrowseContextRecord for: { context . self window } ] on: Error do:[:err| err freeze inspect. DSSpy log: #ERROR key: #DEBUGGER_STACK ]  ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack'''
 ]
