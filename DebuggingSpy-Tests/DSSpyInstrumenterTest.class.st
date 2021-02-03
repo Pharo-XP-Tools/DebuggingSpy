@@ -124,6 +124,26 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: record selector equals: selectedItem selector
 ]
 
+{ #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
+	|inspector object|
+	modifiedClass := StInspector.
+	modifiedMethodSource := (StInspector >> #initializePresenters) sourceCode.
+	instrumenter instrumentInspectorOnObject.
+	
+	object := OrderedCollection new.
+	inspector := StInspector onObject: object.	
+
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	
+	
+	self assert: record class identicalTo: DSInspectObjectRecord.
+	self assert: record windowId equals: inspector window hash.
+	self assert: record inspectedObject equals: object printString.
+	self assert: record inspectedObjectHash equals: object hash
+]
+
 { #category : #'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
 	
@@ -199,7 +219,17 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 ]
 
 { #category : #'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseEnter [
+DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
+	
+	self should: [RubScrolledTextMorph >> #handlesMouseOver: ] raise: KeyNotFound.
+	instrumenter instrumentRubScrollTextMorphHandleMouseOver.
+	methodToRemove := (RubScrolledTextMorph >> #handlesMouseOver:).
+		
+	self assert: (RubScrolledTextMorph new handlesMouseOver: nil)
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	|morph|
 
 	modifiedClass := RubScrolledTextMorph.
@@ -214,14 +244,4 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseEnter [
 	self assert: record class identicalTo: DSMouseEnterTextEditorRecord.
 	self assert: record windowId equals: morph window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
-]
-
-{ #category : #'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
-	
-	self should: [RubScrolledTextMorph >> #handlesMouseOver: ] raise: KeyNotFound.
-	instrumenter instrumentRubScrollTextMorphHandleMouseOver.
-	methodToRemove := (RubScrolledTextMorph >> #handlesMouseOver:).
-		
-	self assert: (RubScrolledTextMorph new handlesMouseOver: nil)
 ]

@@ -18,11 +18,10 @@ DSSpyInstrumenter >> debuggerActionClasses [
 	^ {StStepIntoCommand.
 	StStepOverCommand.
 	StStepThroughCommand.
-	StWhereIsCommand.
 	StReturnValueCommand.
 	StRestartCommand.
 	StRunToSelectionCommand.
-	StProceedCommand}
+	StProceedCommand} collect:[:c| c defaultName]
 ]
 
 { #category : #browsers }
@@ -209,6 +208,44 @@ SpCodeDoItCommand compile: 'execute
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorAttributeInspection [
+
+	StRawInspection compile: 'setAttributeTable
+
+	attributeTable
+		roots: self inspectorNodes;
+		children: [ :node | node children ].
+		
+	self outputSelectionPort transmitDo:[:val| 
+		val ifNotNil: [ 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
+	self outputActivationPort transmitDo:[:val| 
+			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorExpandAttribute [
+
+	FTBasicItem compile: 'expandAndRefresh
+	[DSSpy log: data key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+	self expand.
+	self refreshTable'
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorOnObject [
+
+	StInspector compile: 'initializePresenters
+	[DSInspectObjectRecord for: {self model. self window}] on: Error do:[ self halt. DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
+	millerList := self instantiate: SpMillerPaginatorPresenter.
+	millerList millerListPresenter
+		spacing: self spacing;
+		presenterBlock: [ :aModel | self newInspectorFor: aModel ];
+		setRootModel: self model;
+		whenColumnsWillChangeDo: [ self keepLastPageSelectedTabName ]'
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentMetaInspection [
 
 	StMetaBrowser compile: 'updateSourceWith: method
@@ -388,14 +425,6 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	[DSSpy log: anAnnouncement key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
 	self announcer announce: anAnnouncement.
 	self changed'.
-	
-	RubScrolledTextMorph compile: 'handlesMouseOver: evt
-	^true'.
-	
-	RubScrolledTextMorph compile: 'mouseEnter: evt
-	self haltOnce.
-	[DSSpy log: evt key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
-	^super mouseEnter: evt'.
 		
 	RubKeystroke compile:'printString
 	| location |
