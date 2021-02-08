@@ -193,6 +193,32 @@ DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
 ]
 
 { #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
+	|metaPane object methods|
+	modifiedClass := StMetaBrowser.
+	modifiedMethodSource := (StMetaBrowser >> #updateSourceWith:) sourceCode.
+	instrumenter instrumentInspectSourceOfMethod.
+	
+	object := OrderedCollection new.
+	metaPane := StMetaBrowser on: object.
+	methods := self metaPaneClassesItems: #methods FromInspector: metaPane.
+	
+	methods selectIndex: 1.
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSInspectMethodSourceRecord.
+	self assert: record selectedMethod equals: metaPane selectedMethod name.
+	
+	self assert: record windowId equals: metaPane window hash.
+	self assert: record selectedClass equals: object class name.
+	self assert: record inspectedObject equals: object printString
+	
+	
+	
+]
+
+{ #category : #'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	|inspector object|
 	modifiedClass := StInspector.
