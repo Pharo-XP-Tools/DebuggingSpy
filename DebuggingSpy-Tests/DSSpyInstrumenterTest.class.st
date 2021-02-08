@@ -47,6 +47,20 @@ DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
 		  stamp: 0
 ]
 
+{ #category : #helpers }
+DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
+
+	| ctxPresenter rawView attrTable widget |
+	anInspector buildWithSpec.
+	ctxPresenter := anInspector firstPage rawInspectorPageOrNil
+		                retrievePresenter.
+	rawView := (ctxPresenter class slotNamed: #view) read: ctxPresenter.
+	attrTable := rawView attributeTable.
+	attrTable buildWithSpec.
+	widget := attrTable adapter widget.
+	^ widget dataSource rootItem children
+]
+
 { #category : #running }
 DSSpyInstrumenterTest >> tearDown [
 
@@ -122,6 +136,30 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: record sourceNodeCode equals: selectedItem sourceNodeExecuted sourceCode.
 	self assert: record receiver equals: selectedItem receiver printString.
 	self assert: record selector equals: selectedItem selector
+]
+
+{ #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
+	|inspector object items|
+	modifiedClass := FTBasicItem.
+	modifiedMethodSource := (FTBasicItem >> #expandAndRefresh) sourceCode.
+	instrumenter instrumentExpandAttribute.
+	
+	object := OrderedCollection new.
+	inspector := StInspector onObject: object.	
+	items := self tableItemsListFromInspector: inspector.
+	
+	items first expandAndRefresh.
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	
+	
+	self assert: record class identicalTo: DSInspectAttributeRecord.
+	self assert: record windowId equals: inspector window hash.
+	self assert: record attributeName equals: 'self'. 	
+	self assert: record attributeHash equals: object hash.
+	self assert: record attributeValue equals: object gtDisplayString 
 ]
 
 { #category : #'tests - inspector' }
@@ -216,6 +254,26 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 	self assert: record class identicalTo: DSMouseLeaveWindowRecord.
 	self assert: record windowId equals: window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
+]
+
+{ #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
+	|inspector object|
+	modifiedClass := StInspector.
+	modifiedMethodSource := (StInspector >> #initializePresenters) sourceCode.
+	instrumenter instrumentInspectorOnObject.
+	
+	object := OrderedCollection new.
+	inspector := StInspector onObject: object.	
+
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	
+	
+	self assert: record class identicalTo: DSInspectObjectRecord.
+	self assert: record windowId equals: inspector window hash.
+	self assert: record inspectedObject equals: object printString.
+	self assert: record inspectedObjectHash equals: object hash
 ]
 
 { #category : #'tests - mouse events' }

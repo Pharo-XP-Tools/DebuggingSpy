@@ -208,26 +208,10 @@ SpCodeDoItCommand compile: 'execute
 ]
 
 { #category : #inspector }
-DSSpyInstrumenter >> instrumentInspectorAttributeInspection [
-
-	StRawInspection compile: 'setAttributeTable
-
-	attributeTable
-		roots: self inspectorNodes;
-		children: [ :node | node children ].
-		
-	self outputSelectionPort transmitDo:[:val| 
-		val ifNotNil: [ 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
-	self outputActivationPort transmitDo:[:val| 
-			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentInspectorExpandAttribute [
+DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh
-	[DSSpy log: data key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+	[DSInspectAttributeRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
 	self expand.
 	self refreshTable'
 ]
@@ -236,7 +220,7 @@ DSSpyInstrumenter >> instrumentInspectorExpandAttribute [
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
 	StInspector compile: 'initializePresenters
-	[DSInspectObjectRecord for: {self model. self window}] on: Error do:[ self halt. DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
+	[DSInspectObjectRecord for: {self model inspectedObject. self window}] on: Error do:[DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
 	millerList := self instantiate: SpMillerPaginatorPresenter.
 	millerList millerListPresenter
 		spacing: self spacing;
@@ -474,6 +458,22 @@ DSSpyInstrumenter >> instrumentSystemQueries [
 DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 	^'[DSSpy log: {1} key: {2}] on: Error do:[DSSpy log: #ERROR key: {2}].'
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentnavigateAttribute [
+
+	StRawInspection compile: 'setAttributeTable
+
+	attributeTable
+		roots: self inspectorNodes;
+		children: [ :node | node children ].
+		
+	self outputSelectionPort transmitDo:[:val| 
+		val ifNotNil: [ 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
+	self outputActivationPort transmitDo:[:val| 
+			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
 ]
 
 { #category : #breakpoints }
