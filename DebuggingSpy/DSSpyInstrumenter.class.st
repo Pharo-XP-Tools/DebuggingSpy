@@ -217,6 +217,30 @@ DSSpyInstrumenter >> instrumentExpandAttribute [
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
+
+	StMetaBrowser compile: 'methodsOf: aClass
+
+	aClass ifNil: [ ^ #() ].
+	[DSInspectMethodsRecord for: {self model. self selectedClass. self window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
+	^ aClass methods sorted: #selector ascending
+'
+]
+
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
+
+	StMetaBrowser compile: 'updateSourceWith: method
+	source userActionDuring: [
+		method
+			ifNotNil: [ 
+				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
+				source text: method sourceCode; beForMethod: method  ]
+			ifNil: [ 
+				source text: ''''; clearInteractionModel ] ]'
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
 	StInspector compile: 'initializePresenters
