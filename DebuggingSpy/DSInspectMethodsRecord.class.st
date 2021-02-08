@@ -17,7 +17,7 @@ DSInspectMethodsRecord >> eventName [
 
 { #category : #'actions api' }
 DSInspectMethodsRecord >> record: inspectedObjectWithSelectedClassWithWindow [
-"	self halt."
+
 	super record: { 
 			inspectedObjectWithSelectedClassWithWindow first.
 			inspectedObjectWithSelectedClassWithWindow last }.

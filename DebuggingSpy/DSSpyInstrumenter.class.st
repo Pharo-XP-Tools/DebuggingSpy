@@ -234,7 +234,7 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 	source userActionDuring: [
 		method
 			ifNotNil: [ 
-				[DSSpy log: method name key: #INSPECTOR_META_METHOD] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
+				[DSInspectMethodSourceRecord for: {self model. self selectedClass. self selectedMethod. self window}] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
 				source text: method sourceCode; beForMethod: method  ]
 			ifNil: [ 
 				source text: ''''; clearInteractionModel ] ]'
