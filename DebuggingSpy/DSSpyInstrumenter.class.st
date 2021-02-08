@@ -375,31 +375,6 @@ SpCodePrintItCommand compile: 'execute
 		self printObject: result ]'.
 ]
 
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentRawInspection [
-
-	FTBasicItem compile: 'expandAndRefresh
-	[DSSpy log: data key key: #INSPECTOR_OBSERVE] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
-	self expand.
-	self refreshTable'.
-	
-	StRawInspection compile: 'setAttributeTable
-
-	attributeTable
-		roots: self inspectorNodes;
-		children: [ :node | node children ].
-		
-	self outputSelectionPort transmitDo:[:val| 
-		val ifNotNil: [ 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
-	self outputActivationPort transmitDo:[:val| 
-			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'.
-
-	StInspector class compile: 'onObject: anObject
-	[DSSpy log: anObject key: #INSPECTOR_INSPECT.] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
-	^ self on: (StInspectorModel on: anObject)'
-]
-
 { #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
 
