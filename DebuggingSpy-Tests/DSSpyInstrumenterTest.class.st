@@ -22,6 +22,12 @@ DSSpyInstrumenterTest >> debuggerForTesting [
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane [
+
+	^ (aMetaPane class slotNamed: listName) read: aMetaPane
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> registry [
 	^DSRecordRegistry current records
 ]
@@ -160,6 +166,30 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	self assert: record attributeName equals: 'self'. 	
 	self assert: record attributeHash equals: object hash.
 	self assert: record attributeValue equals: object gtDisplayString 
+]
+
+{ #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
+	|metaPane object classes|
+	modifiedClass := StMetaBrowser.
+	modifiedMethodSource := (StMetaBrowser >> #methodsOf:) sourceCode.
+	instrumenter instrumentInspectMethodsOfClass.
+	
+	object := OrderedCollection new.
+	metaPane := StMetaBrowser on: object.
+	classes := self metaPaneClassesItems: #classes FromInspector: metaPane.
+		
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSInspectMethodsRecord.
+	self assert: record windowId equals: metaPane window hash.
+	self assert: record selectedClass equals: object class name.
+	self assert: record inspectedObject equals: object printString.
+	
+	classes clickAtPath: { 1. 1. 1. 1}.
+	record := self registry second.
+	self assert: record selectedClass equals: object class superclass name
 ]
 
 { #category : #'tests - inspector' }
