@@ -155,7 +155,7 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	record := self registry first.
 	
 	
-	self assert: record class identicalTo: DSInspectAttributeRecord.
+	self assert: record class identicalTo: DSExpandAttributeRecord.
 	self assert: record windowId equals: inspector window hash.
 	self assert: record attributeName equals: 'self'. 	
 	self assert: record attributeHash equals: object hash.
@@ -258,20 +258,20 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 
 { #category : #'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
-	|inspector object|
+	|raw object|
 	modifiedClass := StInspector.
 	modifiedMethodSource := (StInspector >> #initializePresenters) sourceCode.
-	instrumenter instrumentInspectorOnObject.
+	instrumenter instrumentNavigateAttribute.
 	
 	object := OrderedCollection new.
-	inspector := StInspector onObject: object.	
+	raw := StRawInspection on: object.	
+	raw selectPath: #(2).
 
 	self assert: self registry size equals: 1.
-	record := self registry first.
+	record := self registry first.	
 	
-	
-	self assert: record class identicalTo: DSInspectObjectRecord.
-	self assert: record windowId equals: inspector window hash.
+	self assert: record class identicalTo: DSNavigateAttributeRecord.
+	self assert: record windowId equals: raw window hash.
 	self assert: record inspectedObject equals: object printString.
 	self assert: record inspectedObjectHash equals: object hash
 ]
