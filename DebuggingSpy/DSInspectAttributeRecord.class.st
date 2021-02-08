@@ -53,10 +53,17 @@ DSInspectAttributeRecord >> eventName [
 	^'Inspect object'
 ]
 
-{ #category : #'actions - api' }
-DSInspectAttributeRecord >> record: aFTTableItem [
-	super record: {aFTTableItem data hostObject.  aFTTableItem dataSource model window}.
-	attributeName := aFTTableItem data key.
-	attributeValue := aFTTableItem data stringValue.
-	attributeHash := aFTTableItem data value hash
+{ #category : #'actions api' }
+DSInspectAttributeRecord >> record: inspectorNodeWithInspectedObjectWithWindow [
+
+	| inspectorNode window |
+	inspectorNode := inspectorNodeWithInspectedObjectWithWindow first.
+	inspectedObject := inspectorNodeWithInspectedObjectWithWindow second.
+	window := inspectorNodeWithInspectedObjectWithWindow third.
+	super record: { 
+			inspectedObject.
+			window }.
+	attributeName := inspectorNode key.
+	attributeValue := inspectorNode stringValue.
+	attributeHash := inspectorNode value hash
 ]

@@ -211,7 +211,7 @@ SpCodeDoItCommand compile: 'execute
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh
-	[DSInspectAttributeRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
+	[DSExpandAttributeRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
 	self expand.
 	self refreshTable'
 ]
@@ -292,12 +292,12 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 	attributeTable
 		roots: self inspectorNodes;
 		children: [ :node | node children ].
-		
-	self outputSelectionPort transmitDo:[:val| 
+
+	self outputSelectionPort transmitDo: [ :val | 
 		val ifNotNil: [ 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
-	self outputActivationPort transmitDo:[:val| 
-			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
+			[ DSNavigateAttributeRecord for: { {val. model}. self window } ]
+				on: Error
+				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
 { #category : #inspector }
