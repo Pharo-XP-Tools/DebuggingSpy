@@ -6,3 +6,8 @@ Class {
 	#superclass : #DSInspectorRecord,
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSInspectObjectRecord >> eventName [
+	^'Inspect object'
+]
