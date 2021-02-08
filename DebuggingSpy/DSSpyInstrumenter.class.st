@@ -285,6 +285,22 @@ DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 ]
 
 { #category : #inspector }
+DSSpyInstrumenter >> instrumentNavigateAttribute [
+
+	StRawInspection compile: 'setAttributeTable
+
+	attributeTable
+		roots: self inspectorNodes;
+		children: [ :node | node children ].
+		
+	self outputSelectionPort transmitDo:[:val| 
+		val ifNotNil: [ 
+		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
+	self outputActivationPort transmitDo:[:val| 
+			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
+]
+
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentNotebooks [
 
 	StObjectInspectorPresenter compile: 'initializePresenters
@@ -458,22 +474,6 @@ DSSpyInstrumenter >> instrumentSystemQueries [
 DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 	^'[DSSpy log: {1} key: {2}] on: Error do:[DSSpy log: #ERROR key: {2}].'
-]
-
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentnavigateAttribute [
-
-	StRawInspection compile: 'setAttributeTable
-
-	attributeTable
-		roots: self inspectorNodes;
-		children: [ :node | node children ].
-		
-	self outputSelectionPort transmitDo:[:val| 
-		val ifNotNil: [ 
-		[DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].
-	self outputActivationPort transmitDo:[:val| 
-			val ifNotNil: [ [DSSpy log: val key key: #INSPECTOR_OBSERVE] on: Error do:[:err| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE]]].'
 ]
 
 { #category : #breakpoints }
