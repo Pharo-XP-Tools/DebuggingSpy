@@ -12,8 +12,9 @@ Class {
 }
 
 { #category : #'actions api' }
-DSCodeActionRecord >> record: aCodeString [
-	selectedString := aCodeString
+DSCodeActionRecord >> record: aCodeStringWithWindow [
+	super record: aCodeStringWithWindow last.
+	selectedString := aCodeStringWithWindow first
 ]
 
 { #category : #accessing }
