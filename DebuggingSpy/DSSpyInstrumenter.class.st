@@ -421,6 +421,24 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 ]
 
 { #category : #interactions }
+DSSpyInstrumenter >> instrumentSpCodeDoIt [
+
+	SpCodeDoItCommand compile: 'execute
+
+	"Treat the current text selection as an expression; evaluate it."
+
+	self evaluateSelectionAndDo: [ :result | 
+		[ 
+		DSDoItRecord for: { 
+				self selectedTextOrLine.
+				self context window } ]
+			on: Error
+			do: [ :e | 
+				self halt.
+				DSSpy log: #ERROR key: #ACTION_PRINTIT ] ]'
+]
+
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodePrintIt [
 
 	SpCodePrintItCommand compile: 'execute
