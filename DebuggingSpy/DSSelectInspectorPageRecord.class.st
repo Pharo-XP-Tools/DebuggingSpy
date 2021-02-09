@@ -5,7 +5,7 @@ Class {
 	#name : #DSSelectInspectorPageRecord,
 	#superclass : #DSInspectorRecord,
 	#instVars : [
-		'pageName'
+		'pageTitle'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -13,4 +13,25 @@ Class {
 { #category : #accessing }
 DSSelectInspectorPageRecord >> eventName [
 	^'Selecting inspector page'
+]
+
+{ #category : #accessing }
+DSSelectInspectorPageRecord >> pageTitle [
+
+	^ pageTitle
+]
+
+{ #category : #accessing }
+DSSelectInspectorPageRecord >> pageTitle: anObject [
+
+	pageTitle := anObject
+]
+
+{ #category : #'actions api' }
+DSSelectInspectorPageRecord >> record: pageTitleWithInspectedObjectWithWindow [
+
+	super record: { 
+			pageTitleWithInspectedObjectWithWindow second.
+			pageTitleWithInspectedObjectWithWindow last }.
+	pageTitle := pageTitleWithInspectedObjectWithWindow first
 ]

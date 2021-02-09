@@ -253,6 +253,18 @@ DSSpyInstrumenter >> instrumentInspectorOnObject [
 		whenColumnsWillChangeDo: [ self keepLastPageSelectedTabName ]'
 ]
 
+{ #category : #inspector }
+DSSpyInstrumenter >> instrumentInspectorPageSelection [
+
+	StObjectInspectorPresenter compile: 'initializePresenters
+	views := self newNotebook.
+	header := self instantiate: StHeaderBar.
+	self initializeLayout.
+	views whenSelectedPageChangedDo: [ :page | 
+		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
+	self refresh'
+]
+
 { #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 

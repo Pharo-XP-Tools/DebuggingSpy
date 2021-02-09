@@ -238,6 +238,33 @@ DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	self assert: record inspectedObjectHash equals: object hash
 ]
 
+{ #category : #'tests - inspector' }
+DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
+	|inspector object objectInspector pagesView|
+	modifiedClass := StObjectInspectorPresenter.
+	modifiedMethodSource := (StObjectInspectorPresenter >> #initializePresenters) sourceCode.
+	instrumenter instrumentInspectorPageSelection.
+	
+	object := OrderedCollection new.
+	inspector := StInspector onObject: object.	
+	objectInspector := inspector firstPage.
+	pagesView := (objectInspector class slotNamed: #views) read: objectInspector.	
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSSelectInspectorPageRecord.
+	self assert: record windowId equals: inspector window hash.
+	self assert: record pageTitle equals: pagesView pages first title. 	
+	self assert: record inspectedObjectHash equals: object hash.
+	self assert: record inspectedObject equals: object printString.
+	
+	pagesView selectPage: pagesView pages second.
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record pageTitle equals: pagesView pages second title	
+]
+
 { #category : #'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
 	
