@@ -14,6 +14,22 @@ Class {
 }
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> codePresenter [
+
+	| playground codePresenter |
+	playground := StPlaygroundPagePresenter basicNew
+		              setModelBeforeInitialization:
+			              (NewValueHolder value: nil);
+		              application: StPharoApplication current;
+		              initialize;
+		              yourself.
+	codePresenter := (playground class slotNamed: #text) read: playground.
+	codePresenter text: 'test'.
+	codePresenter selectionInterval: (1 to: 4).
+	^ codePresenter
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> debuggerForTesting [
 
 	^ StTestDebuggerProvider new debuggerWithObjectHalting
@@ -390,21 +406,12 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 { #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
-	| playground codePresenter printItCommand |
+	| codePresenter printItCommand |
 	modifiedClass := SpCodePrintItCommand.
 	modifiedMethodSource := (SpCodePrintItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodePrintIt.
 
-	playground := StPlaygroundPagePresenter basicNew
-		              setModelBeforeInitialization:
-			              (NewValueHolder value: nil);
-		              application: StPharoApplication current;
-		              initialize;
-		              yourself.
-	codePresenter := (playground class slotNamed: #text) read: playground.
-	codePresenter text: 'test'.
-	codePresenter selectionInterval: (1 to: 4).
-
+	codePresenter := self codePresenter.
 	printItCommand := SpCodePrintItCommand new.
 	printItCommand context: codePresenter.
 	printItCommand execute.
@@ -413,6 +420,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSPrintItRecord.
-	self assert: record windowId equals: playground window hash.
+	self assert: record windowId equals: codePresenter window hash.
 	self assert: record selectedString equals: 'test'
 ]
