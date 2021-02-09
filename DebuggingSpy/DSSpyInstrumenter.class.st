@@ -420,6 +420,19 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentSpCodePrintIt [
+
+	SpCodePrintItCommand compile: 'execute
+	"Treat the current text selection as an expression; evaluate it. Insert the 
+	description of the result of evaluation after the selection and then make 
+	this description the new text selection."
+
+	self evaluateSelectionAndDo: [ :result | 
+		[DSPrintItRecord for: {self selectedTextOrLine. self context window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+		self printObject: result ]'
+]
+
 { #category : #'system-queries' }
 DSSpyInstrumenter >> instrumentSystemQueries [
 	self deprecated: 'That is not used anymore I think'.

@@ -249,7 +249,7 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	inspector := StInspector onObject: object.	
 	objectInspector := inspector firstPage.
 	pagesView := (objectInspector class slotNamed: #views) read: objectInspector.	
-	
+
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	
@@ -385,4 +385,34 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	self assert: record class identicalTo: DSMouseEnterTextEditorRecord.
 	self assert: record windowId equals: morph window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
+
+	| playground codePresenter printItCommand |
+	modifiedClass := SpCodePrintItCommand.
+	modifiedMethodSource := (SpCodePrintItCommand >> #execute) sourceCode.
+	instrumenter instrumentSpCodePrintIt.
+
+	playground := StPlaygroundPagePresenter basicNew
+		              setModelBeforeInitialization:
+			              (NewValueHolder value: nil);
+		              application: StPharoApplication current;
+		              initialize;
+		              yourself.
+	codePresenter := (playground class slotNamed: #text) read: playground.
+	codePresenter text: 'test'.
+	codePresenter selectionInterval: (1 to: 4).
+
+	printItCommand := SpCodePrintItCommand new.
+	printItCommand context: codePresenter.
+	printItCommand execute.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSPrintItRecord.
+	self assert: record windowId equals: playground window hash.
+	self assert: record selectedString equals: 'test'
 ]
