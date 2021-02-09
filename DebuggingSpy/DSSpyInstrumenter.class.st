@@ -305,21 +305,6 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
-{ #category : #inspector }
-DSSpyInstrumenter >> instrumentNotebooks [
-
-	StObjectInspectorPresenter compile: 'initializePresenters
-	header := self instantiate: StHeaderBar.
-	views := self newNotebook.	
-	views whenSelectedPageChangedDo: [ :page | 
-		[DSSpy log: page title key: #INSPECTOR_VIEW] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
-	evaluator := self newCode
-		beForObject: self model inspectedObject;
-		yourself.
-	evaluator text: self evaluatorInitialText.
-	self refresh'.
-]
-
 { #category : #playground }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
