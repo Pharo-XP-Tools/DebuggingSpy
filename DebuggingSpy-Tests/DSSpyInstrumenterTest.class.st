@@ -404,6 +404,28 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 ]
 
 { #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
+
+	| codePresenter debugItCommand |
+	modifiedClass := SpCodeDebugItCommand.
+	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
+	instrumenter instrumentSpCodeDebugIt.
+
+	codePresenter := self codePresenter.
+
+	debugItCommand := SpCodeDebugItCommand new.
+	debugItCommand context: codePresenter.
+	debugItCommand execute.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSDebugItRecord.
+	self assert: record windowId equals: codePresenter window hash.
+	self assert: record selectedString equals: 'test'
+]
+
+{ #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 
 	| codePresenter printItCommand |

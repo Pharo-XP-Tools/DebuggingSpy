@@ -421,6 +421,25 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 ]
 
 { #category : #interactions }
+DSSpyInstrumenter >> instrumentSpCodeDebugIt [
+
+	SpCodeDebugItCommand compile: 'execute
+
+	| selection |
+	selection := self selectedTextOrLine.
+	selection ifEmpty: [ ^ '''' ].
+	[ 
+	DSDebugItRecord for: { 
+			selection.
+			self context window } ]
+		on: Error
+		do: [ :e | 
+			self halt.
+			DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	self debug: selection readStream'
+]
+
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDoIt [
 
 	SpCodeDoItCommand compile: 'execute
