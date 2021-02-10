@@ -71,13 +71,6 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 	^title'
 ]
 
-{ #category : #interactions }
-DSSpyInstrumenter >> instrumentCodeActions [
-	self instrumentDebugIt.
-	self instrumentDoIt.
-	self instrumentPrintIt
-]
-
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCode [
 "
