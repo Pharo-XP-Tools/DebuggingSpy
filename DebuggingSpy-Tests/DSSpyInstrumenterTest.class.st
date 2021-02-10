@@ -48,6 +48,20 @@ DSSpyInstrumenterTest >> registry [
 	^DSRecordRegistry current records
 ]
 
+{ #category : #helpers }
+DSSpyInstrumenterTest >> rubTextEditor [
+
+	| editor textArea |
+	editor := RubSmalltalkEditor forTextArea:
+		          (textArea := RubEditingArea new).
+	textArea setTextWith: 'test' printString.
+	textArea selectFrom: 1 to: 4.
+	textArea releaseEditor.
+	textArea editorClass: DSFakeTextEditor.
+	textArea editor.
+	^ editor
+]
+
 { #category : #running }
 DSSpyInstrumenterTest >> setUp [
 	super setUp.
@@ -373,6 +387,24 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	self assert: record windowId equals: raw window hash.
 	self assert: record inspectedObject equals: object printString.
 	self assert: record inspectedObjectHash equals: object hash
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
+
+	| rubEditor |
+	modifiedClass := RubSmalltalkEditor.
+	modifiedMethodSource := (RubSmalltalkEditor >> #printIt) sourceCode.
+	instrumenter instrumentRubEditorPrintIt.
+
+	rubEditor := self rubTextEditor.
+	rubEditor printIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSPrintItRecord.	
+	self assert: record selectedString equals: 'test'
 ]
 
 { #category : #'tests - mouse events' }

@@ -377,6 +377,23 @@ SpCodePrintItCommand compile: 'execute
 		self printObject: result ]'.
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentRubEditorPrintIt [
+
+	RubSmalltalkEditor compile: 'printIt
+	| printString |
+
+	self
+		evaluateSelectionAndDo: [ :result | 
+			[DSPrintItRecord for: result 
+			] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+			printString := [ result printString ]
+				on: Error
+				do: [ ''<error in printString: try ''''Inspect it'''' to debug>'' ].
+				
+			self afterSelectionInsertAndSelect: printString ]'
+]
+
 { #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
 
