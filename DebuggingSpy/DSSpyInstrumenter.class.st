@@ -446,9 +446,8 @@ DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 	selection := self selectedTextOrLine.
 	selection ifEmpty: [ ^ '''' ].
 	[ 
-	DSDebugItRecord for: { 
-			selection.
-			self context window } ]
+	DSDebugItRecord for:  
+			selection ]
 		on: Error
 		do: [ :e | 
 			self halt.
@@ -465,9 +464,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 
 	self evaluateSelectionAndDo: [ :result | 
 		[ 
-		DSDoItRecord for: { 
-				self selectedTextOrLine.
-				self context window } ]
+		DSDoItRecord for: self selectedTextOrLine ]
 			on: Error
 			do: [ :e | 
 				self halt.
@@ -483,7 +480,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 	this description the new text selection."
 
 	self evaluateSelectionAndDo: [ :result | 
-		[DSPrintItRecord for: {self selectedTextOrLine. self context window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+		[DSPrintItRecord for: self selectedTextOrLine.] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 		self printObject: result ]'
 ]
 

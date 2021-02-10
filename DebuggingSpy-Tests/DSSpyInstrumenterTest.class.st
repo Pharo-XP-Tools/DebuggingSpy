@@ -453,7 +453,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDebugItRecord.
-	self assert: record windowId equals: codePresenter window hash.
 	self assert: record selectedString equals: 'test'
 ]
 
@@ -475,7 +474,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDoItRecord.
-	self assert: record windowId equals: codePresenter window hash.
 	self assert: record selectedString equals: 'test'
 ]
 
@@ -496,6 +494,5 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSPrintItRecord.
-	self assert: record windowId equals: codePresenter window hash.
 	self assert: record selectedString equals: 'test'
 ]
