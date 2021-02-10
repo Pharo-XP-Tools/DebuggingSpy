@@ -4,6 +4,6 @@ My purpose is to ease testing of instrumented methods from RubTextEditor without
 "
 Class {
 	#name : #DSFakeTextEditor,
-	#superclass : #RubTextEditor,
+	#superclass : #RubSmalltalkEditor,
 	#category : #'DebuggingSpy-Tests'
 }

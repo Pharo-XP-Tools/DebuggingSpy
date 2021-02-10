@@ -53,12 +53,12 @@ DSSpyInstrumenterTest >> rubTextEditor [
 
 	| editor textArea |
 	editor := RubSmalltalkEditor forTextArea:
-		          (textArea := RubEditingArea new).
-	textArea setTextWith: 'test' printString.
-	textArea selectFrom: 1 to: 4.
+		          (textArea := RubEditingArea new).	
+	textArea setTextWith: 'test' printString.		
 	textArea releaseEditor.
 	textArea editorClass: DSFakeTextEditor.
-	textArea editor.
+	textArea editor.	
+	editor selectAll.
 	^ editor
 ]
 
@@ -387,6 +387,25 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	self assert: record windowId equals: raw window hash.
 	self assert: record inspectedObject equals: object printString.
 	self assert: record inspectedObjectHash equals: object hash
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
+
+	| rubEditor |
+	modifiedClass := RubSmalltalkEditor.
+	modifiedMethodSource := (RubSmalltalkEditor >> #doIt) sourceCode.
+	instrumenter instrumentRubEditorDoIt.
+	
+	rubEditor := self rubTextEditor.
+	rubEditor selectAll.
+	rubEditor doIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSDoItRecord.	
+	self assert: record selectedString equals: 'test' printString
 ]
 
 { #category : #'tests - interactions' }

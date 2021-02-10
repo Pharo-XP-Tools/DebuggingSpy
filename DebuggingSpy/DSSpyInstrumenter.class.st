@@ -378,6 +378,19 @@ SpCodePrintItCommand compile: 'execute
 ]
 
 { #category : #interactions }
+DSSpyInstrumenter >> instrumentRubEditorDoIt [
+
+	RubSmalltalkEditor compile: 'doIt
+	"Set the context to include pool vars of the model.  Then evaluate."
+	[ DSDoItRecord for: self selectionString]
+			on: Error
+			do: [ :e | 
+				self halt.
+				DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	^ self evaluateSelection'
+]
+
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 
 	RubSmalltalkEditor compile: 'printIt
