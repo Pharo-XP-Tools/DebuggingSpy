@@ -78,32 +78,6 @@ DSSpyInstrumenter >> instrumentCodeActions [
 	self instrumentPrintIt
 ]
 
-{ #category : #interactions }
-DSSpyInstrumenter >> instrumentDebugIt [
-
-RubSmalltalkEditor compile: 'debug: aStream
-	| method receiver context |
-	[DSSpy log: aStream contents asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	(self model respondsTo: #doItReceiver)
-		ifTrue: [ receiver := self model doItReceiver.
-			context := self model doItContext ]
-		ifFalse: [ receiver := context := nil ].
-	method := self compile: aStream for: receiver in: context.
-	method isReturnSpecial
-		ifTrue: [ self inform: ''Nothing to debug, the expression is optimized''.
-			^ self ].
-	method notNil
-		ifTrue: [ self debug: method receiver: receiver in: context ]'.
-	
-SpCodeDebugItCommand compile: 'execute
-	| selection |
-	
-	selection := self selectedTextOrLine.
-	selection ifEmpty: [ ^ String new ].
-	[DSSpy log: selection asString key: #ACTION_DEBUGIT] on: Error do:[ DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	self debug: selection readStream'.
-]
-
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCode [
 "
