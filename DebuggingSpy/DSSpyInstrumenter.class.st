@@ -620,3 +620,9 @@ DSSpyInstrumenter >> rewriteTempsFrom: ast in: stream [
 			stream space ].
 	stream << $|
 ]
+
+{ #category : #methods }
+DSSpyInstrumenter >> unsubscribeFromSystemAnnouncer [
+
+	SystemAnnouncer uniqueInstance unsubscribe: self
+]

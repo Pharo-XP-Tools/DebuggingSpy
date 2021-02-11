@@ -5,7 +5,8 @@ Class {
 		'record',
 		'browser',
 		'methodEvent',
-		'windowEvent'
+		'windowEvent',
+		'instrumenter'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -24,6 +25,11 @@ DSSpyTest >> assertWindowEventRecordedAs: aClass [
 ]
 
 { #category : #helpers }
+DSSpyTest >> compileTestMethod [
+	DSFakeTextEditor compile: 'dsTestMethod ^self'
+]
+
+{ #category : #helpers }
 DSSpyTest >> methodEvent [
 
 	^ methodEvent ifNil: [ 
@@ -33,8 +39,24 @@ DSSpyTest >> methodEvent [
 ]
 
 { #category : #helpers }
+DSSpyTest >> modifyTestMethod [
+	DSFakeTextEditor compile: 'dsTestMethod ^self + 1'
+]
+
+{ #category : #helpers }
+DSSpyTest >> recoverTestMethod [
+	^DSFakeTextEditor lookupSelector: #dsTestMethod
+]
+
+{ #category : #helpers }
 DSSpyTest >> registry [
 	^DSRecordRegistry current records
+]
+
+{ #category : #helpers }
+DSSpyTest >> removeTestMethod [
+
+	self recoverTestMethod removeFromSystem
 ]
 
 { #category : #running }
@@ -42,8 +64,16 @@ DSSpyTest >> setUp [
 
 	super setUp.
 
-
+	instrumenter := DSSpyInstrumenter new.
 	DSRecordRegistry current reset
+]
+
+{ #category : #running }
+DSSpyTest >> tearDown [
+	instrumenter unsubscribeFromSystemAnnouncer.
+	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
+	DSRecordRegistry current reset.
+	super tearDown
 ]
 
 { #category : #'tests - window events' }
