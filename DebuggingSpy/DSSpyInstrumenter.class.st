@@ -71,6 +71,25 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 	^title'
 ]
 
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
+
+	ClyTextEditor compile: 'printIt
+	"Treat the current text selection as an expression; evaluate it. Insert the 
+	description of the result of evaluation after the selection and then make 
+	this description the new text selection."
+
+	| printString |
+	[DSPrintItRecord for: self selectionString] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	self
+		evaluateSelectionAndDo: [ :result | 
+			
+			printString := [ result asScriptResultStringInCalypso ]
+				on: Error
+				do: [', '<error in printString: try ''Inspect it'' to debug>' printString,' ].
+			self afterSelectionInsertAndSelect: printString ]'
+]
+
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCode [
 "

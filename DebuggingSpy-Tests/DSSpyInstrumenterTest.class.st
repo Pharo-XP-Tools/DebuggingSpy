@@ -14,6 +14,20 @@ Class {
 }
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> clyTextEditor [
+
+	| editor textArea |
+	editor := ClyTextEditor forTextArea:
+		          (textArea := RubEditingArea new).	
+	textArea setTextWith: '41+1'.		
+	textArea releaseEditor.
+	textArea editorClass: DSFakeTextEditor.
+	textArea editor.	
+	editor selectAll.
+	^ editor
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> codePresenter [
 
 	| playground codePresenter |
@@ -148,6 +162,24 @@ DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	self assert: record class identicalTo: DSQueryBrowseRecord.
 	self assert: record windowId equals: browser window hash.
 	self assert: record queryName equals: browser systemQuery description
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
+
+	| clyEditor |
+	modifiedClass := ClyTextEditor.
+	modifiedMethodSource := (ClyTextEditor >> #printIt) sourceCode.
+	instrumenter instrumentClyTextEditorPrintIt.
+
+	clyEditor := self clyTextEditor.
+	clyEditor printIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSPrintItRecord.	
+	self assert: record selectedString equals: '41+1'
 ]
 
 { #category : #'tests - debugger' }
