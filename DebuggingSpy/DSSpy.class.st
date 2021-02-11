@@ -104,21 +104,21 @@ DSSpy class >> logWindowOpened: anEvent [
 	window announcer when: WindowClosed send: #logWindowClosed: to: self
 ]
 
-{ #category : #events }
+{ #category : #'events - methods' }
 DSSpy class >> methodAdded: evt [
 	[ DSMethodAddedRecord for: evt method]
 		on: Error
 		do: [:e| self halt. self log: #ERROR key: #METHOD_ADDED ]
 ]
 
-{ #category : #events }
+{ #category : #'events - methods' }
 DSSpy class >> methodChanged: evt [
 	[ DSMethodModifiedRecord for: evt method]
 		on: Error
 		do: [ self log: #ERROR key: #METHOD_MODIFIED ]
 ]
 
-{ #category : #events }
+{ #category : #'events - methods' }
 DSSpy class >> methodRemoved: evt [
 	[ DSMethodRemovedRecord for: evt method]
 		on: Error
