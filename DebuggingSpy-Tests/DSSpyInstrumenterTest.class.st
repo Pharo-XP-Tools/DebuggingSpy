@@ -390,6 +390,25 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 ]
 
 { #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
+
+	| rubEditor |
+	modifiedClass := RubSmalltalkEditor.
+	modifiedMethodSource := (RubSmalltalkEditor >> #debug:) sourceCode.
+	instrumenter instrumentRubEditorDebugIt.
+	
+	rubEditor := self rubTextEditor.
+	rubEditor selectAll.
+	rubEditor debugIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSDebugItRecord.	
+	self assert: record selectedString equals: 'test' printString
+]
+
+{ #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 
 	| rubEditor |

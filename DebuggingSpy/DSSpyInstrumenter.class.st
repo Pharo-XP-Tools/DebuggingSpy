@@ -298,6 +298,24 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 ]
 
 { #category : #interactions }
+DSSpyInstrumenter >> instrumentRubEditorDebugIt [
+
+RubSmalltalkEditor compile: 'debug: aStream
+	| method receiver context |
+	[DSDebugItRecord for: aStream contents] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+	(self model respondsTo: #doItReceiver)
+		ifTrue: [ receiver := self model doItReceiver.
+			context := self model doItContext ]
+		ifFalse: [ receiver := context := nil ].
+	method := self compile: aStream for: receiver in: context.
+	method isReturnSpecial
+		ifTrue: [ self inform: ''Nothing to debug, the expression is optimized''.
+			^ self ].
+	method notNil
+		ifTrue: [ self debug: method receiver: receiver in: context ]'
+]
+
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorDoIt [
 
 	RubSmalltalkEditor compile: 'doIt
