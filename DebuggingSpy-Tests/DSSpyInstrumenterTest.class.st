@@ -38,7 +38,7 @@ DSSpyInstrumenterTest >> codePresenter [
 		              initialize;
 		              yourself.
 	codePresenter := (playground class slotNamed: #text) read: playground.
-	codePresenter text: 'test'.
+	codePresenter text: '41+1'.
 	codePresenter selectionInterval: (1 to: 4).
 	^ codePresenter
 ]
@@ -68,7 +68,7 @@ DSSpyInstrumenterTest >> rubTextEditor [
 	| editor textArea |
 	editor := RubSmalltalkEditor forTextArea:
 		          (textArea := RubEditingArea new).	
-	textArea setTextWith: 'test' printString.		
+	textArea setTextWith: '41+1' printString.		
 	textArea releaseEditor.
 	textArea editorClass: DSFakeTextEditor.
 	textArea editor.	
@@ -437,7 +437,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDebugItRecord.	
-	self assert: record selectedString equals: 'test' printString
+	self assert: record selectedString equals: '41+1' printString
 ]
 
 { #category : #'tests - interactions' }
@@ -456,7 +456,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDoItRecord.	
-	self assert: record selectedString equals: 'test' printString
+	self assert: record selectedString equals: '41+1'printString
 ]
 
 { #category : #'tests - interactions' }
@@ -474,7 +474,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSPrintItRecord.	
-	self assert: record selectedString equals: 'test'
+	self assert: record selectedString equals: '41+1'
 ]
 
 { #category : #'tests - mouse events' }
@@ -523,7 +523,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDebugItRecord.
-	self assert: record selectedString equals: 'test'
+	self assert: record selectedString equals: '41+1'
 ]
 
 { #category : #'tests - interactions' }
@@ -544,7 +544,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSDoItRecord.
-	self assert: record selectedString equals: 'test'
+	self assert: record selectedString equals: '41+1'
 ]
 
 { #category : #'tests - interactions' }
@@ -564,5 +564,5 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSPrintItRecord.
-	self assert: record selectedString equals: 'test'
+	self assert: record selectedString equals: '41+1'
 ]
