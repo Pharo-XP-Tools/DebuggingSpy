@@ -75,27 +75,26 @@ DSSpy class >> logToFile: aString [
 	str close
 ]
 
-{ #category : #events }
+{ #category : #'events - windows' }
 DSSpy class >> logWindowActivated: anEvent [
-	[ self
-		log: (self windowNameFromEvent: anEvent)
-		key: #WINDOW_ACTIVATED ]
+
+	[ DSWindowActivatedRecord for: anEvent ]
 		on: Error
 		do: [ self log: #ERROR key: #WINDOW_ACTIVATED ]
 ]
 
-{ #category : #events }
+{ #category : #'events - windows' }
 DSSpy class >> logWindowClosed: anEvent [
-	[ self log: (self windowNameFromEvent: anEvent) key: #WINDOW_CLOSED ]
+	[ DSWindowClosedRecord for: anEvent ]
 		on: Error
 		do: [ self log: #ERROR key: #WINDOW_CLOSED ]
 ]
 
-{ #category : #events }
+{ #category : #'events - windows' }
 DSSpy class >> logWindowOpened: anEvent [
 	| window |
 	window := anEvent window.
-	[ self log: (self windowNameFromEvent: anEvent) key: #WINDOW_OPENED ]
+	[ DSWindowOpenedRecord for: anEvent ]
 		on: Error
 		do: [ self log: #ERROR key: #WINDOW_OPENED ].
 	window announcer

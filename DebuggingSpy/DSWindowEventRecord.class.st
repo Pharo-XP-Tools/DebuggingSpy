@@ -28,10 +28,10 @@ DSWindowEventRecord >> recordWindowIdFromEvent: anEvent [
 
 { #category : #recording }
 DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
-	|win label|
-	win := anEvent window.
-	label := [win labelString ] on: Error do:['Unknown window'].
-	windowName := label, ' (', win hash printString, ')'
+
+	windowName := [ anEvent window label ]
+		              on: Error
+		              do: [ 'Unknown window' ]
 ]
 
 { #category : #comparing }
