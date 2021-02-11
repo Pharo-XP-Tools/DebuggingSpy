@@ -18,6 +18,12 @@ DSSpyTest >> assertMethodEventRecordedAs: aClass [
 ]
 
 { #category : #assertions }
+DSSpyTest >> assertMethodEventRecordedAs: aClass for: aMethod [
+	self assert: record class identicalTo: aClass.
+	self assert: record methodName equals: aMethod name
+]
+
+{ #category : #assertions }
 DSSpyTest >> assertWindowEventRecordedAs: aClass [
 	self assert: record class identicalTo: aClass.
 	self assert: record windowId equals: self windowEvent window hash.
@@ -125,6 +131,28 @@ DSSpyTest >> testMethodChanged [
 		
 	record := self registry first.	
 	self assertMethodEventRecordedAs: DSMethodModifiedRecord
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testMethodEventsInstrumentation [
+	
+	|method|
+	instrumenter listenToMethodChanges.
+	self compileTestMethod.
+	method := self recoverTestMethod copy.
+	self modifyTestMethod.
+	self removeTestMethod.
+	
+	self assert: self registry size equals: 3.	
+		
+	record := self registry first.	
+	self assertMethodEventRecordedAs: DSMethodAddedRecord for: method.
+		
+	record := self registry second.	
+	self assertMethodEventRecordedAs: DSMethodModifiedRecord for: method.
+	
+	record := self registry third.	
+	self assertMethodEventRecordedAs: DSMethodRemovedRecord for: method
 ]
 
 { #category : #'tests - methods events' }
