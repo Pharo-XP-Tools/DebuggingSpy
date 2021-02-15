@@ -28,16 +28,11 @@ DSSpyInstrumenterTest >> clyTextEditor [
 ]
 
 { #category : #helpers }
-DSSpyInstrumenterTest >> codePresenter [
+DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 
-	| playground codePresenter |
-	playground := StPlaygroundPagePresenter basicNew
-		              setModelBeforeInitialization:
-			              (NewValueHolder value: nil);
-		              application: StPharoApplication current;
-		              initialize;
-		              yourself.
-	codePresenter := (playground class slotNamed: #text) read: playground.
+	| codePresenter |
+	codePresenter := (aPlaygroundPagePresenter class slotNamed: #text) 
+		                 read: aPlaygroundPagePresenter.
 	codePresenter text: '41+1'.
 	codePresenter selectionInterval: (1 to: 4).
 	^ codePresenter
@@ -55,6 +50,16 @@ DSSpyInstrumenterTest >> debuggerForTesting [
 DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane [
 
 	^ (aMetaPane class slotNamed: listName) read: aMetaPane
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> playgroundPagePresenter [
+
+	^ StPlaygroundPagePresenter basicNew
+		  setModelBeforeInitialization: (NewValueHolder value: nil);
+		  application: StPharoApplication current;
+		  initialize;
+		  yourself
 ]
 
 { #category : #helpers }
@@ -513,15 +518,15 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDebugIt.
 
-	codePresenter := self codePresenter.
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 
 	debugItCommand := SpCodeDebugItCommand new.
 	debugItCommand context: codePresenter.
 	debugItCommand execute.
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSDebugItRecord.
 	self assert: record selectedString equals: '41+1'
 ]
@@ -534,15 +539,15 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 	modifiedMethodSource := (SpCodeDoItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDoIt.
 
-	codePresenter := self codePresenter.
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 
 	printItCommand := SpCodeDoItCommand new.
 	printItCommand context: codePresenter.
 	printItCommand execute.
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSDoItRecord.
 	self assert: record selectedString equals: '41+1'
 ]
@@ -555,14 +560,14 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 	modifiedMethodSource := (SpCodePrintItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodePrintIt.
 
-	codePresenter := self codePresenter.
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 	printItCommand := SpCodePrintItCommand new.
 	printItCommand context: codePresenter.
 	printItCommand execute.
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSPrintItRecord.
 	self assert: record selectedString equals: '41+1'
 ]
