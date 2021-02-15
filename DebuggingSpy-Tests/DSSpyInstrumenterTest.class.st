@@ -30,11 +30,15 @@ DSSpyInstrumenterTest >> clyTextEditor [
 { #category : #helpers }
 DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 
-	| codePresenter |
+	| codePresenter adapter |
 	codePresenter := (aPlaygroundPagePresenter class slotNamed: #text) 
 		                 read: aPlaygroundPagePresenter.
 	codePresenter text: '41+1'.
 	codePresenter selectionInterval: (1 to: 4).
+	adapter := SpMorphicCodeAdapter new.
+	adapter adapt: codePresenter.	
+	codePresenter adapter: adapter.
+	codePresenter adapter buildWidget.	
 	^ codePresenter
 ]
 
@@ -60,6 +64,17 @@ DSSpyInstrumenterTest >> playgroundPagePresenter [
 		  application: StPharoApplication current;
 		  initialize;
 		  yourself
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> press: aCharacter in: aPresenter [
+
+	aPresenter adapter
+		keyDown: aCharacter asciiValue
+		shift: false
+		meta: false
+		control: false
+		option: false
 ]
 
 { #category : #helpers }
@@ -570,4 +585,33 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 	self assert: record class identicalTo: DSPrintItRecord.
 	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : #'tests - playground' }
+DSSpyInstrumenterTest >> testInstrumentStPlayground [
+	|playground code|
+	modifiedClass := StPlaygroundPagePresenter.
+	modifiedMethodSource :=  (StPlaygroundPagePresenter >> #initializePresenters) sourceCode.
+	instrumenter instrumentPlaygroundCode.
+	playground := self playgroundPagePresenter.
+	code := self codePresenterFrom: playground.
+	
+	"On opening, the playground generates an opening record"
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	self assert: record class identicalTo: DSPlaygroundOpenedRecord.
+	self assert: record windowId equals: playground window hash.
+	
+	"When typing code, the playground generates an writing record"
+	self press: $t in: code.
+	self assert: self registry size equals: 2.
+	record := self registry second.	
+	self assert: record class identicalTo: DSPlaygroundWriteRecord.
+	
+	"When the mouse enters the playground, if the playground has focus, generates a reading event"
+	code adapter sendMouseEnterEvent.
+	self assert: self registry size equals: 3.
+	record := self registry third.	
+	self assert: record class identicalTo: DSPlaygroundReadRecord.
+	
 ]

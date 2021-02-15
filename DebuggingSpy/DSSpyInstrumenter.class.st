@@ -290,30 +290,31 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 { #category : #playground }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
-	StPlayground compile: 'initializePresenters
-	text := self newCode
+	StPlaygroundPagePresenter compile: 'initializePresenters
+	self initializeToolbar.
+	self initializeStatusbar.
+
+	(text := self newCode)
 		interactionModel: StPlaygroundInteractionModel new;
 		lineNumbers: self showLineNumbers;
-		contextMenu: [ self menuActions asMenuPresenter ];
-		contextKeyBindings: self menuActions asKMCategory;
-		whenTextChangedDo: [ :aString | page contents: aString ];
-		yourself.		
+		overridingContextMenu;
+		contextMenu: [ (self menuActionsFor: text) asMenuPresenter ];
+		contextKeyBindings: (self menuActionsFor: text) asKMCategory;
+		whenTextChangedDo: [ :aString | page contents: aString ].
 		
-	text eventHandler
-		whenKeyUpDo: [ :event | self updateLineNumber ];
+	[DSPlaygroundOpenedRecord for: self window] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_OPEN ].
+		
+	text eventHandler 
+		whenKeyUpDo: [ :event | self updateLineNumber];
+	whenKeyDownDo: [ :event | self updateLineNumber.		
+			[DSPlaygroundWriteRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
 		whenMouseUpDo: [ :event | self updateLineNumber ];
 		"before taking focus position will be nil, ensure I have the correct one"
-		whenFocusReceivedDo: [ self updateLineNumber ].
-	
-	[DSSpy log: #SCRIPTING_START key: #PLAYGROUND_OPEN] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_OPEN ].
-	text eventHandler whenKeyDownDo:[:evt| 
-		[DSSpy log: #SCRIPTING_WRITE key: #PLAYGROUND_WRITE] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ].
-
-	text eventHandler whenMouseEnterDo:[:evt| 
-		[DSSpy log: #SCRIPTING_START key: #PLAYGROUND_READ] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ].
-		
+		whenFocusReceivedDo: [ self updateLineNumber ];
+		whenMouseEnterDo:[:evt| 
+			self halt.
+		[DSPlaygroundReadRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ].
 	self updatePresenter'
-	
 ]
 
 { #category : #interactions }
