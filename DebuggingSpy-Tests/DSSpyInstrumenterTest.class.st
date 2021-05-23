@@ -149,10 +149,10 @@ DSSpyInstrumenterTest >> tearDown [
 { #category : #'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
-	modifiedClass := ClyFullBrowser.
-	modifiedMethodSource := (ClyFullBrowser >> #newWindowTitle) sourceCode.
+	modifiedClass := ClyFullBrowserMorph.
+	modifiedMethodSource := (ClyFullBrowserMorph >> #newWindowTitle) sourceCode.
 	instrumenter instrumentClyFullBrowser.
-	browser := ClyFullBrowser on: ClyNavigationEnvironment currentImage.  
+	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.  
 	browser  prepareInitialStateBy:  [ :b |b selectMethod: (Object>>#yourself)].
 	browser newWindowTitle.
 	
@@ -169,10 +169,10 @@ DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 { #category : #'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	
-	modifiedClass := ClyQueryBrowser.
-	modifiedMethodSource := (ClyQueryBrowser >> #newWindowTitle) sourceCode.
+	modifiedClass := ClyQueryBrowserMorph.
+	modifiedMethodSource := (ClyQueryBrowserMorph >> #newWindowTitle) sourceCode.
 	instrumenter instrumentClyQueryBrowser.
-	browser := ClyQueryBrowser on: ClyNavigationEnvironment currentImage.  
+	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
 	browser showResultOf: (ClyMessageImplementorsQuery of: #instrumentClyQueryBrowser).
 	browser newWindowTitle.
 	
@@ -311,7 +311,7 @@ DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
 	metaPane := StMetaBrowser on: object.
 	methods := self metaPaneClassesItems: #methods FromInspector: metaPane.
 	
-	methods selectIndex: 1.
+	methods selectItem: methods items first.
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	
@@ -538,9 +538,8 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	|morph|
 
 	modifiedClass := RubScrolledTextMorph.
-	modifiedMethodSource := (RubScrolledTextMorph >> #mouseEnter:) sourceCode.
 	instrumenter instrumentRubScrollTextMorphMouseEnter.
-	
+	methodToRemove := (RubScrolledTextMorph >> #mouseEnter:).
 	morph := RubScrolledTextMorph new.
 	morph mouseEnter: nil.
 	

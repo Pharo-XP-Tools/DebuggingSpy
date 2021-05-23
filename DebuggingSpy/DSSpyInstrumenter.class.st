@@ -43,7 +43,7 @@ DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 { #category : #browsers }
 DSSpyInstrumenter >> instrumentClyFullBrowser [
 
-	ClyFullBrowser compile: 'newWindowTitle
+	ClyFullBrowserMorph compile: 'newWindowTitle
 	| newTitle |
 	
 	packageView selection isEmpty ifTrue: [ ^self systemScope description].	
@@ -59,7 +59,7 @@ DSSpyInstrumenter >> instrumentClyFullBrowser [
 { #category : #browsers }
 DSSpyInstrumenter >> instrumentClyQueryBrowser [
 
-	ClyQueryBrowser compile: 'newWindowTitle
+	ClyQueryBrowserMorph compile: 'newWindowTitle
 	| title | 
 	title := systemQuery description.
 	resultView areItemsLoaded 
