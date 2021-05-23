@@ -24,7 +24,7 @@ DSSpyInstrumenter >> debuggerActionClasses [
 	StProceedCommand} collect:[:c| c defaultName]
 ]
 
-{ #category : #browsers }
+{ #category : #deprecated }
 DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self deprecated: 'Instrumentation of tabs?'.
 	
@@ -88,6 +88,22 @@ DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 				on: Error
 				do: [', '<error in printString: try ''Inspect it'' to debug>' printString,' ].
 			self afterSelectionInsertAndSelect: printString ]'
+]
+
+{ #category : #debugger }
+DSSpyInstrumenter >> instrumentCodePresenter [
+
+	SpCodePresenter compile: 'initializePresenters
+	super initializePresenters.
+	self eventHandler
+		whenKeyDownDo: [ :event | 
+			[ DSPlaygroundWriteRecord for: self ]
+				on: Error
+				do: [:e| self halt. DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
+		whenMouseEnterDo: [ :evt | 
+			[ DSPlaygroundReadRecord for: self ]
+				on: Error
+				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
 ]
 
 { #category : #debugger }
@@ -365,31 +381,9 @@ DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 			self afterSelectionInsertAndSelect: printString ]'
 ]
 
-{ #category : #'mouse events' }
-DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
-
-	RubScrolledTextMorph compile: 'handlesMouseOver: evt
-	^true'
-]
-
-{ #category : #'mouse events' }
-DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
-
-	RubScrolledTextMorph compile: 'mouseEnter: evt
-	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
-	^super mouseEnter: evt'
-]
-
-{ #category : #playground }
-DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
-	RubScrolledTextMorph compile: 'whenKeystrokeInTextArea: anAnnouncement   
-		[DSSpy log: anAnnouncement key: #CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #CODE_WRITE ].
-		self announcer announce: (anAnnouncement copy morph: self)'.
-		
-	RubScrolledTextMorph compile: 'whenGotForcus: anAnnouncement
-	[DSSpy log: anAnnouncement key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
-	self announcer announce: anAnnouncement.
-	self changed'.
+{ #category : #deprecated }
+DSSpyInstrumenter >> instrumentRubKeyStrokePrintString [
+	self deprecated: 'Not used anymore'.
 		
 	RubKeystroke compile:'printString
 	| location |
@@ -406,6 +400,34 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 				do: [ morph ] ].
 	^ location printString'
 	
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
+
+	RubScrolledTextMorph compile: 'handlesMouseOver: evt
+	^true'
+]
+
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
+
+	RubScrolledTextMorph compile: 'mouseEnter: evt
+	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
+	^super mouseEnter: evt'
+]
+
+{ #category : #deprecated }
+DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
+	self deprecated: 'Not used anymore?'.
+	RubScrolledTextMorph compile: 'whenKeystrokeInTextArea: anAnnouncement   
+		[DSSpy log: anAnnouncement key: #CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #CODE_WRITE ].
+		self announcer announce: (anAnnouncement copy morph: self)'.
+		
+	RubScrolledTextMorph compile: 'whenGotForcus: anAnnouncement
+	[DSSpy log: anAnnouncement key: #CODE_FOCUS] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
+	self announcer announce: anAnnouncement.
+	self changed'
 ]
 
 { #category : #interactions }
@@ -455,7 +477,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 		self printObject: result ]'
 ]
 
-{ #category : #'system-queries' }
+{ #category : #deprecated }
 DSSpyInstrumenter >> instrumentSystemQueries [
 	self deprecated: 'That is not used anymore I think'.
 	(SystemNavigation allSelectorsInProtocol: '*Tool-Base')

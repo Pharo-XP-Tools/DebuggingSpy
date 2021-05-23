@@ -203,6 +203,32 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 ]
 
 { #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
+	|code adapter|
+	modifiedClass := SpCodePresenter.
+	modifiedMethodSource :=  [(SpCodePresenter >> #initializePresenters) sourceCode] on: Error do:[nil].
+	instrumenter instrumentCodePresenter.	
+	debugger := self debuggerForTesting.	
+	code := debugger code.
+	adapter := SpMorphicCodeAdapter new.
+	adapter adapt: code.	
+	code adapter: adapter.
+	code adapter buildWidget.		
+
+	"When typing code, the playground code a writing record"
+	self press: $t in: code.
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	self assert: record class identicalTo: DSPlaygroundWriteRecord.
+	
+	"When the mouse enters the playground, if the playground has focus, generates a reading event"
+	code adapter sendMouseEnterEvent.
+	self assert: self registry size equals: 2.
+	record := self registry second.	
+	self assert: record class identicalTo: DSPlaygroundReadRecord
+]
+
+{ #category : #'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	|selectedItem|
 	modifiedClass := StDebugger.
