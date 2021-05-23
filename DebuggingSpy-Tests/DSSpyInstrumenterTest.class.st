@@ -273,7 +273,7 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	self assert: record windowId equals: inspector window hash.
 	self assert: record attributeName equals: 'self'. 	
 	self assert: record attributeHash equals: object hash.
-	self assert: record attributeValue equals: object gtDisplayString 
+	self assert: record attributeValue equals: object displayString 
 ]
 
 { #category : #'tests - inspector' }
