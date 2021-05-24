@@ -13,6 +13,29 @@ Class {
 	#category : #'DebuggingSpy-Tests'
 }
 
+{ #category : #assertions }
+DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
+	|cmds cmd|
+	modifiedClass := StDebugger class.
+	modifiedMethodSource :=  [(StDebugger class >> #instrumentCommandsWith:forRoot: ) sourceCode] on: Error do:[nil].
+	instrumenter instrumentDebuggerCommands.	
+	debugger := self debuggerOnRecursiveContextForTesting.	
+		
+	self setDummyWindowFor: debugger.
+	cmds := debugger rootCommandsGroup.
+	cmd := StDebugger specCommandNamed: debuggerCommandName inGroup: (StDebugger executionCommandGroupIn: cmds) entries.	
+	cmd execute.
+	
+	self assert: self registry size equals: 1.	
+	
+	record := self registry first.
+	self assert: record class identicalTo: DSStepActionRecord.
+	self assert: record eventName equals: debuggerCommandName.
+	self assert: record windowId equals: debugger window window hash.
+	self assert: record context equals: debugger currentContext printString.
+	self assert: record node equals: debugger currentContext sourceNodeExecuted printString
+]
+
 { #category : #helpers }
 DSSpyInstrumenterTest >> clyTextEditor [
 
@@ -46,6 +69,14 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 DSSpyInstrumenterTest >> debuggerForTesting [
 
 	^ StTestDebuggerProvider new debuggerWithObjectHalting
+		  application: StDebugger currentApplication;
+		  initialize
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> debuggerOnRecursiveContextForTesting [
+
+	^ StTestDebuggerProvider new debuggerWithRecursiveContext
 		  application: StDebugger currentApplication;
 		  initialize
 ]
@@ -113,6 +144,15 @@ DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 			err debug ].
 	OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
 		debuggerSelectionStrategy
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> setDummyWindowFor: presenter [
+
+	| windowPresenter |
+	windowPresenter := SpWindowPresenter new.
+	[windowPresenter window: Object new] on: Error do:[].
+	windowPresenter presenter: presenter
 ]
 
 { #category : #running }
@@ -256,6 +296,8 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	
 	debugger := self debuggerForTesting.	
 	self assert: self registry size equals: 1.
+	self registry first inspect.
+	self registry second inspect.
 	
 	debugger stackTable selectItem: debugger stackTable items second.
 	self assert: self registry size equals: 2.
@@ -486,6 +528,24 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	self assert: record inspectedObjectHash equals: object hash
 ]
 
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentProceed [
+
+	self assertInstrumentDebuggerCommandNamed: 'Proceed'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentRestart [
+
+	self assertInstrumentDebuggerCommandNamed: 'Restart'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentReturn [
+
+	self assertInstrumentDebuggerCommandNamed: 'Return'
+]
+
 { #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
@@ -568,6 +628,16 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	self assert: record class identicalTo: DSMouseEnterTextEditorRecord.
 	self assert: record windowId equals: morph window hash.
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentRunTo [
+
+	self assertInstrumentDebuggerCommandNamed: 'Run to'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentSindarinDebuggerCommands [
 ]
 
 { #category : #'tests - interactions' }
@@ -661,4 +731,22 @@ DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	record := self registry third.	
 	self assert: record class identicalTo: DSPlaygroundReadRecord.
 	
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepInto [
+
+	self assertInstrumentDebuggerCommandNamed: 'Into'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepOver [
+
+	self assertInstrumentDebuggerCommandNamed: 'Over'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepThrough [
+
+	self assertInstrumentDebuggerCommandNamed: 'Through'
 ]
