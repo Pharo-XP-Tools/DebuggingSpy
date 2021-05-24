@@ -13,6 +13,19 @@ Class {
 }
 
 { #category : #assertions }
+DSSpyTest >> assertBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBreakpointEventClass target: aTarget [
+	
+	self assert: record class equals: aDSRecordClass.
+	self assert: record eventName equals: aBreakpointEventClass name.
+	self assert: record target equals: aTarget.
+	aTarget ifNil:[	self deny: record objectCentric] 
+			  ifNotNil: [self assert: record objectCentric].
+	self deny: record once.
+	self assert: record method equals: self breakpointedMethod name.
+	self assert: record node equals: self breakpointedMethod ast printString
+]
+
+{ #category : #assertions }
 DSSpyTest >> assertMethodEventRecordedAs: aClass [
 	self assert: record class identicalTo: aClass.
 	self assert: record methodName equals: self methodEvent method name
@@ -114,19 +127,17 @@ DSSpyTest >> tearDown [
 
 { #category : #'tests - breakpoints events' }
 DSSpyTest >> testBreakpointAdded [
+
 	instrumenter listenToBreakpointChanges.
-	
-	self installBreakpoint.	
+
+	self installBreakpoint.
 	self assert: self registry size equals: 1.
-	
+
 	record := self registry first.
-	self assert: record eventName equals: BreakpointAdded name.
-	self assert: record target equals: nil.
-	self deny: record objectCentric.
-	self deny: record once.
-	self assert: record method equals: self breakpointedMethod name.
-	self assert: record node equals: self breakpointedMethod ast printString
-	
+	self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointAdded
+		target: nil
 ]
 
 { #category : #'tests - breakpoints events' }
@@ -139,32 +150,27 @@ DSSpyTest >> testBreakpointHit [
 	self assert: self registry size equals: 1.
 	
 	record := self registry first.
-	self assert: record eventName equals: BreakpointHit name.
-	self assert: record target equals: nil.
-	self deny: record objectCentric.
-	self deny: record once.
-	self assert: record method equals: self breakpointedMethod name.
-	self assert: record node equals: self breakpointedMethod ast printString
+	self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointHit
+		target: nil
 	
 ]
 
 { #category : #'tests - breakpoints events' }
 DSSpyTest >> testBreakpointRemoved [
-	
-	self installBreakpoint.	
+
+	self installBreakpoint.
 	instrumenter listenToBreakpointChanges.
-	
+
 	self removeBreakpoint.
 	self assert: self registry size equals: 1.
-	
+
 	record := self registry first.
-	self assert: record eventName equals: BreakpointRemoved name.
-	self assert: record target equals: nil.
-	self deny: record objectCentric.
-	self deny: record once.
-	self assert: record method equals: self breakpointedMethod name.
-	self assert: record node equals: self breakpointedMethod ast printString
-	
+	self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointRemoved
+		target: nil
 ]
 
 { #category : #'tests - window events' }
@@ -257,34 +263,29 @@ DSSpyTest >> testObjectCentricBreakpointRecord [
 	instrumenter listenToBreakpointChanges.
 	
 	breakpoint := target haltOnCallTo: #breakpointMethod.
-	self assert: self registry size equals: 1.
-	
+	self assert: self registry size equals: 1.	
 	record := self registry first.
-	self assert: record eventName equals: BreakpointAdded name.
-	self assert: record target equals: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
-	self assert: record objectCentric.	
-	self assert: record method equals: self breakpointedMethod name.
-	
+	self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointAdded
+		target: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).	
 	
 	[target breakpointMethod] on: Break do:[].
-	self assert: self registry size equals: 2.
-	
+	self assert: self registry size equals: 2.	
 	record := self registry second.
-	self assert: record eventName equals: BreakpointHit name.
-	self assert: record target equals: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
-	self assert: record objectCentric.	
-	self assert: record method equals: self breakpointedMethod name.
+	self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointHit
+		target: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
 
 
 	self removeBreakpoint.
-	self assert: self registry size equals: 3.
-	
+	self assert: self registry size equals: 3.	
 	record := self registry third.
-	self assert: record eventName equals: BreakpointRemoved name.
-	self assert: record target equals: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
-	self assert: record objectCentric.	
-	self assert: record method equals: self breakpointedMethod name
-
+		self
+		assertBreakpointRecordedAs: DSBreakpointEventRecord
+		forBreakpointEvent: BreakpointRemoved
+		target: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
 ]
 
 { #category : #'tests - breakpoints events' }
