@@ -13,17 +13,6 @@ DSSpyInstrumenter class >> instrumentSystem [
 	self new instrumentSystem
 ]
 
-{ #category : #'debugger- actions' }
-DSSpyInstrumenter >> debuggerActionClasses [
-	^ {StStepIntoCommand.
-	StStepOverCommand.
-	StStepThroughCommand.
-	StReturnValueCommand.
-	StRestartCommand.
-	StRunToSelectionCommand.
-	StProceedCommand} collect:[:c| c defaultName]
-]
-
 { #category : #deprecated }
 DSSpyInstrumenter >> instrumentCalypsoBrowsers [
 	self deprecated: 'Instrumentation of tabs?'.
@@ -134,6 +123,16 @@ DSSpyInstrumenter >> instrumentDebuggerCode [
 ]
 
 { #category : #debugger }
+DSSpyInstrumenter >> instrumentDebuggerCommands [
+	StDebugger class compile:
+	'instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
+
+	<extensionCommands>
+	self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup'
+	
+]
+
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
@@ -174,23 +173,6 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			[DSBrowseContextRecord for: { context . self window } ] on: Error do:[:err| err freeze inspect. DSSpy log: #ERROR key: #DEBUGGER_STACK ]  ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack'''
-]
-
-{ #category : #'debugger- actions' }
-DSSpyInstrumenter >> instrumentDebuggingActions [
-	self debuggerActionClasses
-		do: [ :c | 
-			| sourceStream |
-			sourceStream := WriteStream on: String new.
-			self rewriteSelector: #execute withArguments: #() in: sourceStream.
-			self rewriteTempsFrom: (c >> #execute) ast in: sourceStream.
-			sourceStream
-				<<
-					(self
-						logString: c defaultName printString
-						key: #DEBUGGER_ACTION printString).
-			self rewriteSourceFrom: (c >> #execute) ast in: sourceStream.
-			c compile: sourceStream contents ]
 ]
 
 { #category : #inspector }
