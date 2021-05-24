@@ -38,6 +38,20 @@ DSSpyTest >> assertMethodEventRecordedAs: aClass for: aMethod [
 ]
 
 { #category : #assertions }
+DSSpyTest >> assertVariableBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBreakpointEventClass target: aTarget [
+	
+	self assert: record class equals: aDSRecordClass.
+	self assert: record eventName equals: aBreakpointEventClass name.
+	self assert: record target equals: aTarget.
+	aTarget ifNil:[	self deny: record objectCentric] 
+			  ifNotNil: [self assert: record objectCentric].
+	self deny: record once.
+	self assert: record targetClassOrMethod equals: self breakpointedMethod name.
+	self assert: record targetVariables first equals: #value.
+
+]
+
+{ #category : #assertions }
 DSSpyTest >> assertWindowEventRecordedAs: aClass [
 	self assert: record class identicalTo: aClass.
 	self assert: record windowId equals: self windowEvent window hash.
@@ -68,6 +82,14 @@ DSSpyTest >> installBreakpoint [
 		              node: self breakpointedMethod ast;
 		              always.
 	breakpoint install
+]
+
+{ #category : #helpers }
+DSSpyTest >> installVariableBreakpoint [
+
+	breakpoint := VariableBreakpoint
+		              watchVariable: #value
+		              inClass: self breakpointedMethod
 ]
 
 { #category : #helpers }
@@ -289,15 +311,94 @@ DSSpyTest >> testObjectCentricBreakpointRecord [
 ]
 
 { #category : #'tests - breakpoints events' }
+DSSpyTest >> testObjectCentricVariableBreakpointRecord [
+
+	| target |
+	target := self class basicNew.
+	instrumenter listenToBreakpointChanges.
+
+	breakpoint := (self breakpointedMethod newBreakpointForVariable: #value)
+		              scopeTo: target;
+		              install.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointAdded
+		target:
+		(DSAbstractBreakpointEventRecord basicNew printTargetInstance:
+			 target).
+
+	[ target breakpointMethod ]
+		on: Break
+		do: [  ].
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointHit
+		target:
+		(DSAbstractBreakpointEventRecord basicNew printTargetInstance:
+			 target).
+
+
+	self removeBreakpoint.
+	self assert: self registry size equals: 3.
+	record := self registry third.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointRemoved
+		target:
+		(DSAbstractBreakpointEventRecord basicNew printTargetInstance:
+			 target)
+]
+
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointAdded [
+	instrumenter listenToBreakpointChanges.
+
+	self installVariableBreakpoint.
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointAdded
+		target: nil
+
 ]
 
 { #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointHit [
+		
+	self installVariableBreakpoint.
+	instrumenter listenToBreakpointChanges.
+	[ self breakpointMethod  ] on: Break do:[].
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointHit
+		target: nil
 ]
 
 { #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointRemoved [
+	
+	self installVariableBreakpoint.
+	instrumenter listenToBreakpointChanges.
+	self removeBreakpoint.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self
+		assertVariableBreakpointRecordedAs: DSVariableBreakpointEventRecord
+		forBreakpointEvent: BreakpointRemoved
+		target: nil
 ]
 
 { #category : #'tests - window events' }

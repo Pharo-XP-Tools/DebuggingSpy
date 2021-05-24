@@ -17,3 +17,15 @@ DSVariableBreakpointEventRecord >> record: aBreakpointEvent [
 	targetClassOrMethod := aBreakpointEvent breakpoint targetClassOrMethod name.
 	targetVariables := aBreakpointEvent breakpoint targetVariableNames 
 ]
+
+{ #category : #accessing }
+DSVariableBreakpointEventRecord >> targetClassOrMethod [
+
+	^ targetClassOrMethod
+]
+
+{ #category : #accessing }
+DSVariableBreakpointEventRecord >> targetVariables [
+
+	^ targetVariables
+]
