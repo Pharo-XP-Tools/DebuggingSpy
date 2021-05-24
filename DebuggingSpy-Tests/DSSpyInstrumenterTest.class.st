@@ -15,25 +15,39 @@ Class {
 
 { #category : #assertions }
 DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
-	|cmds cmd|
+
+	| cmds cmd |
 	modifiedClass := StDebugger class.
-	modifiedMethodSource :=  [(StDebugger class >> #instrumentCommandsWith:forRoot: ) sourceCode] on: Error do:[nil].
-	instrumenter instrumentDebuggerCommands.	
-	debugger := self debuggerOnRecursiveContextForTesting.	
-		
+	modifiedMethodSource := [ 
+	                        (StDebugger class
+	                         >> #instrumentCommandsWith:forRoot:)
+		                        sourceCode ]
+		                        on: Error
+		                        do: [ nil ].
+	instrumenter instrumentDebuggerCommands.
+	debugger := self debuggerOnRecursiveContextForTesting.
+
 	self setDummyWindowFor: debugger.
 	cmds := debugger rootCommandsGroup.
-	cmd := StDebugger specCommandNamed: debuggerCommandName inGroup: (StDebugger executionCommandGroupIn: cmds) entries.	
+	cmd := StDebugger
+		       specCommandNamed: debuggerCommandName
+		       inGroup: (StDebugger executionCommandGroupIn: cmds) entries.
+	(#('Return' 'Proceed') includes: debuggerCommandName) 
+		ifTrue:[cmd decoratedCommand forTests: true].
 	cmd execute.
-	
-	self assert: self registry size equals: 1.	
-	
+
+	self assert: self registry size equals: 1.
+
 	record := self registry first.
 	self assert: record class identicalTo: DSStepActionRecord.
 	self assert: record eventName equals: debuggerCommandName.
 	self assert: record windowId equals: debugger window window hash.
-	self assert: record context equals: debugger currentContext printString.
-	self assert: record node equals: debugger currentContext sourceNodeExecuted printString
+	self
+		assert: record context
+		equals: debugger currentContext printString.
+	self
+		assert: record node
+		equals: debugger currentContext sourceNodeExecuted printString
 ]
 
 { #category : #helpers }
@@ -70,13 +84,22 @@ DSSpyInstrumenterTest >> debuggerForTesting [
 
 	^ StTestDebuggerProvider new debuggerWithObjectHalting
 		  application: StDebugger currentApplication;
-		  initialize
+		  initialize;
+		  yourself
 ]
 
 { #category : #helpers }
 DSSpyInstrumenterTest >> debuggerOnRecursiveContextForTesting [
 
 	^ StTestDebuggerProvider new debuggerWithRecursiveContext
+		  application: StDebugger currentApplication;
+		  initialize
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> debuggerWithRunnableContext [
+
+	^ StTestDebuggerProvider new debuggerWithObjectHalting
 		  application: StDebugger currentApplication;
 		  initialize
 ]
