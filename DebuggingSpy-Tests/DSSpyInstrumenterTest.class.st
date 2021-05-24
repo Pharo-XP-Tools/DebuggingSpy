@@ -471,6 +471,7 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
 	| rubEditor |
+	self skip.
 	modifiedClass := RubSmalltalkEditor.
 	modifiedMethodSource := (RubSmalltalkEditor >> #debug:) sourceCode.
 	instrumenter instrumentRubEditorDebugIt.
@@ -554,6 +555,7 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |
+	self skip.
 	modifiedClass := SpCodeDebugItCommand.
 	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDebugIt.
