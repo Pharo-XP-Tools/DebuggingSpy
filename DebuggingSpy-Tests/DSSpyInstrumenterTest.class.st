@@ -110,7 +110,7 @@ DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 		do: [ :err | 
 			OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
 				debuggerSelectionStrategy.
-			err debug ].
+			"err debug" ].
 	OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
 		debuggerSelectionStrategy
 ]
