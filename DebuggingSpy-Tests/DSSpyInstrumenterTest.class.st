@@ -96,6 +96,25 @@ DSSpyInstrumenterTest >> rubTextEditor [
 	^ editor
 ]
 
+{ #category : #helpers }
+DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
+
+	| debuggerSelectionStrategy |
+	debuggerSelectionStrategy := OupsDebuggerSelectionStrategy
+		                             debuggerSelectionStrategy.
+	OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
+		DSNoDebuggerSelectionStrategy.
+
+	aBlock
+		on: Error
+		do: [ :err | 
+			OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
+				debuggerSelectionStrategy.
+			err debug ].
+	OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
+		debuggerSelectionStrategy
+]
+
 { #category : #running }
 DSSpyInstrumenterTest >> setUp [
 	super setUp.
@@ -478,7 +497,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 	
 	rubEditor := self rubTextEditor.
 	rubEditor selectAll.
-	rubEditor debugIt.
+	self runWithoutOpeningDebugger: [rubEditor debugIt].
 
 	self assert: self registry size equals: 1.
 	record := self registry first.	
@@ -554,8 +573,7 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 { #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
-	| codePresenter debugItCommand |
-	self skip.
+	| codePresenter debugItCommand |	
 	modifiedClass := SpCodeDebugItCommand.
 	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDebugIt.
@@ -564,7 +582,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	debugItCommand := SpCodeDebugItCommand new.
 	debugItCommand context: codePresenter.
-	debugItCommand execute.
+	self runWithoutOpeningDebugger: [	debugItCommand execute].
 
 	self assert: self registry size equals: 1.
 	record := self registry first.
