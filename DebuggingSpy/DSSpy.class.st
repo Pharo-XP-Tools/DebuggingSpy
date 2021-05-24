@@ -10,13 +10,8 @@ Class {
 	#classInstVars : [
 		'logDir'
 	],
-	#category : #DebuggingSpy
+	#category : #'DebuggingSpy-Instrumentation'
 }
-
-{ #category : #events }
-DSSpy class >> breakpointEvent: aBreakpointEvent [
-	aBreakpointEvent logBreakpointEventOn: self
-]
 
 { #category : #'mutual exclusion' }
 DSSpy class >> critical: aBlock [
@@ -157,13 +152,6 @@ DSSpy class >> printStringMorphs: anArrayOfMorphs [
 { #category : #helpers }
 DSSpy class >> stream [
 	^ self logFileReference writeStream
-]
-
-{ #category : #events }
-DSSpy class >> update: aBreakpointEvent [
-	[ self breakpointEvent: aBreakpointEvent ]
-		on: Error
-		do: [ :err | self log: #ERROR key: #BREAKPOINT_EVENT ]
 ]
 
 { #category : #helpers }

@@ -1,6 +1,6 @@
 Extension { #name : #VariableBreakpoint }
 
 { #category : #'*DebuggingSpy' }
-VariableBreakpoint >> logKey [
-	^'VBreakpoint'
+VariableBreakpoint >> breakpointRecordFor: aBreakpointEvent [
+	^DSVariableBreakpointEventRecord for: aBreakpointEvent 
 ]

@@ -4,7 +4,7 @@ I instrument the system by adding spying instructions (directly in the code, by 
 Class {
 	#name : #DSSpyInstrumenter,
 	#superclass : #Object,
-	#category : #DebuggingSpy
+	#category : #'DebuggingSpy-Instrumentation'
 }
 
 { #category : #'system instrumentation' }
@@ -512,7 +512,9 @@ DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointChanges [
-	Breakpoint registerObserver: DSSpy
+	SystemAnnouncer uniqueInstance weak when: BreakpointAdded  send: #recordBreakpointEvent: to: DSSpy.
+	SystemAnnouncer uniqueInstance weak when: BreakpointHit  send: #recordBreakpointEvent: to: DSSpy.
+	SystemAnnouncer uniqueInstance weak when: BreakpointRemoved  send: #recordBreakpointEvent: to: DSSpy
 ]
 
 { #category : #breakpoints }
