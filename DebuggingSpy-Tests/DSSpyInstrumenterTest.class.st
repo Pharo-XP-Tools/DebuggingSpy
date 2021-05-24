@@ -110,7 +110,7 @@ DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 		do: [ :err | 
 			OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
 				debuggerSelectionStrategy.
-			"err debug" ].
+			err debug ].
 	OupsDebuggerSelectionStrategy debuggerSelectionStrategy:
 		debuggerSelectionStrategy
 ]
@@ -574,6 +574,7 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |	
+		self skip.
 	modifiedClass := SpCodeDebugItCommand.
 	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDebugIt.
