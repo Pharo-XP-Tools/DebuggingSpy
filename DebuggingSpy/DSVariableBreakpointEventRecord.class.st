@@ -6,16 +6,24 @@ Class {
 	#superclass : #DSAbstractBreakpointEventRecord,
 	#instVars : [
 		'targetClassOrMethod',
-		'targetVariables'
+		'targetVariables',
+		'accessStrategy'
 	],
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSVariableBreakpointEventRecord >> accessStrategy [
+
+	^ accessStrategy
+]
 
 { #category : #'actions api' }
 DSVariableBreakpointEventRecord >> record: aBreakpointEvent [
 	super record: aBreakpointEvent.
 	targetClassOrMethod := aBreakpointEvent breakpoint targetClassOrMethod name.
-	targetVariables := aBreakpointEvent breakpoint targetVariableNames 
+	targetVariables := aBreakpointEvent breakpoint targetVariableNames .
+	accessStrategy := aBreakpointEvent breakpoint accessStrategy
 ]
 
 { #category : #accessing }

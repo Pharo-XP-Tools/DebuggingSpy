@@ -48,7 +48,7 @@ DSSpyTest >> assertVariableBreakpointRecordedAs: aDSRecordClass forBreakpointEve
 	self deny: record once.
 	self assert: record targetClassOrMethod equals: self breakpointedMethod name.
 	self assert: record targetVariables first equals: #value.
-
+	self assert: record accessStrategy equals: #all
 ]
 
 { #category : #assertions }
@@ -367,6 +367,22 @@ DSSpyTest >> testVariableBreakpointAdded [
 		forBreakpointEvent: BreakpointAdded
 		target: nil
 
+]
+
+{ #category : #'tests - breakpoints events' }
+DSSpyTest >> testVariableBreakpointAddedToMultipleVariables [
+
+	instrumenter listenToBreakpointChanges.
+
+	breakpoint := VariableBreakpoint watchVariablesInClass:
+		              DSTestClassWithInstanceVariables.
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self
+		assertCollection: record targetVariables
+		equals:
+		(DSTestClassWithInstanceVariables allSlots collect: [ :s | s name ])
 ]
 
 { #category : #'tests - breakpoints events' }
