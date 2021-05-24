@@ -149,6 +149,11 @@ DSSpy class >> printStringMorphs: anArrayOfMorphs [
 	^ str contents
 ]
 
+{ #category : #'events - breakpoints' }
+DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
+	^aBreakpointEvent recordBreakpoint 
+]
+
 { #category : #helpers }
 DSSpy class >> stream [
 	^ self logFileReference writeStream

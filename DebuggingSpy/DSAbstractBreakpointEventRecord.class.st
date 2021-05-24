@@ -8,7 +8,8 @@ Class {
 	#instVars : [
 		'target',
 		'objectCentric',
-		'eventName'
+		'eventName',
+		'once'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -18,11 +19,45 @@ DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
 ]
 
+{ #category : #accessing }
+DSAbstractBreakpointEventRecord >> objectCentric [
+
+	^ objectCentric
+]
+
+{ #category : #accessing }
+DSAbstractBreakpointEventRecord >> once [
+	^ once
+]
+
+{ #category : #printing }
+DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
+
+	| str |
+	str := WriteStream on: String new.
+	str << '['.
+	str << anObject hash printString.
+	str << ']'.
+	str space.
+	str << anObject printString.
+	^ str contents
+]
+
 { #category : #'actions api' }
 DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
+
 	eventName := aBreakpointEvent class name.
 	objectCentric := aBreakpointEvent breakpoint isObjectCentric.
 	target := objectCentric
-		          ifTrue: [ aBreakpointEvent breakpoint targetInstance printString ]
-		          ifFalse: [ nil ]
+		          ifTrue: [ 
+			          self printTargetInstance:
+				          aBreakpointEvent breakpoint targetInstance ]
+		          ifFalse: [ nil ].
+	once := aBreakpointEvent breakpoint oneShot
+]
+
+{ #category : #accessing }
+DSAbstractBreakpointEventRecord >> target [
+
+	^ target
 ]

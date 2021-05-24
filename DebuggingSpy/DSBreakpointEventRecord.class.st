@@ -11,6 +11,18 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
+{ #category : #accessing }
+DSBreakpointEventRecord >> method [
+
+	^ method
+]
+
+{ #category : #accessing }
+DSBreakpointEventRecord >> node [
+
+	^ node
+]
+
 { #category : #'actions api' }
 DSBreakpointEventRecord >> record: aBreakpointEvent [
 	super record: aBreakpointEvent.
