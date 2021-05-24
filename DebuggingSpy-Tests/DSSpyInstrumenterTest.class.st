@@ -574,7 +574,8 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |	
-		self skip.
+	self skip.
+	self flag: 'This test seems to make the CI crash because of a debugger opening?'.
 	modifiedClass := SpCodeDebugItCommand.
 	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
 	instrumenter instrumentSpCodeDebugIt.
