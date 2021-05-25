@@ -95,7 +95,9 @@ DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandN
 		equals: debugger currentContext printString.
 	self
 		assert: record node
-		equals: debugger currentContext sourceNodeExecuted printString
+		equals: debugger currentContext sourceNodeExecuted printString.
+	self assert: record receiver equals: debugger currentContext receiver printString.
+	self assert: record receiverClass equals: debugger currentContext receiver class name
 ]
 
 { #category : #helpers }

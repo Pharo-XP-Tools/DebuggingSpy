@@ -9,7 +9,9 @@ Class {
 	#instVars : [
 		'context',
 		'node',
-		'eventName'
+		'eventName',
+		'receiver',
+		'receiverClass'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -31,10 +33,24 @@ DSStepActionRecord >> node [
 	^ node
 ]
 
+{ #category : #accessing }
+DSStepActionRecord >> receiver [
+
+	^ receiver
+]
+
+{ #category : #accessing }
+DSStepActionRecord >> receiverClass [
+
+	^ receiverClass
+]
+
 { #category : #'actions api' }
 DSStepActionRecord >> record: aDSDebuggerCommand [
 	super record: aDSDebuggerCommand context window window.
 	eventName := aDSDebuggerCommand class defaultName.
 	context := aDSDebuggerCommand context currentContext printString.
 	node := aDSDebuggerCommand context currentContext sourceNodeExecuted printString.
+	receiver := aDSDebuggerCommand context currentContext receiver printString.
+	receiverClass := aDSDebuggerCommand context currentContext receiver class name
 ]
