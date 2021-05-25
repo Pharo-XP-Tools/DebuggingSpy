@@ -12,8 +12,5 @@ SpAbstractMorphicAdapter >> sendMouseEnterEvent [
 		       buttons: nil
 		       hand: nil
 		       stamp: nil.
-
-
-
-	widget handleEvent: evt
+	widget textArea handleEvent: evt
 ]

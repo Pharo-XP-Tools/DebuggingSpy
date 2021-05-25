@@ -82,44 +82,28 @@ DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 { #category : #debugger }
 DSSpyInstrumenter >> instrumentCodePresenter [
 
-	SpCodePresenter compile: 'initializePresenters
-	super initializePresenters.
+	SpCodePresenter compile: 'initialize 
+
+	super initialize.
+
+	"Use the default menu"
+	overrideContextMenu := false.
+	
+	self withSyntaxHighlight.
+	self withLineNumbers.
+	
+	self registerEventsForStyling.
+	self clearInteractionModel.
+
 	self eventHandler
 		whenKeyDownDo: [ :event | 
 			[ DSPlaygroundWriteRecord for: self ]
 				on: Error
-				do: [:e| self halt. DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
-		whenMouseEnterDo: [ :evt | 
-			[ DSPlaygroundReadRecord for: self ]
+				do: [:e| DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
+		whenMouseEnterDo: [ :evt |
+			[ DSPlaygroundReadRecord for: self.  ]
 				on: Error
 				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
-]
-
-{ #category : #debugger }
-DSSpyInstrumenter >> instrumentDebuggerCode [
-"
-	StDebugger compile: 'initializeCode
-	self flag: #DBG_IMPROVE.
-	
-	code := self newCode.
-	code whenSubmitDo: [ :text | 
-		self
-			recompileMethodTo: text string
-			inContext: self stackTable selection selectedItem
-			notifying: nil.
-			[DSSpy log: self currentContext key: #DEBUGGER_CODE_ACCEPT] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_ACCEPT ] ].
-	code whenResetDo: [ self updateCodeFromContext ].	
-		
-	code eventHandler whenKeyDownDo:[:evt| 
-		[DSSpy log: self currentContext key: #DEBUGGER_CODE_WRITE] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_WRITE ] ].
-
-	code eventHandler whenMouseEnterDo:[:evt| 
-		[DSSpy log: self currentContext key: #DEBUGGER_CODE_READ] on: Error do:[ DSSpy log: #ERROR key: #DEBUGGER_CODE_READ ] ].
-				
-	codeHeader := self instantiate: StHeaderBar.	
-	codeHeader removeStyleFromLabel: ''label.header''.	
-	codeHeader applyStyleToLabel: ''label.headerError''.
-	codeHeader label: self session name'"
 ]
 
 { #category : #debugger }

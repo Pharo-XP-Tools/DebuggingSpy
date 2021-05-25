@@ -334,12 +334,36 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
+{ #category : #'tests - playground' }
+DSSpyInstrumenterTest >> testInstrumentCodePresenter [
+	|playground code|
+	modifiedClass := SpCodePresenter.	
+	modifiedMethodSource :=  [(SpCodePresenter >> #initialize) sourceCode] on: Error do:[nil].
+	instrumenter instrumentCodePresenter.	
+	playground := self playgroundPagePresenter.
+	code := self codePresenterFrom: playground.
+	
+	"When typing code, the playground generates an writing record"
+	self press: $t in: code.
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	self assert: record class identicalTo: DSPlaygroundWriteRecord.
+	
+	"When the mouse enters the playground, if the playground has focus, generates a reading event"
+	code adapter sendMouseEnterEvent.
+	self assert: self registry size equals: 2.
+	record := self registry second.	
+	self assert: record class identicalTo: DSPlaygroundReadRecord.
+	
+]
+
 { #category : #'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 	|code adapter|
-	modifiedClass := SpCodePresenter.
-	modifiedMethodSource :=  [(SpCodePresenter >> #initializePresenters) sourceCode] on: Error do:[nil].
+	modifiedClass := SpCodePresenter.	
+	modifiedMethodSource :=  [(SpCodePresenter >> #initialize) sourceCode] on: Error do:[nil].
 	instrumenter instrumentCodePresenter.	
+	
 	debugger := self debuggerForTesting.	
 	code := debugger code.
 	adapter := SpMorphicCodeAdapter new.
