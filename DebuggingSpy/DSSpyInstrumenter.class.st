@@ -506,7 +506,7 @@ DSSpyInstrumenter >> instrumentSystemQueries [
 			class compile: sourceStream contents ]
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpyInstrumenter >> instrumentationSourceTemplate [
 
 	^'[DSSpy log: {1} key: {2}] on: Error do:[DSSpy log: #ERROR key: {2}].'
@@ -580,7 +580,7 @@ DSSpyInstrumenter >> listenToWindowEvents [
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
 ]
 
-{ #category : #logging }
+{ #category : #deprecated }
 DSSpyInstrumenter >> logArray: anArray key: aKey [
 	| stream |
 	stream := WriteStream on: String new.
@@ -604,7 +604,7 @@ DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self listenToBreakpointChanges 
 ]
 
-{ #category : #logging }
+{ #category : #deprecated }
 DSSpyInstrumenter >> logString: aString key: aKey [
 	^ self instrumentationSourceTemplate
 		format:
@@ -612,7 +612,7 @@ DSSpyInstrumenter >> logString: aString key: aKey [
 			aKey}
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpyInstrumenter >> rewriteSelector: aSelector withArguments: args in: sourceStream [
 	args isEmpty
 		ifTrue: [ sourceStream << aSelector.
@@ -628,7 +628,7 @@ DSSpyInstrumenter >> rewriteSelector: aSelector withArguments: args in: sourceSt
 	sourceStream cr
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpyInstrumenter >> rewriteSourceFrom: ast in: stream [
 	ast statements
 		do: [ :stmt | 
@@ -637,7 +637,7 @@ DSSpyInstrumenter >> rewriteSourceFrom: ast in: stream [
 			stream << '.' ]
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpyInstrumenter >> rewriteTempsFrom: ast in: stream [
 	ast temporaryNames ifEmpty: [ ^ self ].
 	stream << $|.
