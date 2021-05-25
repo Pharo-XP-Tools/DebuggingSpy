@@ -792,20 +792,7 @@ DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	self assert: record class identicalTo: DSPlaygroundOpenedRecord.
-	self assert: record windowId equals: playground window hash.
-	
-	"When typing code, the playground generates an writing record"
-	self press: $t in: code.
-	self assert: self registry size equals: 2.
-	record := self registry second.	
-	self assert: record class identicalTo: DSPlaygroundWriteRecord.
-	
-	"When the mouse enters the playground, if the playground has focus, generates a reading event"
-	code adapter sendMouseEnterEvent.
-	self assert: self registry size equals: 3.
-	record := self registry third.	
-	self assert: record class identicalTo: DSPlaygroundReadRecord.
-	
+	self assert: record windowId equals: playground window hash
 ]
 
 { #category : #'tests - debugger' }

@@ -313,14 +313,10 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 		
 	text eventHandler 
 		whenKeyUpDo: [ :event | self updateLineNumber];
-	whenKeyDownDo: [ :event | self updateLineNumber.		
-			[DSPlaygroundWriteRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
+	whenKeyDownDo: [ :event | self updateLineNumber.];
 		whenMouseUpDo: [ :event | self updateLineNumber ];
 		"before taking focus position will be nil, ensure I have the correct one"
-		whenFocusReceivedDo: [ self updateLineNumber ];
-		whenMouseEnterDo:[:evt| 
-			self halt.
-		[DSPlaygroundReadRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ].
+		whenFocusReceivedDo: [ self updateLineNumber ].
 	self updatePresenter'
 ]
 
