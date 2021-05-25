@@ -5,11 +5,15 @@ I specialize SindarinStepToReturnCommand with debugging spy record creation.
 Class {
 	#name : #DSndarinStepToReturnCommand,
 	#superclass : #SindarinStepToReturnCommand,
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
 { #category : #executing }
 DSndarinStepToReturnCommand >> execute [
-		DSStepActionRecord for: self.
-		^super execute.
+
+	DSStepActionRecord for: self.
+	self forTests ifTrue: [ ^ self ].
+	^ super execute
 ]

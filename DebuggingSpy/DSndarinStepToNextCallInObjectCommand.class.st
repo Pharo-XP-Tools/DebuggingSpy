@@ -5,11 +5,15 @@ I specialize SindarinStepToNextCallInObjectCommand with debugging spy record cre
 Class {
 	#name : #DSndarinStepToNextCallInObjectCommand,
 	#superclass : #SindarinStepToNextCallInObjectCommand,
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
 { #category : #executing }
 DSndarinStepToNextCallInObjectCommand >> execute [
-		DSStepActionRecord for: self.
-		^super execute.
+
+	DSStepActionRecord for: self.
+	self forTests ifTrue: [ ^ self ].
+	^ super execute
 ]

@@ -5,9 +5,8 @@ I specialize StProceedCommand with debugging spy record creation.
 Class {
 	#name : #DSProceedCommand,
 	#superclass : #StProceedCommand,
-	#instVars : [
-		'forTests'
-	],
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
@@ -17,16 +16,4 @@ DSProceedCommand >> execute [
 	DSStepActionRecord for: self.
 	self forTests ifTrue: [ ^ self ].
 	^ super execute
-]
-
-{ #category : #accessing }
-DSProceedCommand >> forTests [
-
-	^ forTests ifNil:[forTests := false]
-]
-
-{ #category : #accessing }
-DSProceedCommand >> forTests: anObject [
-
-	forTests := anObject
 ]

@@ -5,11 +5,15 @@ I specialize SindarinStepToMethodEntryCommand with debugging spy record creation
 Class {
 	#name : #DSndarinStepToMethodEntryCommand,
 	#superclass : #SindarinStepToMethodEntryCommand,
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
 { #category : #executing }
 DSndarinStepToMethodEntryCommand >> execute [
-		DSStepActionRecord for: self.
-		^super execute.
+
+	DSStepActionRecord for: self.
+	self forTests ifTrue: [ ^ self ].
+	^ super execute
 ]

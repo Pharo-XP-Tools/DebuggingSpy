@@ -36,6 +36,54 @@ DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandNa
 		ifTrue:[cmd decoratedCommand forTests: true].
 	cmd execute.
 
+	self assertStepActionRecordForCommandNamed: debuggerCommandName
+]
+
+{ #category : #assertions }
+DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerCommandName [
+
+	| modifiedMethod cmds cmd |
+	modifiedClass := StDebugger class.
+	modifiedMethod := modifiedClass>>#buildSindarinExtentionCommandsGroupWith:forRoot:.
+	modifiedMethodSource := [ modifiedMethod sourceCode ]
+		                        on: Error
+		                        do: [ nil ].
+	instrumenter instrumentSindarinDebuggerCommands.
+	debugger := self debuggerOnRecursiveContextForTesting.
+
+	self setDummyWindowFor: debugger.
+	
+	"Commands from toolbar"
+	cmds := debugger rootCommandsGroup
+	 / StDebuggerToolbarCommandTreeBuilder groupName
+	/ 'Advanced Step'.
+	cmd := StDebugger
+		       specCommandNamed: debuggerCommandName
+		       inGroup: cmds entries.
+	
+	cmd decoratedCommand forTests: true.
+	cmd execute.
+
+	self assertStepActionRecordForCommandNamed: debuggerCommandName.
+	
+	DSRecordRegistry current reset.
+	
+	"Commands from code menu"
+	cmds := debugger rootCommandsGroup
+	             / StDebuggerCodeCommandTreeBuilder groupName
+	             / StDebuggerCodeCommandTreeBuilder new codeDebugCommandsGroupName.
+	cmd := StDebugger
+		       specCommandNamed: debuggerCommandName
+		       inGroup: cmds entries.
+	cmd decoratedCommand forTests: true.
+	cmd execute.
+
+	self assertStepActionRecordForCommandNamed: debuggerCommandName.
+]
+
+{ #category : #assertions }
+DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandName [
+
 	self assert: self registry size equals: 1.
 
 	record := self registry first.
@@ -659,10 +707,6 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 	self assertInstrumentDebuggerCommandNamed: 'Run to'
 ]
 
-{ #category : #'tests - debugger' }
-DSSpyInstrumenterTest >> testInstrumentSindarinDebuggerCommands [
-]
-
 { #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
@@ -772,4 +816,34 @@ DSSpyInstrumenterTest >> testInstrumentStepOver [
 DSSpyInstrumenterTest >> testInstrumentStepThrough [
 
 	self assertInstrumentDebuggerCommandNamed: 'Through'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepToMethodEntry [
+
+	self assertInstrumentSindarinDebuggerCommandNamed: 'To method entry'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepToNextCallInClass [
+
+	self assertInstrumentSindarinDebuggerCommandNamed: 'Next call in class'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepToNextCallInObject [
+
+	self assertInstrumentSindarinDebuggerCommandNamed: 'Next call in receiver'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepToNextInstanceCreation [
+
+	self assertInstrumentSindarinDebuggerCommandNamed: 'Next instance creation'
+]
+
+{ #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentStepToReturnCommand [
+
+	self assertInstrumentSindarinDebuggerCommandNamed: 'To return'
 ]

@@ -5,11 +5,15 @@ I specialize SindarinStepToNextInstanceCreation with debugging spy record creati
 Class {
 	#name : #DSndarinStepToNextInstanceCreation,
 	#superclass : #SindarinStepToNextInstanceCreation,
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
 { #category : #executing }
 DSndarinStepToNextInstanceCreation >> execute [
-		DSStepActionRecord for: self.
-		^super execute.
+
+	DSStepActionRecord for: self.
+	self forTests ifTrue: [ ^ self ].
+	^ super execute
 ]

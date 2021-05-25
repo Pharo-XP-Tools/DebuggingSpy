@@ -5,9 +5,8 @@ I specialize StReturnValueCommand with debugging spy record creation.
 Class {
 	#name : #DSReturnValueCommand,
 	#superclass : #StReturnValueCommand,
-	#instVars : [
-		'forTests'
-	],
+	#traits : 'DSTCommandForTests',
+	#classTraits : 'DSTCommandForTests classTrait',
 	#category : #'DebuggingSpy-Commands'
 }
 
@@ -16,16 +15,4 @@ DSReturnValueCommand >> execute [
 		DSStepActionRecord for: self.
 		self forTests ifTrue: [ ^ self ].
 		^super execute.
-]
-
-{ #category : #accessing }
-DSReturnValueCommand >> forTests [
-
-	^ forTests ifNil:[forTests := false]
-]
-
-{ #category : #accessing }
-DSReturnValueCommand >> forTests: anObject [
-
-	forTests := anObject
 ]

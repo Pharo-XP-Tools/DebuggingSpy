@@ -412,6 +412,37 @@ DSSpyInstrumenter >> instrumentRubScrolledTextMorph [
 	self changed'
 ]
 
+{ #category : #debugger }
+DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
+	StDebugger class compile:
+	'buildSindarinExtentionCommandsGroupWith: stDebuggerInstance forRoot: rootCommandGroup
+
+	<extensionCommands>
+	| commands codeGroup toolbarGroup toolbarSindarinGroup |
+	commands := { 
+		            DSndarinStepToMethodEntryCommand.
+		            DSndarinStepToNextCallInClassCommand.
+		            DSndarinStepToNextCallInObjectCommand.
+		            DSndarinStepToNextInstanceCreation.
+		            DSndarinStepToReturnCommand } collect: [ :class | 		         
+		            class forSpecContext: stDebuggerInstance ].
+
+	codeGroup := rootCommandGroup
+	             / StDebuggerCodeCommandTreeBuilder groupName
+	             / StDebuggerCodeCommandTreeBuilder new codeDebugCommandsGroupName.
+	commands do: [ :c | codeGroup register: c ].
+	
+	toolbarGroup := rootCommandGroup / StDebuggerToolbarCommandTreeBuilder groupName.
+	toolbarSindarinGroup := CmCommandGroup forSpec
+			beToolbarPopoverButton;
+			name: ''Advanced Step'';
+			icon: (stDebuggerInstance application iconNamed: #smallExpert);
+			yourself.
+	toolbarGroup register: toolbarSindarinGroup.
+	commands do: [ :c | toolbarSindarinGroup register: c ]'
+	
+]
+
 { #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 
