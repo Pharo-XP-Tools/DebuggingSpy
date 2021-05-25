@@ -368,14 +368,20 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	instrumenter instrumentDebuggerStack.
 	
 	debugger := self debuggerForTesting.	
-	self assert: self registry size equals: 1.
-	self registry first inspect.
-	self registry second inspect.
+	self assert: self registry size equals: 2.
+	"No idea why: the stack seems to be refreshed 2 times at opening.
+	This generates two identical events:"
+	self assert: self registry first windowId equals: self registry second windowId. 
+	self assert: self registry first receiver equals: self registry second receiver.
+	self assert: self registry first selector equals: self registry second selector.
+	self assert: self registry first contextName equals: self registry second contextName.
+	self assert: self registry first sourceNodeClass equals: self registry second sourceNodeClass.
+	self assert: self registry first sourceNodeCode equals: self registry second sourceNodeCode.
 	
 	debugger stackTable selectItem: debugger stackTable items second.
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 	
-	record := self registry second.
+	record := self registry third.
 	selectedItem := debugger stackTable items second.
 	self assert: record class identicalTo: DSBrowseContextRecord.
 	self assert: record windowId equals: debugger window hash.

@@ -136,6 +136,7 @@ DSSpyInstrumenter >> instrumentDebuggerCommands [
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
+
 	stackTable := self newTable.
 	stackTable
 		addColumn: ((SpImageTableColumn
@@ -158,10 +159,11 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 						  ifFalse: [ method selector ] ])
 				 sortFunction: nil;
 				 yourself);
-		addColumn: ((SpStringTableColumn
-				  title: ''Package''
-				  evaluated: [ :item | 
-					  item method methodClass package name asString ])
+		addColumn:
+			((SpStringTableColumn title: ''Package'' evaluated: [ :item | 
+					  | package |
+					  package := item method package.
+					  package ifNil: [ ''-'' ] ifNotNil: [ package name asString ] ])
 				 sortFunction: nil;
 				 yourself).
 	stackTable transmitDo: [ :context | 
@@ -170,9 +172,16 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			self updateCodeFromContext: context.
 			self expandStackIfLastItemIsSelected.
 			self updateWindowTitle.
-			[DSBrowseContextRecord for: { context . self window } ] on: Error do:[:err| err freeze inspect. DSSpy log: #ERROR key: #DEBUGGER_STACK ]  ] ].
+			[DSBrowseContextRecord for: { context . self window } ] on: Error do:[:err| err freeze inspect. DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
-	stackHeader label: ''Stack'''
+	stackHeader label: ''Stack''.
+	stackHeader toolbarActions: (CmCommandGroup new
+			 register:
+				 ((StDebuggerToggleFilterStackCommand forSpecContext: self) 
+					  iconName: #changeSorter);
+			 register:
+				 (StDebuggerSettingsCommand forSpecWithIconNamed: #configuration);
+			 asSpecGroup)'
 ]
 
 { #category : #inspector }
