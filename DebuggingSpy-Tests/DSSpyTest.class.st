@@ -71,6 +71,21 @@ DSSpyTest >> breakpointedMethod [
 ]
 
 { #category : #helpers }
+DSSpyTest >> compileModifyMethodWithHalt [
+	DSFakeTextEditor compile: 'newMethodWithHalt self halt. self haltIf:[true]'
+]
+
+{ #category : #helpers }
+DSSpyTest >> compileModifyMethodWithNoHaltChange [
+	DSFakeTextEditor compile: 'newMethodWithHalt self halt'
+]
+
+{ #category : #helpers }
+DSSpyTest >> compileNewMethodWithHalt [
+	DSFakeTextEditor compile: 'newMethodWithHalt self halt'
+]
+
+{ #category : #helpers }
 DSSpyTest >> compileTestMethod [
 	DSFakeTextEditor compile: 'dsTestMethod ^self'
 ]
@@ -124,6 +139,18 @@ DSSpyTest >> removeBreakpoint [
 ]
 
 { #category : #helpers }
+DSSpyTest >> removeHaltInMethodWithHalt [
+	DSFakeTextEditor compile: 'newMethodWithHalt ^self'
+]
+
+{ #category : #helpers }
+DSSpyTest >> removeNewMethodWithHalt [
+
+	(DSFakeTextEditor lookupSelector: #newMethodWithHalt) ifNotNil: [ :c | 
+		c removeFromSystem ]
+]
+
+{ #category : #helpers }
 DSSpyTest >> removeTestMethod [
 
 	self recoverTestMethod removeFromSystem
@@ -143,6 +170,7 @@ DSSpyTest >> tearDown [
 	instrumenter unsubscribeFromSystemAnnouncer.
 	breakpoint ifNotNil: [ breakpoint remove ].
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
+	self removeNewMethodWithHalt.
 	DSRecordRegistry current reset.
 	super tearDown
 ]
@@ -193,6 +221,18 @@ DSSpyTest >> testBreakpointRemoved [
 		assertBreakpointRecordedAs: DSBreakpointEventRecord
 		forBreakpointEvent: BreakpointRemoved
 		target: nil
+]
+
+{ #category : #'tests - halts events' }
+DSSpyTest >> testIndexesOfHaltNodesIn [
+
+	| haltData realHaltNode |
+	self compileNewMethodWithHalt.
+	haltData := DSSpy indexesOfHaltNodesIn: DSFakeTextEditor >> #newMethodWithHalt.
+	realHaltNode := (DSFakeTextEditor >> #newMethodWithHalt) ast statements first.
+	self assert: haltData size equals: 1.
+	self assert: haltData first key equals: realHaltNode selector.
+	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
 { #category : #'tests - window events' }
@@ -352,6 +392,111 @@ DSSpyTest >> testObjectCentricVariableBreakpointRecord [
 		target:
 		(DSAbstractBreakpointEventRecord basicNew printTargetInstance:
 			 target)
+]
+
+{ #category : #'tests - halts events' }
+DSSpyTest >> testRecordHaltInAddedMethod [
+	| haltData realHaltNode |
+	instrumenter listenToMethodChanges.
+	self compileNewMethodWithHalt.
+	
+	"We have: 
+		1 - the method change record
+		2 - the halt modification record"
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record class equals: DSHaltChangeRecord.	
+	self assert: record haltChange equals: DSHaltChangeRecord add.
+	self assert: record method equals: (DSFakeTextEditor >> #newMethodWithHalt) name.
+	
+	haltData := record haltData.	
+	realHaltNode := (DSFakeTextEditor >> #newMethodWithHalt) ast statements first.
+	self assert: haltData size equals: 1.
+	self assert: haltData first key equals: realHaltNode selector.
+	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
+]
+
+{ #category : #'tests - halts events' }
+DSSpyTest >> testRecordHaltInMethodmodifiedBy [
+	| oldHaltData haltData addedHaltNode |
+		
+	self compileNewMethodWithHalt.
+	oldHaltData := DSSpy indexesOfHaltNodesIn: (DSFakeTextEditor >> #newMethodWithHalt).
+	instrumenter listenToMethodChanges.
+	
+	self compileModifyMethodWithNoHaltChange.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSMethodModifiedRecord.	
+		
+	self compileModifyMethodWithHalt.
+	
+	"We have: 
+		2 - the method change record
+		3 - the halt modification record"
+	self assert: self registry size equals: 3.
+	record := self registry third.
+	self assert: record class equals: DSHaltChangeRecord.	
+	self assert: record haltChange equals: DSHaltChangeRecord modify.
+	self assert: record method equals: (DSFakeTextEditor >> #newMethodWithHalt) name.
+	
+	haltData := record haltData.	
+	self assert: haltData size equals: 2.
+	self assert: haltData first key equals: oldHaltData first key.
+	self assert: haltData first value equals: oldHaltData first value.
+	
+	addedHaltNode := (DSFakeTextEditor >> #newMethodWithHalt) ast statements second.
+	self assert: haltData second key equals: addedHaltNode selector.
+	self assert: haltData second value equals: (addedHaltNode start to: addedHaltNode stop)
+]
+
+{ #category : #'tests - halts events' }
+DSSpyTest >> testRecordHaltInRemovedMethod [
+	| haltData methodName realHaltNode |
+		
+	self compileNewMethodWithHalt.
+	instrumenter listenToMethodChanges.
+	realHaltNode := (DSFakeTextEditor >> #newMethodWithHalt) ast statements first.
+	methodName := (DSFakeTextEditor >> #newMethodWithHalt) name.
+	self removeNewMethodWithHalt.
+	
+	"We have: 
+		1 - the method change record
+		2 - the halt modification record"
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record class equals: DSHaltChangeRecord.	
+	self assert: record haltChange equals: DSHaltChangeRecord remove.	
+	self assert: record method equals: methodName.
+	
+	haltData := record haltData.	
+	self assert: haltData size equals: 1.
+	self assert: haltData first key equals: realHaltNode selector.
+	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
+]
+
+{ #category : #'tests - halts events' }
+DSSpyTest >> testRecordRemoveHaltInMethodmodified [
+	| haltData realHaltNode |
+	self compileNewMethodWithHalt.
+	instrumenter listenToMethodChanges.
+	realHaltNode := (DSFakeTextEditor >> #newMethodWithHalt) ast statements first.
+		
+	self removeHaltInMethodWithHalt.
+	
+	"We have: 
+		1 - the method change record
+		2 - the halt modification record"
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record class equals: DSHaltChangeRecord.	
+	self assert: record haltChange equals: DSHaltChangeRecord remove.
+	self assert: record method equals: (DSFakeTextEditor >> #newMethodWithHalt) name.	
+	
+	haltData := record haltData.	
+	self assert: haltData size equals: 1.
+	self assert: haltData first key equals: realHaltNode selector.
+	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
 { #category : #'tests - breakpoints events' }

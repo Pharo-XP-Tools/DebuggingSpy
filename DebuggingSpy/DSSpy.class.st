@@ -23,6 +23,14 @@ DSSpy class >> dateTimeString [
 	^'[' , DateAndTime now asString , ']:'
 ]
 
+{ #category : #'events - breakpoints' }
+DSSpy class >> indexesOfHaltNodesIn: aMethod [
+
+	| haltNodes |
+	haltNodes := aMethod ast allChildren select: [ :n | n isHaltNode ].
+	^ haltNodes collect: [ :hn | hn selector -> (hn start to: hn stop) ]
+]
+
 { #category : #logging }
 DSSpy class >> log: elements key: key [
 	| log |
@@ -101,21 +109,44 @@ DSSpy class >> logWindowOpened: anEvent [
 
 { #category : #'events - methods' }
 DSSpy class >> methodAdded: evt [
-	[ DSMethodAddedRecord for: evt method]
+
+	[ 
+	| method |
+	method := evt method.
+	DSMethodAddedRecord for: method.
+	method containsHalt ifTrue: [ self recordHaltInAddedMethod: method ] ]
 		on: Error
-		do: [:e| self log: #ERROR key: #METHOD_ADDED ]
+		do: [ :e | self log: #ERROR key: #METHOD_ADDED ]
 ]
 
 { #category : #'events - methods' }
 DSSpy class >> methodChanged: evt [
-	[ DSMethodModifiedRecord for: evt method]
+
+	[ 
+	| oldMethod newMethod |
+	oldMethod := evt oldMethod.
+	newMethod := evt method.
+
+	DSMethodModifiedRecord for: newMethod.
+
+	(oldMethod containsHalt and: [ newMethod containsHalt not ]) ifTrue: [ 
+		self recordHaltInRemovedMethod: oldMethod ].
+	(oldMethod containsHalt not and: [ newMethod containsHalt ]) ifTrue: [ 
+		self recordHaltInAddedMethod: newMethod ].
+	(oldMethod containsHalt and: [ newMethod containsHalt ]) ifTrue: [ 
+		self recordHaltInMethod: oldMethod modifiedBy: newMethod ] ]
 		on: Error
 		do: [ self log: #ERROR key: #METHOD_MODIFIED ]
 ]
 
 { #category : #'events - methods' }
 DSSpy class >> methodRemoved: evt [
-	[ DSMethodRemovedRecord for: evt method]
+
+	[ 
+	| method |
+	method := evt method.
+	DSMethodRemovedRecord for: method.
+	method containsHalt ifTrue: [ self recordHaltInRemovedMethod: method ] ]
 		on: Error
 		do: [ self log: #ERROR key: #METHOD_REMOVED ]
 ]
@@ -152,6 +183,40 @@ DSSpy class >> printStringMorphs: anArrayOfMorphs [
 { #category : #'events - breakpoints' }
 DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
 	^aBreakpointEvent recordBreakpoint 
+]
+
+{ #category : #'events - breakpoints' }
+DSSpy class >> recordHaltInAddedMethod: method [
+	|nodesSelectorsWithIndexes record|
+	nodesSelectorsWithIndexes := self indexesOfHaltNodesIn: method.
+	record := DSHaltChangeRecord for: DSHaltChangeRecord add.
+	record haltData: nodesSelectorsWithIndexes.
+	record method: method name
+]
+
+{ #category : #'events - breakpoints' }
+DSSpy class >> recordHaltInMethod: oldMethod modifiedBy: newMethod [
+
+	| oldHalts newHalts record |
+	oldHalts := self indexesOfHaltNodesIn: oldMethod.
+	newHalts := self indexesOfHaltNodesIn: newMethod.
+
+	(oldHalts size = newHalts size and: [ 
+		 oldHalts allSatisfy: [ :data | newHalts includes: data ] ]) 
+		ifTrue: [ ^ self ].
+
+	record := DSHaltChangeRecord for: DSHaltChangeRecord modify.
+	record haltData: newHalts.
+	record method: newMethod name
+]
+
+{ #category : #'events - breakpoints' }
+DSSpy class >> recordHaltInRemovedMethod: oldMethod [
+	|nodesSelectorsWithIndexes record|
+	nodesSelectorsWithIndexes := self indexesOfHaltNodesIn: oldMethod.
+	record := DSHaltChangeRecord for: DSHaltChangeRecord remove.
+	record haltData: nodesSelectorsWithIndexes.
+	record method: oldMethod name
 ]
 
 { #category : #helpers }

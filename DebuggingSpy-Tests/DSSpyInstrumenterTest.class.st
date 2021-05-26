@@ -173,7 +173,7 @@ DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 ]
 
 { #category : #helpers }
-DSSpyInstrumenterTest >> executeHalt [
+DSSpyInstrumenterTest >> executeHalt [ 
 
 	<haltOrBreakpointForTesting>
 	self halt
