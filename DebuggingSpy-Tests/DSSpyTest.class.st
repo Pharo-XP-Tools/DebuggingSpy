@@ -592,6 +592,17 @@ DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 ]
 
 { #category : #'tests - task management' }
+DSSpyTest >> testResetSpy [
+
+	DSSpy startTask: task.
+	DSSpy resetSpy.
+	self deny: DSSpy taskStarted.
+	self
+		assert: DSSpy loggingFileName
+		equals: DSSpy defaultLoggingFileName
+]
+
+{ #category : #'tests - task management' }
 DSSpyTest >> testStartTask [
 	
 	DSSpy startTask: task.
@@ -600,6 +611,16 @@ DSSpyTest >> testStartTask [
 	self assert: record class equals: DSStartTaskRecord.
 	self assert: record taskName equals: DSTask dsTaskDescription.
 	self assert: record description equals: DSTask dsTaskDescription
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testTaskStarted [
+
+	self deny: DSSpy taskStarted.
+	DSSpy startTask: task.
+	self assert: DSSpy taskStarted.
+	DSSpy endTask: task.
+	self deny: DSSpy taskStarted
 ]
 
 { #category : #'tests - breakpoints events' }

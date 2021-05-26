@@ -36,5 +36,6 @@ DSRecordRegistry >> records [
 
 { #category : #initialization }
 DSRecordRegistry >> reset [
-	records removeAll
+	records removeAll.
+	DSSpy resetSpy
 ]

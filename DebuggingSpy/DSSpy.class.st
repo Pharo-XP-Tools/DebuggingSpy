@@ -10,7 +10,9 @@ Class {
 	#classInstVars : [
 		'loggingFilename',
 		'loggingFileReference',
-		'loggingDirectory'
+		'loggingDirectory',
+		'logOnlyWhenTaskStarted',
+		'taskStarted'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -39,8 +41,7 @@ DSSpy class >> defaultLoggingFileName [
 { #category : #'task management' }
 DSSpy class >> endTask: aTask [
 	DSEndingTaskRecord for: aTask.
-	loggingFilename := nil.
-	loggingFileReference := nil
+	self resetSpy
 ]
 
 { #category : #logging }
@@ -81,13 +82,28 @@ DSSpy class >> logInspectorTabChange: selectedTab [
 		do: [ self log: #ERROR key: #INSPECTOR_TAB_SELECTION ]
 ]
 
+{ #category : #accessing }
+DSSpy class >> logOnlyWhenTaskStarted [
+
+	^ logOnlyWhenTaskStarted
+]
+
+{ #category : #accessing }
+DSSpy class >> logOnlyWhenTaskStarted: anObject [
+
+	logOnlyWhenTaskStarted := anObject
+]
+
 { #category : #logging }
 DSSpy class >> logToFile: aString [
-	|str|
+
+	| str |
+	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
+		^ self ].
 	str := self stream.
 	str setToEnd.
 	str crlf.
-	str nextPutAll: aString.	
+	str nextPutAll: aString.
 	str close
 ]
 
@@ -255,15 +271,30 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record method: oldMethod name
 ]
 
+{ #category : #initialization }
+DSSpy class >> resetSpy [
+
+	loggingFilename := nil.
+	loggingFileReference := nil.
+	taskStarted := false
+]
+
 { #category : #'task management' }
 DSSpy class >> startTask: aTask [
 	DSStartTaskRecord for: aTask.
 	loggingFilename := aTask name, '-', self defaultLoggingFileName.
+	taskStarted := true
 ]
 
 { #category : #logging }
 DSSpy class >> stream [
 	^ self loggingFileReference writeStream
+]
+
+{ #category : #accessing }
+DSSpy class >> taskStarted [
+
+	^ taskStarted ifNil: [ taskStarted := false ]
 ]
 
 { #category : #deprecated }
