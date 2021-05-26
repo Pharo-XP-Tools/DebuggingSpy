@@ -330,6 +330,16 @@ DSSpyTest >> testLoggingFileName [
 ]
 
 { #category : #'tests - file handling' }
+DSSpyTest >> testLoggingFileNameAfterTaskEnded [
+
+	DSSpy startTask: task.
+	DSSpy endTask: task.
+	self
+		assert: DSSpy loggingFileName
+		equals: DSSpy defaultLoggingFileName
+]
+
+{ #category : #'tests - file handling' }
 DSSpyTest >> testLoggingFileNameAfterTaskStarted [
 	DSSpy startTask: task.
 

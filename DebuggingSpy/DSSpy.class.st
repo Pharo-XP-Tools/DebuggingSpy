@@ -38,7 +38,9 @@ DSSpy class >> defaultLoggingFileName [
 
 { #category : #'task management' }
 DSSpy class >> endTask: aTask [
-	DSEndingTaskRecord for: aTask
+	DSEndingTaskRecord for: aTask.
+	loggingFilename := nil.
+	loggingFileReference := nil
 ]
 
 { #category : #logging }
