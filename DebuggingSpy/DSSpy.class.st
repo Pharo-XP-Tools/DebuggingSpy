@@ -103,7 +103,7 @@ DSSpy class >> logWindowOpened: anEvent [
 DSSpy class >> methodAdded: evt [
 	[ DSMethodAddedRecord for: evt method]
 		on: Error
-		do: [:e| self halt. self log: #ERROR key: #METHOD_ADDED ]
+		do: [:e| self log: #ERROR key: #METHOD_ADDED ]
 ]
 
 { #category : #'events - methods' }
