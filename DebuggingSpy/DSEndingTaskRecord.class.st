@@ -13,6 +13,11 @@ Class {
 }
 
 { #category : #accessing }
+DSEndingTaskRecord >> answer [
+	^ answer
+]
+
+{ #category : #accessing }
 DSEndingTaskRecord >> eventName [
 	^'Ending task'
 ]

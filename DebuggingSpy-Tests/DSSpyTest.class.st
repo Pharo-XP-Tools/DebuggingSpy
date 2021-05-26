@@ -7,7 +7,8 @@ Class {
 		'methodEvent',
 		'windowEvent',
 		'instrumenter',
-		'breakpoint'
+		'breakpoint',
+		'task'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -170,7 +171,7 @@ DSSpyTest >> removeTestMethod [
 DSSpyTest >> setUp [
 
 	super setUp.
-
+	task := DSTask new.
 	instrumenter := DSSpyInstrumenter new.
 	DSRecordRegistry current reset
 ]
@@ -231,6 +232,17 @@ DSSpyTest >> testBreakpointRemoved [
 		assertBreakpointRecordedAs: DSBreakpointEventRecord
 		forBreakpointEvent: BreakpointRemoved
 		target: nil
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testEndTask [
+	DSSpy endTask: task.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSEndingTaskRecord.
+	self assert: record taskName equals: DSTask dsTaskDescription.
+	self assert: record description equals: DSTask dsTaskDescription.
+	self assert: record answer equals: DSTask dsTaskDescription
 ]
 
 { #category : #'tests - halts events' }
@@ -507,6 +519,17 @@ DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 	self assert: haltData size equals: 1.
 	self assert: haltData first key equals: realHaltNode selector.
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testStartTask [
+	
+	DSSpy startTask: task.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSStartTaskRecord.
+	self assert: record taskName equals: DSTask dsTaskDescription.
+	self assert: record description equals: DSTask dsTaskDescription
 ]
 
 { #category : #'tests - breakpoints events' }

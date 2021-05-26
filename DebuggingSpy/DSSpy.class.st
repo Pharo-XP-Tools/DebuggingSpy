@@ -25,7 +25,7 @@ DSSpy class >> dateTimeString [
 
 { #category : #' task management' }
 DSSpy class >> endTask: aTask [
-	self flag: 'todo => also close the current file'
+	DSEndingTaskRecord for: aTask
 ]
 
 { #category : #'events - breakpoints' }
@@ -226,7 +226,7 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 
 { #category : #' task management' }
 DSSpy class >> startTask: aTask [
-	self flag: 'todo => also create a new file'
+	DSStartTaskRecord for: aTask
 ]
 
 { #category : #helpers }
