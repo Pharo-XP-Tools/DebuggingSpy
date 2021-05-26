@@ -117,6 +117,16 @@ DSSpyTest >> methodEvent [
 ]
 
 { #category : #helpers }
+DSSpyTest >> methodModifiedEvent [
+
+	^ methodEvent ifNil: [ 
+		  methodEvent := MethodModified
+			                 methodChangedFrom: self class >> #methodEvent
+			                 to: self class >> #methodEvent
+			                 oldProtocol: #test ]
+]
+
+{ #category : #helpers }
 DSSpyTest >> modifyTestMethod [
 	DSFakeTextEditor compile: 'dsTestMethod ^self + 1'
 ]
@@ -279,7 +289,7 @@ DSSpyTest >> testMethodAdded [
 { #category : #'tests - methods events' }
 DSSpyTest >> testMethodChanged [
 
-	DSSpy methodChanged: self methodEvent.
+	DSSpy methodChanged: self methodModifiedEvent.
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
