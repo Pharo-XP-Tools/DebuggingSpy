@@ -61,7 +61,7 @@ DSSpy class >> logFileReference [
 	^ fr
 ]
 
-{ #category : #logging }
+{ #category : #deprecated }
 DSSpy class >> logInspectorTabChange: selectedTab [
 	[ 
 	|anArrayOfMorphs |
@@ -161,7 +161,7 @@ DSSpy class >> monitor [
 	^monitor ifNil:[monitor := Monitor new]
 ]
 
-{ #category : #logging }
+{ #category : #deprecated }
 DSSpy class >> printGLMStringMorphs: anArrayOfMorphs [
 	| str |
 	str := WriteStream on: String new.
