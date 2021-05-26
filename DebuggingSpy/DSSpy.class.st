@@ -23,7 +23,7 @@ DSSpy class >> dateTimeString [
 	^'[' , DateAndTime now asString , ']:'
 ]
 
-{ #category : #' task management' }
+{ #category : #'task management' }
 DSSpy class >> endTask: aTask [
 	DSEndingTaskRecord for: aTask
 ]
@@ -224,7 +224,7 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record method: oldMethod name
 ]
 
-{ #category : #' task management' }
+{ #category : #'task management' }
 DSSpy class >> startTask: aTask [
 	DSStartTaskRecord for: aTask
 ]
