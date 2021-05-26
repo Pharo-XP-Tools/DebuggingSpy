@@ -8,9 +8,9 @@ Class {
 		'monitor'
 	],
 	#classInstVars : [
-		'logDir',
 		'loggingFilename',
-		'loggingFileReference'
+		'loggingFileReference',
+		'loggingDirectory'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -120,14 +120,14 @@ DSSpy class >> logWindowOpened: anEvent [
 
 { #category : #accessing }
 DSSpy class >> loggingDirectory [
-	^logDir ifNil:[logDir := self defaultLoggingDirectoryName asFileReference]
+	^loggingDirectory ifNil:[loggingDirectory := self defaultLoggingDirectoryName asFileReference]
 ]
 
 { #category : #logging }
 DSSpy class >> loggingDirectory: aStringOrFileReference [
 
-	logDir := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
-	logDir ensureCreateDirectory
+	loggingDirectory := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
+	loggingDirectory ensureCreateDirectory
 ]
 
 { #category : #accessing }
