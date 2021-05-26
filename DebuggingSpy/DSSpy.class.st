@@ -23,6 +23,11 @@ DSSpy class >> dateTimeString [
 	^'[' , DateAndTime now asString , ']:'
 ]
 
+{ #category : #' task management' }
+DSSpy class >> endTask: aTask [
+	self flag: 'todo => also close the current file'
+]
+
 { #category : #'events - breakpoints' }
 DSSpy class >> indexesOfHaltNodesIn: aMethod [
 
@@ -217,6 +222,11 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record := DSHaltChangeRecord for: DSHaltChangeRecord remove.
 	record haltData: nodesSelectorsWithIndexes.
 	record method: oldMethod name
+]
+
+{ #category : #' task management' }
+DSSpy class >> startTask: aTask [
+	self flag: 'todo => also create a new file'
 ]
 
 { #category : #helpers }
