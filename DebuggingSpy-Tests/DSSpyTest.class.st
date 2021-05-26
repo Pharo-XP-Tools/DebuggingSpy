@@ -234,6 +234,19 @@ DSSpyTest >> testBreakpointRemoved [
 		target: nil
 ]
 
+{ #category : #'tests - file handling' }
+DSSpyTest >> testDefaultLoggingDirectoryName [
+
+	self
+		assert: DSSpy defaultLoggingDirectoryName
+		equals: 'ds-spy'
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testDefaultLoggingFileName [
+ 	self assert: DSSpy defaultLoggingFileName equals: SessionManager default currentSession id asString
+]
+
 { #category : #'tests - task management' }
 DSSpyTest >> testEndTask [
 	DSSpy endTask: task.
@@ -243,6 +256,17 @@ DSSpyTest >> testEndTask [
 	self assert: record taskName equals: DSTask dsTaskDescription.
 	self assert: record description equals: DSTask dsTaskDescription.
 	self assert: record answer equals: DSTask dsTaskDescription
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testEnsureCreateLoggingFileReference [
+
+	| fileReference |
+	fileReference := DSSpy loggingDirectory / DSSpy loggingFileName.
+	fileReference ensureDelete.
+	self deny: fileReference exists.
+	DSSpy ensureCreateLoggingFileReference.
+	self assert: fileReference exists
 ]
 
 { #category : #'tests - halts events' }
@@ -287,6 +311,42 @@ DSSpyTest >> testLogWindowOpened [
 		
 	record := self registry first.	
 	self assertWindowEventRecordedAs: DSWindowOpenedRecord
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testLoggingDirectory [
+
+	self
+		assert: DSSpy loggingDirectory
+		equals: DSSpy defaultLoggingDirectoryName asFileReference 
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testLoggingFileName [
+
+	self
+		assert: DSSpy loggingFileName
+		equals: DSSpy defaultLoggingFileName
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testLoggingFileNameAfterTaskStarted [
+	DSSpy startTask: task.
+
+	self
+		assert: DSSpy loggingFileName
+		equals: (task name, '-', DSSpy defaultLoggingFileName)
+]
+
+{ #category : #'tests - file handling' }
+DSSpyTest >> testLoggingFileReference [
+
+	| fileReference |
+	fileReference := DSSpy loggingFileReference.
+	self
+		assert: fileReference
+		equals: DSSpy loggingDirectory / DSSpy loggingFileName.
+	self assert: fileReference exists
 ]
 
 { #category : #'tests - methods events' }

@@ -8,7 +8,9 @@ Class {
 		'monitor'
 	],
 	#classInstVars : [
-		'logDir'
+		'logDir',
+		'loggingFilename',
+		'loggingFileReference'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -18,14 +20,35 @@ DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
 ]
 
-{ #category : #logging }
+{ #category : #helpers }
 DSSpy class >> dateTimeString [
 	^'[' , DateAndTime now asString , ']:'
+]
+
+{ #category : #accessing }
+DSSpy class >> defaultLoggingDirectoryName [
+	^'ds-spy'
+]
+
+{ #category : #accessing }
+DSSpy class >> defaultLoggingFileName [
+
+	^ SessionManager default currentSession id asString
 ]
 
 { #category : #'task management' }
 DSSpy class >> endTask: aTask [
 	DSEndingTaskRecord for: aTask
+]
+
+{ #category : #logging }
+DSSpy class >> ensureCreateLoggingFileReference [
+
+	| fname fr |
+	fname := self loggingFileName.
+	fr := self loggingDirectory / fname.
+	fr ensureCreateFile.
+	^ fr
 ]
 
 { #category : #'events - breakpoints' }
@@ -44,23 +67,6 @@ DSSpy class >> log: elements key: key [
 	self critical: [ self logToFile: log ]
 ]
 
-{ #category : #helpers }
-DSSpy class >> logDir: aString [
-	logDir := aString asFileReference.
-	logDir ensureCreateDirectory
-]
-
-{ #category : #helpers }
-DSSpy class >> logFileReference [
-	| fname fr |
-	fname := SessionManager default currentSession id asString.
-	fr := logDir
-		ifNil: [ fname asFileReference ]
-		ifNotNil: [ logDir / fname ].
-	fr ensureCreateFile.
-	^ fr
-]
-
 { #category : #deprecated }
 DSSpy class >> logInspectorTabChange: selectedTab [
 	[ 
@@ -73,7 +79,7 @@ DSSpy class >> logInspectorTabChange: selectedTab [
 		do: [ self log: #ERROR key: #INSPECTOR_TAB_SELECTION ]
 ]
 
-{ #category : #helpers }
+{ #category : #logging }
 DSSpy class >> logToFile: aString [
 	|str|
 	str := self stream.
@@ -110,6 +116,29 @@ DSSpy class >> logWindowOpened: anEvent [
 		send: #logWindowActivated:
 		to: self.
 	window announcer when: WindowClosed send: #logWindowClosed: to: self
+]
+
+{ #category : #accessing }
+DSSpy class >> loggingDirectory [
+	^logDir ifNil:[logDir := self defaultLoggingDirectoryName asFileReference]
+]
+
+{ #category : #logging }
+DSSpy class >> loggingDirectory: aStringOrFileReference [
+
+	logDir := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
+	logDir ensureCreateDirectory
+]
+
+{ #category : #accessing }
+DSSpy class >> loggingFileName [
+	^loggingFilename ifNil:[loggingFilename := self defaultLoggingFileName]
+]
+
+{ #category : #accessing }
+DSSpy class >> loggingFileReference [
+
+	^loggingFileReference ifNil:[loggingFileReference := self ensureCreateLoggingFileReference]
 ]
 
 { #category : #'events - methods' }
@@ -173,7 +202,7 @@ DSSpy class >> printGLMStringMorphs: anArrayOfMorphs [
 	^ str contents
 ]
 
-{ #category : #logging }
+{ #category : #helpers }
 DSSpy class >> printStringMorphs: anArrayOfMorphs [
 	| str |
 	str := WriteStream on: String new.
@@ -226,22 +255,23 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 
 { #category : #'task management' }
 DSSpy class >> startTask: aTask [
-	DSStartTaskRecord for: aTask
+	DSStartTaskRecord for: aTask.
+	loggingFilename := aTask name, '-', self defaultLoggingFileName.
 ]
 
-{ #category : #helpers }
+{ #category : #logging }
 DSSpy class >> stream [
-	^ self logFileReference writeStream
+	^ self loggingFileReference writeStream
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpy class >> windowName: win [
 	|label|	
 	label := [win labelString ] on: Error do:['window '].
 	^label, ' (', win hash printString, ')'
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpy class >> windowNameFromEvent: anEvent [
 	|win|
 	win := anEvent window.
