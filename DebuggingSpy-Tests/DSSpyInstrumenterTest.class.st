@@ -8,10 +8,28 @@ Class {
 		'record',
 		'debugger',
 		'browser',
-		'methodToRemove'
+		'methodToRemove',
+		'methodsToRemove'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
+
+{ #category : #assertions }
+DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method [
+
+	self assert: record class equals: DSHaltHitRecord.
+	self assert: record method equals: method name.
+	self assert: record sourceCodeInterval first equals: method ast statements first start.
+	self assert: record sourceCodeInterval last equals: method ast statements first stop
+]
+
+{ #category : #assertions }
+DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method conditional: isHaltIf once: isOnce [
+
+	self assert: record conditional equals: isHaltIf.
+	self assert: record once equals: isOnce.
+	self assertHaltHitRecordingMethod: method
+]
 
 { #category : #assertions }
 DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
@@ -155,6 +173,38 @@ DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> executeHalt [
+
+	<haltOrBreakpointForTesting>
+	self halt
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> executeHaltIf [
+
+	<haltOrBreakpointForTesting>
+	self haltIf: [ true ]
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> executeHaltInBloc [
+	<haltOrBreakpointForTesting>
+	[self halt] value
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> executeHaltOnce [
+	<haltOrBreakpointForTesting>
+	self haltOnce
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> executeHaltWithMessage [
+	<haltOrBreakpointForTesting>
+	self halt: 'message'
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane [
 
 	^ (aMetaPane class slotNamed: listName) read: aMetaPane
@@ -179,6 +229,14 @@ DSSpyInstrumenterTest >> press: aCharacter in: aPresenter [
 		meta: false
 		control: false
 		option: false
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> recompileExecuteHaltOnce [
+
+	self class compile: 'executeHaltOnce
+	<haltOrBreakpointForTesting>
+	self haltOnce'
 ]
 
 { #category : #helpers }
@@ -271,10 +329,16 @@ DSSpyInstrumenterTest >> tearDown [
 		modifiedClass compile: modifiedMethodSource.
 		modifiedClass := nil.
 		modifiedMethodSource := nil ].
+	
 	methodToRemove ifNotNil: [ 
 		methodToRemove removeFromSystem.
 		methodToRemove := nil ].
+
+	methodsToRemove ifNotNil: [ 
+		methodsToRemove do: [ :m | m removeFromSystem ] ].
+	
 	DSRecordRegistry current reset.
+	
 	super tearDown
 ]
 
@@ -438,6 +502,73 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	self assert: record attributeName equals: 'self'. 	
 	self assert: record attributeHash equals: object hash.
 	self assert: record attributeValue equals: object displayString 
+]
+
+{ #category : #'tests - halts' }
+DSSpyInstrumenterTest >> testInstrumentHaltHits [
+
+	instrumenter instrumentHaltHits.
+	methodsToRemove := { 
+		                   (Halt class >> #signal:).
+		                   (Halt class >> #signalIn:).
+		                   (Halt class >> #signal) }.
+	[ self executeHalt ]
+		on: Halt
+		do: [ ].
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record selector equals: #halt.
+	self assertHaltHitRecordingMethod:  (self class >> #executeHalt) conditional: false once: false.
+	
+	[ self executeHaltIf ]
+		on: Halt
+		do: [ ].
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record selector equals: #haltIf:.
+	self assertHaltHitRecordingMethod:  (self class >> #executeHaltIf) conditional: true once: false.
+	
+	self recompileExecuteHaltOnce.
+	[ self executeHaltOnce ]
+		on: Halt
+		do: [  ].
+	self assert: self registry size equals: 3.
+	record := self registry third.
+	self assert: record selector equals: #once.
+	self assertHaltHitRecordingMethod:  (self class >> #executeHaltOnce) conditional: false once: true.	
+	
+	[ self executeHaltWithMessage  ]
+		on: Halt
+		do: [  ].
+	self assert: self registry size equals: 4.
+	record := self registry fourth.
+	self assert: record selector equals: #now:.
+	self assertHaltHitRecordingMethod:  (self class >> #executeHaltWithMessage) conditional: false once: false.
+]
+
+{ #category : #'tests - halts' }
+DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
+	|executedMethod|
+	instrumenter instrumentHaltHits.
+	methodsToRemove := { 
+		                   (Halt class >> #signal:).
+		                   (Halt class >> #signalIn:).
+		                   (Halt class >> #signal) }.
+		
+	executedMethod := self class >> #executeHaltInBloc.
+	[ self executeHaltInBloc  ]
+		on: Halt
+		do: [  ].
+		
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record conditional equals: false.
+	self assert: record once equals: false.
+	self assert: record class equals: DSHaltHitRecord.
+	self assert: record method equals: executedMethod name.	
+	self assert: record sourceCodeInterval first equals: executedMethod ast statements first receiver statements first start.
+	self assert: record sourceCodeInterval last equals: executedMethod ast statements first receiver statements first stop
 ]
 
 { #category : #'tests - inspector' }

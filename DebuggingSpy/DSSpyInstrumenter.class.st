@@ -177,6 +177,36 @@ DSSpyInstrumenter >> instrumentExpandAttribute [
 	self refreshTable'
 ]
 
+{ #category : #breakpoints }
+DSSpyInstrumenter >> instrumentHaltHits [
+	Halt class compile: 'signalIn: ctx	
+		
+	self = Halt ifTrue:[
+	[|sender|				
+		sender := thisContext sender sender sender sender sender sender sender sender sender.
+		ctx selector = #once ifFalse:[sender := sender sender].
+		DSHaltHitRecord for: {sender sourceNodeExecuted. ctx selector}] 
+		on: Error 
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
+	super signalIn: ctx'.
+	
+	Halt class compile: 'signal: s
+	self = Halt ifTrue:[	[|sender|		
+		sender := thisContext sender sender sender sender sender.
+		DSHaltHitRecord for:  {sender sourceNodeExecuted. #now:}] 
+		on: Error 
+		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
+	super signal: s'.
+	
+	Halt class compile: 'signal
+		self = Halt ifTrue:[	[|sender| 			
+		sender := thisContext sender sender sender sender sender.
+		DSHaltHitRecord for:  {sender sourceNodeExecuted. #halt}] 
+		on: Error 
+		do:[:err| err freeze inspect.  DSSpy log: #ERROR key: #HALT_HIT ]].
+	super signal'.
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 
@@ -536,37 +566,6 @@ DSSpyInstrumenter >> listenToHaltsChanges [
 	self cacheChanged'
 ]
 
-{ #category : #breakpoints }
-DSSpyInstrumenter >> listenToHaltsHits [
-	Halt class compile: 'signalIn: ctx	
-	self = Halt ifTrue:[
-	[|sender log|
-		sender := thisContext sender sender sender sender sender sender sender sender sender sender.
-		log := {sender method. sender sourceNodeExecuted sourceCode}.	
-		DSSpy log: log key: #HALT_HIT] 
-		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signalIn: ctx'.
-	
-	Halt class compile: 'signal: s
-	self = Halt ifTrue:[	[|sender log|
-		sender := thisContext sender sender sender sender sender .
-		log := {sender method. sender sourceNodeExecuted sourceCode}.	
-		DSSpy log: log key: #HALT_HIT] 
-		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signal: s'.
-	
-	Halt class compile: 'signal
-		self = Halt ifTrue:[	[|sender log| 
-		sender := thisContext sender sender sender sender sender .
-		log := {sender method. sender sourceNodeExecuted sourceCode}.	
-		DSSpy log: log key: #HALT_HIT] 
-		on: Error 
-		do:[  DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signal'.
-]
-
 { #category : #methods }
 DSSpyInstrumenter >> listenToMethodChanges [
 	SystemAnnouncer uniqueInstance weak when: MethodModified send: #methodChanged: to: DSSpy.
@@ -599,7 +598,7 @@ DSSpyInstrumenter >> logArray: anArray key: aKey [
 
 { #category : #breakpoints }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
-	self listenToHaltsHits.
+	self instrumentHaltHits.
 	self listenToHaltsChanges.
 	self listenToBreakpointChanges 
 ]
