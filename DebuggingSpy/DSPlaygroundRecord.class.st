@@ -7,3 +7,8 @@ Class {
 	#superclass : #DSAbstractEventRecord,
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #'actions api' }
+DSPlaygroundRecord >> record: aPresenter [
+	super record: aPresenter window window
+]

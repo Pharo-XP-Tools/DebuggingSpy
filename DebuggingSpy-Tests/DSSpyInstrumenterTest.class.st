@@ -44,14 +44,16 @@ DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandNa
 		                        do: [ nil ].
 	instrumenter instrumentDebuggerCommands.
 	debugger := self debuggerOnRecursiveContextForTesting.
-
-	self setDummyWindowFor: debugger.
+	
 	cmds := debugger rootCommandsGroup.
 	cmd := StDebugger
 		       specCommandNamed: debuggerCommandName
 		       inGroup: (StDebugger executionCommandGroupIn: cmds) entries.
 	(#('Return' 'Proceed') includes: debuggerCommandName) 
 		ifTrue:[cmd decoratedCommand forTests: true].
+		
+	self setDummyWindowForPresenter: debugger.
+	
 	cmd execute.
 
 	self assertStepActionRecordForCommandNamed: debuggerCommandName
@@ -69,7 +71,7 @@ DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerC
 	instrumenter instrumentSindarinDebuggerCommands.
 	debugger := self debuggerOnRecursiveContextForTesting.
 
-	self setDummyWindowFor: debugger.
+	self setDummyWindowForPresenter: debugger.
 	
 	"Commands from toolbar"
 	cmds := debugger rootCommandsGroup
@@ -138,8 +140,10 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 	| codePresenter adapter |
 	codePresenter := (aPlaygroundPagePresenter class slotNamed: #text) 
 		                 read: aPlaygroundPagePresenter.
+	self setDummyWindowPresenter: aPlaygroundPagePresenter window forPresenter: codePresenter.
 	codePresenter text: '41+1'.
-	codePresenter selectionInterval: (1 to: 4).
+	codePresenter selectionInterval: (1 to: 4).	
+	
 	adapter := SpMorphicCodeAdapter new.
 	adapter adapt: codePresenter.	
 	codePresenter adapter: adapter.
@@ -150,10 +154,20 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 { #category : #helpers }
 DSSpyInstrumenterTest >> debuggerForTesting [
 
-	^ StTestDebuggerProvider new debuggerWithObjectHalting
-		  application: StDebugger currentApplication;
-		  initialize;
-		  yourself
+	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
+	debugger application: StDebugger currentApplication.
+	debugger initialize.
+	^ debugger
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> debuggerForTestingWithWindow [
+
+	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
+	self setDummyWindowForPresenter: debugger.
+	debugger application: StDebugger currentApplication.
+	debugger initialize.
+	^ debugger
 ]
 
 { #category : #helpers }
@@ -211,13 +225,27 @@ DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> newInspectorOn: anObject [
+
+	| inspector |
+	inspector := StInspector basicNew.
+	self setDummyWindowForPresenter: inspector.
+	inspector setModelBeforeInitialization:
+		(StInspectorModel on: anObject).
+	inspector initialize.
+	^ inspector
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> playgroundPagePresenter [
 
-	^ StPlaygroundPagePresenter basicNew
-		  setModelBeforeInitialization: (NewValueHolder value: nil);
-		  application: StPharoApplication current;
-		  initialize;
-		  yourself
+	| playground |
+	playground := StPlaygroundPagePresenter basicNew.
+	self setDummyWindowForPresenter: playground.
+	playground setModelBeforeInitialization: (NewValueHolder value: nil).
+	playground application: StPharoApplication current.
+	playground initialize.
+	^ playground
 ]
 
 { #category : #helpers }
@@ -278,11 +306,27 @@ DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 ]
 
 { #category : #helpers }
-DSSpyInstrumenterTest >> setDummyWindowFor: presenter [
+DSSpyInstrumenterTest >> setDummyWindowForMorph: morph [
+
+	[ morph privateOwner: SystemWindow basicNew ]
+		on: Error
+		do: [  ]
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> setDummyWindowForPresenter: presenter [
 
 	| windowPresenter |
 	windowPresenter := SpWindowPresenter new.
-	[windowPresenter window: Object new] on: Error do:[].
+	windowPresenter application: StPharoApplication current.
+	[windowPresenter window: SystemWindow basicNew] on: Error do:[].
+	self setDummyWindowPresenter: windowPresenter forPresenter: presenter
+
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> setDummyWindowPresenter: windowPresenter forPresenter: presenter [
+
 	windowPresenter presenter: presenter
 ]
 
@@ -312,11 +356,15 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 	| ctxPresenter rawView attrTable widget |
 	anInspector buildWithSpec.
+	self setDummyWindowForPresenter: anInspector.
 	ctxPresenter := anInspector firstPage rawInspectorPageOrNil
 		                retrievePresenter.
 	rawView := (ctxPresenter class slotNamed: #view) read: ctxPresenter.
+	
+	self setDummyWindowPresenter: anInspector window forPresenter: rawView.
 	attrTable := rawView attributeTable.
 	attrTable buildWithSpec.
+	self setDummyWindowPresenter: anInspector window forPresenter: attrTable.
 	widget := attrTable adapter widget.
 	^ widget dataSource rootItem children
 ]
@@ -350,6 +398,7 @@ DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 	instrumenter instrumentClyFullBrowser.
 	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.  
 	browser  prepareInitialStateBy:  [ :b |b selectMethod: (Object>>#yourself)].
+	self setDummyWindowForMorph: browser.
 	browser newWindowTitle.
 	
 	self assert: self registry size equals: 1.
@@ -370,6 +419,7 @@ DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	instrumenter instrumentClyQueryBrowser.
 	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
 	browser showResultOf: (ClyMessageImplementorsQuery of: #instrumentClyQueryBrowser).
+	self setDummyWindowForMorph: browser.
 	browser newWindowTitle.
 	
 	self assert: self registry size equals: 1.
@@ -405,6 +455,7 @@ DSSpyInstrumenterTest >> testInstrumentCodePresenter [
 	modifiedMethodSource :=  [(SpCodePresenter >> #initialize) sourceCode] on: Error do:[nil].
 	instrumenter instrumentCodePresenter.	
 	playground := self playgroundPagePresenter.
+	self setDummyWindowForPresenter: playground.
 	code := self codePresenterFrom: playground.
 	
 	"When typing code, the playground generates an writing record"
@@ -412,12 +463,14 @@ DSSpyInstrumenterTest >> testInstrumentCodePresenter [
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	self assert: record class identicalTo: DSPlaygroundWriteRecord.
+	self assert: record windowId equals: playground window window hash.
 	
 	"When the mouse enters the playground, if the playground has focus, generates a reading event"
 	code adapter sendMouseEnterEvent.
 	self assert: self registry size equals: 2.
 	record := self registry second.	
 	self assert: record class identicalTo: DSPlaygroundReadRecord.
+	self assert: record windowId equals: playground window window hash
 	
 ]
 
@@ -429,7 +482,8 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 	instrumenter instrumentCodePresenter.	
 	
 	debugger := self debuggerForTesting.	
-	code := debugger code.
+	code := debugger code.	
+	self setDummyWindowForPresenter: code.
 	adapter := SpMorphicCodeAdapter new.
 	adapter adapt: code.	
 	code adapter: adapter.
@@ -440,12 +494,14 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	self assert: record class identicalTo: DSPlaygroundWriteRecord.
+	self assert: record windowId equals: code window window hash.
 	
 	"When the mouse enters the playground, if the playground has focus, generates a reading event"
 	code adapter sendMouseEnterEvent.
 	self assert: self registry size equals: 2.
 	record := self registry second.	
-	self assert: record class identicalTo: DSPlaygroundReadRecord
+	self assert: record class identicalTo: DSPlaygroundReadRecord.
+	self assert: record windowId equals: code window window hash
 ]
 
 { #category : #'tests - debugger' }
@@ -455,8 +511,9 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	modifiedMethodSource := (StDebugger >> #initializeStack) sourceCode.
 	instrumenter instrumentDebuggerStack.
 	
-	debugger := self debuggerForTesting.	
+	debugger := self debuggerForTestingWithWindow.		
 	self assert: self registry size equals: 2.
+	
 	"No idea why: the stack seems to be refreshed 2 times at opening.
 	This generates two identical events:"
 	self assert: self registry first windowId equals: self registry second windowId. 
@@ -472,7 +529,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	record := self registry third.
 	selectedItem := debugger stackTable items second.
 	self assert: record class identicalTo: DSBrowseContextRecord.
-	self assert: record windowId equals: debugger window hash.
+	self assert: record windowId equals: debugger window window hash.
 	self assert: record contextName equals: selectedItem method printString.
 	self assert: record sourceNodeClass equals: selectedItem sourceNodeExecuted class name.
 	self assert: record sourceNodeCode equals: selectedItem sourceNodeExecuted sourceCode.
@@ -488,17 +545,15 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	instrumenter instrumentExpandAttribute.
 	
 	object := OrderedCollection new.
-	inspector := StInspector onObject: object.	
-	items := self tableItemsListFromInspector: inspector.
-	
+	inspector := StInspector onObject: object.		
+	items := self tableItemsListFromInspector: inspector.	
 	items first expandAndRefresh.
 	
 	self assert: self registry size equals: 1.
 	record := self registry first.
-	
-	
+		
 	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self assert: record windowId equals: inspector window hash.
+	self assert: record windowId equals: inspector window window hash.
 	self assert: record attributeName equals: 'self'. 	
 	self assert: record attributeHash equals: object hash.
 	self assert: record attributeValue equals: object displayString 
@@ -579,14 +634,18 @@ DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
 	instrumenter instrumentInspectMethodsOfClass.
 	
 	object := OrderedCollection new.
-	metaPane := StMetaBrowser on: object.
+	metaPane := StMetaBrowser basicNew.
+	self setDummyWindowForPresenter: metaPane.
+	metaPane application: StPharoApplication current.
+	metaPane setModelBeforeInitialization: object.
+	metaPane	initialize.
 	classes := self metaPaneClassesItems: #classes FromInspector: metaPane.
 		
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSInspectMethodsRecord.
-	self assert: record windowId equals: metaPane window hash.
+	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString.
 	
@@ -606,6 +665,8 @@ DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
 	metaPane := StMetaBrowser on: object.
 	methods := self metaPaneClassesItems: #methods FromInspector: metaPane.
 	
+	self setDummyWindowForPresenter: metaPane.
+	
 	methods selectItem: methods items first.
 	self assert: self registry size equals: 1.
 	record := self registry first.	
@@ -613,7 +674,7 @@ DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
 	self assert: record class identicalTo: DSInspectMethodSourceRecord.
 	self assert: record selectedMethod equals: metaPane selectedMethod name.
 	
-	self assert: record windowId equals: metaPane window hash.
+	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString
 	
@@ -629,14 +690,14 @@ DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	instrumenter instrumentInspectorOnObject.
 	
 	object := OrderedCollection new.
-	inspector := StInspector onObject: object.	
+	inspector := self newInspectorOn: object.
 
 	self assert: self registry size equals: 1.
 	record := self registry first.
 	
 	
 	self assert: record class identicalTo: DSInspectObjectRecord.
-	self assert: record windowId equals: inspector window hash.
+	self assert: record windowId equals: inspector window window hash.
 	self assert: record inspectedObject equals: object printString.
 	self assert: record inspectedObjectHash equals: object hash
 ]
@@ -648,8 +709,8 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	modifiedMethodSource := (StObjectInspectorPresenter >> #initializePresenters) sourceCode.
 	instrumenter instrumentInspectorPageSelection.
 	
-	object := OrderedCollection new.
-	inspector := StInspector onObject: object.	
+	object := OrderedCollection new.	
+	inspector := self newInspectorOn: object.
 	objectInspector := inspector firstPage.
 	pagesView := (objectInspector class slotNamed: #views) read: objectInspector.	
 
@@ -657,7 +718,7 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSSelectInspectorPageRecord.
-	self assert: record windowId equals: inspector window hash.
+	self assert: record windowId equals: inspector window window hash.
 	self assert: record pageTitle equals: pagesView pages first title. 	
 	self assert: record inspectedObjectHash equals: object hash.
 	self assert: record inspectedObject equals: object printString.
@@ -750,14 +811,15 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	instrumenter instrumentNavigateAttribute.
 	
 	object := OrderedCollection new.
-	raw := StRawInspection on: object.	
+	raw := StRawInspection on: object.
+	self setDummyWindowForPresenter: raw.	
 	raw selectPath: #(2).
 
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSNavigateAttributeRecord.
-	self assert: record windowId equals: raw window hash.
+	self assert: record windowId equals: raw window window hash.
 	self assert: record inspectedObject equals: object printString.
 	self assert: record inspectedObjectHash equals: object hash
 ]
@@ -947,7 +1009,7 @@ DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	self assert: self registry size equals: 1.
 	record := self registry first.	
 	self assert: record class identicalTo: DSPlaygroundOpenedRecord.
-	self assert: record windowId equals: playground window hash
+	self assert: record windowId equals: playground window window hash
 ]
 
 { #category : #'tests - debugger' }

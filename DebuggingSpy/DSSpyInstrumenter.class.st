@@ -156,7 +156,7 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			self updateCodeFromContext: context.
 			self expandStackIfLastItemIsSelected.
 			self updateWindowTitle.
-			[DSBrowseContextRecord for: { context . self window } ] on: Error do:[:err| err freeze inspect. DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
+			[DSBrowseContextRecord for: { context . self window window} ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack''.
 	stackHeader toolbarActions: (CmCommandGroup new
@@ -213,7 +213,7 @@ DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 	StMetaBrowser compile: 'methodsOf: aClass
 
 	aClass ifNil: [ ^ #() ].
-	[DSInspectMethodsRecord for: {self model. self selectedClass. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
+	[DSInspectMethodsRecord for: {self model. self selectedClass. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
 	^ aClass methods sorted: #selector ascending
 '
 ]
@@ -225,7 +225,7 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 	source userActionDuring: [
 		method
 			ifNotNil: [ 
-				[DSInspectMethodSourceRecord for: {self model. self selectedClass. self selectedMethod. self window}] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
+				[DSInspectMethodSourceRecord for: {self model. self selectedClass. self selectedMethod. self window window}] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
 				source text: method sourceCode; beForMethod: method  ]
 			ifNil: [ 
 				source text: ''''; clearInteractionModel ] ]'
@@ -235,7 +235,7 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
 	StInspector compile: 'initializePresenters
-	[DSInspectObjectRecord for: {self model inspectedObject. self window}] on: Error do:[DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
+	[DSInspectObjectRecord for: {self model inspectedObject. self window window}] on: Error do:[DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
 	millerList := self instantiate: SpMillerPaginatorPresenter.
 	millerList millerListPresenter
 		spacing: self spacing;
@@ -252,7 +252,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	header := self instantiate: StHeaderBar.
 	self initializeLayout.
 	views whenSelectedPageChangedDo: [ :page | 
-		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
+		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
 	self refresh'
 ]
 
@@ -303,7 +303,7 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 
 	self outputSelectionPort transmitDo: [ :val | 
 		val ifNotNil: [ 
-			[ DSNavigateAttributeRecord for: { {val. model}. self window } ]
+			[ DSNavigateAttributeRecord for: { {val. model}. self window window} ]
 				on: Error
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
@@ -323,7 +323,7 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 		contextKeyBindings: (self menuActionsFor: text) asKMCategory;
 		whenTextChangedDo: [ :aString | page contents: aString ].
 		
-	[DSPlaygroundOpenedRecord for: self window] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_OPEN ].
+	[DSPlaygroundOpenedRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_OPEN ].
 		
 	text eventHandler 
 		whenKeyUpDo: [ :event | self updateLineNumber];

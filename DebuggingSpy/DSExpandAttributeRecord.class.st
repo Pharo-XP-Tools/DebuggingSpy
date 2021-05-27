@@ -9,9 +9,11 @@ Class {
 
 { #category : #'actions - api' }
 DSExpandAttributeRecord >> record: aFTTableItem [
-
+	|window|
+	window := aFTTableItem dataSource model window.
+	(window isKindOf: SpWindowPresenter) ifTrue:[window := window window].
 	super record: { 
 			aFTTableItem data.
 			aFTTableItem data hostObject.
-			aFTTableItem dataSource model window }
+			window}
 ]
