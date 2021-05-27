@@ -22,7 +22,7 @@ DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpy class >> dateTimeString [
 	^'[' , DateAndTime now asString , ']:'
 ]
@@ -220,7 +220,7 @@ DSSpy class >> printGLMStringMorphs: anArrayOfMorphs [
 	^ str contents
 ]
 
-{ #category : #helpers }
+{ #category : #deprecated }
 DSSpy class >> printStringMorphs: anArrayOfMorphs [
 	| str |
 	str := WriteStream on: String new.
