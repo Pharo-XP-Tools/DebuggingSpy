@@ -13,7 +13,7 @@ Class {
 { #category : #executing }
 DSndarinStepToReturnCommand >> execute [
 
-	DSStepActionRecord for: self.
+	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_RETURN].
 	self forTests ifTrue: [ ^ self ].
 	^ super execute
 ]

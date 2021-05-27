@@ -13,7 +13,7 @@ Class {
 { #category : #executing }
 DSProceedCommand >> execute [
 
-	DSStepActionRecord for: self.
+	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #PROCEED].
 	self forTests ifTrue: [ ^ self ].
 	^ super execute
 ]

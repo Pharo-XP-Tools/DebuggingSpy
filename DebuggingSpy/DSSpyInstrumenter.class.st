@@ -69,7 +69,7 @@ DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 	this description the new text selection."
 
 	| printString |
-	[DSPrintItRecord for: self selectionString] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+	[DSPrintItRecord for: self selectionString] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 	self
 		evaluateSelectionAndDo: [ :result | 
 			
@@ -203,7 +203,7 @@ DSSpyInstrumenter >> instrumentHaltHits [
 		sender := thisContext sender sender sender sender sender.
 		DSHaltHitRecord for:  {sender sourceNodeExecuted. #halt}] 
 		on: Error 
-		do:[:err| err freeze inspect.  DSSpy log: #ERROR key: #HALT_HIT ]].
+		do:[:err| DSSpy log: #ERROR key: #HALT_HIT ]].
 	super signal'.
 ]
 
@@ -260,7 +260,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 
 	FTSelectableMorph compile:'mouseDown: evt 
-	DSMouseDownTableItemRecord for: {self allMorphs. self window}.
+	[DSMouseDownTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #CLICK_ON_TABLE_ITEM].
 	^super mouseDown: evt '
 ]
 
@@ -269,7 +269,7 @@ DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 
 	FTSelectableMorph compile: 'mouseEnter: evt
 
-	DSMouseEnterTableItemRecord for: {self allMorphs. self window}.
+	[DSMouseEnterTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #ENTER_TABLE_ITEM].
 	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
@@ -339,7 +339,7 @@ DSSpyInstrumenter >> instrumentRubEditorDebugIt [
 
 RubSmalltalkEditor compile: 'debug: aStream
 	| method receiver context |
-	[DSDebugItRecord for: aStream contents] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
+	[DSDebugItRecord for: aStream contents] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
 	(self model respondsTo: #doItReceiver)
 		ifTrue: [ receiver := self model doItReceiver.
 			context := self model doItContext ]
@@ -502,7 +502,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 	this description the new text selection."
 
 	self evaluateSelectionAndDo: [ :result | 
-		[DSPrintItRecord for: self selectedTextOrLine.] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+		[DSPrintItRecord for: self selectedTextOrLine] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 		self printObject: result ]'
 ]
 

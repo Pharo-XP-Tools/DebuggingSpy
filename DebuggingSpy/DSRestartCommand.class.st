@@ -10,6 +10,6 @@ Class {
 
 { #category : #executing }
 DSRestartCommand >> execute [
-		DSStepActionRecord for: self.
+		[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #RESTART].
 		^super execute.
 ]

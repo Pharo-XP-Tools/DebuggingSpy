@@ -13,7 +13,7 @@ Class {
 { #category : #executing }
 DSndarinStepToNextInstanceCreation >> execute [
 
-	DSStepActionRecord for: self.
+	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_NEXT_INSTANCE_CREATION].
 	self forTests ifTrue: [ ^ self ].
 	^ super execute
 ]

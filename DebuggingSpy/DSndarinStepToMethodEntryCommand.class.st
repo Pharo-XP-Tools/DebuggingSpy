@@ -13,7 +13,7 @@ Class {
 { #category : #executing }
 DSndarinStepToMethodEntryCommand >> execute [
 
-	DSStepActionRecord for: self.
+	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_METHOD_ENTRY].
 	self forTests ifTrue: [ ^ self ].
 	^ super execute
 ]

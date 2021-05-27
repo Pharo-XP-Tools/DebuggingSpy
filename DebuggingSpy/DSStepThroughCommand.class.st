@@ -10,6 +10,6 @@ Class {
 
 { #category : #executing }
 DSStepThroughCommand >> execute [
-		DSStepActionRecord for: self.
+		[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #THROUGH].
 		^super execute.
 ]
