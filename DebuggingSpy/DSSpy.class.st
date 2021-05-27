@@ -64,11 +64,8 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 
 { #category : #logging }
 DSSpy class >> log: elements key: key [
-	| log |
-	self haltOnce.       
-	log := key , ':', self dateTimeString, elements printString, ':END_', key, ':'.
-	log crTrace.
-	self critical: [ self logToFile: log ]
+
+	DSLoggingErrorRecord for: key
 ]
 
 { #category : #deprecated }

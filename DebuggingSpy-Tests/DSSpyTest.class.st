@@ -282,6 +282,14 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 ]
 
 { #category : #'tests - logging' }
+DSSpyTest >> testLogKey [
+	DSSpy log: nil key: #TEST.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record event equals: #TEST
+]
+
+{ #category : #'tests - logging' }
 DSSpyTest >> testLogToFile [
 	|str|
 	str := WriteStream on: String new.
