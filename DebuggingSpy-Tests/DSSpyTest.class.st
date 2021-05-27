@@ -745,9 +745,8 @@ DSSpyTest >> testWriteToFile [
 	
 	
 	DSSpy loggingFileReference ensureDelete.
-	
 	DSSpy writeToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: 'test'
+	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
 ]
 
 { #category : #helpers }

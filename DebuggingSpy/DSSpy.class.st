@@ -307,7 +307,19 @@ DSSpy class >> windowNameFromEvent: anEvent [
 { #category : #logging }
 DSSpy class >> writeToFile: aString [
 
-	self stream
-		nextPutAll: aString;
-		close
+	| str strSize firstWrite writingPosition |
+	str := self stream.
+	strSize := str writeStreamSize.
+	firstWrite := strSize = 0.
+	firstWrite ifTrue: [ str nextPut: $[ ].
+	writingPosition := firstWrite
+		                   ifTrue: [ str position ]
+		                   ifFalse: [ strSize - 1 ].
+	str position: writingPosition.
+	firstWrite ifFalse: [ 
+		str nextPut: $,.
+		str crlf ].
+	str nextPutAll: aString.
+	str nextPut: $].
+	str close
 ]
