@@ -281,6 +281,42 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
+{ #category : #'tests - logging' }
+DSSpyTest >> testLogToFile [
+	|str|
+	str := WriteStream on: String new.
+	str crlf.
+	str nextPutAll: 'test'.
+	
+	DSSpy loggingFileReference ensureDelete.
+	DSSpy logOnlyWhenTaskStarted: false.
+	DSSpy logToFile: 'test'.
+	self assert: DSSpy loggingFileReference readStream contents equals: str contents.
+	
+	str crlf.
+	str nextPutAll: 'test'.
+	
+	DSSpy logToFile: 'test'.
+	self assert: DSSpy loggingFileReference readStream contents equals: str contents
+]
+
+{ #category : #'tests - logging' }
+DSSpyTest >> testLogToFileOnlyWhenTaskStarted [
+	|str|
+	str := WriteStream on: String new.
+	str crlf.
+	str nextPutAll: 'test'.
+	
+	DSSpy loggingFileReference ensureDelete.
+	DSSpy logOnlyWhenTaskStarted: true.
+	DSSpy logToFile: 'test'.
+	self deny: DSSpy loggingFileReference exists.
+	
+	DSSpy startTask: task.	
+	DSSpy logToFile: 'test'.
+	self assert: DSSpy loggingFileReference readStream contents equals: str contents
+]
+
 { #category : #'tests - window events' }
 DSSpyTest >> testLogWindowActivated [
 	DSSpy logWindowActivated: self windowEvent.
