@@ -291,21 +291,11 @@ DSSpyTest >> testLogKey [
 
 { #category : #'tests - logging' }
 DSSpyTest >> testLogToFile [
-	|str|
-	str := WriteStream on: String new.
-	str crlf.
-	str nextPutAll: 'test'.
-	
+
 	DSSpy loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: false.
 	DSSpy logToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: str contents.
-	
-	str crlf.
-	str nextPutAll: 'test'.
-	
-	DSSpy logToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: str contents
+	self assert: DSSpy loggingFileReference readStream contents equals: 'test'
 ]
 
 { #category : #'tests - logging' }
@@ -748,6 +738,16 @@ DSSpyTest >> testWindowOpenedListensToWindowActivatedAndClosedEvents [
 
 	record := self registry third.
 	self assert: record class identicalTo: DSWindowClosedRecord
+]
+
+{ #category : #'tests - logging' }
+DSSpyTest >> testWriteToFile [
+	
+	
+	DSSpy loggingFileReference ensureDelete.
+	
+	DSSpy writeToFile: 'test'.
+	self assert: DSSpy loggingFileReference readStream contents equals: 'test'
 ]
 
 { #category : #helpers }

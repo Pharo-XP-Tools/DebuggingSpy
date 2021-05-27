@@ -95,14 +95,9 @@ DSSpy class >> logOnlyWhenTaskStarted: anObject [
 { #category : #logging }
 DSSpy class >> logToFile: aString [
 
-	| str |
 	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
 		^ self ].
-	str := self stream.
-	str setToEnd.
-	str crlf.
-	str nextPutAll: aString.
-	str close
+	self critical: [ self writeToFile: aString ]
 ]
 
 { #category : #'events - windows' }
@@ -307,4 +302,12 @@ DSSpy class >> windowNameFromEvent: anEvent [
 	|win|
 	win := anEvent window.
 	^self windowName: win
+]
+
+{ #category : #logging }
+DSSpy class >> writeToFile: aString [
+
+	self stream
+		nextPutAll: aString;
+		close
 ]
