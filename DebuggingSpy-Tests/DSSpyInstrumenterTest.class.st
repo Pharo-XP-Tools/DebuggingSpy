@@ -745,8 +745,8 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 { #category : #'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	|raw object|
-	modifiedClass := StInspector.
-	modifiedMethodSource := (StInspector >> #initializePresenters) sourceCode.
+	modifiedClass := StRawInspection.
+	modifiedMethodSource := (StRawInspection >> #setAttributeTable) sourceCode.
 	instrumenter instrumentNavigateAttribute.
 	
 	object := OrderedCollection new.

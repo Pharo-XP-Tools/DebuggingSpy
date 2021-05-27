@@ -252,7 +252,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	header := self instantiate: StHeaderBar.
 	self initializeLayout.
 	views whenSelectedPageChangedDo: [ :page | 
-		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
+		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
 	self refresh'
 ]
 
@@ -360,7 +360,6 @@ DSSpyInstrumenter >> instrumentRubEditorDoIt [
 	[ DSDoItRecord for: self selectionString]
 			on: Error
 			do: [ :e | 
-				self halt.
 				DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 	^ self evaluateSelection'
 ]
@@ -374,7 +373,7 @@ DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 	self
 		evaluateSelectionAndDo: [ :result | 
 			[DSPrintItRecord for: result 
-			] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+			] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 			printString := [ result printString ]
 				on: Error
 				do: [ ''<error in printString: try ''''Inspect it'''' to debug>'' ].
@@ -475,7 +474,6 @@ DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 			selection ]
 		on: Error
 		do: [ :e | 
-			self halt.
 			DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 	self debug: selection readStream'
 ]
@@ -492,7 +490,6 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 		DSDoItRecord for: self selectedTextOrLine ]
 			on: Error
 			do: [ :e | 
-				self halt.
 				DSSpy log: #ERROR key: #ACTION_PRINTIT ] ]'
 ]
 
@@ -505,7 +502,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 	this description the new text selection."
 
 	self evaluateSelectionAndDo: [ :result | 
-		[DSPrintItRecord for: self selectedTextOrLine.] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+		[DSPrintItRecord for: self selectedTextOrLine.] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 		self printObject: result ]'
 ]
 
@@ -549,7 +546,7 @@ DSSpyInstrumenter >> listenToBreakpointChanges [
 	SystemAnnouncer uniqueInstance weak when: BreakpointRemoved  send: #recordBreakpointEvent: to: DSSpy
 ]
 
-{ #category : #breakpoints }
+{ #category : #deprecated }
 DSSpyInstrumenter >> listenToHaltsChanges [
 	StHaltCache compile: 'setNodeCache: haltAndBreakpointNodes forSelector: aSelector
 	|nodeSelectors|
@@ -599,7 +596,6 @@ DSSpyInstrumenter >> logArray: anArray key: aKey [
 { #category : #breakpoints }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self instrumentHaltHits.
-	self listenToHaltsChanges.
 	self listenToBreakpointChanges 
 ]
 
