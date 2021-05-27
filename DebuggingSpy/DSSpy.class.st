@@ -22,11 +22,6 @@ DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
 ]
 
-{ #category : #deprecated }
-DSSpy class >> dateTimeString [
-	^'[' , DateAndTime now asString , ']:'
-]
-
 { #category : #accessing }
 DSSpy class >> defaultLoggingDirectoryName [
 	^'ds-spy'
@@ -66,18 +61,6 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 DSSpy class >> log: elements key: key [
 
 	DSLoggingErrorRecord for: key
-]
-
-{ #category : #deprecated }
-DSSpy class >> logInspectorTabChange: selectedTab [
-	[ 
-	|anArrayOfMorphs |
-	anArrayOfMorphs :=  selectedTab label allMorphs.
-	self
-		log: (self printGLMStringMorphs: anArrayOfMorphs)
-		key: #INSPECTOR_TAB_SELECTION ]
-		on: Error
-		do: [ self log: #ERROR key: #INSPECTOR_TAB_SELECTION ]
 ]
 
 { #category : #accessing }
@@ -207,30 +190,6 @@ DSSpy class >> monitor [
 	^monitor ifNil:[monitor := Monitor new]
 ]
 
-{ #category : #deprecated }
-DSSpy class >> printGLMStringMorphs: anArrayOfMorphs [
-	| str |
-	str := WriteStream on: String new.
-	anArrayOfMorphs
-		do: [ :m | 
-			(m isKindOf: GLMStringBrick)
-				ifTrue: [ str << m text asString.
-					str << ' ' ] ].
-	^ str contents
-]
-
-{ #category : #deprecated }
-DSSpy class >> printStringMorphs: anArrayOfMorphs [
-	| str |
-	str := WriteStream on: String new.
-	anArrayOfMorphs
-		do: [ :m | 
-			((m isKindOf: StringMorph) and: [ m contents ~= '...' ])
-				ifTrue: [ str << m contents asString.
-					str << ' ' ] ].
-	^ str contents
-]
-
 { #category : #'events - breakpoints' }
 DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
 	^aBreakpointEvent recordBreakpoint 
@@ -301,20 +260,6 @@ DSSpy class >> stream [
 DSSpy class >> taskStarted [
 
 	^ taskStarted ifNil: [ taskStarted := false ]
-]
-
-{ #category : #deprecated }
-DSSpy class >> windowName: win [
-	|label|	
-	label := [win labelString ] on: Error do:['window '].
-	^label, ' (', win hash printString, ')'
-]
-
-{ #category : #deprecated }
-DSSpy class >> windowNameFromEvent: anEvent [
-	|win|
-	win := anEvent window.
-	^self windowName: win
 ]
 
 { #category : #logging }
