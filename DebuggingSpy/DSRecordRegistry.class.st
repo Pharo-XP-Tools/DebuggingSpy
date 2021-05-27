@@ -20,6 +20,7 @@ DSRecordRegistry class >> current [
 
 { #category : #initialization }
 DSRecordRegistry >> addRecord: aRecord [
+	self assert: aRecord dateTime notNil.
 	records add: aRecord
 ]
 
