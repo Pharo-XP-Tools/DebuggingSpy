@@ -83,7 +83,7 @@ DSSpy class >> logInspectorTabChange: selectedTab [
 { #category : #accessing }
 DSSpy class >> logOnlyWhenTaskStarted [
 
-	^ logOnlyWhenTaskStarted
+	^ logOnlyWhenTaskStarted ifNil:[logOnlyWhenTaskStarted := false]
 ]
 
 { #category : #accessing }
