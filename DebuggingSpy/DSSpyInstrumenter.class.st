@@ -213,7 +213,7 @@ DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 	StMetaBrowser compile: 'methodsOf: aClass
 
 	aClass ifNil: [ ^ #() ].
-	[DSInspectMethodsRecord for: {self model. self selectedClass. self window}] on: Error do:[:e| self halt. DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
+	[DSInspectMethodsRecord for: {self model. self selectedClass. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
 	^ aClass methods sorted: #selector ascending
 '
 ]
