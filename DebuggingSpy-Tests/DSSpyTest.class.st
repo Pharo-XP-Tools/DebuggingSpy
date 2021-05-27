@@ -396,6 +396,7 @@ DSSpyTest >> testLoggingFileReference [
 DSSpyTest >> testMaterialize [
 	|records materializedRecords|
 	DSSpy loggingFileReference ensureDelete.
+	DSSpy resetSpy.
 	records := OrderedCollection with:  (DSLoggingErrorRecord for: #TEST) with:  (DSLoggingErrorRecord for: #TEST).
 	records do:[:r| DSSpy serialize: r].
 	materializedRecords := DSSpy materialize: DSSpy loggingFileReference.
@@ -659,9 +660,12 @@ DSSpyTest >> testResetSpy [
 DSSpyTest >> testSerialize [
 
 	DSSpy loggingFileReference ensureDelete.
+	DSSpy resetSpy.
 	record := DSLoggingErrorRecord for: #TEST.
 	DSSpy serialize: record.
-	self assert: DSSpy loggingFileReference contents equals: ('[', (STON toString: record), ']')
+	self
+		assert: DSSpy loggingFileReference contents
+		equals: '[' , (STON toString: record) , ']'
 ]
 
 { #category : #'tests - task management' }

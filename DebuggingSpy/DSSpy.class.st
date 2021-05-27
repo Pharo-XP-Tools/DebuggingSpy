@@ -275,7 +275,8 @@ DSSpy class >> resetSpy [
 
 	loggingFilename := nil.
 	loggingFileReference := nil.
-	taskStarted := false
+	taskStarted := false.
+	logOnlyWhenTaskStarted := false
 ]
 
 { #category : #'serialize/materialize' }
