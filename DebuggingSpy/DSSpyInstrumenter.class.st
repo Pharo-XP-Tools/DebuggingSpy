@@ -10,7 +10,8 @@ Class {
 { #category : #'system instrumentation' }
 DSSpyInstrumenter class >> instrumentSystem [
 	<script>
-	self new instrumentSystem
+	self new instrumentSystem.
+	DSRecordRegistry autoSerialize: true
 ]
 
 { #category : #deprecated }

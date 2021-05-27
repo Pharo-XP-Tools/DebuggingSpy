@@ -10,18 +10,41 @@ Class {
 	#classVars : [
 		'Current'
 	],
+	#classInstVars : [
+		'autoSerialize'
+	],
 	#category : #'DebuggingSpy-Records'
 }
+
+{ #category : #accessing }
+DSRecordRegistry class >> autoSerialize [
+
+	^ autoSerialize ifNil: [ autoSerialize := false ]
+]
+
+{ #category : #accessing }
+DSRecordRegistry class >> autoSerialize: anObject [
+
+	autoSerialize := anObject
+]
 
 { #category : #accessing }
 DSRecordRegistry class >> current [
 	^Current ifNil:[Current := self new]
 ]
 
+{ #category : #private }
+DSRecordRegistry class >> serialize: aDSRecord [
+
+	self autoSerialize ifFalse: [ ^ self ].
+	DSSpy serialize: aDSRecord
+]
+
 { #category : #initialization }
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
-	records add: aRecord
+	records add: aRecord.
+	self class serialize: aRecord
 ]
 
 { #category : #initialization }
