@@ -392,6 +392,26 @@ DSSpyTest >> testLoggingFileReference [
 	self assert: fileReference exists
 ]
 
+{ #category : #'tests - serialize/materialize' }
+DSSpyTest >> testMaterialize [
+	|records materializedRecords|
+	DSSpy loggingFileReference ensureDelete.
+	records := OrderedCollection with:  (DSLoggingErrorRecord for: #TEST) with:  (DSLoggingErrorRecord for: #TEST).
+	records do:[:r| DSSpy serialize: r].
+	materializedRecords := DSSpy materialize: DSSpy loggingFileReference.
+	self assert: materializedRecords size equals: 2.
+	
+	self assert: materializedRecords first class equals: DSLoggingErrorRecord.
+	self assert: materializedRecords first dateTime equals: records first dateTime.
+	self assert: materializedRecords first eventName equals: records first eventName.
+	self assert: materializedRecords first event equals: records first event.
+	
+	self assert: materializedRecords second class equals: DSLoggingErrorRecord.
+	self assert: materializedRecords second dateTime equals: records second dateTime.
+	self assert: materializedRecords second eventName equals: records second eventName.
+	self assert: materializedRecords second event equals: records second event
+]
+
 { #category : #'tests - methods events' }
 DSSpyTest >> testMethodAdded [
 	DSSpy methodAdded: self methodEvent.
@@ -633,6 +653,15 @@ DSSpyTest >> testResetSpy [
 	self
 		assert: DSSpy loggingFileName
 		equals: DSSpy defaultLoggingFileName
+]
+
+{ #category : #'tests - serialize/materialize' }
+DSSpyTest >> testSerialize [
+
+	DSSpy loggingFileReference ensureDelete.
+	record := DSLoggingErrorRecord for: #TEST.
+	DSSpy serialize: record.
+	self assert: DSSpy loggingFileReference contents equals: ('[', (STON toString: record), ']')
 ]
 
 { #category : #'tests - task management' }

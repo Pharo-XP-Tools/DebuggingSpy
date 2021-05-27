@@ -152,6 +152,12 @@ DSSpy class >> loggingFileReference [
 	^loggingFileReference ifNil:[loggingFileReference := self ensureCreateLoggingFileReference]
 ]
 
+{ #category : #'serialize/materialize' }
+DSSpy class >> materialize: aFilename [
+
+	^STON fromString: aFilename asFileReference contents
+]
+
 { #category : #'events - methods' }
 DSSpy class >> methodAdded: evt [
 
@@ -270,6 +276,12 @@ DSSpy class >> resetSpy [
 	loggingFilename := nil.
 	loggingFileReference := nil.
 	taskStarted := false
+]
+
+{ #category : #'serialize/materialize' }
+DSSpy class >> serialize: aDSEventRecord [
+
+	self logToFile: (STON toString: aDSEventRecord)
 ]
 
 { #category : #'task management' }
