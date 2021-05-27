@@ -295,15 +295,14 @@ DSSpyTest >> testLogToFile [
 	DSSpy loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: false.
 	DSSpy logToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: 'test'
+	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
 ]
 
 { #category : #'tests - logging' }
 DSSpyTest >> testLogToFileOnlyWhenTaskStarted [
 	|str|
 	str := WriteStream on: String new.
-	str crlf.
-	str nextPutAll: 'test'.
+	str nextPutAll: '[test]'.
 	
 	DSSpy loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: true.
@@ -742,11 +741,26 @@ DSSpyTest >> testWindowOpenedListensToWindowActivatedAndClosedEvents [
 
 { #category : #'tests - logging' }
 DSSpyTest >> testWriteToFile [
-	
-	
+
+	| str |
 	DSSpy loggingFileReference ensureDelete.
 	DSSpy writeToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
+	self
+		assert: DSSpy loggingFileReference readStream contents
+		equals: '[test]'.
+	DSSpy writeToFile: 'test'.
+
+	str := WriteStream on: String new.
+	str << '['.
+	str << 'test'.
+	str << ','.
+	str crlf.
+	str << 'test'.
+	str << ']'.
+
+	self
+		assert: DSSpy loggingFileReference readStream contents
+		equals: str contents
 ]
 
 { #category : #helpers }
