@@ -74,6 +74,11 @@ DSAbstractEventRecord >> initialize [
 	dateTime := DateAndTime now
 ]
 
+{ #category : #printing }
+DSAbstractEventRecord >> printOn: aStream [
+	aStream << self eventName
+]
+
 { #category : #'actions api' }
 DSAbstractEventRecord >> record: aWindow [
 	self assert: (aWindow isKindOf: SystemWindow).
