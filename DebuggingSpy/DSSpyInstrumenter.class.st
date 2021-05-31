@@ -459,10 +459,16 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 
 { #category : #system }
 DSSpyInstrumenter >> instrumentSystem [
-	
+
+	self logClyBrowsersOpenings.
+	self logCodeInteractions.
+	self logDebuggerInteractions.
+	self logHaltAndBreakpointEvents.
+	self logInspectorInteractions.
+	self logMouseEvents.
+	self logPlaygroundOpenings.
 	self listenToWindowEvents.
 	self listenToMethodChanges
-	
 ]
 
 { #category : #breakpoints }
