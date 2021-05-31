@@ -296,27 +296,12 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 { #category : #playground }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
-	StPlaygroundPagePresenter compile: 'initializePresenters
-	self initializeToolbar.
-	self initializeStatusbar.
-
-	(text := self newCode)
-		interactionModel: StPlaygroundInteractionModel new;
-		lineNumbers: self showLineNumbers;
-		overridingContextMenu;
-		contextMenu: [ (self menuActionsFor: text) asMenuPresenter ];
-		contextKeyBindings: (self menuActionsFor: text) asKMCategory;
-		whenTextChangedDo: [ :aString | page contents: aString ].
-		
-	[DSPlaygroundOpenedRecord for: self] on: Error do:[ DSSpy log: #ERROR key: #PLAYGROUND_OPEN ].
-		
-	text eventHandler 
-		whenKeyUpDo: [ :event | self updateLineNumber];
-	whenKeyDownDo: [ :event | self updateLineNumber.];
-		whenMouseUpDo: [ :event | self updateLineNumber ];
-		"before taking focus position will be nil, ensure I have the correct one"
-		whenFocusReceivedDo: [ self updateLineNumber ].
-	self updatePresenter'
+	StPlayground class compile: 'open 
+	<script>
+	|pg|
+	pg := self new openWithSpec.
+	[DSPlaygroundOpenedRecord for: pg] on: Error do:[:err| DSSpy log: err key: #PLAYGROUND_OPEN ].
+	^pg'
 ]
 
 { #category : #interactions }

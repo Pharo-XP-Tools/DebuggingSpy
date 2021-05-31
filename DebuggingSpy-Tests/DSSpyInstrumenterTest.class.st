@@ -998,12 +998,11 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 { #category : #'tests - playground' }
 DSSpyInstrumenterTest >> testInstrumentStPlayground [
-	|playground code|
-	modifiedClass := StPlaygroundPagePresenter.
-	modifiedMethodSource :=  (StPlaygroundPagePresenter >> #initializePresenters) sourceCode.
+	|playground|
+	modifiedClass := StPlayground.
+	modifiedMethodSource :=  (StPlayground class >> #open) sourceCode.
 	instrumenter instrumentPlaygroundCode.
-	playground := self playgroundPagePresenter.
-	code := self codePresenterFrom: playground.
+	playground := StPlayground open.
 	
 	"On opening, the playground generates an opening record"
 	self assert: self registry size equals: 1.
