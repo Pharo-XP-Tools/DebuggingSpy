@@ -457,6 +457,14 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 		self printObject: result ]'
 ]
 
+{ #category : #system }
+DSSpyInstrumenter >> instrumentSystem [
+	
+	self listenToWindowEvents.
+	self listenToMethodChanges
+	
+]
+
 { #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointChanges [
 	SystemAnnouncer uniqueInstance weak when: BreakpointAdded  send: #recordBreakpointEvent: to: DSSpy.
@@ -477,13 +485,67 @@ DSSpyInstrumenter >> listenToWindowEvents [
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
 ]
 
-{ #category : #breakpoints }
+{ #category : #system }
+DSSpyInstrumenter >> logClyBrowsersOpenings [
+	self instrumentClyQueryBrowser.
+	self instrumentClyFullBrowser 
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> logCodeInteractions [
+
+	self instrumentClyTextEditorPrintIt.
+	self instrumentRubEditorDebugIt.
+	self instrumentRubEditorDoIt.
+	self instrumentRubEditorPrintIt.
+	self instrumentSpCodeDebugIt.
+	self instrumentSpCodeDoIt.
+	self instrumentSpCodePrintIt
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> logDebuggerInteractions [
+
+	self instrumentCodePresenter.
+	self instrumentDebuggerCommands.
+	self instrumentDebuggerStack.
+	self instrumentSindarinDebuggerCommands
+]
+
+{ #category : #system }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self instrumentHaltHits.
 	self listenToBreakpointChanges 
 ]
 
-{ #category : #methods }
+{ #category : #system }
+DSSpyInstrumenter >> logInspectorInteractions [
+
+	self instrumentExpandAttribute.
+	self instrumentInspectMethodsOfClass.
+	self instrumentInspectSourceOfMethod.
+	self instrumentInspectorOnObject.
+	self instrumentInspectorPageSelection.
+	self instrumentNavigateAttribute
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> logMouseEvents [
+
+	self instrumentMouseDownFTSelectableMorph.
+	self instrumentMouseEnterFTSelectableMorph.
+	self instrumentMouseEnterWindow.
+	self instrumentMouseLeaveWindow.
+	self instrumentRubScrollTextMorphHandleMouseOver.
+	self instrumentRubScrollTextMorphMouseEnter
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> logPlaygroundOpenings [
+	self instrumentPlaygroundCode
+]
+
+{ #category : #system }
 DSSpyInstrumenter >> unsubscribeFromSystemAnnouncer [
 
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy 
