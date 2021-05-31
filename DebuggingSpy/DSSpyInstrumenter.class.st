@@ -459,7 +459,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 
 { #category : #system }
 DSSpyInstrumenter >> instrumentSystem [
-
+	self instrumentDebuggerOpening.
 	self logClyBrowsersOpenings.
 	self logCodeInteractions.
 	self logDebuggerInteractions.
