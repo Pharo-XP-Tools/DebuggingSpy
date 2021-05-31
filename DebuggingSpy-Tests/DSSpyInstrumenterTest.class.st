@@ -505,6 +505,25 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 ]
 
 { #category : #'tests - debugger' }
+DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
+	modifiedClass := StDebugger.	
+	modifiedMethodSource :=  [(StDebugger >> #initializeWindow:) sourceCode] on: Error do:[nil].
+	
+	debugger := self debuggerForTestingWithWindow.			
+	instrumenter instrumentDebuggerOpening.	
+	debugger initializeWindow: debugger window.
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class identicalTo: DSDebuggerOpeningRecord.
+	self assert: record windowId equals: debugger window window hash.
+	self assert: record contextName equals: debugger currentContext method printString.
+	self assert: record sourceNodeClass equals: debugger currentContext  sourceNodeExecuted class name.
+	self assert: record sourceNodeCode equals: debugger currentContext  sourceNodeExecuted sourceCode
+	
+]
+
+{ #category : #'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	|selectedItem|
 	modifiedClass := StDebugger.

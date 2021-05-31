@@ -102,6 +102,21 @@ DSSpyInstrumenter >> instrumentDebuggerCommands [
 ]
 
 { #category : #debugger }
+DSSpyInstrumenter >> instrumentDebuggerOpening [
+
+	StDebugger compile: 'initializeWindow: aWindowPresenter
+	
+	super initializeWindow: aWindowPresenter.
+	aWindowPresenter
+		title: self debuggerActionModel statusStringForContext;
+		initialExtent: self initialExtent;
+		whenClosedDo: [ self clear ].
+
+	self initializeShortcuts: aWindowPresenter.
+		[DSDebuggerOpeningRecord for: self ] on: Error do:[:err| DSSpy log: err key: #DEBUGGER_STACK ]	'
+]
+
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
