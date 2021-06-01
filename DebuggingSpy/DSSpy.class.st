@@ -53,7 +53,7 @@ DSSpy class >> ensureCreateLoggingFileReference [
 DSSpy class >> forceLoggingFileNameFor: aTask [
 
 	loggingFilename := aTask name , '-' , self defaultLoggingFileName.
-	self ensureCreateLoggingFileReference 
+	loggingFileReference := self ensureCreateLoggingFileReference 
 ]
 
 { #category : #'task management' }

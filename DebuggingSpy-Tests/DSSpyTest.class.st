@@ -178,6 +178,7 @@ DSSpyTest >> setUp [
 
 { #category : #running }
 DSSpyTest >> tearDown [
+	DSRecordRegistry autoSerialize: false.
 	instrumenter unsubscribeFromSystemAnnouncer.
 	breakpoint ifNotNil: [ breakpoint remove ].
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
@@ -694,6 +695,19 @@ DSSpyTest >> testStartTask [
 	self assert: record class equals: DSStartTaskRecord.
 	self assert: record taskName equals: DSTask dsTaskDescription.
 	self assert: record description equals: DSTask dsTaskDescription
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testStartTaskSerialization [
+
+	| recordedTask |
+	DSRecordRegistry autoSerialize: true.
+	DSSpy resetSpy.
+	DSSpy startTask: task.
+	recordedTask := (DSSpy materialize:
+		                 DSSpy loggingFileReference) first.
+	self assert: recordedTask class equals: DSStartTaskRecord.
+	self assert: recordedTask taskName equals: task name
 ]
 
 { #category : #'tests - task management' }

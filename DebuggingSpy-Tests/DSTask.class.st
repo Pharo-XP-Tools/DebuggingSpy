@@ -4,6 +4,9 @@ I simulate a task that can be managed through DSSpy.
 Class {
 	#name : #DSTask,
 	#superclass : #Object,
+	#instVars : [
+		'answer'
+	],
 	#category : #'DebuggingSpy-Tests'
 }
 
@@ -15,12 +18,25 @@ DSTask class >> dsTaskDescription [
 
 { #category : #accessing }
 DSTask >> answer [ 	
-	^self class dsTaskDescription
+	^answer
+]
+
+{ #category : #accessing }
+DSTask >> answer: anObject [
+
+	answer := anObject
 ]
 
 { #category : #accessing }
 DSTask >> description [ 	
 	^self class dsTaskDescription
+]
+
+{ #category : #initialization }
+DSTask >> initialize [
+
+	super initialize.
+	answer := self class dsTaskDescription
 ]
 
 { #category : #accessing }
