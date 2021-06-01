@@ -52,7 +52,8 @@ DSSpy class >> ensureCreateLoggingFileReference [
 { #category : #'task management' }
 DSSpy class >> forceLoggingFileNameFor: aTask [
 
-	loggingFilename := aTask name , '-' , self defaultLoggingFileName
+	loggingFilename := aTask name , '-' , self defaultLoggingFileName.
+	self ensureCreateLoggingFileReference 
 ]
 
 { #category : #'task management' }

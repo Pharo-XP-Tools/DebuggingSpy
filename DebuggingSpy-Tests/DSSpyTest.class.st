@@ -273,7 +273,9 @@ DSSpyTest >> testEnsureCreateLoggingFileReference [
 DSSpyTest >> testForceLoggingFileNameFor [
 	DSSpy resetSpy.
 	DSSpy forceLoggingFileNameFor: task.	
-	self assert: DSSpy loggingFileName equals: (task name, '-', SessionManager default currentSession id asString)
+	self assert: DSSpy loggingFileName equals: (task name, '-', SessionManager default currentSession id asString).
+	self assert: DSSpy loggingFileName equals: DSSpy loggingFileReference basename.
+	self assert: DSSpy loggingFileReference exists
 ]
 
 { #category : #'tests - task management' }
