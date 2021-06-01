@@ -517,6 +517,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
 	record := self registry first.
 	self assert: record class identicalTo: DSDebuggerOpeningRecord.
 	self assert: record windowId equals: debugger window window hash.
+	self assert: record debuggerId equals: debugger hash.
 	self assert: record contextName equals: debugger currentContext method printString.
 	self assert: record sourceNodeClass equals: debugger currentContext  sourceNodeExecuted class name.
 	self assert: record sourceNodeCode equals: debugger currentContext  sourceNodeExecuted sourceCode
