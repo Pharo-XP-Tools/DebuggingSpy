@@ -269,6 +269,21 @@ DSSpyTest >> testEnsureCreateLoggingFileReference [
 	self assert: fileReference exists
 ]
 
+{ #category : #'tests - task management' }
+DSSpyTest >> testForceLoggingFileNameFor [
+	DSSpy resetSpy.
+	DSSpy forceLoggingFileNameFor: task.	
+	self assert: DSSpy loggingFileName equals: (task name, '-', SessionManager default currentSession id asString)
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testForceRunningTask [
+	DSSpy resetSpy.
+	DSSpy forceRunningTask: task.
+	self assert: DSSpy taskStarted.
+	self assert: DSSpy loggingFileName equals: (task name, '-', SessionManager default currentSession id asString)
+]
+
 { #category : #'tests - halts events' }
 DSSpyTest >> testIndexesOfHaltNodesIn [
 

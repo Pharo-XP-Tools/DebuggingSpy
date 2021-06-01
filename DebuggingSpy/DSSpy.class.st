@@ -49,6 +49,18 @@ DSSpy class >> ensureCreateLoggingFileReference [
 	^ fr
 ]
 
+{ #category : #'task management' }
+DSSpy class >> forceLoggingFileNameFor: aTask [
+
+	loggingFilename := aTask name , '-' , self defaultLoggingFileName
+]
+
+{ #category : #'task management' }
+DSSpy class >> forceRunningTask: aTask [
+	self forceLoggingFileNameFor: aTask.
+	taskStarted := true
+]
+
 { #category : #'events - breakpoints' }
 DSSpy class >> indexesOfHaltNodesIn: aMethod [
 
@@ -247,7 +259,7 @@ DSSpy class >> serialize: aDSEventRecord [
 { #category : #'task management' }
 DSSpy class >> startTask: aTask [
 	DSStartTaskRecord for: aTask.
-	loggingFilename := aTask name, '-', self defaultLoggingFileName.
+	self forceLoggingFileNameFor: aTask.
 	taskStarted := true
 ]
 
