@@ -36,7 +36,9 @@ DSSpy class >> defaultLoggingFileName [
 { #category : #'task management' }
 DSSpy class >> endTask: aTask [
 	DSEndingTaskRecord for: aTask.
-	self resetSpy
+	loggingFilename := nil.
+	loggingFileReference := nil.
+	taskStarted := false.
 ]
 
 { #category : #logging }

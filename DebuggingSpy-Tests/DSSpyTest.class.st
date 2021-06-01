@@ -318,18 +318,27 @@ DSSpyTest >> testLogToFile [
 
 { #category : #'tests - logging' }
 DSSpyTest >> testLogToFileOnlyWhenTaskStarted [
-	|str|
+	|str dir|
+	dir := DSSpy loggingDirectory .
+	dir exists ifTrue: [ dir deleteAllChildren].
+	DSSpy resetSpy.
+	self deny: DSSpy logOnlyWhenTaskStarted.
+	
 	str := WriteStream on: String new.
 	str nextPutAll: '[test]'.
 	
-	DSSpy loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy logToFile: 'test'.
-	self deny: DSSpy loggingFileReference exists.
+	self assert: DSSpy logOnlyWhenTaskStarted.
+	self assert: DSSpy loggingFileReference contents isEmpty.
 	
 	DSSpy startTask: task.	
 	DSSpy logToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: str contents
+	self assert: DSSpy loggingFileReference contents equals: str contents.
+	
+	DSSpy endTask: task.
+	self assert: DSSpy logOnlyWhenTaskStarted
+	
 ]
 
 { #category : #'tests - window events' }
