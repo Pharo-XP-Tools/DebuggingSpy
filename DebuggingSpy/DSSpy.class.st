@@ -259,9 +259,10 @@ DSSpy class >> serialize: aDSEventRecord [
 
 { #category : #'task management' }
 DSSpy class >> startTask: aTask [
-	DSStartTaskRecord for: aTask.
+
 	self forceLoggingFileNameFor: aTask.
-	taskStarted := true
+	taskStarted := true.
+	DSStartTaskRecord for: aTask
 ]
 
 { #category : #logging }
