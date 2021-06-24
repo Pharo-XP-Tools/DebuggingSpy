@@ -16,7 +16,7 @@ Class {
 
 { #category : #'instance creation' }
 DSRecordHistory class >> on: anArray [
-	^self new records: anArray
+	^self new processRecords: anArray
 ]
 
 { #category : #'API-history' }
@@ -86,6 +86,14 @@ DSRecordHistory >> numberOfSteps [
 
 	^ (records select: [ :record | record isKindOf: DSStepActionRecord ])
 		  size
+]
+
+{ #category : #initialization }
+DSRecordHistory >> processRecords: array [
+
+	self records: array.
+	(self records first isKindOf: DSStartTaskRecord) ifTrue: [ 
+		self taskName: self records first taskName ]
 ]
 
 { #category : #accessing }
