@@ -85,6 +85,11 @@ DSAbstractEventRecord >> record: aWindow [
 	windowId := aWindow hash
 ]
 
+{ #category : #'API-history' }
+DSAbstractEventRecord >> recordWindowHistoryOn: aDSRecordHistory [
+	aDSRecordHistory addWindowRecord: self
+]
+
 { #category : #accessing }
 DSAbstractEventRecord >> windowId [
 
