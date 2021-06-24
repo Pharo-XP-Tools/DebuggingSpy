@@ -9,7 +9,8 @@ Class {
 		'user',
 		'records',
 		'windowsHistory',
-		'tag'
+		'tag',
+		'windowNames'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -21,16 +22,65 @@ DSRecordHistory class >> on: anArray [
 
 { #category : #'API-history' }
 DSRecordHistory >> addWindowRecord: aDSRecord [
-	(self windowsHistory at: aDSRecord windowId ifAbsentPut: [OrderedCollection new]) add: aDSRecord
+
+	(self windowsHistory
+		 at: (self findWindowRecordKeyForID: aDSRecord windowId)
+		 ifAbsentPut: [ OrderedCollection new ]) add: aDSRecord
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> allRecordsOfKind: aClass [
+
+	^ records select: [ :record | record isKindOf: aClass ]
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> breakpointAdds [
+
+	^ (self breakpointEvents: BreakpointAdded name) size
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> breakpointEvents [
+
+	^ self records select: [ :r | r isKindOf: DSAbstractEventRecord ]
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> breakpointEvents: aBreakpointEventName [
+
+	^ self breakpointEvents select: [ :bpEvent | 
+		  bpEvent eventName = aBreakpointEventName ]
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> breakpointHit [
+
+	^ (self breakpointEvents: BreakpointHit name) size
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> breakpointRemove [
+
+	^ (self breakpointEvents: BreakpointRemoved name) size
 ]
 
 { #category : #'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
-	self records do: [ :r | r recordWindowHistoryOn: self ]
+	self windowsHistory removeAll.
+	self fixMissingWindowIds.
+	self records do: [ :r | r recordWindowHistoryOn: self ].
+	self fixWindowRecordKeysNames
 ]
 
 { #category : #'API-history' }
+DSRecordHistory >> callStackBrowing [
+
+	^ (self allRecordsOfKind: DSBrowseContextRecord) size
+]
+
+{ #category : #'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 
 	| time currentRecord disc |
@@ -47,7 +97,7 @@ DSRecordHistory >> collectTimeDiscrepancies [
 	^ disc
 ]
 
-{ #category : #'API-history' }
+{ #category : #'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
 	|time currentRecord|
 	time := 0.
@@ -62,10 +112,83 @@ DSRecordHistory >> detectTimeDiscrepancies [
 	
 ]
 
+{ #category : #'API-history' }
+DSRecordHistory >> executedCode [
+
+	^ (self allRecordsOfKind: DSCodeActionRecord) size
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> findWindowRecordKeyForID: id [
+
+	^ self windowsHistory keys
+		  detect: [ :k | k windowId = id ]
+		  ifNone: [ 
+			  DSRecordHistoryWindowKey new
+				  windowId: id;
+				  yourself ]
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> fixMissingWindowIds [
+
+	| openedWindowStack |
+	openedWindowStack := Stack new.
+	windowNames := Dictionary new.
+
+	records do: [ :r | 
+		r windowId ifNotNil: [ 
+			({ 
+				 DSWindowClosedRecord.
+				 DSMouseLeaveWindowRecord } includes: r class) ifTrue: [ 
+				openedWindowStack removeAllSuchThat: [ :id | r windowId = id ] ].
+
+			({ 
+				 DSWindowActivatedRecord.
+				 DSMouseEnterWindowRecord.
+				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
+				openedWindowStack push: r windowId ].
+
+			({ 
+				 DSWindowActivatedRecord.
+				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
+				(#( nil '' ) includes: r windowName) ifFalse: [ 
+					windowNames at: r windowId put: r windowName ] ] ].
+		r windowId ifNil: [ 
+			openedWindowStack isEmpty
+				ifTrue: [ r windowId: -1 ]
+				ifFalse: [ r windowId: openedWindowStack top ] ] ]
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> fixWindowRecordKeysNames [
+
+	windowNames keysAndValuesDo: [ :id :name | 
+		(self findWindowRecordKeyForID: id) windowName: name ]
+]
+
 { #category : #initialization }
 DSRecordHistory >> initialize [
 	super initialize.
 	self flag: 'I am not tested! Please do it!' 
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> methodsAdded [
+
+	^ (self allRecordsOfKind: DSMethodAddedRecord) size
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> methodsModified [
+
+	^ (self allRecordsOfKind: DSMethodModifiedRecord) size
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> methodsRemoved [
+
+	^ (self allRecordsOfKind: DSMethodRemovedRecord) size
 ]
 
 { #category : #accessing }
@@ -84,8 +207,13 @@ DSRecordHistory >> numberOfSeekerActions [
 { #category : #'API-history' }
 DSRecordHistory >> numberOfSteps [
 
-	^ (records select: [ :record | record isKindOf: DSStepActionRecord ])
-		  size
+	^ (self allRecordsOfKind: DSStepActionRecord) size
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> openedDebuggers [
+
+	^ (self allRecordsOfKind: DSDebuggerOpeningRecord) size
 ]
 
 { #category : #initialization }
@@ -157,7 +285,7 @@ DSRecordHistory >> user: anObject [
 
 { #category : #accessing }
 DSRecordHistory >> windowsHistory [
-	^windowsHistory ifNil:[windowsHistory := Dictionary new]
+	^windowsHistory ifNil:[windowsHistory := IdentityDictionary new]
 ]
 
 { #category : #accessing }
