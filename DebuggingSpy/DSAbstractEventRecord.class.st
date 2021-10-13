@@ -81,7 +81,6 @@ DSAbstractEventRecord >> printOn: aStream [
 
 { #category : #'actions api' }
 DSAbstractEventRecord >> record: aWindow [
-	self assert: (aWindow isKindOf: SystemWindow).
 	windowId := aWindow hash
 ]
 

@@ -156,7 +156,7 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			self updateCodeFromContext: context.
 			self expandStackIfLastItemIsSelected.
 			self updateWindowTitle.
-			[DSBrowseContextRecord for: { context . self window window} ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
+			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0]} } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack''.
 	stackHeader toolbarActions: (CmCommandGroup new
@@ -235,7 +235,13 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
 	StInspector compile: 'initializePresenters
-	[DSInspectObjectRecord for: {self model inspectedObject. self window window}] on: Error do:[DSSpy log: #ERROR key: #INSPECTOR_INSPECT].	
+	[ 
+	self class == StPlayground ifFalse: [ 
+		DSInspectObjectRecord for: { 
+				self model inspectedObject.
+				([self window window] on: Error do: [ 0 ]) } ] ]
+		on: Error
+		do: [ DSSpy log: #ERROR key: #INSPECTOR_INSPECT ].	
 	millerList := self instantiate: SpMillerPaginatorPresenter.
 	millerList millerListPresenter
 		spacing: self spacing;
@@ -252,7 +258,13 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	header := self instantiate: StHeaderBar.
 	self initializeLayout.
 	views whenSelectedPageChangedDo: [ :page | 
-		[DSSelectInspectorPageRecord for: {page title. self model inspectedObject. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ] .
+		[ 
+		DSSelectInspectorPageRecord for: { 
+				page title.
+				self model inspectedObject.
+				[self window window] on: Error do:[0] } ]
+			on: Error
+			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]. .
 	self refresh'
 ]
 
