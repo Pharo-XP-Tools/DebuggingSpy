@@ -147,7 +147,8 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 	adapter := SpMorphicCodeAdapter new.
 	adapter adapt: codePresenter.	
 	codePresenter adapter: adapter.
-	codePresenter adapter buildWidget.	
+	codePresenter adapter buildWidget.
+	adapter widget selectionInterval: (1 to: 4).	
 	^ codePresenter
 ]
 
@@ -987,6 +988,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 
 	printItCommand := SpCodeDoItCommand new.
 	printItCommand context: codePresenter.
+	codePresenter rawSelection: (1 to: 4).
 	printItCommand execute.
 
 	self assert: self registry size equals: 1.
