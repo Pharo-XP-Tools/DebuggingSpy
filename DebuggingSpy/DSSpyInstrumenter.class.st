@@ -156,7 +156,7 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			self updateCodeFromContext: context.
 			self expandStackIfLastItemIsSelected.
 			self updateWindowTitle.
-			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0]} } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
+			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0] } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack''.
 	stackHeader toolbarActions: (CmCommandGroup new
