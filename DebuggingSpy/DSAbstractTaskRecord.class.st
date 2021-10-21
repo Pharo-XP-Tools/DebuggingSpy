@@ -8,8 +8,7 @@ Class {
 	#name : #DSAbstractTaskRecord,
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
-		'taskName',
-		'description'
+		'task'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -17,17 +16,16 @@ Class {
 { #category : #accessing }
 DSAbstractTaskRecord >> description [
 
-	^ description
+	^ task description
 ]
 
 { #category : #'actions api' }
 DSAbstractTaskRecord >> record: aTask [
-	taskName := aTask name.
-	description := aTask description.
+	task := aTask
 ]
 
 { #category : #accessing }
 DSAbstractTaskRecord >> taskName [
 
-	^ taskName
+	^ task name
 ]

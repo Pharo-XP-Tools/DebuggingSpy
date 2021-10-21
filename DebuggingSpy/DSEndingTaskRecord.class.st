@@ -6,24 +6,15 @@ Tasks are object that should answer to `#name`, `#description` and `#answer`, al
 Class {
 	#name : #DSEndingTaskRecord,
 	#superclass : #DSAbstractTaskRecord,
-	#instVars : [
-		'answer'
-	],
 	#category : #'DebuggingSpy-Records'
 }
 
 { #category : #accessing }
 DSEndingTaskRecord >> answer [
-	^ answer
+	^ task answer
 ]
 
 { #category : #accessing }
 DSEndingTaskRecord >> eventName [
 	^'Ending task'
-]
-
-{ #category : #'actions api' }
-DSEndingTaskRecord >> record: aTask [
-	super record: aTask.
-	answer := aTask answer
 ]
