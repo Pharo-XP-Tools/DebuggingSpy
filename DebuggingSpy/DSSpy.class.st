@@ -5,6 +5,7 @@ Class {
 	#name : #DSSpy,
 	#superclass : #Object,
 	#classVars : [
+		'HandlingError',
 		'monitor'
 	],
 	#classInstVars : [
@@ -75,6 +76,11 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 { #category : #logging }
 DSSpy class >> log: elements key: key [
 
+	HandlingError ifNil: [ HandlingError := false ].
+	HandlingError ifFalse: [ 
+		HandlingError := true.
+		self halt.
+		HandlingError := false ].
 	DSLoggingErrorRecord for: key
 ]
 
