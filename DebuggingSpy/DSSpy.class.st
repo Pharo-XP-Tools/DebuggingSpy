@@ -82,11 +82,11 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 { #category : #logging }
 DSSpy class >> log: elements key: key [
 
-	HandlingError ifNil: [ HandlingError := false ].
+"	HandlingError ifNil: [ HandlingError := false ].
 	HandlingError ifFalse: [ 
 		HandlingError := true.
 		self halt.
-		HandlingError := false ].
+		HandlingError := false ]."
 	DSLoggingErrorRecord for: key
 ]
 
