@@ -9,7 +9,7 @@ BaselineOfDebuggingSpy >> baseline: spec [
 
 	<baseline>
 	spec for: #common do: [ 
-		spec postLoadDoIt: #postloadAction.
+		spec postLoadDoIt: [self postloadAction].
 		spec package: 'DebuggingSpy'.
 		spec package: 'DebuggingSpy-Tests' ]
 ]
