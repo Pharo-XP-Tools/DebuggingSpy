@@ -65,6 +65,12 @@ DSSpy class >> forceRunningTask: aTask [
 	taskStarted := true
 ]
 
+{ #category : #accessing }
+DSSpy class >> handlingError: anObject [
+
+	^ HandlingError := anObject
+]
+
 { #category : #'events - breakpoints' }
 DSSpy class >> indexesOfHaltNodesIn: aMethod [
 

@@ -301,7 +301,7 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 
 { #category : #'tests - logging' }
 DSSpyTest >> testLogKey [
-	DSSpy log: nil key: #TEST.
+	[DSSpy log: nil key: #TEST] on: Halt do:[:h| h proceed].
 	self assert: self registry size equals: 1.
 	record := self registry first.
 	self assert: record event equals: #TEST
