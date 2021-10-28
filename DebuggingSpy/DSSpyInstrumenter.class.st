@@ -304,6 +304,49 @@ DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	^super handleMouseLeave: anEvent'
 ]
 
+{ #category : #'mouse events' }
+DSSpyInstrumenter >> instrumentMouseWheelEvents [
+	FTTableMorph compile:'mouseWheel: event
+
+	"I tried scrolling up/down with a calculated value (check #scrollUpByPageDelta implementor)
+	 but the scrollbar proved been more intelligent than me... looks like hardcoded values 
+	 work better :/"
+	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
+	event isUp ifTrue: [ 
+		self verticalScrollBar scrollRestrictedUp: 3.
+		^ self
+	].
+	event isDown ifTrue: [ 
+		self verticalScrollBar scrollRestrictedDown: 3.
+		^ self
+	].
+	
+	super mouseWheel: event'.
+	
+GeneralScrollPane  compile: 'mouseWheel: event 
+	"Handle a mouseWheel event."
+	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
+	(self scrollTarget handlesMouseWheel: event)
+		ifTrue: [^self scrollTarget mouseWheel: event]. "pass on"
+	
+	event isUp ifTrue: [ ^ vScrollbar scrollUp: 3 ].
+	event isDown ifTrue: [ ^ vScrollbar scrollDown: 3 ].
+	event isLeft  ifTrue: [ ^ hScrollbar scrollLeft: 3 ].
+	event isRight  ifTrue: [ ^ hScrollbar scrollRight: 3 ].'.
+	
+Slider compile: 'dragging: aBoolean
+
+	(aBoolean not and: [ dragging ]) ifTrue: [ 
+		[ DSStopScrollingEventRecord for: self window ]
+			on: Error
+			do: [ :e | DSSpy log: #ERROR key: #SCROLL_STOP ] ].
+	dragging := aBoolean.
+	dragging ifTrue: [ 
+		[ DSStartScrollingEventRecord for: self window ]
+			on: Error
+			do: [ :e | DSSpy log: #ERROR key: #SCROLL_START ] ]'
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentNavigateAttribute [
 

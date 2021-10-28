@@ -44,7 +44,8 @@ DSRecordRegistry class >> serialize: aDSRecord [
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
 	records add: aRecord.
-	self class serialize: aRecord
+	self class serialize: aRecord.
+	aRecord crTrace
 ]
 
 { #category : #initialization }
