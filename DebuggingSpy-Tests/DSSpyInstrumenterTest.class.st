@@ -953,6 +953,66 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 	self assertInstrumentDebuggerCommandNamed: 'Run to'
 ]
 
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
+	
+	|slider|
+	modifiedClass := Slider.
+	modifiedMethodSource := (Slider >> #dragging:) sourceCode.
+	instrumenter instrumentScrollingByDraggingSlider.
+	
+	slider := Slider new.
+	slider privateOwner: SystemWindow new.
+	
+	slider dragging: true.			
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSStartScrollingEventRecord.
+	self assert: record windowId equals: slider window hash.
+
+	slider dragging: false.			
+	self assert: self registry size equals: 2.	
+	record := self registry second.
+	self assert: record class identicalTo: DSStopScrollingEventRecord.
+	self assert: record windowId equals: slider window hash.
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
+	
+	|pane|
+	modifiedClass := GeneralScrollPane.
+	modifiedMethodSource := (GeneralScrollPane >> #mouseWheel:) sourceCode.
+	instrumenter instrumentScrollingInScrollPanesEvents.
+	
+	pane := GeneralScrollPane new.
+	pane privateOwner: SystemWindow new.
+	
+	pane mouseWheel: MouseWheelEvent new.			
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSScrollEventRecord.
+	self assert: record windowId equals: pane window hash
+]
+
+{ #category : #'tests - mouse events' }
+DSSpyInstrumenterTest >> testInstrumentScrollingInTablesEvents [
+	
+	|table|
+	modifiedClass := FTTableMorph.
+	modifiedMethodSource := (FTTableMorph >> #mouseWheel:) sourceCode.
+	instrumenter instrumentScrollingInTablesEvents.
+	
+	table := FTTableMorph new.
+	table privateOwner: SystemWindow new.
+	
+	table mouseWheel: MouseWheelEvent new.			
+	self assert: self registry size equals: 1.	
+	record := self registry first.
+	self assert: record class identicalTo: DSScrollEventRecord.
+	self assert: record windowId equals: table window hash
+]
+
 { #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
