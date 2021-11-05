@@ -147,7 +147,9 @@ DSSpy class >> loggingDirectory [
 { #category : #logging }
 DSSpy class >> loggingDirectory: aStringOrFileReference [
 
-	loggingDirectory := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
+	loggingDirectory := (RelativePath new / aStringOrFileReference
+	                     / self defaultLoggingDirectoryName)
+		                    asFileReference.
 	loggingDirectory ensureCreateDirectory
 ]
 
