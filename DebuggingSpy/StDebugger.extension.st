@@ -22,6 +22,7 @@ StDebugger class >> executionCommandGroupIn: rootCommandGroup [
 { #category : #'*DebuggingSpy' }
 StDebugger class >> instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup [
 
+	<extensionCommands>
 	self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
 ]
 

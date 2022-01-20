@@ -18,6 +18,26 @@ Class {
 	#category : #'DebuggingSpy-Instrumentation'
 }
 
+{ #category : #'task management' }
+DSSpy class >> closeSurvey: aSurvey [
+	|currentLoggingFilename currentLoggingFileReference currentTaskStarted|
+	currentLoggingFilename := loggingFilename.
+	currentLoggingFileReference := loggingFileReference.
+	currentTaskStarted := taskStarted.
+	
+	loggingFilename := self filenameForSurvey: aSurvey.
+	loggingFileReference := self ensureCreateLoggingFileReference. 
+	taskStarted := true.
+	
+	DSSurveyRecord for: aSurvey.
+	
+	loggingFilename := currentLoggingFilename.
+	loggingFileReference := currentLoggingFileReference.
+	taskStarted := currentTaskStarted
+	
+	
+]
+
 { #category : #'mutual exclusion' }
 DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
@@ -50,6 +70,11 @@ DSSpy class >> ensureCreateLoggingFileReference [
 	fr := self loggingDirectory / fname.
 	fr ensureCreateFile.
 	^ fr
+]
+
+{ #category : #'task management' }
+DSSpy class >> filenameForSurvey: aSurvey [
+	^aSurvey uuid asString , '_' , self defaultLoggingFileName, '.', self surveyFileExtension
 ]
 
 { #category : #'task management' }
@@ -282,6 +307,11 @@ DSSpy class >> startTask: aTask [
 { #category : #logging }
 DSSpy class >> stream [
 	^ self loggingFileReference writeStream
+]
+
+{ #category : #'task management' }
+DSSpy class >> surveyFileExtension [
+	^'survey'
 ]
 
 { #category : #accessing }
