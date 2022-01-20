@@ -8,7 +8,8 @@ Class {
 		'windowEvent',
 		'instrumenter',
 		'breakpoint',
-		'task'
+		'task',
+		'survey'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -172,6 +173,7 @@ DSSpyTest >> setUp [
 
 	super setUp.
 	task := DSTask new.
+	survey := DSSurvey new.
 	instrumenter := DSSpyInstrumenter new.
 	DSRecordRegistry current reset
 ]
@@ -268,6 +270,15 @@ DSSpyTest >> testEnsureCreateLoggingFileReference [
 	self deny: fileReference exists.
 	DSSpy ensureCreateLoggingFileReference.
 	self assert: fileReference exists
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testFilenameForSurvey [
+	|fnameStream|
+	fnameStream := (DSSpy filenameForSurvey: survey) readStream.
+	self assert: (fnameStream readStream upTo: $_) equals: survey uuid asString.
+	self assert: (fnameStream readStream upTo: $.) equals: DSSpy defaultLoggingFileName.
+	self assert: (fnameStream readStream upToEnd) equals: DSSpy surveyFileExtension
 ]
 
 { #category : #'tests - task management' }
@@ -720,6 +731,11 @@ DSSpyTest >> testStartTaskSerialization [
 ]
 
 { #category : #'tests - task management' }
+DSSpyTest >> testSurveyFileExtension [
+	self assert: DSSpy surveyFileExtension equals: 'survey'
+]
+
+{ #category : #'tests - task management' }
 DSSpyTest >> testTaskStarted [
 
 	self deny: DSSpy taskStarted.
@@ -834,6 +850,42 @@ DSSpyTest >> testWriteToFile [
 	self
 		assert: DSSpy loggingFileReference readStream contents
 		equals: str contents
+]
+
+{ #category : #'tests - task management' }
+DSSpyTest >> testcloseSurvey [
+	
+	|taskLoggingFileName recordedSurvey|
+	DSSpy logOnlyWhenTaskStarted: true.
+	DSSpy startTask: task.
+	DSRecordRegistry autoSerialize: true.
+	taskLoggingFileName := task name, '-', DSSpy defaultLoggingFileName.
+	
+	self assert: self registry size equals: 1.
+	self assert: DSSpy loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy loggingFileReference basename equals: taskLoggingFileName.
+	
+	DSSpy closeSurvey: survey.
+	self assert: self registry size equals: 2.
+	self assert: DSSpy loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy loggingFileReference basename equals: taskLoggingFileName.	
+	
+	record := self registry first.
+	self assert: record class equals: DSStartTaskRecord.
+	self assert: record taskName equals: DSTask dsTaskDescription.
+	self assert: record description equals: DSTask dsTaskDescription.
+	
+	record := self registry last.
+	self assert: record class equals: DSSurveyRecord.
+	self assert: record answer equals: survey answer.
+	self assert: record description equals: DSSurvey dsSurveyDescription.
+	
+	recordedSurvey := (STON fromString: (DSSpy loggingDirectory / (DSSpy filenameForSurvey: survey)) readStream contents) first.
+	self assert: recordedSurvey class equals: DSSurveyRecord.
+	self assert: recordedSurvey answer equals: survey answer.
+	self assert: recordedSurvey description equals: DSSurvey dsSurveyDescription.
+	(DSSpy loggingDirectory / (DSSpy filenameForSurvey: survey)) delete
+	
 ]
 
 { #category : #helpers }
