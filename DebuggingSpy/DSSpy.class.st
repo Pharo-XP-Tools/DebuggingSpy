@@ -13,7 +13,8 @@ Class {
 		'loggingFileReference',
 		'loggingDirectory',
 		'logOnlyWhenTaskStarted',
-		'taskStarted'
+		'taskStarted',
+		'logger'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -24,7 +25,7 @@ DSSpy class >> closeSurvey: aSurvey [
 	currentLoggingFilename := loggingFilename.
 	currentLoggingFileReference := loggingFileReference.
 	currentTaskStarted := taskStarted.
-	
+	logger setupLoggerForSurvey: aSurvey.
 	loggingFilename := self filenameForSurvey: aSurvey.
 	loggingFileReference := self ensureCreateLoggingFileReference. 
 	taskStarted := true.
@@ -43,15 +44,9 @@ DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
 ]
 
-{ #category : #accessing }
-DSSpy class >> defaultLoggingDirectoryName [
-	^'ds-spy'
-]
-
-{ #category : #accessing }
-DSSpy class >> defaultLoggingFileName [
-
-	^ SessionManager default currentSession id asString
+{ #category : #logging }
+DSSpy class >> defaultLoggerClass [
+	^DSSpySTONFileLogger
 ]
 
 { #category : #'task management' }
@@ -62,31 +57,9 @@ DSSpy class >> endTask: aTask [
 	taskStarted := false.
 ]
 
-{ #category : #logging }
-DSSpy class >> ensureCreateLoggingFileReference [
-
-	| fname fr |
-	fname := self loggingFileName.
-	fr := self loggingDirectory / fname.
-	fr ensureCreateFile.
-	^ fr
-]
-
-{ #category : #'task management' }
-DSSpy class >> filenameForSurvey: aSurvey [
-	^aSurvey uuid asString , '_' , self defaultLoggingFileName, '.', self surveyFileExtension
-]
-
-{ #category : #'task management' }
-DSSpy class >> forceLoggingFileNameFor: aTask [
-
-	loggingFilename := aTask name , '-' , self defaultLoggingFileName.
-	loggingFileReference := self ensureCreateLoggingFileReference 
-]
-
 { #category : #'task management' }
 DSSpy class >> forceRunningTask: aTask [
-	self forceLoggingFileNameFor: aTask.
+	logger setupLoggerForTask: aTask.
 	taskStarted := true
 ]
 
@@ -102,6 +75,14 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 	| haltNodes |
 	haltNodes := aMethod ast allChildren select: [ :n | n isHaltNode ].
 	^ haltNodes collect: [ :hn | hn selector -> (hn start to: hn stop) ]
+]
+
+{ #category : #logging }
+DSSpy class >> log: aString [
+
+	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
+		^ self ].
+	self critical: [ logger log: aString ]
 ]
 
 { #category : #logging }
@@ -125,14 +106,6 @@ DSSpy class >> logOnlyWhenTaskStarted [
 DSSpy class >> logOnlyWhenTaskStarted: anObject [
 
 	logOnlyWhenTaskStarted := anObject
-]
-
-{ #category : #logging }
-DSSpy class >> logToFile: aString [
-
-	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
-		^ self ].
-	self critical: [ self writeToFile: aString ]
 ]
 
 { #category : #'events - windows' }
@@ -165,26 +138,15 @@ DSSpy class >> logWindowOpened: anEvent [
 ]
 
 { #category : #accessing }
-DSSpy class >> loggingDirectory [
-	^loggingDirectory ifNil:[loggingDirectory := self defaultLoggingDirectoryName asFileReference]
-]
+DSSpy class >> logger [
 
-{ #category : #logging }
-DSSpy class >> loggingDirectory: aStringOrFileReference [
-
-	loggingDirectory := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
-	loggingDirectory ensureCreateDirectory
+	^ logger ifNil:[logger := self defaultLoggerClass new]
 ]
 
 { #category : #accessing }
-DSSpy class >> loggingFileName [
-	^loggingFilename ifNil:[loggingFilename := self defaultLoggingFileName]
-]
+DSSpy class >> logger: anObject [
 
-{ #category : #accessing }
-DSSpy class >> loggingFileReference [
-
-	^loggingFileReference ifNil:[loggingFileReference := self ensureCreateLoggingFileReference]
+	logger := anObject
 ]
 
 { #category : #'serialize/materialize' }
@@ -293,49 +255,19 @@ DSSpy class >> resetSpy [
 { #category : #'serialize/materialize' }
 DSSpy class >> serialize: aDSEventRecord [
 
-	self logToFile: (STON toString: aDSEventRecord)
+	self log: aDSEventRecord
 ]
 
 { #category : #'task management' }
 DSSpy class >> startTask: aTask [
 
-	self forceLoggingFileNameFor: aTask.
+	logger setupLoggerForTask: aTask.
 	taskStarted := true.
 	DSStartTaskRecord for: aTask
-]
-
-{ #category : #logging }
-DSSpy class >> stream [
-	^ self loggingFileReference writeStream
-]
-
-{ #category : #'task management' }
-DSSpy class >> surveyFileExtension [
-	^'survey'
 ]
 
 { #category : #accessing }
 DSSpy class >> taskStarted [
 
 	^ taskStarted ifNil: [ taskStarted := false ]
-]
-
-{ #category : #logging }
-DSSpy class >> writeToFile: aString [
-
-	| str strSize firstWrite writingPosition |
-	str := self stream.
-	strSize := str writeStreamSize.
-	firstWrite := strSize = 0.
-	firstWrite ifTrue: [ str nextPut: $[ ].
-	writingPosition := firstWrite
-		                   ifTrue: [ str position ]
-		                   ifFalse: [ strSize - 1 ].
-	str position: writingPosition.
-	firstWrite ifFalse: [ 
-		str nextPut: $,.
-		str crlf ].
-	str nextPutAll: aString.
-	str nextPut: $].
-	str close
 ]
