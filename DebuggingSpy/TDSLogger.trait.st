@@ -6,6 +6,11 @@ Trait {
 	#category : #'DebuggingSpy-Loggers'
 }
 
+{ #category : #logging }
+TDSLogger >> log: aDSEventRecord [
+	self explicitRequirement
+]
+
 { #category : #initialization }
 TDSLogger >> reset [
 	self explicitRequirement 
