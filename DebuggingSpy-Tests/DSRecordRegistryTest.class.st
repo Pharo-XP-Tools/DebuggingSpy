@@ -22,10 +22,10 @@ DSRecordRegistryTest >> testAutoSerialize [
 { #category : #tests }
 DSRecordRegistryTest >> testAutoSerializeRecord [
 	|materializedRecord|
-	DSSpy loggingFileReference ensureDelete.
+	DSSpy logger loggingFileReference ensureDelete.
 	DSRecordRegistry autoSerialize: true.
 	record := DSLoggingErrorRecord for: #TEST.
-	materializedRecord := (DSSpy materialize: DSSpy loggingFileReference) first.
+	materializedRecord := (DSSpy materialize: DSSpy logger loggingFileReference) first.
 	self assert: materializedRecord dateTime equals: record dateTime.
 	self assert: materializedRecord event equals: record event.
 	self assert: materializedRecord class equals: record class
