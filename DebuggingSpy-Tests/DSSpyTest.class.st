@@ -244,16 +244,16 @@ DSSpyTest >> testCloseSurvey [
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy startTask: task.
 	DSRecordRegistry autoSerialize: true.
-	taskLoggingFileName := task name, '-', DSSpy defaultLoggingFileName.
+	taskLoggingFileName := task name, '-', DSSpy logger defaultLoggingFileName.
 	
 	self assert: self registry size equals: 1.
-	self assert: DSSpy loggingFileName equals: taskLoggingFileName.
-	self assert: DSSpy loggingFileReference basename equals: taskLoggingFileName.
+	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.
 	
 	DSSpy closeSurvey: survey.
 	self assert: self registry size equals: 2.
-	self assert: DSSpy loggingFileName equals: taskLoggingFileName.
-	self assert: DSSpy loggingFileReference basename equals: taskLoggingFileName.	
+	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.	
 	
 	record := self registry first.
 	self assert: record class equals: DSStartTaskRecord.
@@ -265,11 +265,11 @@ DSSpyTest >> testCloseSurvey [
 	self assert: record answer equals: survey answer.
 	self assert: record description equals: DSSurvey dsSurveyDescription.
 	
-	recordedSurvey := (STON fromString: (DSSpy loggingDirectory / (DSSpy filenameForSurvey: survey)) readStream contents) first.
+	recordedSurvey := (STON fromString: (DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) readStream contents) first.
 	self assert: recordedSurvey class equals: DSSurveyRecord.
 	self assert: recordedSurvey answer equals: survey answer.
 	self assert: recordedSurvey description equals: DSSurvey dsSurveyDescription.
-	(DSSpy loggingDirectory / (DSSpy filenameForSurvey: survey)) delete
+	(DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) delete
 	
 ]
 

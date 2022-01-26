@@ -12,7 +12,12 @@ TDSLogger >> reset [
 ]
 
 { #category : #setup }
-TDSLogger >> setupLoggerForSurvey: aSurvey [
+TDSLogger >> setupLoggerAfterSurvey: aSurvey [
+	self explicitRequirement
+]
+
+{ #category : #setup }
+TDSLogger >> setupLoggerBeforeSurvey: aSurvey [
 	self explicitRequirement "self forceLoggingFileNameFor: aTask."
 ]
 

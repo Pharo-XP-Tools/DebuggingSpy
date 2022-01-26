@@ -18,22 +18,16 @@ Class {
 
 { #category : #'task management' }
 DSSpy class >> closeSurvey: aSurvey [
-	|currentLoggingFilename currentLoggingFileReference currentTaskStarted|
-	currentLoggingFilename := loggingFilename.
-	currentLoggingFileReference := loggingFileReference.
+
+	| currentTaskStarted |
+	logger setupLoggerBeforeSurvey: aSurvey.
 	currentTaskStarted := taskStarted.
-	logger setupLoggerForSurvey: aSurvey.
-	loggingFilename := self filenameForSurvey: aSurvey.
-	loggingFileReference := self ensureCreateLoggingFileReference. 
+
 	taskStarted := true.
-	
 	DSSurveyRecord for: aSurvey.
-	
-	loggingFilename := currentLoggingFilename.
-	loggingFileReference := currentLoggingFileReference.
-	taskStarted := currentTaskStarted
-	
-	
+
+	taskStarted := currentTaskStarted.
+	logger setupLoggerAfterSurvey: aSurvey
 ]
 
 { #category : #'mutual exclusion' }

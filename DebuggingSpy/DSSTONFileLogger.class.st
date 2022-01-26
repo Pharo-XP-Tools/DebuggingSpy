@@ -9,7 +9,8 @@ Class {
 	#instVars : [
 		'loggingDirectory',
 		'loggingFilename',
-		'loggingFileReference'
+		'loggingFileReference',
+		'savedConfiguration'
 	],
 	#category : #'DebuggingSpy-Loggers'
 }
@@ -83,9 +84,43 @@ DSSTONFileLogger >> reset [
 	loggingFileReference := nil
 ]
 
+{ #category : #private }
+DSSTONFileLogger >> restoreCurrentConfiguration [
+
+	loggingFilename := self savedConfiguration at:
+		                   #currentLoggingFilename.
+	loggingFileReference := self savedConfiguration at:
+		                        #currentLoggingFileReference
+]
+
+{ #category : #private }
+DSSTONFileLogger >> saveCurrentConfiguration [
+
+	self savedConfiguration
+		at: #currentLoggingFilename
+		put: loggingFilename.
+	self savedConfiguration
+		at: #currentLoggingFileReference
+		put: loggingFileReference
+]
+
+{ #category : #accessing }
+DSSTONFileLogger >> savedConfiguration [
+	 ^savedConfiguration ifNil:[savedConfiguration := Dictionary new]
+]
+
 { #category : #setup }
-DSSTONFileLogger >> setupLoggerForSurvey: aSurvey [
-	"self forceLoggingFileNameFor: aTask".
+DSSTONFileLogger >> setupLoggerAfterSurvey: aSurvey [
+
+	self restoreCurrentConfiguration
+]
+
+{ #category : #setup }
+DSSTONFileLogger >> setupLoggerBeforeSurvey: aSurvey [
+
+	self saveCurrentConfiguration.
+	loggingFilename := self filenameForSurvey: aSurvey.
+	loggingFileReference := self ensureCreateLoggingFileReference
 ]
 
 { #category : #setup }
