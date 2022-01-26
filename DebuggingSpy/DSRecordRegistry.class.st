@@ -34,6 +34,13 @@ DSRecordRegistry class >> current [
 ]
 
 { #category : #private }
+DSRecordRegistry class >> log: aDSRecord [
+
+	self autoSerialize ifFalse: [ ^ self ].
+	DSSpy serialize: aDSRecord
+]
+
+{ #category : #private }
 DSRecordRegistry class >> serialize: aDSRecord [
 
 	self autoSerialize ifFalse: [ ^ self ].
@@ -44,7 +51,7 @@ DSRecordRegistry class >> serialize: aDSRecord [
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
 	records add: aRecord.
-	self class serialize: aRecord.
+	self class log: aRecord.
 	aRecord crTrace
 ]
 
