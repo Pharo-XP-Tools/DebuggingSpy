@@ -311,6 +311,15 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 ]
 
 { #category : #'tests - logging' }
+DSSpyTest >> testLog [
+
+	DSSpy loggingFileReference ensureDelete.
+	DSSpy logOnlyWhenTaskStarted: false.
+	DSSpy log: 'test'.
+	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
+]
+
+{ #category : #'tests - logging' }
 DSSpyTest >> testLogKey [
 	[DSSpy log: nil key: #TEST] on: Halt do:[:h| h proceed].
 	self assert: self registry size equals: 1.
@@ -319,16 +328,7 @@ DSSpyTest >> testLogKey [
 ]
 
 { #category : #'tests - logging' }
-DSSpyTest >> testLogToFile [
-
-	DSSpy loggingFileReference ensureDelete.
-	DSSpy logOnlyWhenTaskStarted: false.
-	DSSpy logToFile: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
-]
-
-{ #category : #'tests - logging' }
-DSSpyTest >> testLogToFileOnlyWhenTaskStarted [
+DSSpyTest >> testLogOnlyWhenTaskStarted [
 	|str dir|
 	dir := DSSpy loggingDirectory .
 	dir exists ifTrue: [ dir deleteAllChildren].
@@ -339,12 +339,12 @@ DSSpyTest >> testLogToFileOnlyWhenTaskStarted [
 	str nextPutAll: '[test]'.
 	
 	DSSpy logOnlyWhenTaskStarted: true.
-	DSSpy logToFile: 'test'.
+	DSSpy log: 'test'.
 	self assert: DSSpy logOnlyWhenTaskStarted.
 	self assert: DSSpy loggingFileReference contents isEmpty.
 	
 	DSSpy startTask: task.	
-	DSSpy logToFile: 'test'.
+	DSSpy log: 'test'.
 	self assert: DSSpy loggingFileReference contents equals: str contents.
 	
 	DSSpy endTask: task.
