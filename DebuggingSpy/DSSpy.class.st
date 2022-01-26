@@ -75,11 +75,11 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 ]
 
 { #category : #logging }
-DSSpy class >> log: aString [
+DSSpy class >> log: aDSRecord [
 
 	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
 		^ self ].
-	self critical: [ logger log: aString ]
+	self critical: [ logger log: aDSRecord ]
 ]
 
 { #category : #logging }

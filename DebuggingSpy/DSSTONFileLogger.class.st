@@ -49,7 +49,6 @@ DSSTONFileLogger >> forceLoggingFileNameFor: aTask [
 
 { #category : #logging }
 DSSTONFileLogger >> log: aDSEventRecord [
-
 	self writeToFile: (STON toString: aDSEventRecord)
 ]
 

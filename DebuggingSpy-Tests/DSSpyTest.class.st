@@ -302,7 +302,7 @@ DSSpyTest >> testLog [
 	DSSpy logger loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: false.
 	DSSpy log: 'test'.
-	self assert: DSSpy logger loggingFileReference readStream contents equals: '[test]'
+	self assert: DSSpy logger loggingFileReference readStream contents equals: '[''test'']'
 ]
 
 { #category : #'tests - logging' }
@@ -322,7 +322,7 @@ DSSpyTest >> testLogOnlyWhenTaskStarted [
 	self deny: DSSpy logOnlyWhenTaskStarted.
 	
 	str := WriteStream on: String new.
-	str nextPutAll: '[test]'.
+	str nextPutAll: '[''test'']'.
 	
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy log: 'test'.
