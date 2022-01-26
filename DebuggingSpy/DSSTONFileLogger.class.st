@@ -76,6 +76,14 @@ DSSTONFileLogger >> loggingFileReference [
 	^loggingFileReference ifNil:[loggingFileReference := self ensureCreateLoggingFileReference] 
 ]
 
+{ #category : #initialization }
+DSSTONFileLogger >> reset [
+
+	loggingDirectory := nil.
+	loggingFilename := nil.
+	loggingFileReference := nil
+]
+
 { #category : #setup }
 DSSTONFileLogger >> setupLoggerForSurvey: aSurvey [
 	"self forceLoggingFileNameFor: aTask".

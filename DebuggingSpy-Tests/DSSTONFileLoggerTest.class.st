@@ -14,8 +14,8 @@ Class {
 DSSTONFileLoggerTest >> setUp [
 	super setUp.
 	oldLogger := DSSpy logger.
-	DSSpy logger: logger.
 	logger := DSSTONFileLogger new.
+	DSSpy logger: logger.
 	survey := DSSurvey new.
 	task := DSTask new
 ]
@@ -62,7 +62,7 @@ DSSTONFileLoggerTest >> testFilenameForSurvey [
 
 { #category : #'tests - task management' }
 DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
-	logger resetSpy.
+	logger reset.
 	logger forceLoggingFileNameFor: task.	
 	self assert: logger loggingFileName equals: (task name, '-', SessionManager default currentSession id asString).
 	self assert: logger loggingFileName equals: logger loggingFileReference basename.
@@ -108,6 +108,7 @@ DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskEnded [
 
 { #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskStarted [
+	
 	DSSpy startTask: task.
 
 	self
@@ -133,6 +134,11 @@ DSSTONFileLoggerTest >> testReset [
 	self
 		assert: logger loggingFileName
 		equals: logger defaultLoggingFileName
+]
+
+{ #category : #'tests - task management' }
+DSSTONFileLoggerTest >> testSurveyFileExtension [
+	self assert: logger surveyFileExtension equals: 'survey'
 ]
 
 { #category : #'tests - logging' }

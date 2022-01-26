@@ -9,9 +9,6 @@ Class {
 		'monitor'
 	],
 	#classInstVars : [
-		'loggingFilename',
-		'loggingFileReference',
-		'loggingDirectory',
 		'logOnlyWhenTaskStarted',
 		'taskStarted',
 		'logger'
@@ -51,10 +48,10 @@ DSSpy class >> defaultLoggerClass [
 
 { #category : #'task management' }
 DSSpy class >> endTask: aTask [
+
 	DSEndingTaskRecord for: aTask.
-	loggingFilename := nil.
-	loggingFileReference := nil.
-	taskStarted := false.
+	logger reset.
+	taskStarted := false
 ]
 
 { #category : #'task management' }
@@ -246,8 +243,7 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 { #category : #initialization }
 DSSpy class >> resetSpy [
 
-	loggingFilename := nil.
-	loggingFileReference := nil.
+	logger reset.
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false
 ]

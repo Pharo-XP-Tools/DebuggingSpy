@@ -299,10 +299,10 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 { #category : #'tests - logging' }
 DSSpyTest >> testLog [
 
-	DSSpy loggingFileReference ensureDelete.
+	DSSpy logger loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: false.
 	DSSpy log: 'test'.
-	self assert: DSSpy loggingFileReference readStream contents equals: '[test]'
+	self assert: DSSpy logger loggingFileReference readStream contents equals: '[test]'
 ]
 
 { #category : #'tests - logging' }
@@ -373,11 +373,11 @@ DSSpyTest >> testLogWindowOpened [
 { #category : #'tests - serialize/materialize' }
 DSSpyTest >> testMaterialize [
 	|records materializedRecords|
-	DSSpy loggingFileReference ensureDelete.
+	DSSpy logger loggingFileReference ensureDelete.
 	DSSpy resetSpy.
 	records := OrderedCollection with:  (DSLoggingErrorRecord for: #TEST) with:  (DSLoggingErrorRecord for: #TEST).
 	records do:[:r| DSSpy serialize: r].
-	materializedRecords := DSSpy materialize: DSSpy loggingFileReference.
+	materializedRecords := DSSpy materialize: DSSpy logger loggingFileReference.
 	self assert: materializedRecords size equals: 2.
 	
 	self assert: materializedRecords first class equals: DSLoggingErrorRecord.
@@ -637,12 +637,12 @@ DSSpyTest >> testResetSpy [
 { #category : #'tests - serialize/materialize' }
 DSSpyTest >> testSerialize [
 
-	DSSpy loggingFileReference ensureDelete.
+	DSSpy logger loggingFileReference ensureDelete.
 	DSSpy resetSpy.
 	record := DSLoggingErrorRecord for: #TEST.
 	DSSpy serialize: record.
 	self
-		assert: DSSpy loggingFileReference contents
+		assert: DSSpy logger loggingFileReference contents
 		equals: '[' , (STON toString: record) , ']'
 ]
 
@@ -661,18 +661,13 @@ DSSpyTest >> testStartTask [
 DSSpyTest >> testStartTaskSerialization [
 
 	| recordedTask |
-	DSSpy loggingDirectory deleteAllChildren.
+	DSSpy logger loggingDirectory deleteAllChildren.
 	DSRecordRegistry autoSerialize: true.
 	DSSpy resetSpy.
 	DSSpy startTask: task.
-	recordedTask := (DSSpy materialize: DSSpy loggingFileReference) first.
+	recordedTask := (DSSpy materialize: DSSpy logger loggingFileReference) first.
 	self assert: recordedTask class equals: DSStartTaskRecord.
 	self assert: recordedTask taskName equals: task name
-]
-
-{ #category : #'tests - task management' }
-DSSpyTest >> testSurveyFileExtension [
-	self assert: DSSpy surveyFileExtension equals: 'survey'
 ]
 
 { #category : #'tests - task management' }
