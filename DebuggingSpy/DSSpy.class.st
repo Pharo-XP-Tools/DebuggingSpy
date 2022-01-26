@@ -46,7 +46,7 @@ DSSpy class >> critical: aBlock [
 
 { #category : #logging }
 DSSpy class >> defaultLoggerClass [
-	^DSSpySTONFileLogger
+	^DSSTONFileLogger
 ]
 
 { #category : #'task management' }

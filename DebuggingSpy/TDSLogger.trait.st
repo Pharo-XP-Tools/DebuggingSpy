@@ -2,16 +2,21 @@
 Common API for DSSpy surveys
 "
 Trait {
-	#name : #TDSSpyLogger,
+	#name : #TDSLogger,
 	#category : #'DebuggingSpy-Loggers'
 }
 
+{ #category : #initialization }
+TDSLogger >> reset [
+	self explicitRequirement 
+]
+
 { #category : #setup }
-TDSSpyLogger >> setupLoggerForSurvey: aSurvey [
+TDSLogger >> setupLoggerForSurvey: aSurvey [
 	self explicitRequirement "self forceLoggingFileNameFor: aTask."
 ]
 
 { #category : #setup }
-TDSSpyLogger >> setupLoggerForTask: aTask [
+TDSLogger >> setupLoggerForTask: aTask [
 	self explicitRequirement
 ]
