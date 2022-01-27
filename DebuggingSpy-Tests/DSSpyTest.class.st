@@ -273,6 +273,12 @@ DSSpyTest >> testCloseSurvey [
 	
 ]
 
+{ #category : #'tests - logging' }
+DSSpyTest >> testDefaultLogger [
+	DSSpy logger: nil.
+	self assert: DSSpy logger class equals: DSSpy defaultLoggerClass 
+]
+
 { #category : #'tests - task management' }
 DSSpyTest >> testEndTask [
 	DSSpy endTask: task.
