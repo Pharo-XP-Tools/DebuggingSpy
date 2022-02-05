@@ -64,7 +64,7 @@ DSSTONFileLoggerTest >> testFilenameForSurvey [
 DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 	logger reset.
 	logger forceLoggingFileNameFor: task.	
-	self assert: logger loggingFileName equals: (task name, '-', SessionManager default currentSession id asString).
+	self assert: logger loggingFileName equals: (task title, '-', SessionManager default currentSession id asString).
 	self assert: logger loggingFileName equals: logger loggingFileReference basename.
 	self assert: logger loggingFileReference exists
 ]
@@ -77,7 +77,7 @@ DSSTONFileLoggerTest >> testForceRunningTask [
 	self
 		assert: logger loggingFileName
 		equals:
-		task name , '-' , SessionManager default currentSession id asString
+		task title , '-' , SessionManager default currentSession id asString
 ]
 
 { #category : #'tests - file handling' }
@@ -113,7 +113,7 @@ DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskStarted [
 
 	self
 		assert: logger loggingFileName
-		equals: (task name, '-', logger defaultLoggingFileName)
+		equals: (task title, '-', logger defaultLoggingFileName)
 ]
 
 { #category : #'tests - file handling' }

@@ -244,7 +244,7 @@ DSSpyTest >> testCloseSurvey [
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy startTask: task.
 	DSRecordRegistry autoSerialize: true.
-	taskLoggingFileName := task name, '-', DSSpy logger defaultLoggingFileName.
+	taskLoggingFileName := task title, '-', DSSpy logger defaultLoggingFileName.
 	
 	self assert: self registry size equals: 1.
 	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
@@ -673,7 +673,7 @@ DSSpyTest >> testStartTaskSerialization [
 	DSSpy startTask: task.
 	recordedTask := (DSSpy materialize: DSSpy logger loggingFileReference) first.
 	self assert: recordedTask class equals: DSStartTaskRecord.
-	self assert: recordedTask taskName equals: task name
+	self assert: recordedTask taskName equals: task title
 ]
 
 { #category : #'tests - task management' }

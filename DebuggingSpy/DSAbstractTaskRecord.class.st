@@ -27,5 +27,5 @@ DSAbstractTaskRecord >> record: aTask [
 { #category : #accessing }
 DSAbstractTaskRecord >> taskName [
 
-	^ task name
+	^ task title
 ]

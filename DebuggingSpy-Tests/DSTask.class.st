@@ -40,6 +40,6 @@ DSTask >> initialize [
 ]
 
 { #category : #accessing }
-DSTask >> name [ 	
+DSTask >> title [ 	
 	^self class dsTaskDescription
 ]
