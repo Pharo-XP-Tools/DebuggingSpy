@@ -44,7 +44,7 @@ DSSTONFileLogger >> filenameForSurvey: aSurvey [
 { #category : #'task management' }
 DSSTONFileLogger >> forceLoggingFileNameFor: aTask [
 
-	loggingFilename := aTask name , '-' , self defaultLoggingFileName.
+	loggingFilename := aTask title , '-' , self defaultLoggingFileName.
 	loggingFileReference := self ensureCreateLoggingFileReference 
 ]
 
