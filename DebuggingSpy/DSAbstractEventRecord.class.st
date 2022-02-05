@@ -6,7 +6,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'dateTime',
-		'windowId'
+		'windowId',
+		'uuid'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -71,7 +72,8 @@ DSAbstractEventRecord >> eventName [
 
 { #category : #initialization }
 DSAbstractEventRecord >> initialize [
-	dateTime := DateAndTime now
+	dateTime := DateAndTime now.
+	uuid := UUID new
 ]
 
 { #category : #printing }
@@ -87,6 +89,12 @@ DSAbstractEventRecord >> record: aWindow [
 { #category : #'API-history' }
 DSAbstractEventRecord >> recordWindowHistoryOn: aDSRecordHistory [
 	aDSRecordHistory addWindowRecord: self
+]
+
+{ #category : #accessing }
+DSAbstractEventRecord >> uuid [
+
+	^ uuid
 ]
 
 { #category : #accessing }
