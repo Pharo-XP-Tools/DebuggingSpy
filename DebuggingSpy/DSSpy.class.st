@@ -11,7 +11,8 @@ Class {
 	#classInstVars : [
 		'logOnlyWhenTaskStarted',
 		'taskStarted',
-		'logger'
+		'logger',
+		'packagesMonitoredForSourceCodeChanges'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -167,6 +168,7 @@ DSSpy class >> methodChanged: evt [
 	newMethod := evt method.
 
 	DSMethodModifiedRecord for: newMethod.
+	self recordSourceCodeChangeFrom: oldMethod to: newMethod.
 
 	(oldMethod containsHalt and: [ newMethod containsHalt not ]) ifTrue: [ 
 		self recordHaltInRemovedMethod: oldMethod ].
@@ -193,6 +195,24 @@ DSSpy class >> methodRemoved: evt [
 { #category : #accessing }
 DSSpy class >> monitor [
 	^monitor ifNil:[monitor := Monitor new]
+]
+
+{ #category : #'as yet unclassified' }
+DSSpy class >> monitorPackageForSourceCodeChanges: aString [ 
+	self packagesMonitoredForSourceCodeChanges add: aString
+]
+
+{ #category : #'as yet unclassified' }
+DSSpy class >> packagesMonitoredForSourceCodeChanges [
+
+	^ packagesMonitoredForSourceCodeChanges ifNil: [ 
+		  packagesMonitoredForSourceCodeChanges := Set new ]
+]
+
+{ #category : #accessing }
+DSSpy class >> packagesMonitoredForSourceCodeChanges: anObject [
+
+	packagesMonitoredForSourceCodeChanges := anObject
 ]
 
 { #category : #'events - breakpoints' }
@@ -232,6 +252,19 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record := DSHaltChangeRecord for: DSHaltChangeRecord remove.
 	record haltData: nodesSelectorsWithIndexes.
 	record method: oldMethod name
+]
+
+{ #category : #'events - methods' }
+DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
+
+	((self packagesMonitoredForSourceCodeChanges includes:
+		  oldMethod package name) or: [ 
+		 self packagesMonitoredForSourceCodeChanges includes:
+			 newMethod package name ]) ifFalse: [ ^ self ].
+	DSSourceCodeChangeEventRecord for: { 
+			newMethod.
+			oldMethod sourceCode.
+			newMethod sourceCode }
 ]
 
 { #category : #initialization }

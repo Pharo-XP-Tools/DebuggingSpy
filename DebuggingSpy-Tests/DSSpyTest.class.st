@@ -175,7 +175,8 @@ DSSpyTest >> setUp [
 	task := DSTask new.
 	survey := DSSurvey new.
 	instrumenter := DSSpyInstrumenter new.
-	DSRecordRegistry current reset
+	DSRecordRegistry current reset.
+	DSSpy packagesMonitoredForSourceCodeChanges: nil
 ]
 
 { #category : #running }
@@ -447,6 +448,22 @@ DSSpyTest >> testMethodRemoved [
 	self assertMethodEventRecordedAs: DSMethodRemovedRecord
 ]
 
+{ #category : #'tests - methods events' }
+DSSpyTest >> testMonitorPackageForSourceCodeChanges [
+
+	DSSpy monitorPackageForSourceCodeChanges: self class package name.
+	self assert: DSSpy packagesMonitoredForSourceCodeChanges size equals: 1.
+	self assert: DSSpy packagesMonitoredForSourceCodeChanges asOrderedCollection first equals: self class package name.
+	
+	DSSpy monitorPackageForSourceCodeChanges: self class package name.
+	self assert: DSSpy packagesMonitoredForSourceCodeChanges size equals: 1.
+	
+	DSSpy monitorPackageForSourceCodeChanges: 'Another package'.
+	self assert: DSSpy packagesMonitoredForSourceCodeChanges size equals: 2.
+	self assert: (DSSpy packagesMonitoredForSourceCodeChanges includes: 'Another package').
+	self assert: (DSSpy packagesMonitoredForSourceCodeChanges includes: self class package name).
+]
+
 { #category : #'tests - breakpoints events' }
 DSSpyTest >> testObjectCentricBreakpointRecord [
 
@@ -522,6 +539,12 @@ DSSpyTest >> testObjectCentricVariableBreakpointRecord [
 		target:
 		(DSAbstractBreakpointEventRecord basicNew printTargetInstance:
 			 target)
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testPackagesMonitoredForSourceCodeChanges [
+
+	self assert: DSSpy packagesMonitoredForSourceCodeChanges isEmpty
 ]
 
 { #category : #'tests - halts events' }
@@ -605,6 +628,31 @@ DSSpyTest >> testRecordHaltInRemovedMethod [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
+{ #category : #'tests - methods events' }
+DSSpyTest >> testRecordMethodChangesSourceCode [
+
+	|method|
+	DSSpy methodChanged: self methodModifiedEvent.
+	self assert: self registry size equals: 1.	
+		
+	record := self registry first.	
+	self deny: record class identicalTo: DSSourceCodeChangeEventRecord.
+	
+	DSRecordRegistry current reset.
+	DSSpy monitorPackageForSourceCodeChanges: self class package name.
+	DSSpy methodChanged: self methodModifiedEvent.
+	
+	self assert: self registry size equals: 2.
+	self assert: self registry first class identicalTo: DSMethodModifiedRecord.	
+	
+	record := self registry second.	
+	method := (self class >> #methodEvent).
+	self assert: record class identicalTo: DSSourceCodeChangeEventRecord.	
+	self assert: record methodName equals: method name.
+	self assert: record oldSource equals: method sourceCode.
+	self assert: record newSource equals: method sourceCode
+]
+
 { #category : #'tests - halts events' }
 DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 	| haltData realHaltNode |
@@ -627,6 +675,27 @@ DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 	self assert: haltData size equals: 1.
 	self assert: haltData first key equals: realHaltNode selector.
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testRecordSourceCodeChangeFromTo [
+
+	|oldMethod newMethod|
+	oldMethod := (self class >> #methodEvent).
+	newMethod := (self class >> #methodModifiedEvent).
+	
+	DSSpy recordSourceCodeChangeFrom: oldMethod to: newMethod.
+	self assert: self registry isEmpty.		
+	
+	DSSpy monitorPackageForSourceCodeChanges: self class package name.
+	DSSpy recordSourceCodeChangeFrom: oldMethod to: newMethod.
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class identicalTo: DSSourceCodeChangeEventRecord.	
+	self assert: record methodName equals: newMethod name.
+	self assert: record oldSource equals: oldMethod sourceCode.
+	self assert: record newSource equals: newMethod sourceCode
 ]
 
 { #category : #'tests - task management' }
