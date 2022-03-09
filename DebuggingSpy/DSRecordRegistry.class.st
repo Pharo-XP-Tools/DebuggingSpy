@@ -52,7 +52,8 @@ DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
 	records add: aRecord.
 	self class log: aRecord.
-	aRecord crTrace
+	self flag: 'Add debug code here to see what is traced'.
+	"aRecord crTrace"
 ]
 
 { #category : #initialization }
