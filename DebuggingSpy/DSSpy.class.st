@@ -197,12 +197,12 @@ DSSpy class >> monitor [
 	^monitor ifNil:[monitor := Monitor new]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'events - methods' }
 DSSpy class >> monitorPackageForSourceCodeChanges: aString [ 
 	self packagesMonitoredForSourceCodeChanges add: aString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'events - methods' }
 DSSpy class >> packagesMonitoredForSourceCodeChanges [
 
 	^ packagesMonitoredForSourceCodeChanges ifNil: [ 
