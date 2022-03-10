@@ -413,16 +413,14 @@ SliderMorph compile: 'dragging: aBoolean
 DSSpyInstrumenter >> instrumentScrollingInScrollPanesEvents [
 	
 	
-GeneralScrollPane  compile: 'mouseWheel: event 
+ScrollPane  compile: 'mouseWheel: event 
 	"Handle a mouseWheel event."
 	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
-	(self scrollTarget handlesMouseWheel: event)
-		ifTrue: [^self scrollTarget mouseWheel: event]. "pass on"
-	
-	event isUp ifTrue: [ ^ vScrollbar scrollUp: 3 ].
-	event isDown ifTrue: [ ^ vScrollbar scrollDown: 3 ].
-	event isLeft  ifTrue: [ ^ hScrollbar scrollLeft: 3 ].
-	event isRight  ifTrue: [ ^ hScrollbar scrollRight: 3 ].'
+		
+	event isUp ifTrue: [ ^ scrollBar scrollUp: 3 ].
+	event isDown ifTrue: [ ^ scrollBar scrollDown: 3 ].
+	event isLeft  ifTrue: [ ^ hScrollBar scrollLeft: 3 ].
+	event isRight  ifTrue: [ ^ hScrollBar scrollRight: 3 ].'
 ]
 
 { #category : #'mouse events' }

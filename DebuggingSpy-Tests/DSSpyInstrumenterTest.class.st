@@ -981,11 +981,11 @@ DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
 	
 	|pane|
-	modifiedClass := GeneralScrollPane.
-	modifiedMethodSource := (GeneralScrollPane >> #mouseWheel:) sourceCode.
+	modifiedClass := ScrollPane.
+	modifiedMethodSource := (ScrollPane >> #mouseWheel:) sourceCode.
 	instrumenter instrumentScrollingInScrollPanesEvents.
 	
-	pane := GeneralScrollPane new.
+	pane := ScrollPane new.
 	pane privateOwner: SystemWindow new.
 	
 	pane mouseWheel: MouseWheelEvent new.			
