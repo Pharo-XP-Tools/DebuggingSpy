@@ -270,7 +270,7 @@ DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 { #category : #initialization }
 DSSpy class >> resetSpy [
 
-	logger reset.
+	logger ifNotNil:[logger reset].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false
 ]
