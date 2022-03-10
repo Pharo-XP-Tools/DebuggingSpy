@@ -957,11 +957,11 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 	
 	|slider|
-	modifiedClass := Slider.
-	modifiedMethodSource := (Slider >> #dragging:) sourceCode.
+	modifiedClass := SliderMorph.
+	modifiedMethodSource := (SliderMorph >> #dragging:) sourceCode.
 	instrumenter instrumentScrollingByDraggingSlider.
 	
-	slider := Slider new.
+	slider := SliderMorph new.
 	slider privateOwner: SystemWindow new.
 	
 	slider dragging: true.			

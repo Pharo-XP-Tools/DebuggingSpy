@@ -396,7 +396,7 @@ DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 { #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingByDraggingSlider [
 	
-Slider compile: 'dragging: aBoolean
+SliderMorph compile: 'dragging: aBoolean
 
 	(aBoolean not and: [ dragging ]) ifTrue: [ 
 		[ DSStopScrollingEventRecord for: self window ]
