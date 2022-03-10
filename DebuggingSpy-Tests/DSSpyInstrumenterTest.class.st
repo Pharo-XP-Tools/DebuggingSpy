@@ -356,16 +356,20 @@ DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
 DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 	| ctxPresenter rawView attrTable widget |
-	anInspector buildWithSpec.
+	anInspector build.
 	self setDummyWindowForPresenter: anInspector.
 	ctxPresenter := anInspector firstPage rawInspectorPageOrNil
 		                retrievePresenter.
 	rawView := (ctxPresenter class slotNamed: #view) read: ctxPresenter.
-	
-	self setDummyWindowPresenter: anInspector window forPresenter: rawView.
+
+	self
+		setDummyWindowPresenter: anInspector window
+		forPresenter: rawView.
 	attrTable := rawView attributeTable.
-	attrTable buildWithSpec.
-	self setDummyWindowPresenter: anInspector window forPresenter: attrTable.
+	attrTable build.
+	self
+		setDummyWindowPresenter: anInspector window
+		forPresenter: attrTable.
 	widget := attrTable adapter widget.
 	^ widget dataSource rootItem children
 ]
