@@ -256,7 +256,8 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	StObjectInspectorPresenter compile: 'initializePresenters
 	views := self newNotebook.
 	header := self instantiate: StHeaderBar.
-	self initializeLayout.
+	
+	self layout: self defaultLayout.
 	views whenSelectedPageChangedDo: [ :page | 
 		[ 
 		DSSelectInspectorPageRecord for: { 
