@@ -283,7 +283,10 @@ DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 	FTSelectableMorph compile: 'mouseEnter: evt
 
 	[DSMouseEnterTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #ENTER_TABLE_ITEM].
-	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
+	colorBeforeOver := self color.
+	self color: (selectionColor isTransparent
+			 ifTrue: [ self mouseOverColor ]
+			 ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
 { #category : #'mouse events' }
