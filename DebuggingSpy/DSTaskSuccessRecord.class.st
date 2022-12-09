@@ -15,7 +15,7 @@ Class {
 
 { #category : #accessing }
 DSTaskSuccessRecord >> eventName [
-	^'Task success ', self success
+	^'Task success ', self success asString
 ]
 
 { #category : #accessing }
