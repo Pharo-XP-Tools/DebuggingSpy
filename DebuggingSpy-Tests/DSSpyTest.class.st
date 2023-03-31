@@ -404,7 +404,8 @@ DSSpyTest >> testMethodAdded [
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodAddedRecord
+	self assertMethodEventRecordedAs: DSMethodAddedRecord.
+	self assert: record methodSource equals: (self class >> #methodEvent) sourceCode
 ]
 
 { #category : #'tests - methods events' }
@@ -414,7 +415,8 @@ DSSpyTest >> testMethodChanged [
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodModifiedRecord
+	self assertMethodEventRecordedAs: DSMethodModifiedRecord.
+	self assert: record methodSource equals: (self class >> #methodEvent) sourceCode
 ]
 
 { #category : #'tests - methods events' }
@@ -445,7 +447,8 @@ DSSpyTest >> testMethodRemoved [
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodRemovedRecord
+	self assertMethodEventRecordedAs: DSMethodRemovedRecord.
+	self assert: record methodSource equals: (self class >> #methodEvent) sourceCode
 ]
 
 { #category : #'tests - methods events' }
