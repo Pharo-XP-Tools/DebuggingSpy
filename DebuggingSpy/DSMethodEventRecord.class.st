@@ -64,11 +64,15 @@ DSMethodEventRecord >> methodSource: anObject [
 DSMethodEventRecord >> record: aCompiledMethod [
 
 	methodName := aCompiledMethod name.
-	methodSource := [ aCompiledMethod sourceCode ]
-		                on: Error
-		                do: [ :e | 
-			                String streamContents: [ :s | 
-				                s << 'Impossible to obtain source:'.
-				                s space.
-				                s << e printString ] ]
+	methodSource := DSSpy recordSourceCode
+		                ifTrue: [ 
+			                [ aCompiledMethod sourceCode ]
+				                on: Error
+				                do: [ :e | 
+					                String streamContents: [ :s | 
+						                s << 'Impossible to obtain source:'.
+						                s space.
+						                s << e printString ] ] ]
+		                ifFalse: [ 
+		                DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
