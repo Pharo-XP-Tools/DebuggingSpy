@@ -12,8 +12,12 @@ Class {
 }
 
 { #category : #'actions api' }
-DSCodeActionRecord >> record: aCodeString [	
-	selectedString := aCodeString
+DSCodeActionRecord >> record: aCodeString [
+
+	selectedString := DSSpy recordSourceCode
+		                  ifTrue: [ aCodeString ]
+		                  ifFalse: [ 
+		                  DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
 
 { #category : #accessing }
