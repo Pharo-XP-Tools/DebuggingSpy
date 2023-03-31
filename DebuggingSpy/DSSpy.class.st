@@ -12,7 +12,8 @@ Class {
 		'logOnlyWhenTaskStarted',
 		'taskStarted',
 		'logger',
-		'packagesMonitoredForSourceCodeChanges'
+		'packagesMonitoredForSourceCodeChanges',
+		'recordSourceCode'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -254,6 +255,18 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record method: oldMethod name
 ]
 
+{ #category : #accessing }
+DSSpy class >> recordSourceCode [
+
+	^ recordSourceCode ifNil: [ recordSourceCode := false ]
+]
+
+{ #category : #accessing }
+DSSpy class >> recordSourceCode: aBoolean [
+
+	recordSourceCode := aBoolean
+]
+
 { #category : #'events - methods' }
 DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 
@@ -267,10 +280,16 @@ DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 			newMethod sourceCode }
 ]
 
+{ #category : #accessing }
+DSSpy class >> recordSourceCodeDisabledErrorMessage [
+
+	^ 'Source code recording disabled'
+]
+
 { #category : #initialization }
 DSSpy class >> resetSpy [
 
-	logger reset.
+	logger ifNotNil:[:l| l reset].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false
 ]

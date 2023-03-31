@@ -9,7 +9,8 @@ Class {
 		'instrumenter',
 		'breakpoint',
 		'task',
-		'survey'
+		'survey',
+		'recordSourceCode'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -37,6 +38,22 @@ DSSpyTest >> assertMethodEventRecordedAs: aClass [
 DSSpyTest >> assertMethodEventRecordedAs: aClass for: aMethod [
 	self assert: record class identicalTo: aClass.
 	self assert: record methodName equals: aMethod name
+]
+
+{ #category : #assertions }
+DSSpyTest >> assertMethodSourceCodeNotRecorded [
+
+	self
+		assert: record methodSource
+		equals: DSSpy recordSourceCodeDisabledErrorMessage
+]
+
+{ #category : #assertions }
+DSSpyTest >> assertMethodSourceCodeRecorded [
+
+	self
+		assert: record methodSource
+		equals: (self class >> #methodEvent) sourceCode
 ]
 
 { #category : #assertions }
@@ -176,7 +193,9 @@ DSSpyTest >> setUp [
 	survey := DSSurvey new.
 	instrumenter := DSSpyInstrumenter new.
 	DSRecordRegistry current reset.
-	DSSpy packagesMonitoredForSourceCodeChanges: nil
+	DSSpy packagesMonitoredForSourceCodeChanges: nil.
+	recordSourceCode := DSSpy recordSourceCode.
+	DSSpy recordSourceCode: false
 ]
 
 { #category : #running }
@@ -187,6 +206,7 @@ DSSpyTest >> tearDown [
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
 	self removeNewMethodWithHalt.
 	DSRecordRegistry current reset.
+	DSSpy recordSourceCode: recordSourceCode.
 	super tearDown
 ]
 
@@ -400,21 +420,46 @@ DSSpyTest >> testMaterialize [
 
 { #category : #'tests - methods events' }
 DSSpyTest >> testMethodAdded [
+	DSSpy recordSourceCode: true.
 	DSSpy methodAdded: self methodEvent.
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodAddedRecord
+	self assertMethodEventRecordedAs: DSMethodAddedRecord.
+	self assertMethodSourceCodeRecorded
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testMethodAddedNoSourceCode [
+	DSSpy methodAdded: self methodEvent.
+	self assert: self registry size equals: 1.	
+		
+	record := self registry first.	
+	self assertMethodEventRecordedAs: DSMethodAddedRecord.
+	self assertMethodSourceCodeNotRecorded
 ]
 
 { #category : #'tests - methods events' }
 DSSpyTest >> testMethodChanged [
 
+	DSSpy recordSourceCode: true.
 	DSSpy methodChanged: self methodModifiedEvent.
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodModifiedRecord
+	self assertMethodEventRecordedAs: DSMethodModifiedRecord.
+	self assertMethodSourceCodeRecorded
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testMethodChangedNoSourceCode [
+
+	DSSpy methodChanged: self methodModifiedEvent.
+	self assert: self registry size equals: 1.	
+		
+	record := self registry first.	
+	self assertMethodEventRecordedAs: DSMethodModifiedRecord.
+	self assertMethodSourceCodeNotRecorded
 ]
 
 { #category : #'tests - methods events' }
@@ -441,11 +486,24 @@ DSSpyTest >> testMethodEventsInstrumentation [
 
 { #category : #'tests - methods events' }
 DSSpyTest >> testMethodRemoved [
+
+	DSSpy recordSourceCode: true.
 	DSSpy methodRemoved: self methodEvent.
 	self assert: self registry size equals: 1.	
 		
 	record := self registry first.	
-	self assertMethodEventRecordedAs: DSMethodRemovedRecord
+	self assertMethodEventRecordedAs: DSMethodRemovedRecord.
+	self assertMethodSourceCodeRecorded
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testMethodRemovedNoSourceCode [
+	DSSpy methodRemoved: self methodEvent.
+	self assert: self registry size equals: 1.	
+		
+	record := self registry first.	
+	self assertMethodEventRecordedAs: DSMethodRemovedRecord.
+	self assertMethodSourceCodeNotRecorded
 ]
 
 { #category : #'tests - methods events' }
@@ -696,6 +754,12 @@ DSSpyTest >> testRecordSourceCodeChangeFromTo [
 	self assert: record methodName equals: newMethod name.
 	self assert: record oldSource equals: oldMethod sourceCode.
 	self assert: record newSource equals: newMethod sourceCode
+]
+
+{ #category : #'tests - configuration' }
+DSSpyTest >> testRecordSourceCodeDefaultValue [
+	DSSpy recordSourceCode: nil.
+	self deny: DSSpy recordSourceCode 
 ]
 
 { #category : #'tests - task management' }

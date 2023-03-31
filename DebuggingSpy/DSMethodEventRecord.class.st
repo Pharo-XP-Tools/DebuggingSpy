@@ -6,7 +6,8 @@ Class {
 	#name : #DSMethodEventRecord,
 	#superclass : #DSAbstractEventRecord,
 	#instVars : [
-		'methodName'
+		'methodName',
+		'methodSource'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -47,7 +48,31 @@ DSMethodEventRecord >> methodName: anObject [
 	methodName := anObject
 ]
 
+{ #category : #accessing }
+DSMethodEventRecord >> methodSource [
+
+	^ methodSource
+]
+
+{ #category : #accessing }
+DSMethodEventRecord >> methodSource: anObject [
+
+	methodSource := anObject
+]
+
 { #category : #'actions api' }
 DSMethodEventRecord >> record: aCompiledMethod [
-	methodName := aCompiledMethod name
+
+	methodName := aCompiledMethod name.
+	methodSource := DSSpy recordSourceCode
+		                ifTrue: [ 
+			                [ aCompiledMethod sourceCode ]
+				                on: Error
+				                do: [ :e | 
+					                String streamContents: [ :s | 
+						                s << 'Impossible to obtain source:'.
+						                s space.
+						                s << e printString ] ] ]
+		                ifFalse: [ 
+		                DSSpy recordSourceCodeDisabledErrorMessage ]
 ]

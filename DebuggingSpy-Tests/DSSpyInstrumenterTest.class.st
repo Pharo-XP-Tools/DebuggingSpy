@@ -9,7 +9,8 @@ Class {
 		'debugger',
 		'browser',
 		'methodToRemove',
-		'methodsToRemove'
+		'methodsToRemove',
+		'recordSourceCode'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -336,6 +337,8 @@ DSSpyInstrumenterTest >> setUp [
 	super setUp.
 	
 	instrumenter := DSSpyInstrumenter new.
+	recordSourceCode := DSSpy recordSourceCode.
+	DSSpy recordSourceCode: true.
 	DSRecordRegistry current reset
 ]
 
@@ -385,6 +388,8 @@ DSSpyInstrumenterTest >> tearDown [
 
 	methodsToRemove ifNotNil: [ 
 		methodsToRemove do: [ :m | m removeFromSystem ] ].
+	
+	DSSpy recordSourceCode: recordSourceCode.
 	
 	DSRecordRegistry current reset.
 	
@@ -1199,4 +1204,17 @@ DSSpyInstrumenterTest >> testInstrumentStepToNextInstanceCreation [
 DSSpyInstrumenterTest >> testInstrumentStepToReturnCommand [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'To return'
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testLoggingInteractionsWithNoSourceCode [
+	DSSpy recordSourceCode: false.
+	{ 
+		DSDebugItRecord.
+		DSDoItRecord.
+		DSPrintItRecord } do: [ :recordClass | 
+		record := recordClass new record: 'test'.
+		self
+			assert: record selectedString
+			equals: DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
