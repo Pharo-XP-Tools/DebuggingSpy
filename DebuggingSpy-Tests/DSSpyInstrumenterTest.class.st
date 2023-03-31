@@ -892,7 +892,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 		           r class = DSClipboardCopyRecord ]) first.
 
 	self assert: record class identicalTo: DSClipboardCopyRecord.
-	self assert: record clipboardText equals: Clipboard clipboardText ] 
+	self assert: record clipboardText asOctetString  equals: Clipboard clipboardText asOctetString] 
 		ensure: [ DSSpy recordClipboardContent: registerClipboardText ]
 ]
 
