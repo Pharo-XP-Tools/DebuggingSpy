@@ -13,7 +13,8 @@ Class {
 		'taskStarted',
 		'logger',
 		'packagesMonitoredForSourceCodeChanges',
-		'recordSourceCode'
+		'recordSourceCode',
+		'recordClipboardContent'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -219,6 +220,18 @@ DSSpy class >> packagesMonitoredForSourceCodeChanges: anObject [
 { #category : #'events - breakpoints' }
 DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
 	^aBreakpointEvent recordBreakpoint 
+]
+
+{ #category : #accessing }
+DSSpy class >> recordClipboardContent [
+
+	^ recordClipboardContent  ifNil: [ recordClipboardContent := false ]
+]
+
+{ #category : #accessing }
+DSSpy class >> recordClipboardContent: anObject [
+
+	recordClipboardContent := anObject
 ]
 
 { #category : #'events - breakpoints' }

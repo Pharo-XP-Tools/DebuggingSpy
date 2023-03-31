@@ -10,29 +10,8 @@ Class {
 		'clipboardText',
 		'editorClassName'
 	],
-	#classVars : [
-		'RegisterClipboardText'
-	],
 	#category : #'DebuggingSpy-Records'
 }
-
-{ #category : #initialization }
-DSClipboardActionRecord class >> initialize [
-
-	RegisterClipboardText := false
-]
-
-{ #category : #'as yet unclassified' }
-DSClipboardActionRecord class >> registerClipboardText [
-
-	^ RegisterClipboardText
-]
-
-{ #category : #'as yet unclassified' }
-DSClipboardActionRecord class >> registerClipboardText: anObject [
-
-	RegisterClipboardText := anObject
-]
 
 { #category : #accessing }
 DSClipboardActionRecord >> clipboardText [
@@ -60,7 +39,7 @@ DSClipboardActionRecord >> editorClassName: anObject [
 
 { #category : #'actions api' }
 DSClipboardActionRecord >> record: recordInfo [
-	clipboardText  := RegisterClipboardText ifTrue: [ recordInfo first] ifFalse: ['RegisterClipboarText disabled'].
+	clipboardText  := DSSpy recordClipboardContent ifTrue: [ recordInfo first] ifFalse: ['RecordClipboarContent disabled'].
 	windowId := recordInfo second.
 	editorClassName := recordInfo third
 ]
