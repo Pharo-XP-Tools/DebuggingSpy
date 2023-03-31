@@ -9,7 +9,8 @@ Class {
 		'instrumenter',
 		'breakpoint',
 		'task',
-		'survey'
+		'survey',
+		'recordSourceCode'
 	],
 	#category : #'DebuggingSpy-Tests'
 }
@@ -176,7 +177,9 @@ DSSpyTest >> setUp [
 	survey := DSSurvey new.
 	instrumenter := DSSpyInstrumenter new.
 	DSRecordRegistry current reset.
-	DSSpy packagesMonitoredForSourceCodeChanges: nil
+	DSSpy packagesMonitoredForSourceCodeChanges: nil.
+	recordSourceCode := DSSpy recordSourceCode.
+	DSSpy recordSourceCode: false
 ]
 
 { #category : #running }
@@ -187,6 +190,7 @@ DSSpyTest >> tearDown [
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
 	self removeNewMethodWithHalt.
 	DSRecordRegistry current reset.
+	DSSpy recordSourceCode: recordSourceCode.
 	super tearDown
 ]
 
@@ -699,6 +703,12 @@ DSSpyTest >> testRecordSourceCodeChangeFromTo [
 	self assert: record methodName equals: newMethod name.
 	self assert: record oldSource equals: oldMethod sourceCode.
 	self assert: record newSource equals: newMethod sourceCode
+]
+
+{ #category : #'tests - configuration' }
+DSSpyTest >> testRecordSourceCodeDefaultValue [
+	DSSpy recordSourceCode: nil.
+	self deny: DSSpy recordSourceCode 
 ]
 
 { #category : #'tests - task management' }
