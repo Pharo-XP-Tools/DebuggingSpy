@@ -356,6 +356,21 @@ DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> stObjectContextModelMock [
+
+	| model context |
+	model := StInspectorModel on: StInspectorMockObject new.
+	context := StInspectionContext fromPragma:
+		           (StInspectorMockObject >> #inspectionMock1) pragmas first.
+	context inspectedObject: model inspectedObject.
+	^ StObjectContextModel new
+		  inspection: model;
+		  inspectedObject: model inspectedObject;
+		  context: context;
+		  yourself
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 	| ctxPresenter rawView attrTable widget |
@@ -1061,6 +1076,53 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 
 	self assert: record class identicalTo: DSDoItRecord.
 	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
+
+	| presenter |
+	modifiedClass := StObjectContextPresenter.
+	modifiedMethodSource := (StObjectContextPresenter >> #doEvaluateAndGo) sourceCode.
+	instrumenter instrumentSpCodeDoItAndGoForInspector.
+
+	presenter := StObjectContextPresenter basicNew.
+	presenter setModelBeforeInitialization: self stObjectContextModelMock.
+	[presenter intializePresentersWithEvaluator] on: Error do:["we just pass layout initialization errors as we do not care"].
+	presenter evaluator text: '4+2'.
+	presenter evaluator  selectionInterval: (1 to: 3).
+	
+	presenter doEvaluateAndGo.	
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.
+
+	self assert: record class identicalTo: DSDoItAndGoRecord.
+	self assert: record selectedString equals: '4+2'
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
+
+	| presenter |
+	modifiedClass := StPlaygroundPagePresenter.
+	modifiedMethodSource := (StPlaygroundPagePresenter >> #doEvaluateAndGo) sourceCode.
+	instrumenter instrumentSpCodeDoItAndGoForPlayground.
+
+	presenter := StPlaygroundPagePresenter basicNew.
+	presenter application: StPharoApplication new.
+	presenter initializePresenters.
+	presenter setModelBeforeInitialization: DSFakeTextEditor new.
+	presenter text text: '4+2'.
+	presenter text selectionInterval: (1 to: 3).
+
+	presenter doEvaluateAndGo.	
+	
+	self assert: self registry size equals: 1.
+	record := self registry first.
+
+	self assert: record class identicalTo: DSDoItAndGoRecord.
+	self assert: record selectedString equals: '4+2'
 ]
 
 { #category : #'tests - interactions' }

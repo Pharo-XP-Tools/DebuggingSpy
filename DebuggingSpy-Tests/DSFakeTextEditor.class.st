@@ -7,3 +7,7 @@ Class {
 	#superclass : #RubSmalltalkEditor,
 	#category : #'DebuggingSpy-Tests'
 }
+
+{ #category : #accessing }
+DSFakeTextEditor >> contents: anObject [
+]
