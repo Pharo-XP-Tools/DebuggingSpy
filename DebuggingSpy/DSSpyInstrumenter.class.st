@@ -331,6 +331,19 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 	^pg'
 ]
 
+{ #category : #system }
+DSSpyInstrumenter >> instrumentRubEditorCopySelection [
+
+RubTextEditor compile: 'copySelection
+"Copy the current selection and store it in the paste buffer, unless a caret.  Undoer & Redoer: undoCutCopy"
+
+	self lineSelectAndEmptyCheck: [^ self].
+	self clipboardTextPut: self selection.
+	DSClipboardCopyRecord for: {self selection . self textArea window hash . self class name}.
+	self editingState previousInterval: self selectionInterval.
+'
+]
+
 { #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorDebugIt [
 
@@ -359,6 +372,19 @@ DSSpyInstrumenter >> instrumentRubEditorDoIt [
 			do: [ :e | 
 				DSSpy log: #ERROR key: #ACTION_PRINTIT ].
 	^ self evaluateSelection'
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> instrumentRubEditorPaste [
+
+	RubTextEditor compile: 'paste
+	"Paste the text from the shared buffer over the current selection and 
+	redisplay if necessary.  Undoer & Redoer: undoAndReselect."
+
+	self replace: self selectionInterval with: self clipboardText and:
+		[self selectAt: self pointIndex].
+	DSClipboardPasteRecord for: {self clipboardText . self textArea window hash. self class name}.
+	'
 ]
 
 { #category : #interactions }
@@ -391,6 +417,63 @@ DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 	RubScrolledTextMorph compile: 'mouseEnter: evt
 	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
 	^super mouseEnter: evt'
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> instrumentRubSmalltalkEditorCopySelection [
+
+RubSmalltalkEditor compile: 'copySelection
+"Copy the current selection and store it in the paste buffer, unless a caret.  Undoer & Redoer: undoCutCopy"
+
+	| node escapingCharacter selection |
+	"Research of selected node for eventual nesting of comment or string."
+	self lineSelectAndEmptyCheck: [ ^ self ].
+	node := self bestNodeInTextArea.
+	escapingCharacter := self getEscapeCharacterFromAst: node.
+
+	selection := (escapingCharacter notNil and: [ "The node, if a comment or a string, should entirely contain the selection.
+		We convert the node source interval to an open interval to ignore the node delimiters." 
+		              node sourceInterval asOpenInterval includesAll:
+			              self selectionInterval ])
+		             ifTrue: [ 
+		             self selection asString unescapeCharacter:
+			             escapingCharacter ]
+		             ifFalse: [ self selection asString ].
+	self clipboardTextPut: selection.
+	self editingState previousInterval: self selectionInterval.
+	DSClipboardCopyRecord for: { 
+			selection.
+			self textArea window hash.
+			self class name }
+'
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> instrumentRubSmalltalkEditorPaste [
+	
+RubSmalltalkEditor compile:'paste
+	"Paste the text from the shared buffer over the current selection and 
+	redisplay if necessary.  Undoer & Redoer: undoAndReselect."
+	| node character escapedText |
+	"This method is specialized for Pharo code.
+	If paste happens in the context of a comment or a string, the pasted contents should be properly escaped."
+	
+	"Get the AST node corresponding to where we are going to paste.
+	If there is a selection, cut it off, because pasting it will over-write it, and get the AST node at the cut position.
+	This is specially important when the selection spans multiple scopes (e.g., it starts inside a comment and finished in the middle of another)."
+	node := self bestNodeInTextAreaWithoutSelection.
+
+	"The pasted text could be inserted in some context requiring escaping, e.g., a comment, a string.
+	If so, get the escaping character, and escape the pasted text before pasting it."
+	character := self getEscapeCharacterFromAst: node.
+	escapedText := (self shouldEscapeCharacter: character)
+		  ifTrue: [ self escapeCharacter: character inString: self clipboardText ]
+		  ifFalse: [ self clipboardText ].
+	
+	self replace: self selectionInterval with: escapedText and:
+		[self selectAt: self pointIndex].
+	
+	DSClipboardPasteRecord for: {escapedText . self textArea window hash . self class name}.'
 ]
 
 { #category : #'mouse events' }
@@ -568,6 +651,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 { #category : #system }
 DSSpyInstrumenter >> instrumentSystem [
 	self instrumentDebuggerOpening.
+	self logTextEditorsClipbardActions.
 	self logClyBrowsersOpenings.
 	self logCodeInteractions.
 	self logDebuggerInteractions.
@@ -659,6 +743,15 @@ DSSpyInstrumenter >> logMouseEvents [
 { #category : #system }
 DSSpyInstrumenter >> logPlaygroundOpenings [
 	self instrumentPlaygroundCode
+]
+
+{ #category : #system }
+DSSpyInstrumenter >> logTextEditorsClipbardActions [
+
+	self instrumentRubEditorCopySelection.
+	self instrumentRubEditorPaste.
+	self instrumentRubSmalltalkEditorCopySelection.
+	self instrumentRubSmalltalkEditorPaste.
 ]
 
 { #category : #system }

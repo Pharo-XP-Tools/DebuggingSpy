@@ -890,6 +890,34 @@ DSSpyInstrumenterTest >> testInstrumentReturn [
 ]
 
 { #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
+
+	| rubEditor registerClipboardText |
+	modifiedClass := RubSmalltalkEditor.
+	modifiedMethodSource := (RubSmalltalkEditor >> #doIt) sourceCode.
+	instrumenter instrumentRubSmalltalkEditorCopySelection.
+
+	registerClipboardText := DSSpy recordClipboardContent.
+	DSSpy recordClipboardContent: true.
+	[ 
+	rubEditor := self rubTextEditor.
+	rubEditor selectAll.
+	rubEditor copySelection.
+
+	self
+		assert:
+		(self registry select: [ :r | r class = DSClipboardCopyRecord ])
+			size
+		equals: 1.
+	record := (self registry select: [ :r | 
+		           r class = DSClipboardCopyRecord ]) first.
+
+	self assert: record class identicalTo: DSClipboardCopyRecord.
+	self assert: record clipboardText asString  equals: Clipboard clipboardText asString] 
+		ensure: [ DSSpy recordClipboardContent: registerClipboardText ]
+]
+
+{ #category : #'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
 	| rubEditor |
@@ -926,6 +954,37 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 	
 	self assert: record class identicalTo: DSDoItRecord.	
 	self assert: record selectedString equals: '41+1'printString
+]
+
+{ #category : #'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
+
+	| rubEditor registerClipboardText |
+	modifiedClass := RubSmalltalkEditor.
+	modifiedMethodSource := (RubSmalltalkEditor >> #doIt) sourceCode.
+	instrumenter instrumentRubSmalltalkEditorPaste.
+	registerClipboardText := DSSpy recordClipboardContent.
+	DSSpy recordClipboardContent: true.
+
+	[ 
+	rubEditor := self rubTextEditor.
+	rubEditor textArea beForSmalltalkCode.
+
+	Clipboard clipboardText: 'copiedText'.
+	rubEditor selectAll.
+	rubEditor paste.
+	"Added the select to be able to run the test in an instrumented image"
+	self
+		assert:
+		(self registry select: [ :r | r class = DSClipboardPasteRecord ])
+			size
+		equals: 1.
+	record := (self registry select: [ :r | 
+		           r class = DSClipboardPasteRecord ]) first.
+
+	self assert: record class identicalTo: DSClipboardPasteRecord.
+	self assert: record clipboardText equals: 'copiedText' ] ensure: [ 
+		DSSpy recordClipboardContent: registerClipboardText ]
 ]
 
 { #category : #'tests - interactions' }
