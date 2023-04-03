@@ -614,7 +614,9 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentRubEditorPrintIt.
 	self instrumentSpCodeDebugIt.
 	self instrumentSpCodeDoIt.
-	self instrumentSpCodePrintIt
+	self instrumentSpCodePrintIt.
+	self instrumentSpCodeDoItAndGoForInspector.
+	self instrumentSpCodeDoItAndGoForPlayground
 ]
 
 { #category : #system }
