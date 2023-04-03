@@ -489,7 +489,7 @@ DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 			selection ]
 		on: Error
 		do: [ :e | 
-			DSSpy log: #ERROR key: #ACTION_PRINTIT ].
+			DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
 	self debug: selection readStream'
 ]
 
@@ -505,7 +505,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 		DSDoItRecord for: self selectedTextOrLine ]
 			on: Error
 			do: [ :e | 
-				DSSpy log: #ERROR key: #ACTION_PRINTIT ] ]'
+				DSSpy log: #ERROR key: #ACTION_DOIT ] ]'
 ]
 
 { #category : #interactions }
