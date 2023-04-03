@@ -509,7 +509,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 ]
 
 { #category : #interactions }
-DSSpyInstrumenter >> instrumentSpCodeDoItAndGo [
+DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 
 	StObjectContextPresenter compile: 'doEvaluateAndGo
 	| value |
@@ -527,8 +527,12 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGo [
 		onCompileError: [ ^ self ]
 		onError: [ :e | e pass ].
 	
-	activationBlock value: (StEvaluatedSelectionModel newValue: value)'.
-	
+	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
+]
+
+{ #category : #interactions }
+DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
+
 	StPlaygroundPagePresenter compile: 'doEvaluateAndGo
 	| value |
 	
