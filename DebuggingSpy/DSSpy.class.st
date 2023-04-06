@@ -284,10 +284,11 @@ DSSpy class >> recordSourceCode: aBoolean [
 { #category : #'events - methods' }
 DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 
-	((self packagesMonitoredForSourceCodeChanges includes:
-		  oldMethod package name) or: [ 
-		 self packagesMonitoredForSourceCodeChanges includes:
-			 newMethod package name ]) ifFalse: [ ^ self ].
+	self scopeSourceCodeChangesRecording ifTrue: [ 
+		((self packagesMonitoredForSourceCodeChanges includes:
+			  oldMethod package name) or: [ 
+			 self packagesMonitoredForSourceCodeChanges includes:
+				 newMethod package name ]) ifFalse: [ ^ self ] ].
 	DSSourceCodeChangeEventRecord for: { 
 			newMethod.
 			oldMethod sourceCode.
