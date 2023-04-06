@@ -207,6 +207,7 @@ DSSpyTest >> tearDown [
 	self removeNewMethodWithHalt.
 	DSRecordRegistry current reset.
 	DSSpy recordSourceCode: recordSourceCode.
+	DSSpy scopeSourceCodeChangesRecording: nil.
 	super tearDown
 ]
 
@@ -771,6 +772,12 @@ DSSpyTest >> testResetSpy [
 	self
 		assert: DSSpy logger loggingFileName
 		equals: DSSpy logger defaultLoggingFileName
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testScopeSourceCodeChangesRecording [
+	DSSpy scopeSourceCodeChangesRecording: nil.
+	self deny: DSSpy scopeSourceCodeChangesRecording
 ]
 
 { #category : #'tests - serialize/materialize' }
