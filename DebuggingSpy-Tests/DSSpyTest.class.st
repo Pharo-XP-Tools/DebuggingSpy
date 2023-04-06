@@ -195,7 +195,8 @@ DSSpyTest >> setUp [
 	DSRecordRegistry current reset.
 	DSSpy packagesMonitoredForSourceCodeChanges: nil.
 	recordSourceCode := DSSpy recordSourceCode.
-	DSSpy recordSourceCode: false
+	DSSpy recordSourceCode: false.
+	DSSpy scopeSourceCodeChangesRecording: true
 ]
 
 { #category : #running }
@@ -691,6 +692,7 @@ DSSpyTest >> testRecordHaltInRemovedMethod [
 DSSpyTest >> testRecordMethodChangesSourceCode [
 
 	|method|
+	DSSpy scopeSourceCodeChangesRecording: true.
 	DSSpy methodChanged: self methodModifiedEvent.
 	self assert: self registry size equals: 1.	
 		
@@ -710,6 +712,26 @@ DSSpyTest >> testRecordMethodChangesSourceCode [
 	self assert: record methodName equals: method name.
 	self assert: record oldSource equals: method sourceCode.
 	self assert: record newSource equals: method sourceCode
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testRecordMethodChangesSourceCodeActivated [
+
+	DSSpy methodChanged: self methodModifiedEvent.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self deny: record class identicalTo: DSSourceCodeChangeEventRecord
+]
+
+{ #category : #'tests - methods events' }
+DSSpyTest >> testRecordMethodChangesSourceCodeNotScoped [
+
+	DSSpy scopeSourceCodeChangesRecording: false.
+
+	DSSpy methodChanged: self methodModifiedEvent.
+	self assert: self registry size equals: 2.
+	record := self registry second.
+	self assert: record class identicalTo: DSSourceCodeChangeEventRecord
 ]
 
 { #category : #'tests - halts events' }
