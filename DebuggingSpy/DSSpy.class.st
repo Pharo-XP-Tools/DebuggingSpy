@@ -14,7 +14,8 @@ Class {
 		'logger',
 		'packagesMonitoredForSourceCodeChanges',
 		'recordSourceCode',
-		'recordClipboardContent'
+		'recordClipboardContent',
+		'scopeSourceCodeChangesRecording'
 	],
 	#category : #'DebuggingSpy-Instrumentation'
 }
@@ -305,6 +306,18 @@ DSSpy class >> resetSpy [
 	logger ifNotNil:[:l| l reset].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false
+]
+
+{ #category : #accessing }
+DSSpy class >> scopeSourceCodeChangesRecording [
+
+	^ scopeSourceCodeChangesRecording ifNil: [ scopeSourceCodeChangesRecording := false ]
+]
+
+{ #category : #accessing }
+DSSpy class >> scopeSourceCodeChangesRecording: anObject [
+
+	scopeSourceCodeChangesRecording := anObject
 ]
 
 { #category : #'serialize/materialize' }
