@@ -27,6 +27,16 @@ DSSurveyRecord >> eventName [
 	^'Survey closed'
 ]
 
+{ #category : #printing }
+DSSurveyRecord >> printOn: aStream [
+	super printOn: aStream.
+	survey ifNil:[^self].
+	aStream space.
+	aStream << ':'.
+	aStream space.
+	aStream << survey title
+]
+
 { #category : #accessing }
 DSSurveyRecord >> record: aSurvey [
 	survey := aSurvey
