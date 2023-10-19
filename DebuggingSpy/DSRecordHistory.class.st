@@ -43,7 +43,7 @@ DSRecordHistory >> breakpointAdds [
 { #category : #'private - history' }
 DSRecordHistory >> breakpointEvents [
 
-	^ self records select: [ :r | r isKindOf: DSAbstractEventRecord ]
+	^ self records select: [ :r | r isKindOf: DSAbstractBreakpointEventRecord ]
 ]
 
 { #category : #'private - history' }
@@ -97,6 +97,15 @@ DSRecordHistory >> collectTimeDiscrepancies [
 	^ disc
 ]
 
+{ #category : #'API-history' }
+DSRecordHistory >> countDebugActions [
+
+	^ self breakpointAdds + self breakpointHit + self breakpointRemove
+	  + self executedCode + self methodsAdded + self methodsModified
+	  + self methodsRemoved + self numberOfSteps + self openedDebuggers
+	  + self callStackBrowing
+]
+
 { #category : #'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
 	|time currentRecord|
@@ -110,6 +119,16 @@ DSRecordHistory >> detectTimeDiscrepancies [
 		].
 	
 	
+]
+
+{ #category : #'as yet unclassified' }
+DSRecordHistory >> eventsAfter: aDateAndTime [ 
+	^records select:[:e| e dateTime > aDateAndTime]
+]
+
+{ #category : #'as yet unclassified' }
+DSRecordHistory >> eventsBefore: aDateAndTime [ 
+	self shouldBeImplemented.
 ]
 
 { #category : #'API-history' }
@@ -183,6 +202,12 @@ DSRecordHistory >> methodsAdded [
 DSRecordHistory >> methodsModified [
 
 	^ (self allRecordsOfKind: DSMethodModifiedRecord) size
+]
+
+{ #category : #'API-history' }
+DSRecordHistory >> methodsModifiedEvents [
+
+	^ (self allRecordsOfKind: DSMethodModifiedRecord)
 ]
 
 { #category : #'API-history' }
