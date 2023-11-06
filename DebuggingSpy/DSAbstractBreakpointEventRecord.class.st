@@ -36,10 +36,10 @@ DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
 	| str |
 	str := WriteStream on: String new.
 	str << '['.
-	str << anObject hash printString.
-	str << ']'.
+	str << anObject identityHash printString.
+	str << '] instance of '.
 	str space.
-	str << anObject printString.
+	str << anObject class name.
 	^ str contents
 ]
 

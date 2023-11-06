@@ -83,7 +83,7 @@ DSAbstractEventRecord >> printOn: aStream [
 
 { #category : #'actions api' }
 DSAbstractEventRecord >> record: aWindow [
-	windowId := aWindow hash
+	windowId := aWindow identityHash 
 ]
 
 { #category : #'API-history' }

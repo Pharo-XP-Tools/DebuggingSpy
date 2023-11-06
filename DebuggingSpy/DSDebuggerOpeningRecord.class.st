@@ -29,6 +29,6 @@ DSDebuggerOpeningRecord >> eventName [
 
 { #category : #'actions api' }
 DSDebuggerOpeningRecord >> record: aDebugger [
-	debuggerId := aDebugger hash.
+	debuggerId := aDebugger identityHash.
 	super record: { aDebugger currentContext. aDebugger window window }
 ]

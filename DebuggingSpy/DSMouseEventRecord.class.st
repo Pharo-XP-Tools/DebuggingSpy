@@ -30,5 +30,5 @@ DSMouseEventRecord >> itemElement: anObject [
 DSMouseEventRecord >> record: morphsAndWindow [
 
 	itemElement := self class printStringMorphs: morphsAndWindow first.
-	windowId := morphsAndWindow last hash
+	windowId := morphsAndWindow last identityHash
 ]
