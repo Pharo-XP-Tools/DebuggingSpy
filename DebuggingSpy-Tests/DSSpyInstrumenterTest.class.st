@@ -110,7 +110,7 @@ DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandN
 	record := self registry first.
 	self assert: record class identicalTo: DSStepActionRecord.
 	self assert: record eventName equals: debuggerCommandName.
-	self assert: record windowId equals: debugger window window hash.
+	self assert: record windowId equals: debugger window window identityHash.
 	self
 		assert: record context
 		equals: debugger currentContext printString.
@@ -600,9 +600,9 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	record := self registry first.
 		
 	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record attributeName equals: 'self'. 	
-	self assert: record attributeHash equals: object hash.
+	self assert: record attributeHash equals: object identityHash.
 	self assert: record attributeValue equals: object displayString 
 ]
 
@@ -744,9 +744,9 @@ DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	
 	
 	self assert: record class identicalTo: DSInspectObjectRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object hash
+	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
 { #category : #'tests - inspector' }
@@ -765,9 +765,9 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSSelectInspectorPageRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record pageTitle equals: pagesView pages first title. 	
-	self assert: record inspectedObjectHash equals: object hash.
+	self assert: record inspectedObjectHash equals: object identityHash.
 	self assert: record inspectedObject equals: object printString.
 	
 	pagesView selectPage: pagesView pages second.
@@ -866,9 +866,9 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSNavigateAttributeRecord.
-	self assert: record windowId equals: raw window window hash.
+	self assert: record windowId equals: raw window window identityHash.
 	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object hash
+	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
 { #category : #'tests - debugger' }
