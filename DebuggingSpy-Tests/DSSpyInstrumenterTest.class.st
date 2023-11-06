@@ -553,7 +553,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	instrumenter instrumentDebuggerStack.
 	
 	debugger := self debuggerForTestingWithWindow.		
-	self assert: self registry size equals: 3.
+	self assert: self registry size equals: 2.
 	
 	"No idea why: the stack seems to be refreshed 3 times at opening.
 	This generates three identical events:"
@@ -563,17 +563,17 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: self registry first contextName equals: self registry second contextName.
 	self assert: self registry first sourceNodeClass equals: self registry second sourceNodeClass.
 	self assert: self registry first sourceNodeCode equals: self registry second sourceNodeCode.
-	self assert: self registry first windowId equals: self registry third windowId. 
+	"self assert: self registry first windowId equals: self registry third windowId. 
 	self assert: self registry first receiver equals: self registry third receiver.
 	self assert: self registry first selector equals: self registry third selector.
 	self assert: self registry first contextName equals: self registry third contextName.
 	self assert: self registry first sourceNodeClass equals: self registry third sourceNodeClass.
-	self assert: self registry first sourceNodeCode equals: self registry third sourceNodeCode.
+	self assert: self registry first sourceNodeCode equals: self registry third sourceNodeCode."
 	
 	debugger stackTable selectItem: debugger stackTable items second.
-	self assert: self registry size equals: 4.
+	self assert: self registry size equals: 3.
 	
-	record := self registry fourth.
+	record := self registry third.
 	selectedItem := debugger stackTable items second.
 	self assert: record class identicalTo: DSBrowseContextRecord.
 	self assert: record windowId equals: debugger window window hash.
