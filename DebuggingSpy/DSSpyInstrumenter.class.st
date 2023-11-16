@@ -256,7 +256,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	StObjectInspectorPresenter compile: 'initializePresenters
 	views := self newNotebook.
 	header := self instantiate: StHeaderBar.
-	self initializeLayout.
+	self layout: self defaultLayout.
 	views whenSelectedPageChangedDo: [ :page | 
 		[ 
 		DSSelectInspectorPageRecord for: { 
@@ -326,7 +326,7 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 	StPlayground class compile: 'open 
 	<script>
 	|pg|
-	pg := self new openWithSpec.
+	pg := self new open.
 	[DSPlaygroundOpenedRecord for: pg] on: Error do:[:err| DSSpy log: err key: #PLAYGROUND_OPEN ].
 	^pg'
 ]

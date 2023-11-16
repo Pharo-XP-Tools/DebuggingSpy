@@ -374,7 +374,7 @@ DSSpyInstrumenterTest >> stObjectContextModelMock [
 DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 	| ctxPresenter rawView attrTable widget |
-	anInspector buildWithSpec.
+	anInspector build.
 	self setDummyWindowForPresenter: anInspector.
 	ctxPresenter := anInspector firstPage rawInspectorPageOrNil
 		                retrievePresenter.
@@ -382,7 +382,7 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 	
 	self setDummyWindowPresenter: anInspector window forPresenter: rawView.
 	attrTable := rawView attributeTable.
-	attrTable buildWithSpec.
+	attrTable build.
 	self setDummyWindowPresenter: anInspector window forPresenter: attrTable.
 	widget := attrTable adapter widget.
 	^ widget dataSource rootItem children
