@@ -1213,7 +1213,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 { #category : #'tests - playground' }
 DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	|playground|
-	modifiedClass := StPlayground.
+	modifiedClass := StPlayground class.
 	modifiedMethodSource :=  (StPlayground class >> #open) sourceCode.
 	instrumenter instrumentPlaygroundCode.
 	playground := StPlayground open.
