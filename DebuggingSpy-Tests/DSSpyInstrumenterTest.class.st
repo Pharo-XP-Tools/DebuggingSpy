@@ -279,11 +279,13 @@ DSSpyInstrumenterTest >> rubTextEditor [
 
 	| editor textArea |
 	editor := RubSmalltalkEditor forTextArea:
-		          (textArea := RubEditingArea new).	
-	textArea setTextWith: '41+1' printString.		
+		          (textArea := RubEditingArea new
+			                       beForSmalltalkCode;
+			                       yourself).
+	textArea setTextWith: '41+1' printString.
 	textArea releaseEditor.
 	textArea editorClass: DSFakeTextEditor.
-	textArea editor.	
+	textArea editor.
 	editor selectAll.
 	^ editor
 ]
