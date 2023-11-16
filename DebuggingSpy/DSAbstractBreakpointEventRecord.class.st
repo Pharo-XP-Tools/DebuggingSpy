@@ -49,11 +49,11 @@ DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 	eventName := aBreakpointEvent class name.
 	objectCentric := aBreakpointEvent breakpoint isObjectCentric.
 	target := objectCentric
-		          ifTrue: [ 
+		          ifTrue: [
 			          self printTargetInstance:
 				          aBreakpointEvent breakpoint targetInstance ]
 		          ifFalse: [ nil ].
-	once := aBreakpointEvent breakpoint oneShot
+	once := aBreakpointEvent breakpoint once
 ]
 
 { #category : #accessing }

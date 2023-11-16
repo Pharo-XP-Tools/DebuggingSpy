@@ -112,9 +112,7 @@ DSSpyTest >> compileTestMethod [
 { #category : #helpers }
 DSSpyTest >> installBreakpoint [
 
-	breakpoint := Breakpoint new
-		              node: self breakpointedMethod ast;
-		              always.
+	breakpoint := Breakpoint new node: self breakpointedMethod ast.
 	breakpoint install
 ]
 
