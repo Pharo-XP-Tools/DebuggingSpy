@@ -256,7 +256,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 	StObjectInspectorPresenter compile: 'initializePresenters
 	views := self newNotebook.
 	header := self instantiate: StHeaderBar.
-	self layout: self defaultLayout.
+	
 	views whenSelectedPageChangedDo: [ :page | 
 		[ 
 		DSSelectInspectorPageRecord for: { 
@@ -264,8 +264,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 				self model inspectedObject.
 				[self window window] on: Error do:[0] } ]
 			on: Error
-			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]. .
-	self refresh'
+			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]'
 ]
 
 { #category : #'mouse events' }
