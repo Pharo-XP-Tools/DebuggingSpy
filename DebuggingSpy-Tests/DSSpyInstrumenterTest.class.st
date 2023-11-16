@@ -331,7 +331,7 @@ DSSpyInstrumenterTest >> setDummyWindowForPresenter: presenter [
 { #category : #helpers }
 DSSpyInstrumenterTest >> setDummyWindowPresenter: windowPresenter forPresenter: presenter [
 
-	windowPresenter presenter: presenter
+	windowPresenter basicPresenter: presenter
 ]
 
 { #category : #running }
