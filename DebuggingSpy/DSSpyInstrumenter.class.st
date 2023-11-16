@@ -479,7 +479,7 @@ RubSmalltalkEditor compile:'paste
 { #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingByDraggingSlider [
 	
-Slider compile: 'dragging: aBoolean
+SliderMorph compile: 'dragging: aBoolean
 
 	(aBoolean not and: [ dragging ]) ifTrue: [ 
 		[ DSStopScrollingEventRecord for: self window ]
@@ -496,7 +496,7 @@ Slider compile: 'dragging: aBoolean
 DSSpyInstrumenter >> instrumentScrollingInScrollPanesEvents [
 	
 	
-GeneralScrollPane  compile: 'mouseWheel: event 
+GeneralScrollPaneMorph  compile: 'mouseWheel: event 
 	"Handle a mouseWheel event."
 	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
 	(self scrollTarget handlesMouseWheel: event)

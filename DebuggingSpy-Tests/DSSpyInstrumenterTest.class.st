@@ -1042,11 +1042,11 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 	
 	|slider|
-	modifiedClass := Slider.
-	modifiedMethodSource := (Slider >> #dragging:) sourceCode.
+	modifiedClass := SliderMorph.
+	modifiedMethodSource := (SliderMorph >> #dragging:) sourceCode.
 	instrumenter instrumentScrollingByDraggingSlider.
 	
-	slider := Slider new.
+	slider := SliderMorph new.
 	slider privateOwner: SystemWindow new.
 	
 	slider dragging: true.			
@@ -1066,11 +1066,11 @@ DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
 	
 	|pane|
-	modifiedClass := GeneralScrollPane.
-	modifiedMethodSource := (GeneralScrollPane >> #mouseWheel:) sourceCode.
+	modifiedClass := GeneralScrollPaneMorph.
+	modifiedMethodSource := (GeneralScrollPaneMorph >> #mouseWheel:) sourceCode.
 	instrumenter instrumentScrollingInScrollPanesEvents.
 	
-	pane := GeneralScrollPane new.
+	pane := GeneralScrollPaneMorph new.
 	pane privateOwner: SystemWindow new.
 	
 	pane mouseWheel: MouseWheelEvent new.			
