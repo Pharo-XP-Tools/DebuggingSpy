@@ -9,7 +9,7 @@ jobs:
       PROJECT_NAME: ${{ matrix.smalltalk }}-DebuggingSpy
     strategy:
       matrix:
-        smalltalk: [ Pharo64-11.0 ]
+        smalltalk: [ Pharo64-11 ]
     name: ${{ matrix.smalltalk }}
     steps:
       - uses: actions/checkout@v2
