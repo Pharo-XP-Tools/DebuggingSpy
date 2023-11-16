@@ -244,7 +244,8 @@ DSSpyInstrumenterTest >> playgroundPagePresenter [
 	| playground |
 	playground := StPlaygroundPagePresenter basicNew.
 	self setDummyWindowForPresenter: playground.
-	playground setModelBeforeInitialization: (NewValueHolder value: nil).
+	playground setModelBeforeInitialization:
+		(NewValueHolderForTestWithDummyPlaygroundPage value: nil).
 	playground application: StPharoApplication current.
 	playground initialize.
 	^ playground
