@@ -2,12 +2,14 @@
 This record is generated when the mouse enters an item in a text editor.
 "
 Class {
-	#name : #DSMouseEnterTextEditorRecord,
-	#superclass : #DSMouseEventRecord,
-	#category : #'DebuggingSpy-Records'
+	#name : 'DSMouseEnterTextEditorRecord',
+	#superclass : 'DSMouseEventRecord',
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEnterTextEditorRecord >> eventName [
 	^'Mouse on text editor'
 ]

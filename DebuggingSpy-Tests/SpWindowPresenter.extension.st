@@ -1,6 +1,6 @@
-Extension { #name : #SpWindowPresenter }
+Extension { #name : 'SpWindowPresenter' }
 
-{ #category : #'*DebuggingSpy-Tests' }
+{ #category : '*DebuggingSpy-Tests' }
 SpWindowPresenter >> basicPresenter: aPresenter [
 	"Set the presenter to show as content of the window."
 

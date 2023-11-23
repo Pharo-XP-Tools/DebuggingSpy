@@ -3,34 +3,36 @@ I record breakpoint events information, whatever the type of breakpoint.
 My subclasses have to handle the real recording, depending on the breakpoint.
 "
 Class {
-	#name : #DSAbstractBreakpointEventRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSAbstractBreakpointEventRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'target',
 		'objectCentric',
 		'eventName',
 		'once'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> objectCentric [
 
 	^ objectCentric
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> once [
 	^ once
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
 
 	| str |
@@ -43,7 +45,7 @@ DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
 	^ str contents
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 
 	eventName := aBreakpointEvent class name.
@@ -56,7 +58,7 @@ DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 	once := aBreakpointEvent breakpoint once
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> target [
 
 	^ target

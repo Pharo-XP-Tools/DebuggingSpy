@@ -3,15 +3,17 @@ I record debugger actions such as step, stepOver, etc.
 The name of the action is stored in my event name
 "
 Class {
-	#name : #DSDebuggerActionRecord,
-	#superclass : #DSDebuggerRecord,
+	#name : 'DSDebuggerActionRecord',
+	#superclass : 'DSDebuggerRecord',
 	#instVars : [
 		'eventName'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> into: aContext [
 
 	^ (self for: aContext)
@@ -19,7 +21,7 @@ DSDebuggerActionRecord class >> into: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> over: aContext [
 
 	^ (self for: aContext)
@@ -27,7 +29,7 @@ DSDebuggerActionRecord class >> over: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> proceed: aContext [
 
 	^ (self for: aContext)
@@ -35,7 +37,7 @@ DSDebuggerActionRecord class >> proceed: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> restart: aContext [
 
 	^ (self for: aContext)
@@ -43,7 +45,7 @@ DSDebuggerActionRecord class >> restart: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> return: aContext [
 
 	^ (self for: aContext)
@@ -51,7 +53,7 @@ DSDebuggerActionRecord class >> return: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> runTo: aContext [
 
 	^ (self for: aContext)
@@ -59,7 +61,7 @@ DSDebuggerActionRecord class >> runTo: aContext [
 		  yourself
 ]
 
-{ #category : #'tests - instance creation' }
+{ #category : 'tests - instance creation' }
 DSDebuggerActionRecord class >> through: aContext [
 
 	^ (self for: aContext)
@@ -67,18 +69,18 @@ DSDebuggerActionRecord class >> through: aContext [
 		  yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSDebuggerActionRecord >> eventName [
 	^eventName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSDebuggerActionRecord >> eventName: anObject [
 
 	eventName := anObject
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSDebuggerActionRecord >> record: aContext [ 
 	super record: aContext.
 	

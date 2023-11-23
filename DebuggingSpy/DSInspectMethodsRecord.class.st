@@ -2,20 +2,22 @@
 I record inspections of the methods of a class in the meta pane of an inspector.
 "
 Class {
-	#name : #DSInspectMethodsRecord,
-	#superclass : #DSInspectorRecord,
+	#name : 'DSInspectMethodsRecord',
+	#superclass : 'DSInspectorRecord',
 	#instVars : [
 		'selectedClass'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectMethodsRecord >> eventName [
 	^'Inspect methods'
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSInspectMethodsRecord >> record: inspectedObjectWithSelectedClassWithWindow [
 
 	super record: { 
@@ -24,13 +26,13 @@ DSInspectMethodsRecord >> record: inspectedObjectWithSelectedClassWithWindow [
 	selectedClass := inspectedObjectWithSelectedClassWithWindow second name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectMethodsRecord >> selectedClass [
 
 	^ selectedClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectMethodsRecord >> selectedClass: anObject [
 
 	selectedClass := anObject

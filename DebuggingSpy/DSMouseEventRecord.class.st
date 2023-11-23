@@ -6,27 +6,29 @@ For example the following events:
 means the user is currently browsing the method foo (and we assume there she reads the code)..
 "
 Class {
-	#name : #DSMouseEventRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSMouseEventRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'itemElement'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEventRecord >> itemElement [
 
 	^ itemElement
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEventRecord >> itemElement: anObject [
 
 	itemElement := anObject
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSMouseEventRecord >> record: morphsAndWindow [
 
 	itemElement := self class printStringMorphs: morphsAndWindow first.

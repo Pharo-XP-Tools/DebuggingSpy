@@ -2,44 +2,45 @@
 I simulate a task that can be managed through DSSpy.
 "
 Class {
-	#name : #DSTask,
-	#superclass : #Object,
+	#name : 'DSTask',
+	#superclass : 'Object',
 	#instVars : [
 		'answer'
 	],
-	#category : #'DebuggingSpy-Tests'
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTask class >> dsTaskDescription [
 
 	^ 'DS test task'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTask >> answer [ 	
 	^answer
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTask >> answer: anObject [
 
 	answer := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTask >> description [ 	
 	^self class dsTaskDescription
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSTask >> initialize [
 
 	super initialize.
 	answer := self class dsTaskDescription
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTask >> title [ 	
 	^self class dsTaskDescription
 ]

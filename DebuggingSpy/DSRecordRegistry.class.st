@@ -2,8 +2,8 @@
 For now I am a dumb registry to simply record all events in an ordered collection
 "
 Class {
-	#name : #DSRecordRegistry,
-	#superclass : #Object,
+	#name : 'DSRecordRegistry',
+	#superclass : 'Object',
 	#instVars : [
 		'records'
 	],
@@ -13,41 +13,43 @@ Class {
 	#classInstVars : [
 		'autoSerialize'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordRegistry class >> autoSerialize [
 
 	^ autoSerialize ifNil: [ autoSerialize := false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordRegistry class >> autoSerialize: anObject [
 
 	autoSerialize := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordRegistry class >> current [
 	^Current ifNil:[Current := self new]
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DSRecordRegistry class >> log: aDSRecord [
 
 	self autoSerialize ifFalse: [ ^ self ].
 	DSSpy serialize: aDSRecord
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DSRecordRegistry class >> serialize: aDSRecord [
 
 	self autoSerialize ifFalse: [ ^ self ].
 	DSSpy serialize: aDSRecord
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
 	records add: aRecord.
@@ -56,18 +58,18 @@ DSRecordRegistry >> addRecord: aRecord [
 	"aRecord crTrace"
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSRecordRegistry >> initialize [
 	records := OrderedCollection new
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordRegistry >> records [
 
 	^ records
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSRecordRegistry >> reset [
 	records removeAll.
 	DSSpy resetSpy
