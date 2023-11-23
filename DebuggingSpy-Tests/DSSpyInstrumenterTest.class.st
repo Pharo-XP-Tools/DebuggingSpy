@@ -682,58 +682,77 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 
 { #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
-	|metaPane object classes|
+
+	| metaPane object classes |
 	modifiedClass := StMetaBrowserPresenter.
-	modifiedMethodSource := (StMetaBrowserPresenter >> #methodsOf:) sourceCode.
+	modifiedMethodSource := (StMetaBrowserPresenter >> #methodsOf:)
+		                        sourceCode.
 	instrumenter instrumentInspectMethodsOfClass.
-	
+
 	object := OrderedCollection new.
 	metaPane := StMetaBrowserPresenter basicNew.
 	self setDummyWindowForPresenter: metaPane.
 	metaPane application: StPharoApplication current.
 	metaPane setModelBeforeInitialization: object.
-	metaPane	initialize.
-	classes := self metaPaneClassesItems: #classes FromInspector: metaPane.
-		
+
+	metaPane initialize.
+
+	classes := self
+		           metaPaneClassesItems: #classes
+		           FromInspector: metaPane.
+	classes selectPath:
+		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
+
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSInspectMethodsRecord.
 	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString.
-	
-	classes clickAtPath: { 1. 1. 1. 1}.
+
+	classes clickAtPath: { 1. 1. 1. 1 }.
 	record := self registry second.
-	self assert: record selectedClass equals: object class superclass name
+	self
+		assert: record selectedClass
+		equals: object class superclass name
 ]
 
 { #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
-	|metaPane object methods|
+
+	| metaPane object methods classes |
 	modifiedClass := StMetaBrowserPresenter.
-	modifiedMethodSource := (StMetaBrowserPresenter >> #updateSourceWith:) sourceCode.
+	modifiedMethodSource := (StMetaBrowserPresenter >> #updateSourceWith:)
+		                        sourceCode.
 	instrumenter instrumentInspectSourceOfMethod.
-	
+
 	object := OrderedCollection new.
 	metaPane := StMetaBrowserPresenter on: object.
-	methods := self metaPaneClassesItems: #methods FromInspector: metaPane.
-	
+	methods := self
+		           metaPaneClassesItems: #methods
+		           FromInspector: metaPane.
+	classes := self
+		           metaPaneClassesItems: #classes
+		           FromInspector: metaPane.
+
 	self setDummyWindowForPresenter: metaPane.
-	
+
+	classes selectPath:
+		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
+
 	methods selectItem: methods items first.
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSInspectMethodSourceRecord.
-	self assert: record selectedMethod equals: metaPane selectedMethod name.
-	
+	self
+		assert: record selectedMethod
+		equals: metaPane selectedMethod name.
+
 	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString
-	
-	
-	
 ]
 
 { #category : 'tests - inspector' }
