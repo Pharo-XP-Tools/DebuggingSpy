@@ -231,7 +231,7 @@ DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane
 DSSpyInstrumenterTest >> newInspectorOn: anObject [
 
 	| inspector |
-	inspector := StInspector basicNew.
+	inspector := StInspectorPresenter basicNew.
 	self setDummyWindowForPresenter: inspector.
 	inspector setModelBeforeInitialization:
 		(StInspectorModel on: anObject).
@@ -790,8 +790,8 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	pagesView := (objectInspector class slotNamed: #views) read:
 		             objectInspector.
 
-	self assert: self registry size equals: 2.
-	record := self registry second.
+	self assert: self registry size equals: 1.
+	record := self registry first.
 
 	self assert: record class identicalTo: DSSelectInspectorPageRecord.
 	self
@@ -802,8 +802,8 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	self assert: record inspectedObject equals: object printString.
 
 	pagesView selectPage: pagesView pages second.
-	self assert: self registry size equals: 3.
-	record := self registry third.
+	self assert: self registry size equals: 2.
+	record := self registry second.
 	self assert: record pageTitle equals: pagesView pages second title
 ]
 
