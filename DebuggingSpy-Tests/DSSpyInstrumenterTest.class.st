@@ -590,24 +590,27 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 
 { #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
-	|inspector object items|
+
+	| inspector object items |
 	modifiedClass := FTBasicItem.
 	modifiedMethodSource := (FTBasicItem >> #expandAndRefresh) sourceCode.
 	instrumenter instrumentExpandAttribute.
-	
+
 	object := OrderedCollection new.
-	inspector := StInspector onObject: object.		
-	items := self tableItemsListFromInspector: inspector.	
+	inspector := StInspectorPresenter onObject: object.
+	items := self tableItemsListFromInspector: inspector.
 	items first expandAndRefresh.
-	
+
 	self assert: self registry size equals: 1.
 	record := self registry first.
-		
+
 	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self assert: record windowId equals: inspector window window identityHash.
-	self assert: record attributeName equals: 'self'. 	
+	self
+		assert: record windowId
+		equals: inspector window window identityHash.
+	self assert: record attributeName equals: 'self'.
 	self assert: record attributeHash equals: object identityHash.
-	self assert: record attributeValue equals: object displayString 
+	self assert: record attributeValue equals: object displayString
 ]
 
 { #category : 'tests - halts' }
