@@ -236,7 +236,7 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 { #category : 'inspector' }
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
-	StInspector compile: 'initializePresenters
+	StInspectorPresenter compile: 'initializePresenters
 	[ 
 	self class == StPlayground ifFalse: [ 
 		DSInspectObjectRecord for: { 
