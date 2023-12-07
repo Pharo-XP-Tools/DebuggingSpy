@@ -11,7 +11,8 @@ Class {
 		'windowsHistory',
 		'tag',
 		'windowNames',
-		'windows'
+		'windows',
+		'windowJumps'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -73,6 +74,17 @@ DSRecordHistory >> buildWindowHistory [
 	self fixMissingWindowIds.
 	self records do: [ :r | r recordWindowHistoryOn: self ].
 	self fixWindowRecordKeysNames
+]
+
+{ #category : #initialization }
+DSRecordHistory >> buildWindowJumps [
+
+	| currentWindow |
+	windowJumps := OrderedCollection new.
+	(self allRecordsOfKind: DSMouseEnterWindowRecord) do: [ :e |
+		currentWindow = e windowId ifFalse: [
+			currentWindow := e windowId.
+			windowJumps add: currentWindow ] ]
 ]
 
 { #category : #'as yet unclassified' }
@@ -262,7 +274,8 @@ DSRecordHistory >> processRecords: array [
 	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
 		self taskName: self records first taskName ].
 	self buildWindowHistory.
-	self buildWindows
+	self buildWindows.
+	self buildWindowJumps
 ]
 
 { #category : #accessing }
