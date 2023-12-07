@@ -32,3 +32,13 @@ DSDebuggerOpeningRecord >> record: aDebugger [
 	debuggerId := aDebugger identityHash.
 	super record: { aDebugger currentContext. aDebugger window window }
 ]
+
+{ #category : #accessing }
+DSDebuggerOpeningRecord >> windowName [
+	^contextName
+]
+
+{ #category : #'as yet unclassified' }
+DSDebuggerOpeningRecord >> windowType [
+	^'Debugger'
+]

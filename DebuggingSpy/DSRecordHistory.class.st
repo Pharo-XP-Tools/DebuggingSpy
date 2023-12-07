@@ -10,7 +10,8 @@ Class {
 		'records',
 		'windowsHistory',
 		'tag',
-		'windowNames'
+		'windowNames',
+		'windows'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -72,6 +73,19 @@ DSRecordHistory >> buildWindowHistory [
 	self fixMissingWindowIds.
 	self records do: [ :r | r recordWindowHistoryOn: self ].
 	self fixWindowRecordKeysNames
+]
+
+{ #category : #'as yet unclassified' }
+DSRecordHistory >> buildWindows [
+
+	windows := OrderedCollection new.
+	windowsHistory valuesDo: [ :events |
+		windows add: (DSWindowRecord for: events) ].
+	windows do: [ :w |
+		| sourceEventIndex |
+		sourceEventIndex := (records indexOf: w events first) - 1.
+		sourceEventIndex > 0 ifTrue: [
+			w sourceEvent: (records at: sourceEventIndex) ] ]
 ]
 
 { #category : #'API-history' }
@@ -244,9 +258,11 @@ DSRecordHistory >> openedDebuggers [
 { #category : #initialization }
 DSRecordHistory >> processRecords: array [
 
-	self records: array.
-	(self records first isKindOf: DSStartTaskRecord) ifTrue: [ 
-		self taskName: self records first taskName ]
+	self records: (array reject:[:e| e windowId = 0]).
+	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
+		self taskName: self records first taskName ].
+	self buildWindowHistory.
+	self buildWindows
 ]
 
 { #category : #accessing }

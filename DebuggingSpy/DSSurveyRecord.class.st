@@ -46,3 +46,13 @@ DSSurveyRecord >> record: aSurvey [
 DSSurveyRecord >> survey [
 	^survey
 ]
+
+{ #category : #accessing }
+DSSurveyRecord >> windowName [
+	^survey title
+]
+
+{ #category : #'as yet unclassified' }
+DSSurveyRecord >> windowType [
+	^'Survey'
+]

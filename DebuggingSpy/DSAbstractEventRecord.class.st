@@ -108,3 +108,8 @@ DSAbstractEventRecord >> windowId: anObject [
 
 	windowId := anObject
 ]
+
+{ #category : #'as yet unclassified' }
+DSAbstractEventRecord >> windowType [
+	^windowId
+]

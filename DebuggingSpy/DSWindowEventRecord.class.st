@@ -50,3 +50,14 @@ DSWindowEventRecord >> windowName: anObject [
 
 	windowName := anObject
 ]
+
+{ #category : #'as yet unclassified' }
+DSWindowEventRecord >> windowType [
+
+	| rs type |
+	rs := windowName readStream.
+	type := rs upTo: Character space.
+	type size = 1 ifTrue: [ type := rs upTo: $( ].
+
+	^ type
+]

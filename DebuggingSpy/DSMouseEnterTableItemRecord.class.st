@@ -11,3 +11,8 @@ Class {
 DSMouseEnterTableItemRecord >> eventName [
 	^'Mouse on table item'
 ]
+
+{ #category : #accessing }
+DSMouseEnterTableItemRecord >> windowName [
+	^windowId
+]

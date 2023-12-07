@@ -11,3 +11,13 @@ Class {
 DSMouseEnterTextEditorRecord >> eventName [
 	^'Mouse on text editor'
 ]
+
+{ #category : #accessing }
+DSMouseEnterTextEditorRecord >> windowName [
+	^ windowId
+]
+
+{ #category : #'as yet unclassified' }
+DSMouseEnterTextEditorRecord >> windowType [
+	^windowId
+]
