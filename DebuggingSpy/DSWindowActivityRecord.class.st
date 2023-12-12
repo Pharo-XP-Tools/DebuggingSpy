@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'start',
 		'stop',
-		'events'
+		'events',
+		'window'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -17,6 +18,17 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		  stop: aDSMouseLeaveWindowRecord;
 		  events: aCollection;
 		  yourself
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> eventName [
+
+	^ String streamContents: [ :ws |
+		  window printTypeOn: ws.
+		  ws << ':'.
+		  ws space.
+		  ws << (events last dateTime - events first dateTime)
+			  humanReadablePrintString ]
 ]
 
 { #category : #accessing }
@@ -53,4 +65,16 @@ DSWindowActivityRecord >> stop [
 DSWindowActivityRecord >> stop: anObject [
 
 	stop := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> window [
+
+	^ window
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> window: anObject [
+
+	window := anObject
 ]
