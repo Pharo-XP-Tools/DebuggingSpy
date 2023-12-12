@@ -20,6 +20,17 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		  yourself
 ]
 
+{ #category : #'as yet unclassified' }
+DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection window: aDSWindowRecord [
+
+	^ (self
+		   start: aDSMouseEnterWindowRecord
+		   stop: aDSMouseLeaveWindowRecord
+		   events: aCollection)
+		  window: aDSWindowRecord;
+		  yourself
+]
+
 { #category : #accessing }
 DSWindowActivityRecord >> eventName [
 

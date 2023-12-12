@@ -32,7 +32,7 @@ DSWindowRecord >> activePeriods: anObject [
 DSWindowRecord >> buildEvents: aCollectionOfEvents [
 
 	events := aCollectionOfEvents.
-	activePeriods := self computeActivePeriods.
+	self computeActivePeriods.
 
 	type := self windowTypeFor: events first.
 	type = 'ClyQueryBrowserMorph' ifTrue: [
@@ -63,17 +63,23 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 { #category : #'as yet unclassified' }
 DSWindowRecord >> computeActivePeriods [
 
-	| activityStartStopEvents start stop |
+	| activityStartStopEvents start stop previous |
 	activePeriods := OrderedCollection new.
 	activityStartStopEvents := events select: [ :e |
 		                           {
 			                           DSMouseEnterWindowRecord.
 			                           DSMouseLeaveWindowRecord } includes:
 			                           e class ].
+	(activityStartStopEvents notEmpty and: [
+		 activityStartStopEvents first class == DSMouseLeaveWindowRecord ])
+		ifTrue: [ activityStartStopEvents removeFirst ].
+
 	[ activityStartStopEvents isEmpty ] whileFalse: [
 		| next |
 		next := activityStartStopEvents removeFirst.
-		next class = DSMouseEnterWindowRecord ifTrue: [ start := next ].
+		next class = DSMouseEnterWindowRecord ifTrue: [
+			previous class = next class ifFalse: [ start := next ] ].
+
 		next class = DSMouseLeaveWindowRecord ifTrue: [
 			| startIndex stopIndex |
 			stop := next.
@@ -83,7 +89,9 @@ DSWindowRecord >> computeActivePeriods [
 				activePeriods add: (DSWindowActivityRecord
 						 start: start
 						 stop: stop
-						 events: (events copyFrom: startIndex to: stopIndex)) ] ] ]
+						 events: (events copyFrom: startIndex to: stopIndex)
+						 window: self) ] ].
+		previous := next ]
 ]
 
 { #category : #accessing }
@@ -113,10 +121,19 @@ DSWindowRecord >> name: anObject [
 { #category : #printing }
 DSWindowRecord >> printOn: ws [
 	ws << '['.
-	ws << type.
+	self printTypeOn: ws.
 	ws << ']'.
 	ws space.
 	ws << name
+]
+
+{ #category : #printing }
+DSWindowRecord >> printTypeOn: aStream [
+
+	type isString ifTrue: [
+		aStream << type.
+		^ self ].
+	aStream << 'External Window'
 ]
 
 { #category : #accessing }

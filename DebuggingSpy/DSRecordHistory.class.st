@@ -79,12 +79,17 @@ DSRecordHistory >> buildWindowHistory [
 { #category : #initialization }
 DSRecordHistory >> buildWindowJumps [
 
-	| currentWindow |
+	| jumps currentWindow |
 	windowJumps := OrderedCollection new.
-	(self allRecordsOfKind: DSMouseEnterWindowRecord) do: [ :e |
-		currentWindow = e windowId ifFalse: [
-			currentWindow := e windowId.
-			windowJumps add: currentWindow ] ]
+	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
+
+	jumps do: [ :jumpEvent |
+		(windows
+			 detect: [ :w | w windowId = jumpEvent windowId ]
+			 ifNone: [ nil ]) ifNotNil: [ :w |
+			(w activePeriods
+				 detect: [ :period | period start == jumpEvent ]
+				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ]
 ]
 
 { #category : #'as yet unclassified' }
