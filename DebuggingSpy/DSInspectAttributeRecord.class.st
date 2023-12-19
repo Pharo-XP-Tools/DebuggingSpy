@@ -65,5 +65,5 @@ DSInspectAttributeRecord >> record: inspectorNodeWithInspectedObjectWithWindow [
 			window }.
 	attributeName := inspectorNode key.
 	attributeValue := inspectorNode stringValue.
-	attributeHash := inspectorNode value hash
+	attributeHash := inspectorNode value identityHash
 ]

@@ -40,5 +40,5 @@ DSInspectorRecord >> record: inspectedObjectAndWindow [
 
 	super record: inspectedObjectAndWindow second.
 	inspectedObject := inspectedObjectAndWindow first printString.
-	inspectedObjectHash := inspectedObjectAndWindow first hash
+	inspectedObjectHash := inspectedObjectAndWindow first identityHash 
 ]

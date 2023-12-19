@@ -23,7 +23,7 @@ DSWindowEventRecord >> record: aWindowEvent [
 DSWindowEventRecord >> recordWindowIdFromEvent: anEvent [
 	|win|
 	win := anEvent window.
-	windowId := win hash
+	windowId := win identityHash
 ]
 
 { #category : #recording }

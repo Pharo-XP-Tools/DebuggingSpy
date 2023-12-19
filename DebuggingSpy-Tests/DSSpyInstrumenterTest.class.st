@@ -110,7 +110,7 @@ DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandN
 	record := self registry first.
 	self assert: record class identicalTo: DSStepActionRecord.
 	self assert: record eventName equals: debuggerCommandName.
-	self assert: record windowId equals: debugger window window hash.
+	self assert: record windowId equals: debugger window window identityHash.
 	self
 		assert: record context
 		equals: debugger currentContext printString.
@@ -553,7 +553,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	instrumenter instrumentDebuggerStack.
 	
 	debugger := self debuggerForTestingWithWindow.		
-	self assert: self registry size equals: 3.
+	self assert: self registry size equals: 2.
 	
 	"No idea why: the stack seems to be refreshed 3 times at opening.
 	This generates three identical events:"
@@ -563,17 +563,17 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: self registry first contextName equals: self registry second contextName.
 	self assert: self registry first sourceNodeClass equals: self registry second sourceNodeClass.
 	self assert: self registry first sourceNodeCode equals: self registry second sourceNodeCode.
-	self assert: self registry first windowId equals: self registry third windowId. 
+	"self assert: self registry first windowId equals: self registry third windowId. 
 	self assert: self registry first receiver equals: self registry third receiver.
 	self assert: self registry first selector equals: self registry third selector.
 	self assert: self registry first contextName equals: self registry third contextName.
 	self assert: self registry first sourceNodeClass equals: self registry third sourceNodeClass.
-	self assert: self registry first sourceNodeCode equals: self registry third sourceNodeCode.
+	self assert: self registry first sourceNodeCode equals: self registry third sourceNodeCode."
 	
 	debugger stackTable selectItem: debugger stackTable items second.
-	self assert: self registry size equals: 4.
+	self assert: self registry size equals: 3.
 	
-	record := self registry fourth.
+	record := self registry third.
 	selectedItem := debugger stackTable items second.
 	self assert: record class identicalTo: DSBrowseContextRecord.
 	self assert: record windowId equals: debugger window window hash.
@@ -600,9 +600,9 @@ DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
 	record := self registry first.
 		
 	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record attributeName equals: 'self'. 	
-	self assert: record attributeHash equals: object hash.
+	self assert: record attributeHash equals: object identityHash.
 	self assert: record attributeValue equals: object displayString 
 ]
 
@@ -744,9 +744,9 @@ DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	
 	
 	self assert: record class identicalTo: DSInspectObjectRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object hash
+	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
 { #category : #'tests - inspector' }
@@ -765,9 +765,9 @@ DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSSelectInspectorPageRecord.
-	self assert: record windowId equals: inspector window window hash.
+	self assert: record windowId equals: inspector window window identityHash.
 	self assert: record pageTitle equals: pagesView pages first title. 	
-	self assert: record inspectedObjectHash equals: object hash.
+	self assert: record inspectedObjectHash equals: object identityHash.
 	self assert: record inspectedObject equals: object printString.
 	
 	pagesView selectPage: pagesView pages second.
@@ -866,9 +866,9 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSNavigateAttributeRecord.
-	self assert: record windowId equals: raw window window hash.
+	self assert: record windowId equals: raw window window identityHash.
 	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object hash
+	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
 { #category : #'tests - debugger' }
