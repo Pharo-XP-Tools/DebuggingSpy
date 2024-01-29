@@ -82,21 +82,23 @@ DSRecordHistory >> callStackBrowing [
 
 { #category : #'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
-	|time currentRecord deltas|
+
+	| time currentRecord deltas |
 	time := 0.
 	deltas := OrderedCollection new.
 	currentRecord := records first.
-	records do:[:r| |delta|
-		((r isKindOf: DSWindowOpenedRecord) and: [
-			                    'Finish task *' match:
-				                    r windowName asString ]) ifTrue:[^deltas].
-		delta := (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		(delta) > 30 ifTrue:[deltas add: ({r. currentRecord. records} -> delta asSeconds)]. 		
-		currentRecord := r.		
-		].
-	^deltas
-	
+	records do: [ :r |
+		| delta |
+		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
+		time := time
+		        + (r dateTime asSeconds - currentRecord dateTime asSeconds).
+		delta > 30 ifTrue: [
+			deltas add: {
+					r.
+					currentRecord.
+					records } -> delta asSeconds ].
+		currentRecord := r ].
+	^ deltas
 ]
 
 { #category : #'API-history' }
