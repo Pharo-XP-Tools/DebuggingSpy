@@ -12,7 +12,8 @@ Class {
 		'tag',
 		'windowNames',
 		'windows',
-		'windowJumps'
+		'windowJumps',
+		'filteredWindowJumps'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -20,6 +21,11 @@ Class {
 { #category : #'instance creation' }
 DSRecordHistory class >> on: anArray [
 	^self new processRecords: anArray
+]
+
+{ #category : #'instance creation' }
+DSRecordHistory class >> readTrace: aStringOrFilename [
+	^self on: (STON fromString: aStringOrFilename asFileReference contents)
 ]
 
 { #category : #'API-history' }
@@ -79,7 +85,7 @@ DSRecordHistory >> buildWindowHistory [
 { #category : #initialization }
 DSRecordHistory >> buildWindowJumps [
 
-	| jumps currentWindow |
+	| jumps |
 	windowJumps := OrderedCollection new.
 	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
 
@@ -89,10 +95,15 @@ DSRecordHistory >> buildWindowJumps [
 			 ifNone: [ nil ]) ifNotNil: [ :w |
 			(w activePeriods
 				 detect: [ :period | period start == jumpEvent ]
-				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ]
+				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ].
+
+	filteredWindowJumps := windowJumps reject: [ :e |
+		                       e events size <= 3 or: [
+			                       e stop dateTime - e start dateTime
+			                       < 500 milliSeconds ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'private - history' }
 DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
@@ -152,12 +163,12 @@ DSRecordHistory >> detectTimeDiscrepancies [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'API-history' }
 DSRecordHistory >> eventsAfter: aDateAndTime [ 
 	^records select:[:e| e dateTime > aDateAndTime]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'API-history' }
 DSRecordHistory >> eventsBefore: aDateAndTime [ 
 	self shouldBeImplemented.
 ]
