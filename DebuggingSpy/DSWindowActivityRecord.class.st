@@ -5,7 +5,9 @@ Class {
 		'start',
 		'stop',
 		'events',
-		'window'
+		'window',
+		'previous',
+		'next'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -52,6 +54,30 @@ DSWindowActivityRecord >> events [
 DSWindowActivityRecord >> events: anObject [
 
 	events := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> next [
+
+	^ next
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> next: anObject [
+
+	next := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> previous [
+
+	^ previous
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> previous: anObject [
+
+	previous := anObject
 ]
 
 { #category : #accessing }

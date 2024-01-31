@@ -82,12 +82,13 @@ DSRecordHistory >> buildWindowHistory [
 	self fixWindowRecordKeysNames
 ]
 
-{ #category : #initialization }
+{ #category : #'private - history' }
 DSRecordHistory >> buildWindowJumps [
 
-	| jumps |
+	| jumps previousWindowActivity nextWindowActivity |
 	windowJumps := OrderedCollection new.
 	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
+
 
 	jumps do: [ :jumpEvent |
 		(windows
@@ -100,7 +101,17 @@ DSRecordHistory >> buildWindowJumps [
 	filteredWindowJumps := windowJumps reject: [ :e |
 		                       e events size <= 3 or: [
 			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds ] ]
+			                       < 500 milliSeconds ] ].
+
+	previousWindowActivity := nil.
+	filteredWindowJumps do: [ :period |
+		period previous: previousWindowActivity.
+		previousWindowActivity := period ].
+
+	nextWindowActivity := nil.
+	filteredWindowJumps reverseDo: [ :period |
+		period next: nextWindowActivity.
+		nextWindowActivity := period ]
 ]
 
 { #category : #'private - history' }
