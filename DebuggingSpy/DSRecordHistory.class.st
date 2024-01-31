@@ -264,13 +264,6 @@ DSRecordHistory >> name [
 	^ self user, ': ', self taskName, '(', tag, ')'
 ]
 
-{ #category : #testing }
-DSRecordHistory >> numberOfSeekerActions [
-
-	^ (self records select: [ :r | 
-		   DSSeekerActionRecord withAllSubclasses includes: r class ]) size
-]
-
 { #category : #'API-history' }
 DSRecordHistory >> numberOfSteps [
 
