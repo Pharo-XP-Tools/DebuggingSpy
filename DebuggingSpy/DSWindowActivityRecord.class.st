@@ -9,7 +9,7 @@ Class {
 		'previous',
 		'next'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : #'DebuggingSpy-Records-Extensions'
 }
 
 { #category : #'as yet unclassified' }
@@ -114,4 +114,10 @@ DSWindowActivityRecord >> window [
 DSWindowActivityRecord >> window: anObject [
 
 	window := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> windowId [
+
+	^ windowId ifNil: [ windowId := window windowId ]
 ]
