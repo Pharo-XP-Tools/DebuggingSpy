@@ -116,15 +116,11 @@ DSRecordHistory >> buildWindowJumps [
 
 { #category : #'private - history' }
 DSRecordHistory >> buildWindows [
-
+	
 	windows := OrderedCollection new.
 	windowsHistory valuesDo: [ :events |
 		windows add: (DSWindowRecord for: events) ].
-	windows do: [ :w |
-		| sourceEventIndex |
-		sourceEventIndex := (records indexOf: w events first) - 1.
-		sourceEventIndex > 0 ifTrue: [
-			w sourceEvent: (records at: sourceEventIndex) ] ]
+	self reconstructSourcesOfDebuggerOpenings
 ]
 
 { #category : #'API-history' }
@@ -174,6 +170,46 @@ DSRecordHistory >> detectTimeDiscrepancies [
 	
 ]
 
+{ #category : #'private - history' }
+DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecordList [
+
+	| eventIndex previousRecord |
+	eventIndex := aRecordList indexOf: aDSDebuggerOpeningRecord.
+
+	eventIndex = 1 ifTrue: [ ^ nil ].
+
+
+	(self
+		 findSourceEventLike:
+		 aDSDebuggerOpeningRecord primarySourcesOfWindowOpenings
+		 forRecord: aDSDebuggerOpeningRecord
+		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
+
+
+	previousRecord := aRecordList at: eventIndex - 1.
+	(previousRecord class == DSMouseEnterTableItemRecord and: [
+		 previousRecord isOverTestCase ]) ifTrue: [
+		^ DSRunTestRecord for: previousRecord ].
+
+
+	(self
+		 findSourceEventLike:
+		 aDSDebuggerOpeningRecord secondarySourcesOfWindowOpenings
+		 forRecord: aDSDebuggerOpeningRecord
+		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
+
+
+	aDSDebuggerOpeningRecord contextName = 'CompiledMethod>>#DoIt'
+		ifTrue: [
+			^DSDebugItRecord new
+				selectedString: aDSDebuggerOpeningRecord sourceNodeCode;
+				windowId: (aRecordList at: eventIndex - 1) windowId;
+				yourself ].
+
+	self halt: 'If we get there we forgot a case...'.
+	^ aRecordList at: eventIndex - 1
+]
+
 { #category : #'API-history' }
 DSRecordHistory >> eventsAfter: aDateAndTime [ 
 	^records select:[:e| e dateTime > aDateAndTime]
@@ -188,6 +224,20 @@ DSRecordHistory >> eventsBefore: aDateAndTime [
 DSRecordHistory >> executedCode [
 
 	^ (self allRecordsOfKind: DSCodeActionRecord) size
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord in: aRecordList [
+
+	| eventIndex |
+	eventIndex := aRecordList indexOf: aRecord.
+	eventIndex - 1 to: 1 by: -1 do: [ :i |
+		| previousRecord |
+		previousRecord := aRecordList at: i.
+		previousRecord class = aRecord class ifTrue: [ ^ nil ].
+		((possibleSourceEvents includes: previousRecord class) and:[previousRecord canOpenDebuggers])
+			ifTrue: [	^ previousRecord ] ].
+	^ nil
 ]
 
 { #category : #'private - history' }
@@ -296,6 +346,23 @@ DSRecordHistory >> processRecords: array [
 	self buildWindowHistory.
 	self buildWindows.
 	self buildWindowJumps
+]
+
+{ #category : #'as yet unclassified' }
+DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
+
+	| sortedDebuggerWindows recordsCopy |
+	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
+		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
+
+	recordsCopy := records copy.
+
+	sortedDebuggerWindows do: [ :w |
+		|sourceEvent|
+		sourceEvent := (self estimateSourceEventOf: w events first from: recordsCopy).
+		recordsCopy remove: w events first.
+		recordsCopy remove: sourceEvent realRecord ifAbsent:[]. 			
+		w sourceEvent: sourceEvent ]
 ]
 
 { #category : #accessing }

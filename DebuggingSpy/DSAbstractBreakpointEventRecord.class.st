@@ -14,6 +14,11 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
+{ #category : #testing }
+DSAbstractBreakpointEventRecord >> canOpenDebuggers [
+	^eventName = 'BreakpointHit'
+]
+
 { #category : #accessing }
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName

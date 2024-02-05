@@ -106,6 +106,13 @@ DSWindowRecord >> events: anObject [
 	events := anObject
 ]
 
+{ #category : #testing }
+DSWindowRecord >> isDebugger [
+
+	events ifEmpty: [ ^ false ].
+	^ events first class == DSDebuggerOpeningRecord
+]
+
 { #category : #accessing }
 DSWindowRecord >> name [
 

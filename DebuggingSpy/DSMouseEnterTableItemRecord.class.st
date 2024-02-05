@@ -9,7 +9,19 @@ Class {
 
 { #category : #accessing }
 DSMouseEnterTableItemRecord >> eventName [
-	^'Mouse on table item'
+
+	^ String streamContents: [ :str |
+		  str << 'Mouse on table item:'.
+		  str space.
+		  str << itemElement ]
+]
+
+{ #category : #testing }
+DSMouseEnterTableItemRecord >> isOverTestCase [
+
+	^ itemElement isString and: [
+		  itemElement size > 4 and: [
+			  (itemElement copyFrom: 1 to: 4) = 'test' ] ]
 ]
 
 { #category : #accessing }
