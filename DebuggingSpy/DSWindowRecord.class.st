@@ -8,7 +8,7 @@ Class {
 		'activePeriods',
 		'sourceEvent'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : #'DebuggingSpy-Records-Extensions'
 }
 
 { #category : #'instance creation' }
