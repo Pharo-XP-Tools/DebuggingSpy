@@ -226,6 +226,12 @@ DSRecordHistory >> executedCode [
 	^ (self allRecordsOfKind: DSCodeActionRecord) size
 ]
 
+{ #category : #accessing }
+DSRecordHistory >> filteredWindowJumps [
+
+	^ filteredWindowJumps
+]
+
 { #category : #'private - history' }
 DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord in: aRecordList [
 
