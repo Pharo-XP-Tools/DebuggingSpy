@@ -131,7 +131,7 @@ DSWindowRecord >> printOn: ws [
 	self printTypeOn: ws.
 	ws << ']'.
 	ws space.
-	ws << name
+	ws << (name isString ifTrue:[name] ifFalse:[name printString]) 
 ]
 
 { #category : #printing }
