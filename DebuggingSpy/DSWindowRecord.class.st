@@ -156,6 +156,14 @@ DSWindowRecord >> sourceEvent: anObject [
 ]
 
 { #category : #accessing }
+DSWindowRecord >> totalTime [
+
+	^ (activePeriods
+		   inject: 0
+		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
+]
+
+{ #category : #accessing }
 DSWindowRecord >> type [
 
 	^ type
