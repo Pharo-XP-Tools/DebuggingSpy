@@ -58,6 +58,7 @@ DSWindowEventRecord >> windowType [
 	rs := windowName readStream.
 	type := rs upTo: Character space.
 	type size = 1 ifTrue: [ type := rs upTo: $( ].
-
-	^ type
+	(#('Spotter' 'implementors' 'Inspector'  'Debugger' 'Implementors' 'Breakpoint' 'Transcript' 'Browser' 'ClyQueryBrowserMorph' 'ClyFullBrowserMorph') includes: type) ifTrue:[^type].
+	type isNumber ifTrue:[^'X'].
+	^ 'Application'
 ]
