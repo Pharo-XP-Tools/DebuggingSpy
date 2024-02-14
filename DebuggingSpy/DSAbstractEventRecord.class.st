@@ -122,5 +122,5 @@ DSAbstractEventRecord >> windowId: anObject [
 
 { #category : #accessing }
 DSAbstractEventRecord >> windowType [
-	^windowId
+	^'Unknown Window'
 ]
