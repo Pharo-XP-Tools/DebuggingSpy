@@ -116,7 +116,7 @@ DSRecordHistory >> buildWindowJumps [
 	filteredWindowJumps := windowJumps reject: [ :e |
 		                       e events size <= 3 or: [
 			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds ] ].
+			                       < 500 milliSeconds "or: [ ""self halt."" ""e type = 'Finish'"" true] "] ].
 
 	previousWindowActivity := nil.
 	filteredWindowJumps do: [ :period |
@@ -141,8 +141,7 @@ DSRecordHistory >> buildWindows [
 		                   (w totalTime < 0.5 seconds or: [
 			                    (w respondsTo: #type) and: [
 				                    #( 'Finish' 'Post-task' 'Survey' ) includes:
-					                    w type ] ]) or: [ w windowId = -1 ] ].
-	self halt
+					                    w type ] ]) or: [ w windowId = -1 ] ]
 ]
 
 { #category : #'API-history' }
