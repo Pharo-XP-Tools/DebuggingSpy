@@ -78,7 +78,7 @@ DSRecordHistory >> breakpointRemove [
 DSRecordHistory >> buildWindowHistory [
 
 	self windowsHistory removeAll.
-	self fixMissingWindowIds.
+	self fixMissingWindowNames.
 	self records do: [ :r | r recordWindowHistoryOn: self ].
 	self fixWindowRecordKeysNames
 ]
@@ -266,34 +266,39 @@ DSRecordHistory >> findWindowRecordKeyForID: id [
 ]
 
 { #category : #'private - history' }
-DSRecordHistory >> fixMissingWindowIds [
+DSRecordHistory >> fixMissingWindowNames [
 
-	| openedWindowStack |
-	openedWindowStack := Stack new.
 	windowNames := Dictionary new.
+	(records reject: [ :e | e windowId isNil ]) do: [ :r |
+		(r respondsTo: #windowName) ifTrue: [
+			windowNames
+				at: (r windowId ifNil: [ self halt ])
+				ifAbsentPut: [ r windowName ifNil: [ self halt ] ] ] ]
+]
 
-	records do: [ :r | 
-		r windowId ifNotNil: [ 
-			({ 
-				 DSWindowClosedRecord.
-				 DSMouseLeaveWindowRecord } includes: r class) ifTrue: [ 
-				openedWindowStack removeAllSuchThat: [ :id | r windowId = id ] ].
+{ #category : #'as yet unclassified' }
+DSRecordHistory >> fixWindowIdsOf: aCollection [
 
-			({ 
-				 DSWindowActivatedRecord.
-				 DSMouseEnterWindowRecord.
-				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
-				openedWindowStack push: r windowId ].
+	| windowlessRecords currentWindowId |
+	windowlessRecords := aCollection select: [ :e | e windowId isNil ].
 
-			({ 
-				 DSWindowActivatedRecord.
-				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
-				(#( nil '' ) includes: r windowName) ifFalse: [ 
-					windowNames at: r windowId put: r windowName ] ] ].
-		r windowId ifNil: [ 
-			openedWindowStack isEmpty
-				ifTrue: [ r windowId: -1 ]
-				ifFalse: [ r windowId: openedWindowStack top ] ] ]
+	currentWindowId := aCollection select: [ :e |
+		                   {
+			                   DSWindowClosedRecord.
+			                   DSMouseLeaveWindowRecord } includes: e class ].
+
+	windowlessRecords removeAllSuchThat: [ :e |
+		e dateTime < currentWindowId first dateTime ].
+	windowlessRecords removeAllSuchThat: [ :e |
+		e dateTime > currentWindowId last dateTime ].
+
+	[ currentWindowId isEmpty ] whileFalse: [
+		| firstEvent |
+		firstEvent := currentWindowId removeFirst.
+		(windowlessRecords select: [ :e | e dateTime < firstEvent dateTime ])
+			do: [ :e | e windowId: firstEvent windowId ].
+		windowlessRecords removeAllSuchThat: [ :e |
+			(#( nil 0 ) includes: e windowId) not ] ]
 ]
 
 { #category : #'private - history' }
@@ -354,7 +359,10 @@ DSRecordHistory >> openedDebuggers [
 { #category : #initialization }
 DSRecordHistory >> processRecords: array [
 
-	self records: (array reject:[:e| e windowId = 0]).
+	self fixWindowIdsOf: array.
+	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
+	self records:
+		(array reject: [ :e | #( nil 0 ) includes: e windowId ]).
 	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
 		self taskName: self records first taskName ].
 	self buildWindowHistory.
