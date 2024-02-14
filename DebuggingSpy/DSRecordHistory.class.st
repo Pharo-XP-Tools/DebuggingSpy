@@ -29,6 +29,20 @@ DSRecordHistory class >> readTrace: aStringOrFilename [
 	^self on: (STON fromString: aStringOrFilename asFileReference contents)
 ]
 
+{ #category : #'as yet unclassified' }
+DSRecordHistory class >> windowActivationEventTypes [
+
+	"Return a list of types that correspond to the user activating or entering a window."
+	^{DSMouseEnterWindowRecord }
+]
+
+{ #category : #'as yet unclassified' }
+DSRecordHistory class >> windowLeaveEventTypes [
+
+	"Return a list of types that correspond to the user activating or entering a window."
+	^{DSMouseLeaveWindowRecord. DSWindowClosedRecord  }
+]
+
 { #category : #'API-history' }
 DSRecordHistory >> addWindowRecord: aDSRecord [
 
