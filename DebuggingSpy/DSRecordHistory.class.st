@@ -13,7 +13,8 @@ Class {
 		'windowNames',
 		'windows',
 		'windowJumps',
-		'filteredWindowJumps'
+		'filteredWindowJumps',
+		'filteredWindows'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -116,11 +117,18 @@ DSRecordHistory >> buildWindowJumps [
 
 { #category : #'private - history' }
 DSRecordHistory >> buildWindows [
-	
+
 	windows := OrderedCollection new.
 	windowsHistory valuesDo: [ :events |
 		windows add: (DSWindowRecord for: events) ].
-	self reconstructSourcesOfDebuggerOpenings
+	self reconstructSourcesOfDebuggerOpenings.
+
+	filteredWindows := windows reject: [ :w |
+		                   (w totalTime < 0.5 seconds or: [
+			                    (w respondsTo: #type) and: [
+				                    #( 'Finish' 'Post-task' 'Survey' ) includes:
+					                    w type ] ]) or: [ w windowId = -1 ] ].
+	self halt
 ]
 
 { #category : #'API-history' }
