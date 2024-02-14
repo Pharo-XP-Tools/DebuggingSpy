@@ -252,6 +252,12 @@ DSRecordHistory >> filteredWindowJumps [
 	^ filteredWindowJumps
 ]
 
+{ #category : #accessing }
+DSRecordHistory >> filteredWindows [
+
+	^ filteredWindows
+]
+
 { #category : #'private - history' }
 DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord in: aRecordList [
 
@@ -508,6 +514,12 @@ DSRecordHistory >> validateWindows [
 				 str
 				 <<
 				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]
+]
+
+{ #category : #accessing }
+DSRecordHistory >> windowJumps [
+
+	^ windowJumps
 ]
 
 { #category : #accessing }
