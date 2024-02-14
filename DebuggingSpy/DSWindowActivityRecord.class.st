@@ -1,6 +1,6 @@
 Class {
 	#name : #DSWindowActivityRecord,
-	#superclass : #DSMouseEventRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'start',
 		'stop',
@@ -34,14 +34,19 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 ]
 
 { #category : #accessing }
+DSWindowActivityRecord >> duration [
+
+	^ events last dateTime - events first dateTime
+]
+
+{ #category : #accessing }
 DSWindowActivityRecord >> eventName [
 
 	^ String streamContents: [ :ws |
 		  window printTypeOn: ws.
 		  ws << ':'.
 		  ws space.
-		  ws << (events last dateTime - events first dateTime)
-			  humanReadablePrintString ]
+		  ws << self duration humanReadablePrintString ]
 ]
 
 { #category : #accessing }
