@@ -362,7 +362,7 @@ DSRecordHistory >> processRecords: array [
 	self buildWindowJumps
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'private - history' }
 DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 
 	| sortedDebuggerWindows recordsCopy |
