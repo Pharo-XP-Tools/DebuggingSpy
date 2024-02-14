@@ -289,29 +289,37 @@ DSRecordHistory >> fixMissingWindowNames [
 				ifAbsentPut: [ r windowName ifNil: [ self halt ] ] ] ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'private - history' }
 DSRecordHistory >> fixWindowIdsOf: aCollection [
 
-	| windowlessRecords currentWindowId |
+	| windowlessRecords validEvents enterAndLeaveSequences currentWindowId currentSequence |
+
 	windowlessRecords := aCollection select: [ :e | e windowId isNil ].
+	validEvents := aCollection select:[ :e | (#( nil 0 ) includes: e windowId) not ].
 
-	currentWindowId := aCollection select: [ :e |
-		                   {
-			                   DSWindowClosedRecord.
-			                   DSMouseLeaveWindowRecord } includes: e class ].
+	"First we sort all events in sequences happening in the same window"
+	enterAndLeaveSequences := OrderedCollection new.
+	currentWindowId := validEvents first windowId.
+	currentSequence := OrderedCollection new.
+	validEvents do: [:e |	
+			
+		(e windowId ~= currentWindowId or: [(self class windowLeaveEventTypes includes: e class)])
+			ifTrue: [
+				(self class windowLeaveEventTypes includes: e class) ifTrue:[currentSequence add: e].
+				enterAndLeaveSequences add: currentSequence.
+				currentSequence := OrderedCollection new.
+				currentSequence add: e.
+				currentWindowId := e windowId ]
+			ifFalse: [ currentSequence add: e ] ].
 
-	windowlessRecords removeAllSuchThat: [ :e |
-		e dateTime < currentWindowId first dateTime ].
-	windowlessRecords removeAllSuchThat: [ :e |
-		e dateTime > currentWindowId last dateTime ].
-
-	[ currentWindowId isEmpty ] whileFalse: [
-		| firstEvent |
-		firstEvent := currentWindowId removeFirst.
-		(windowlessRecords select: [ :e | e dateTime < firstEvent dateTime ])
-			do: [ :e | e windowId: firstEvent windowId ].
-		windowlessRecords removeAllSuchThat: [ :e |
-			(#( nil 0 ) includes: e windowId) not ] ]
+	"Then for each sequence, we try to find events without window id happening between the start and the end of that sequence"
+	enterAndLeaveSequences do: [ :sequence |
+		| enter leave |
+		enter := sequence first.
+		leave := sequence last.
+		(windowlessRecords select: [ :e |
+			 e dateTime > enter dateTime and: [ e dateTime < leave dateTime ] ])
+			do: [ :e | e windowId: enter windowId ] ]
 ]
 
 { #category : #'private - history' }
