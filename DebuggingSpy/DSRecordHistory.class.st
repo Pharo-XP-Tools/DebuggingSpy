@@ -381,7 +381,8 @@ DSRecordHistory >> processRecords: array [
 		self taskName: self records first taskName ].
 	self buildWindowHistory.
 	self buildWindows.
-	self buildWindowJumps
+	self buildWindowJumps.
+	self validateWindows
 ]
 
 { #category : #'private - history' }
@@ -458,6 +459,49 @@ DSRecordHistory >> user [
 DSRecordHistory >> user: anObject [
 
 	user := anObject
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> validateWindows [
+	"Validates that each windows starts by a window entering or opening event, finishes by a window closing or leaving event, and that every event contained in the window happened between the opening event timestamp and the closing even timestamp"
+
+	| erroneousWindows |
+	erroneousWindows := Dictionary new.
+
+	windows do: [ :w |
+		| firstEvent lastEvent |
+		firstEvent := w events first.
+		lastEvent := w events last.
+
+		({
+			 DSWindowOpenedRecord.
+			 DSWindowActivatedRecord.
+			 DSMouseEnterWindowRecord.
+			 DSDebuggerOpeningRecord.
+			 DSBrowseContextRecord.
+			 DSQueryBrowseRecord } includes: firstEvent class) ifFalse: [
+			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
+				add: #opening -> firstEvent ].
+
+		({
+			 DSWindowClosedRecord.
+			 DSMouseLeaveWindowRecord } includes: lastEvent class) ifFalse: [
+			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
+				add: #closing -> lastEvent ].
+
+		w events do: [ :e |
+			(e dateTime >= firstEvent dateTime and: [
+				 e dateTime <= lastEvent dateTime ]) ifFalse: [
+				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
+					add: #timestamp -> e ] ] ].
+
+	erroneousWindows ifNotEmpty: [
+		Warning signal: (String streamContents: [ :str |
+				 str << erroneousWindows size printString.
+				 str space.
+				 str
+				 <<
+				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]
 ]
 
 { #category : #accessing }
