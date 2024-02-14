@@ -41,7 +41,7 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 		ifFalse: [title := ''Loading: '', title ].
 	self systemScope isCurrentImage ifFalse: [ 
 		title := title , '' in '', self systemScope description ].
-	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #QUERY].
 	^title'
 ]
 
