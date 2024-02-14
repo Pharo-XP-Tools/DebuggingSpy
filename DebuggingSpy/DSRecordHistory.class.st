@@ -104,9 +104,8 @@ DSRecordHistory >> buildWindowJumps [
 	windowJumps := OrderedCollection new.
 	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
 
-
 	jumps do: [ :jumpEvent |
-		(windows
+		(filteredWindows
 			 detect: [ :w | w windowId = jumpEvent windowId ]
 			 ifNone: [ nil ]) ifNotNil: [ :w |
 			(w activePeriods
@@ -116,7 +115,7 @@ DSRecordHistory >> buildWindowJumps [
 	filteredWindowJumps := windowJumps reject: [ :e |
 		                       e events size <= 3 or: [
 			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds "or: [ ""self halt."" ""e type = 'Finish'"" true] "] ].
+			                       < 500 milliSeconds "or: [ ""self halt."" ""e type = 'Finish'"" true] " ] ].
 
 	previousWindowActivity := nil.
 	filteredWindowJumps do: [ :period |
