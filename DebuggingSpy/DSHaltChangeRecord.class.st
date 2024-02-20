@@ -28,7 +28,7 @@ DSHaltChangeRecord class >> remove [
 
 { #category : #accessing }
 DSHaltChangeRecord >> eventName [
-	^'Halt change'
+	^haltChange, ' (', method, ')'
 ]
 
 { #category : #accessing }

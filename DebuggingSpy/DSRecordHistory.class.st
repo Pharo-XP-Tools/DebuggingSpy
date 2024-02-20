@@ -351,6 +351,19 @@ DSRecordHistory >> fixWindowRecordKeysNames [
 		(self findWindowRecordKeyForID: id) windowName: name ]
 ]
 
+{ #category : #'API-history' }
+DSRecordHistory >> haltAnalysisMap [
+
+	| report |
+	report := Dictionary new.
+	(self allRecordsOfKind: DSAbstractHaltRecord) do: [ :bp |
+		(report at: bp method ifAbsentPut: [
+			 DSHaltReport new
+				 method: bp method;
+				 yourself ]) add: bp ].
+	^ report
+]
+
 { #category : #initialization }
 DSRecordHistory >> initialize [
 	super initialize.
