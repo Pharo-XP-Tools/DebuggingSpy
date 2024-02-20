@@ -14,6 +14,14 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
+{ #category : #converting }
+DSAbstractBreakpointEventRecord >> asBreakpointRecord [
+
+	^ self modelClass
+		  perform: eventName asLowercase asSymbol asMutator
+		  with: self
+]
+
 { #category : #testing }
 DSAbstractBreakpointEventRecord >> canOpenDebuggers [
 	^eventName = 'BreakpointHit'
@@ -22,6 +30,12 @@ DSAbstractBreakpointEventRecord >> canOpenDebuggers [
 { #category : #accessing }
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
+]
+
+{ #category : #converting }
+DSAbstractBreakpointEventRecord >> modelClass [
+
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
