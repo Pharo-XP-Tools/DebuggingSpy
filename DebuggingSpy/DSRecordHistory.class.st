@@ -389,11 +389,20 @@ DSRecordHistory >> processRecords: array [
 	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
 	self records:
 		(array reject: [ :e | #( nil 0 ) includes: e windowId ]).
+		
+	"Transform raw events to model events"
+	(self allRecordsOfKind: DSStepActionRecord) do: #asStepRecord.
+	
+	"Detect if we're in a specific task"	
 	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
 		self taskName: self records first taskName ].
+	
+	"Windows"
 	self buildWindowHistory.
 	self buildWindows.
 	self buildWindowJumps.
+	
+	"Check data consistency (raises a warning that can be proceeded)"
 	self validateWindows
 ]
 

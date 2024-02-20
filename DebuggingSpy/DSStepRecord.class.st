@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+DSStepRecord class >> for: anEvent [
+
+	| step |
+	step := self new.
+	step become: anEvent.
+	anEvent record: step.
+	^ anEvent
+]
+
+{ #category : #'as yet unclassified' }
 DSStepRecord class >> into: aDSDebuggerActionRecord [
 
 	^ DSIntoRecord for: aDSDebuggerActionRecord
