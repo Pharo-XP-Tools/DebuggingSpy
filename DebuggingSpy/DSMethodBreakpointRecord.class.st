@@ -52,3 +52,15 @@ DSMethodBreakpointRecord >> method [
 DSMethodBreakpointRecord >> node [
 	^sourceRecord node
 ]
+
+{ #category : #'as yet unclassified' }
+DSMethodBreakpointRecord >> submethodTargets [
+
+	^ {self node}
+]
+
+{ #category : #'as yet unclassified' }
+DSMethodBreakpointRecord >> targetClassOrMethod [
+
+	^ self method
+]

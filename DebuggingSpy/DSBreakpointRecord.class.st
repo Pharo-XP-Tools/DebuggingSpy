@@ -30,6 +30,16 @@ DSBreakpointRecord >> printTargetInstance: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+DSBreakpointRecord >> submethodTargets [
+	^self subclassResponsibility 
+]
+
+{ #category : #'as yet unclassified' }
 DSBreakpointRecord >> target [
 	^sourceRecord target
+]
+
+{ #category : #'as yet unclassified' }
+DSBreakpointRecord >> targetClassOrMethod [
+	^self subclassResponsibility 
 ]

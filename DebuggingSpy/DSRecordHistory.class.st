@@ -64,6 +64,19 @@ DSRecordHistory >> breakpointAdds [
 	^ (self breakpointEvents: BreakpointAdded name) size
 ]
 
+{ #category : #'API-history' }
+DSRecordHistory >> breakpointAnalysisMap [
+
+	| report |
+	report := Dictionary new.
+	(self allRecordsOfKind: DSBreakpointRecord) do: [ :bp |
+		(report at: bp targetClassOrMethod ifAbsentPut: [
+			 DSBreakpointReport new
+				 method: bp targetClassOrMethod;
+				 yourself ]) add: bp ].
+	^ report
+]
+
 { #category : #'private - history' }
 DSRecordHistory >> breakpointEvents [
 

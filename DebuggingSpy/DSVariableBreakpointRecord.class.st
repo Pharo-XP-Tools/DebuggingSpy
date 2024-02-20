@@ -32,12 +32,12 @@ DSVariableBreakpointRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSVariableBreakpointRecord >> accessStrategy [
 	^sourceRecord accessStrategy
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSVariableBreakpointRecord >> eventName [
 
 	^ String streamContents: [ :s |
@@ -45,12 +45,18 @@ DSVariableBreakpointRecord >> eventName [
 		  s << super eventName ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'accessing - analysis' }
+DSVariableBreakpointRecord >> submethodTargets [
+
+	^ self targetVariables
+]
+
+{ #category : #accessing }
 DSVariableBreakpointRecord >> targetClassOrMethod [
 	^sourceRecord targetClassOrMethod
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSVariableBreakpointRecord >> targetVariables [
 	^sourceRecord targetVariables
 ]
