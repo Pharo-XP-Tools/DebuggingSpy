@@ -226,7 +226,7 @@ DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecord
 				windowId: (aRecordList at: eventIndex - 1) windowId;
 				yourself ].
 
-	self halt: 'If we get there we forgot a case...'.
+	"self halt: 'If we get there we forgot a case...'."
 	^ aRecordList at: eventIndex - 1
 ]
 
