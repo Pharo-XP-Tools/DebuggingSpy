@@ -47,21 +47,6 @@ DSStepRecord class >> through: aDSDebuggerActionRecord [
 ]
 
 { #category : #accessing }
-DSStepRecord >> contextName [
-	^sourceRecord contextName
-]
-
-{ #category : #accessing }
 DSStepRecord >> eventName [
 	^ sourceRecord eventName
-]
-
-{ #category : #accessing }
-DSStepRecord >> sourceNodeClass [
-	^sourceRecord sourceNodeClass
-]
-
-{ #category : #accessing }
-DSStepRecord >> sourceNodeCode [
-	^sourceRecord sourceNodeCode
 ]
