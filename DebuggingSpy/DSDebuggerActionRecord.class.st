@@ -67,16 +67,6 @@ DSDebuggerActionRecord class >> through: aContext [
 		  yourself
 ]
 
-{ #category : #converting }
-DSDebuggerActionRecord >> asStepRecord [
-
-	^ DSStepRecord
-		  perform:
-			  (eventName asLowercase copyReplaceAll: ' ' with: '') asSymbol
-				  asMutator
-		  with: { self }
-]
-
 { #category : #accessing }
 DSDebuggerActionRecord >> eventName [
 	^eventName
