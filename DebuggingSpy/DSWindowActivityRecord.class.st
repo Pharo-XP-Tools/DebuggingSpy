@@ -61,6 +61,16 @@ DSWindowActivityRecord >> events: anObject [
 	events := anObject
 ]
 
+{ #category : #merging }
+DSWindowActivityRecord >> merge: aDSWindowActivityRecord [
+	|merge become|
+	merge := DSMergedWindowActivityRecord new.
+	become := self.
+	merge become: self.
+	become mergeWith: merge.
+	become mergeWith: aDSWindowActivityRecord
+]
+
 { #category : #accessing }
 DSWindowActivityRecord >> next [
 

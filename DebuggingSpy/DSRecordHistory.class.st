@@ -14,7 +14,8 @@ Class {
 		'windows',
 		'windowJumps',
 		'filteredWindowJumps',
-		'filteredWindows'
+		'filteredWindows',
+		'mergedWindowJumps'
 	],
 	#category : #'DebuggingSpy-Records'
 }
@@ -125,7 +126,10 @@ DSRecordHistory >> buildWindowJumps [
 	nextWindowActivity := nil.
 	filteredWindowJumps reverseDo: [ :period |
 		period next: nextWindowActivity.
-		nextWindowActivity := period ]
+		nextWindowActivity := period ].
+	
+	self mergeFilteredJumps
+	
 ]
 
 { #category : #'private - history' }
@@ -340,6 +344,28 @@ DSRecordHistory >> initialize [
 	self flag: 'I am not tested! Please do it!' 
 ]
 
+{ #category : #'private - history' }
+DSRecordHistory >> mergeFilteredJumps [
+
+	| currentJump |
+	mergedWindowJumps := OrderedCollection new.
+	currentJump := filteredWindowJumps first.
+
+	[ currentJump notNil ] whileTrue: [
+		currentJump next ifNil: [
+			mergedWindowJumps add: currentJump.
+			^ self ].
+		currentJump windowId = currentJump next windowId
+			ifTrue: [ currentJump merge: currentJump next ]
+			ifFalse: [
+				mergedWindowJumps ifNotEmpty: [
+					currentJump previous: mergedWindowJumps last ].
+				mergedWindowJumps add: currentJump.
+				currentJump := currentJump next ] ].
+
+	self validateMergedJumps
+]
+
 { #category : #'API-history' }
 DSRecordHistory >> methodsAdded [
 
@@ -481,6 +507,26 @@ DSRecordHistory >> user [
 DSRecordHistory >> user: anObject [
 
 	user := anObject
+]
+
+{ #category : #'private - history' }
+DSRecordHistory >> validateMergedJumps [
+
+	1 to: mergedWindowJumps size do:[:i|
+		|current next|
+		current := mergedWindowJumps at: i.
+		current = mergedWindowJumps last ifFalse:[ 
+			|w wId| 
+			next := mergedWindowJumps at: i + 1.
+			self assert: next previous == current.
+			self assert: current next == next.
+			w := current window.
+			wId := current windowId.
+			
+			self assert: (current events allSatisfy: [:e| e windowId = w and:[e window == w]]).
+			self assert: (current events allSatisfy: [:e| e dateTime < next start dateTime])
+		]
+	]
 ]
 
 { #category : #'private - history' }
