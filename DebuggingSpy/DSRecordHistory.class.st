@@ -128,7 +128,7 @@ DSRecordHistory >> buildWindowJumps [
 		period next: nextWindowActivity.
 		nextWindowActivity := period ].
 	
-	self mergeFilteredJumps
+	self mergeFilteredWindowJumps
 	
 ]
 
@@ -345,7 +345,7 @@ DSRecordHistory >> initialize [
 ]
 
 { #category : #'private - history' }
-DSRecordHistory >> mergeFilteredJumps [
+DSRecordHistory >> mergeFilteredWindowJumps [
 
 	| currentJump |
 	mergedWindowJumps := OrderedCollection new.
@@ -364,6 +364,12 @@ DSRecordHistory >> mergeFilteredJumps [
 				currentJump := currentJump next ] ].
 
 	self validateMergedJumps
+]
+
+{ #category : #accessing }
+DSRecordHistory >> mergedWindowJumps [
+
+	^ mergedWindowJumps
 ]
 
 { #category : #'API-history' }
