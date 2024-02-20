@@ -47,6 +47,26 @@ DSStepRecord class >> through: aDSDebuggerActionRecord [
 ]
 
 { #category : #accessing }
+DSStepRecord >> context [
+	^sourceRecord context
+]
+
+{ #category : #accessing }
 DSStepRecord >> eventName [
 	^ sourceRecord eventName
+]
+
+{ #category : #accessing }
+DSStepRecord >> node [
+	^sourceRecord node
+]
+
+{ #category : #accessing }
+DSStepRecord >> receiver [
+	^sourceRecord receiver
+]
+
+{ #category : #accessing }
+DSStepRecord >> receiverClass [
+	^sourceRecord receiverClass
 ]
