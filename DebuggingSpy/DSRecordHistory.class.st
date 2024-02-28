@@ -446,7 +446,7 @@ DSRecordHistory >> processRecords: array [
 	self fixWindowIdsOf: array.
 	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
 	self records:
-		(array reject: [ :e | #( nil 0 ) includes: e windowId ]).
+		(array reject: [ :e | #( 0 ) includes: e windowId ]).
 		
 	"Transform raw events to model events"
 	(self allRecordsOfKind: DSStepActionRecord) do: #asStepRecord.
