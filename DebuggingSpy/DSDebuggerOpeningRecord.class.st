@@ -31,6 +31,7 @@ DSDebuggerOpeningRecord >> eventName [
 DSDebuggerOpeningRecord >> primarySourcesOfWindowOpenings [
 
 	^ ({
+		   DSBreakpointRecord.
 		   DSAbstractBreakpointEventRecord.
 		   DSHaltHitRecord } collect: [ :c | c withAllSubclasses ])
 		  flattened
