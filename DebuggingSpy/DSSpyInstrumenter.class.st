@@ -168,6 +168,16 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			 asSpecGroup)'
 ]
 
+{ #category : #breakpoints }
+DSSpyInstrumenter >> instrumentExceptionSignalling [
+	Exception compile: 'raiseUnhandledError
+
+	self class = Halt ifFalse:[[	DSUnhandledExceptionRecord for:  self] 
+		on: Error 
+		do:[:err| DSSpy log: #ERROR key: self class name asSymbol ]].
+	^ UnhandledError signalForException: self'.
+]
+
 { #category : #inspector }
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
