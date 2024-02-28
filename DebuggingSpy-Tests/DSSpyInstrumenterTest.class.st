@@ -189,6 +189,11 @@ DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> execute1Halt [
+ 1 halt
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> executeHalt [ 
 
 	<haltOrBreakpointForTesting>
@@ -649,6 +654,14 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	record := self registry fourth.
 	self assert: record selector equals: #now:.
 	self assertHaltHitRecordingMethod:  (self class >> #executeHaltWithMessage) conditional: false once: false.
+	
+	[ self execute1Halt  ]
+		on: Halt
+		do: [  ].
+	self assert: self registry size equals: 5.
+	record := self registry fifth.
+	self assert: record selector equals: #halt.
+	self assertHaltHitRecordingMethod:  (self class >> #execute1Halt) conditional: false once: false.
 ]
 
 { #category : #'tests - halts' }
