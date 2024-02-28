@@ -4,6 +4,12 @@ Class {
 	#category : #'DebuggingSpy-Records-Extensions'
 }
 
+{ #category : #accessing }
+DSBreakpointRecord >> breakpointHash [
+
+	^ sourceRecord breakpointHash
+]
+
 { #category : #'as yet unclassified' }
 DSBreakpointRecord >> canOpenDebuggers [
 	^sourceRecord canOpenDebuggers
