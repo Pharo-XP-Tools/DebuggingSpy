@@ -35,7 +35,7 @@ DSMethodBreakpointRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSMethodBreakpointRecord >> eventName [
 
 	^ String streamContents: [ :s |
@@ -43,23 +43,23 @@ DSMethodBreakpointRecord >> eventName [
 		  s << super eventName ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSMethodBreakpointRecord >> method [
 	^sourceRecord method
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSMethodBreakpointRecord >> node [
 	^sourceRecord node
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSMethodBreakpointRecord >> submethodTargets [
 
 	^ {self node}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSMethodBreakpointRecord >> targetClassOrMethod [
 
 	^ self method

@@ -10,42 +10,42 @@ DSBreakpointRecord >> breakpointHash [
 	^ sourceRecord breakpointHash
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 DSBreakpointRecord >> canOpenDebuggers [
 	^sourceRecord canOpenDebuggers
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> eventName [
 	^sourceRecord eventName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> objectCentric [
 	^sourceRecord objectCentric
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> once [
 	^sourceRecord once
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #printing }
 DSBreakpointRecord >> printTargetInstance: anObject [
 	^sourceRecord printTargetInstance: anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> submethodTargets [
 	^self subclassResponsibility 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> target [
 	^sourceRecord target
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 DSBreakpointRecord >> targetClassOrMethod [
 	^self subclassResponsibility 
 ]
