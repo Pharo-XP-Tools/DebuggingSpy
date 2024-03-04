@@ -16,6 +16,16 @@ Class {
 	#category : #'DebuggingSpy-Records'
 }
 
+{ #category : #converting }
+DSStepActionRecord >> asStepRecord [
+
+	^ DSStepRecord
+		  perform:
+			  (eventName asLowercase copyReplaceAll: ' ' with: '') asSymbol
+				  asMutator
+		  with: self 
+]
+
 { #category : #accessing }
 DSStepActionRecord >> context [
 

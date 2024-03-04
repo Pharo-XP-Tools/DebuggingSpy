@@ -27,10 +27,29 @@ DSDebuggerOpeningRecord >> eventName [
 	^'Debugger open'
 ]
 
+{ #category : #'as yet unclassified' }
+DSDebuggerOpeningRecord >> primarySourcesOfWindowOpenings [
+
+	^ ({
+		   DSBreakpointRecord.
+		   DSAbstractBreakpointEventRecord.
+		   DSHaltHitRecord } collect: [ :c | c withAllSubclasses ])
+		  flattened
+]
+
 { #category : #'actions api' }
 DSDebuggerOpeningRecord >> record: aDebugger [
 	debuggerId := aDebugger identityHash.
 	super record: { aDebugger currentContext. aDebugger window window }
+]
+
+{ #category : #'as yet unclassified' }
+DSDebuggerOpeningRecord >> secondarySourcesOfWindowOpenings [
+
+	^ ({
+		   DSCodeActionRecord.
+		   DSStepActionRecord } collect: [ :c | c withAllSubclasses ])
+		  flattened
 ]
 
 { #category : #accessing }

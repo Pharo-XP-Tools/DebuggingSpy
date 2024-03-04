@@ -12,7 +12,7 @@ Class {
 
 { #category : #accessing }
 DSSelectInspectorPageRecord >> eventName [
-	^'Selecting inspector page'
+	^'Selecting inspector tab'
 ]
 
 { #category : #accessing }

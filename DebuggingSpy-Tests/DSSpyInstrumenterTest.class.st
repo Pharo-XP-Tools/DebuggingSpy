@@ -189,6 +189,11 @@ DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 ]
 
 { #category : #helpers }
+DSSpyInstrumenterTest >> execute1Halt [
+ 1 halt
+]
+
+{ #category : #helpers }
 DSSpyInstrumenterTest >> executeHalt [ 
 
 	<haltOrBreakpointForTesting>
@@ -224,6 +229,18 @@ DSSpyInstrumenterTest >> executeHaltWithMessage [
 DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane [
 
 	^ (aMetaPane class slotNamed: listName) read: aMetaPane
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> methodWithDNU [
+
+	self unknownMessage
+]
+
+{ #category : #helpers }
+DSSpyInstrumenterTest >> methodWithException [
+
+	Exception new signal
 ]
 
 { #category : #helpers }
@@ -649,6 +666,14 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	record := self registry fourth.
 	self assert: record selector equals: #now:.
 	self assertHaltHitRecordingMethod:  (self class >> #executeHaltWithMessage) conditional: false once: false.
+	
+	[ self execute1Halt  ]
+		on: Halt
+		do: [  ].
+	self assert: self registry size equals: 5.
+	record := self registry fifth.
+	self assert: record selector equals: #halt.
+	self assertHaltHitRecordingMethod:  (self class >> #execute1Halt) conditional: false once: false.
 ]
 
 { #category : #'tests - halts' }
@@ -1287,4 +1312,43 @@ DSSpyInstrumenterTest >> testLoggingInteractionsWithNoSourceCode [
 		self
 			assert: record selectedString
 			equals: DSSpy recordSourceCodeDisabledErrorMessage ]
+]
+
+{ #category : #'tests - exceptions' }
+DSSpyInstrumenterTest >> testRecordDNU [
+	|capturedDNU|
+	
+	modifiedClass := Exception.
+	modifiedMethodSource := (Exception >> #raiseUnhandledError) sourceCode.
+	instrumenter instrumentExceptionSignalling.
+	
+	[self methodWithDNU] on: MessageNotUnderstood do:[:dnu| capturedDNU := dnu. [dnu raiseUnhandledError] on: UnhandledError do:[] ].
+		
+	record := self registry first.
+	self assert: record class equals: DSUnhandledExceptionRecord.
+	self assert: record exceptionClass equals: MessageNotUnderstood name.
+	self assert: record errorString equals: capturedDNU description.
+	self assert: record receiver equals: self class name.
+	self assert: record node equals: (self class>>#methodWithDNU) ast children first sourceCode.
+	self assert: record method equals: (self class>>#methodWithDNU) selector	
+]
+
+{ #category : #'tests - exceptions' }
+DSSpyInstrumenterTest >> testRecordException [
+	|capturedException|
+	
+	modifiedClass := Exception.
+	modifiedMethodSource := (Exception >> #raiseUnhandledError) sourceCode.
+	instrumenter instrumentExceptionSignalling.
+		
+	[self methodWithException] on: Exception do:[:e| capturedException := e copy. [e raiseUnhandledError] on: UnhandledError do:[] ].
+
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSUnhandledExceptionRecord.
+	self assert: record exceptionClass equals: Exception name.
+	self assert: record errorString equals: capturedException description.
+	self assert: record receiver equals: self class name.
+	self assert: record node equals: (self class>>#methodWithException) ast children first sourceCode.
+	self assert: record method equals: (self class>>#methodWithException) selector	
 ]

@@ -8,7 +8,7 @@ Class {
 		'activePeriods',
 		'sourceEvent'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : #'DebuggingSpy-Records-Extensions'
 }
 
 { #category : #'instance creation' }
@@ -105,6 +105,13 @@ DSWindowRecord >> events: anObject [
 	events := anObject
 ]
 
+{ #category : #testing }
+DSWindowRecord >> isDebugger [
+
+	events ifEmpty: [ ^ false ].
+	^ events first class == DSDebuggerOpeningRecord
+]
+
 { #category : #accessing }
 DSWindowRecord >> name [
 
@@ -123,7 +130,7 @@ DSWindowRecord >> printOn: ws [
 	self printTypeOn: ws.
 	ws << ']'.
 	ws space.
-	ws << name
+	ws << (name isString ifTrue:[name] ifFalse:[name printString]) 
 ]
 
 { #category : #printing }
@@ -145,6 +152,14 @@ DSWindowRecord >> sourceEvent [
 DSWindowRecord >> sourceEvent: anObject [
 
 	sourceEvent := anObject
+]
+
+{ #category : #accessing }
+DSWindowRecord >> totalTime [
+
+	^ (activePeriods
+		   inject: 0
+		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
 ]
 
 { #category : #accessing }

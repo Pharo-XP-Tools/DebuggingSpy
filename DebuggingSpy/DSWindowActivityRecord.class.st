@@ -1,13 +1,15 @@
 Class {
 	#name : #DSWindowActivityRecord,
-	#superclass : #DSMouseEventRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'start',
 		'stop',
 		'events',
-		'window'
+		'window',
+		'previous',
+		'next'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : #'DebuggingSpy-Records-Extensions'
 }
 
 { #category : #'as yet unclassified' }
@@ -32,14 +34,19 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 ]
 
 { #category : #accessing }
+DSWindowActivityRecord >> duration [
+
+	^ events last dateTime - events first dateTime
+]
+
+{ #category : #accessing }
 DSWindowActivityRecord >> eventName [
 
 	^ String streamContents: [ :ws |
 		  window printTypeOn: ws.
 		  ws << ':'.
 		  ws space.
-		  ws << (events last dateTime - events first dateTime)
-			  humanReadablePrintString ]
+		  ws << self duration humanReadablePrintString ]
 ]
 
 { #category : #accessing }
@@ -52,6 +59,40 @@ DSWindowActivityRecord >> events [
 DSWindowActivityRecord >> events: anObject [
 
 	events := anObject
+]
+
+{ #category : #merging }
+DSWindowActivityRecord >> merge: aDSWindowActivityRecord [
+	|merge become|
+	merge := DSMergedWindowActivityRecord new.
+	become := self.
+	merge become: self.
+	become mergeWith: merge.
+	become mergeWith: aDSWindowActivityRecord
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> next [
+
+	^ next
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> next: anObject [
+
+	next := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> previous [
+
+	^ previous
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> previous: anObject [
+
+	previous := anObject
 ]
 
 { #category : #accessing }
@@ -88,4 +129,10 @@ DSWindowActivityRecord >> window [
 DSWindowActivityRecord >> window: anObject [
 
 	window := anObject
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> windowId [
+
+	^ windowId ifNil: [ windowId := window windowId ]
 ]
