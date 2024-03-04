@@ -55,9 +55,11 @@ DSWindowEventRecord >> windowName: anObject [
 DSWindowEventRecord >> windowType [
 
 	| rs type |
+	((windowName splitOn: Character space) includes: 'senders') ifTrue:[^'Senders'].
+	((windowName splitOn: Character space) includes: 'implementors') ifTrue:[^'Implementors'].
+	
 	rs := windowName readStream.
-	type := rs upTo: Character space.
+	type := rs upTo: Character space.		
 	type size = 1 ifTrue: [ type := rs upTo: $( ].
-
 	^ type
 ]

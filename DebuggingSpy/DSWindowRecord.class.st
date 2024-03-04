@@ -39,7 +39,7 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 		(events
 			 detect: [ :e | e class == DSQueryBrowseRecord ]
 			 ifNone: [ nil ]) ifNotNil: [ :e |
-			type := e queryName readStream upTo: Character space.
+			type := (e queryName readStream upTo: Character space) capitalized.
 			name := (e queryName splitOn: Character space) last ] ].
 
 
@@ -54,8 +54,7 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 				        (#( nil '' ) includes: e methodBrowsed) ifFalse: [
 					        ws << '>>'.
 					        ws << e methodBrowsed ] ] ] ].
-
-
+	
 	name ifNotNil: [ ^ self ].
 	name := self windowNameFor: events first
 ]
