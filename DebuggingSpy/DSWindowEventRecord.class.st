@@ -56,10 +56,14 @@ DSWindowEventRecord >> windowType [
 
 	| rs type |
 	((windowName splitOn: Character space) includes: 'senders') ifTrue:[^'Senders'].
+	((windowName splitOn: Character space) includes: 'Senders') ifTrue:[^'Senders'].
 	((windowName splitOn: Character space) includes: 'implementors') ifTrue:[^'Implementors'].
-	
+	((windowName splitOn: Character space) includes: 'Implementors') ifTrue:[^'Implementors'].
+
 	rs := windowName readStream.
-	type := rs upTo: Character space.		
+	type := rs upTo: Character space.
 	type size = 1 ifTrue: [ type := rs upTo: $( ].
-	^ type
+	(#('Spotter' 'implementors' 'Inspector'  'Debugger' 'Implementors' 'Breakpoint' 'Transcript' 'Browser' 'ClyQueryBrowserMorph' 'ClyFullBrowserMorph') includes: type) ifTrue:[^type].
+	type isNumber ifTrue:[^'X'].
+	^ 'Application'
 ]

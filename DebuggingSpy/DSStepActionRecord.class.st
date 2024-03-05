@@ -19,11 +19,14 @@ Class {
 { #category : #converting }
 DSStepActionRecord >> asStepRecord [
 
+	((SindarinCommand allSubclasses collect: #defaultName) includes:
+		 eventName) ifTrue: [ ^ DSStepRecord sindarinStep: self ].
+
 	^ DSStepRecord
 		  perform:
 			  (eventName asLowercase copyReplaceAll: ' ' with: '') asSymbol
 				  asMutator
-		  with: self 
+		  with: self
 ]
 
 { #category : #accessing }

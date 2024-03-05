@@ -494,6 +494,11 @@ DSRecordHistory >> records: anObject [
 	records := anObject
 ]
 
+{ #category : #initialization }
+DSRecordHistory >> reprocessRecords [
+	self processRecords: records asOrderedCollection 
+]
+
 { #category : #accessing }
 DSRecordHistory >> tag [
 
@@ -595,19 +600,24 @@ DSRecordHistory >> validateWindows [
 				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
 					add: #timestamp -> e ] ] ].
 
-	erroneousWindows ifNotEmpty: [
+	"erroneousWindows ifNotEmpty: [
 		Warning signal: (String streamContents: [ :str |
 				 str << erroneousWindows size printString.
 				 str space.
 				 str
 				 <<
-				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]
+				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]"
 ]
 
 { #category : #accessing }
 DSRecordHistory >> windowJumps [
 
 	^ windowJumps
+]
+
+{ #category : #accessing }
+DSRecordHistory >> windows [
+	^ windows
 ]
 
 { #category : #accessing }

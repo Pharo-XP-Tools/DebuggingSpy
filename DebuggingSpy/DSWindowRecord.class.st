@@ -6,7 +6,8 @@ Class {
 		'name',
 		'events',
 		'activePeriods',
-		'sourceEvent'
+		'sourceEvent',
+		'idleTime'
 	],
 	#category : #'DebuggingSpy-Records-Extensions'
 }
@@ -26,6 +27,14 @@ DSWindowRecord >> activePeriods [
 DSWindowRecord >> activePeriods: anObject [
 
 	activePeriods := anObject
+]
+
+{ #category : #adding }
+DSWindowRecord >> addIdleTime: aDuration [
+	idleTime ifNil: [
+		idleTime := aDuration.
+		^ self ].	
+	idleTime := idleTime + aDuration
 ]
 
 { #category : #'as yet unclassified' }
@@ -103,6 +112,11 @@ DSWindowRecord >> events [
 DSWindowRecord >> events: anObject [
 
 	events := anObject
+]
+
+{ #category : #accessing }
+DSWindowRecord >> idleTime [
+	^ idleTime ifNil:[idleTime := 0 seconds]
 ]
 
 { #category : #testing }

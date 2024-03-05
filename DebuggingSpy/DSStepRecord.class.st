@@ -51,6 +51,12 @@ DSStepRecord class >> runto: aDSDebuggerActionRecord [
 ]
 
 { #category : #'as yet unclassified' }
+DSStepRecord class >> sindarinStep: aDSDebuggerActionRecord [
+
+	^ DSSindarinStepRecord for: aDSDebuggerActionRecord
+]
+
+{ #category : #'as yet unclassified' }
 DSStepRecord class >> through: aDSDebuggerActionRecord [
 
 	^ DSThroughRecord for: aDSDebuggerActionRecord

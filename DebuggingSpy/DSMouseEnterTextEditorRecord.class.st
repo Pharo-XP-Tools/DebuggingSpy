@@ -19,5 +19,6 @@ DSMouseEnterTextEditorRecord >> windowName [
 
 { #category : #'as yet unclassified' }
 DSMouseEnterTextEditorRecord >> windowType [
-	^windowId
+"	self halt."
+	^"windowId" 'External Window'
 ]
