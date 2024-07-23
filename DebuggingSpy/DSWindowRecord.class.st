@@ -7,7 +7,8 @@ Class {
 		'events',
 		'activePeriods',
 		'sourceEvent',
-		'idleTime'
+		'idleTime',
+		'trueIdleTime'
 	],
 	#category : #'DebuggingSpy-Records-Extensions'
 }
@@ -33,8 +34,12 @@ DSWindowRecord >> activePeriods: anObject [
 DSWindowRecord >> addIdleTime: aDuration [
 	idleTime ifNil: [
 		idleTime := aDuration.
+		idleTime asSeconds = 40562 ifTrue: [ self halt ].	
+	idleTime asSeconds = 3800 ifTrue: [ self halt ].
 		^ self ].	
-	idleTime := idleTime + aDuration
+	idleTime := idleTime + aDuration.
+	idleTime asSeconds = 40562 ifTrue: [ self halt ].	
+	idleTime asSeconds = 3800 ifTrue: [ self halt ].
 ]
 
 { #category : #'as yet unclassified' }
@@ -174,6 +179,18 @@ DSWindowRecord >> totalTime [
 	^ (activePeriods
 		   inject: 0
 		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
+]
+
+{ #category : #accessing }
+DSWindowRecord >> trueIdleTime [
+
+	^ trueIdleTime ifNil:[trueIdleTime := 0 asSeconds]
+]
+
+{ #category : #accessing }
+DSWindowRecord >> trueIdleTime: anObject [
+
+	trueIdleTime := anObject
 ]
 
 { #category : #accessing }

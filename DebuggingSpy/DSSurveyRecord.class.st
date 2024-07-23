@@ -16,6 +16,12 @@ DSSurveyRecord >> answer [
 	^survey answer
 ]
 
+{ #category : #'as yet unclassified' }
+DSSurveyRecord >> collectAnswersFromQuestions [
+
+	^ survey collectAnswersFromQuestions
+]
+
 { #category : #accessing }
 DSSurveyRecord >> description [
 

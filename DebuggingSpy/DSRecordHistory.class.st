@@ -80,7 +80,9 @@ DSRecordHistory >> breakpointAnalysisMap [
 { #category : #'private - history' }
 DSRecordHistory >> breakpointEvents [
 
-	^ self records select: [ :r | r isKindOf: DSAbstractBreakpointEventRecord ]
+	^ self records select: [ :r |
+		  (r isKindOf: DSAbstractBreakpointEventRecord) or: [
+			  r isKindOf: DSBreakpointRecord ] ]
 ]
 
 { #category : #'private - history' }
@@ -169,26 +171,30 @@ DSRecordHistory >> callStackBrowing [
 { #category : #'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 
-	| time currentRecord disc |
-	disc := 0.
+	| time currentRecord deltas |
 	time := 0.
+	deltas := OrderedCollection new.
 	currentRecord := records first.
-	records do: [ :r | 
+	records do: [ :r |
 		| delta |
 		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
 		time := time
 		        + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		delta > 300 ifTrue: [ disc := disc + delta ].
+		delta > 30 ifTrue: [
+			deltas add: {
+					r.
+					currentRecord.
+					records } -> delta asSeconds ].
 		currentRecord := r ].
-	^ disc
+	^ deltas
 ]
 
 { #category : #'API-history' }
 DSRecordHistory >> countDebugActions [
 
-	^ self breakpointAdds + self breakpointHit + self breakpointRemove
+	^ self breakpointAdds "+ self breakpointHit" + self breakpointRemove
 	  + self executedCode + self methodsAdded + self methodsModified
-	  + self methodsRemoved + self numberOfSteps + self openedDebuggers
+	  + self methodsRemoved + self numberOfSteps "+ self openedDebuggers"
 	  + self callStackBrowing
 ]
 
