@@ -7,7 +7,8 @@ Class {
 		'events',
 		'window',
 		'previous',
-		'next'
+		'next',
+		'annotation'
 	],
 	#category : #'DebuggingSpy-Records-Extensions'
 }
@@ -31,6 +32,18 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		   events: aCollection)
 		  window: aDSWindowRecord;
 		  yourself
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> annotation [
+
+	^ annotation ifNil:[annotation := DSWindowAnnotation new]
+]
+
+{ #category : #accessing }
+DSWindowActivityRecord >> annotation: anObject [
+
+	annotation := anObject
 ]
 
 { #category : #accessing }
@@ -59,6 +72,13 @@ DSWindowActivityRecord >> events [
 DSWindowActivityRecord >> events: anObject [
 
 	events := anObject
+]
+
+{ #category : #inspections }
+DSWindowActivityRecord >> inspectionAnnotation [
+
+	<inspectorPresentationOrder: 50 title: 'Annotation'>
+	^ DSWindowElementAnnotationPresenter on: self
 ]
 
 { #category : #merging }
@@ -134,5 +154,7 @@ DSWindowActivityRecord >> window: anObject [
 { #category : #accessing }
 DSWindowActivityRecord >> windowId [
 
-	^ windowId ifNil: [ windowId := window windowId ]
+	^ windowId
+		  ifNil: [ windowId := window windowId ]
+		  ifNotNil: [ windowId ]
 ]

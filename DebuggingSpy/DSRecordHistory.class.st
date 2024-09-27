@@ -1,6 +1,3 @@
-"
-I represent a user experiment record and expose an API to extract data from this record.
-"
 Class {
 	#name : #DSRecordHistory,
 	#superclass : #Object,
@@ -128,10 +125,10 @@ DSRecordHistory >> buildWindowJumps [
 				 detect: [ :period | period start == jumpEvent ]
 				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ].
 
-	filteredWindowJumps := windowJumps reject: [ :e |
+	filteredWindowJumps := windowJumps "reject: [ :e |
 		                       e events size <= 3 or: [
 			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds "or: [ ""self halt."" ""e type = 'Finish'"" true] " ] ].
+			                       < 500 milliSeconds" "or: [ ""self halt."" ""e type = 'Finish'"" true] "" ] ]".
 
 	previousWindowActivity := nil.
 	filteredWindowJumps do: [ :period |
@@ -192,10 +189,9 @@ DSRecordHistory >> collectTimeDiscrepancies [
 { #category : #'API-history' }
 DSRecordHistory >> countDebugActions [
 
-	^ self breakpointAdds "+ self breakpointHit" + self breakpointRemove
-	  + self executedCode + self methodsAdded + self methodsModified
-	  + self methodsRemoved + self numberOfSteps "+ self openedDebuggers"
-	  + self callStackBrowing
+	^ self breakpointAdds + self breakpointRemove + self executedCode
+	  + self methodsAdded + self methodsModified + self methodsRemoved
+	  + self numberOfSteps + self callStackBrowing
 ]
 
 { #category : #'private - history' }
@@ -478,7 +474,7 @@ DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
 		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
 
-	recordsCopy := records copy.
+	recordsCopy := records copy asOrderedCollection.
 
 	sortedDebuggerWindows do: [ :w |
 		|sourceEvent|
@@ -616,19 +612,16 @@ DSRecordHistory >> validateWindows [
 ]
 
 { #category : #accessing }
-DSRecordHistory >> windowJumps [
-
-	^ windowJumps
-]
-
-{ #category : #accessing }
 DSRecordHistory >> windows [
 	^ windows
 ]
 
 { #category : #accessing }
 DSRecordHistory >> windowsHistory [
-	^windowsHistory ifNil:[windowsHistory := IdentityDictionary new]
+
+	^ windowsHistory
+		  ifNil: [ windowsHistory := IdentityDictionary new ]
+		  ifNotNil: [ windowsHistory ]
 ]
 
 { #category : #accessing }

@@ -31,7 +31,7 @@ DSBreakpointReport >> printOn: aStream [
 { #category : #accessing }
 DSBreakpointReport >> targets [
 
-	^ targets ifNil: [ targets := Dictionary new ]
+	^ targets ifNil: [ targets := Dictionary new ] ifNotNil: [ targets ]
 ]
 
 { #category : #accessing }

@@ -121,7 +121,8 @@ DSWindowRecord >> events: anObject [
 
 { #category : #accessing }
 DSWindowRecord >> idleTime [
-	^ idleTime ifNil:[idleTime := 0 seconds]
+
+	^ idleTime ifNil: [ idleTime := 0 seconds ] ifNotNil: [ idleTime ]
 ]
 
 { #category : #testing }
@@ -184,7 +185,9 @@ DSWindowRecord >> totalTime [
 { #category : #accessing }
 DSWindowRecord >> trueIdleTime [
 
-	^ trueIdleTime ifNil:[trueIdleTime := 0 asSeconds]
+	^ trueIdleTime
+		  ifNil: [ trueIdleTime := 0 asSeconds ]
+		  ifNotNil: [ trueIdleTime ]
 ]
 
 { #category : #accessing }

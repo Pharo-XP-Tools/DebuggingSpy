@@ -1,6 +1,3 @@
-"
-For now I am a dumb registry to simply record all events in an ordered collection
-"
 Class {
 	#name : #DSRecordRegistry,
 	#superclass : #Object,
@@ -19,7 +16,9 @@ Class {
 { #category : #accessing }
 DSRecordRegistry class >> autoSerialize [
 
-	^ autoSerialize ifNil: [ autoSerialize := false ]
+	^ autoSerialize
+		  ifNil: [ autoSerialize := false ]
+		  ifNotNil: [ autoSerialize ]
 ]
 
 { #category : #accessing }
@@ -30,7 +29,8 @@ DSRecordRegistry class >> autoSerialize: anObject [
 
 { #category : #accessing }
 DSRecordRegistry class >> current [
-	^Current ifNil:[Current := self new]
+
+	^ Current ifNil: [ Current := self new ] ifNotNil: [ Current ]
 ]
 
 { #category : #private }

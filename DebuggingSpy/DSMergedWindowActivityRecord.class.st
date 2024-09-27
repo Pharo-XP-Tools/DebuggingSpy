@@ -10,7 +10,9 @@ Class {
 { #category : #accessing }
 DSMergedWindowActivityRecord >> activities [
 
-	^ activities ifNil: [ activities := OrderedCollection new ]
+	^ activities
+		  ifNil: [ activities := OrderedCollection new ]
+		  ifNotNil: [ activities ]
 ]
 
 { #category : #accessing }

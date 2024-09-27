@@ -72,9 +72,19 @@ DSStepRecord >> eventName [
 	^ sourceRecord eventName
 ]
 
+{ #category : #'as yet unclassified' }
+DSStepRecord >> eventSymbol [
+	^'V'
+]
+
 { #category : #accessing }
 DSStepRecord >> node [
 	^sourceRecord node
+]
+
+{ #category : #printing }
+DSStepRecord >> printContextAndNode [
+	^sourceRecord printContextAndNode 
 ]
 
 { #category : #accessing }

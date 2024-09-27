@@ -12,22 +12,43 @@ DSBreakpointRecord >> breakpointHash [
 
 { #category : #testing }
 DSBreakpointRecord >> canOpenDebuggers [
-	^sourceRecord canOpenDebuggers
+
+	^ sourceRecord canOpenDebuggers
 ]
 
 { #category : #accessing }
 DSBreakpointRecord >> eventName [
-	^sourceRecord eventName
+
+	^ sourceRecord eventName
+]
+
+{ #category : #'as yet unclassified' }
+DSBreakpointRecord >> eventSymbol [
+	^self subclassResponsibility
 ]
 
 { #category : #accessing }
 DSBreakpointRecord >> objectCentric [
-	^sourceRecord objectCentric
+
+	^ sourceRecord objectCentric
 ]
 
 { #category : #accessing }
 DSBreakpointRecord >> once [
-	^sourceRecord once
+
+	^ sourceRecord once
+]
+
+{ #category : #printing }
+DSBreakpointRecord >> printContextAndNode [
+
+	^ String streamContents: [ :s |
+		  | nodeStream peek |
+		  s << '['.
+		  s << self eventName.
+		  s << ']'.
+		  s space.
+		  s << self method]
 ]
 
 { #category : #printing }
@@ -37,15 +58,18 @@ DSBreakpointRecord >> printTargetInstance: anObject [
 
 { #category : #accessing }
 DSBreakpointRecord >> submethodTargets [
-	^self subclassResponsibility 
+
+	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
 DSBreakpointRecord >> target [
-	^sourceRecord target
+
+	^ sourceRecord target
 ]
 
 { #category : #accessing }
 DSBreakpointRecord >> targetClassOrMethod [
-	^self subclassResponsibility 
+
+	^ self subclassResponsibility
 ]

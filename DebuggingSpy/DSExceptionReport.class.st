@@ -38,7 +38,9 @@ DSExceptionReport >> printOn: aStream [
 { #category : #accessing }
 DSExceptionReport >> records [
 
-	^ records ifNil: [ records := OrderedCollection new ]
+	^ records
+		  ifNil: [ records := OrderedCollection new ]
+		  ifNotNil: [ records ]
 ]
 
 { #category : #accessing }
