@@ -1,17 +1,16 @@
 Class {
-	#name : 'DSSTONFileLoggerTest',
-	#superclass : 'TestCase',
+	#name : #DSSTONFileLoggerTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'logger',
 		'survey',
 		'task',
 		'oldLogger'
 	],
-	#category : 'DebuggingSpy-Tests',
-	#package : 'DebuggingSpy-Tests'
+	#category : #'DebuggingSpy-Tests'
 }
 
-{ #category : 'running' }
+{ #category : #running }
 DSSTONFileLoggerTest >> setUp [
 	super setUp.
 	oldLogger := DSSpy logger.
@@ -21,14 +20,14 @@ DSSTONFileLoggerTest >> setUp [
 	task := DSTask new
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 DSSTONFileLoggerTest >> tearDown [
 
 	DSSpy logger: oldLogger.
 	super tearDown
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingDirectoryName [
 
 	self
@@ -36,12 +35,12 @@ DSSTONFileLoggerTest >> testDefaultLoggingDirectoryName [
 		equals: 'ds-spy'
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingFileName [
  	self assert: logger defaultLoggingFileName equals: SessionManager default currentSession id asString
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testEnsureCreateLoggingFileReference [
 
 	| fileReference |
@@ -52,7 +51,7 @@ DSSTONFileLoggerTest >> testEnsureCreateLoggingFileReference [
 	self assert: fileReference exists
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSTONFileLoggerTest >> testFilenameForSurvey [
 	|fnameStream|
 	fnameStream := (logger filenameForSurvey: survey) readStream.
@@ -61,7 +60,7 @@ DSSTONFileLoggerTest >> testFilenameForSurvey [
 	self assert: (fnameStream readStream upToEnd) equals: logger surveyFileExtension
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 	logger reset.
 	logger forceLoggingFileNameFor: task.	
@@ -70,7 +69,7 @@ DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 	self assert: logger loggingFileReference exists
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSTONFileLoggerTest >> testForceRunningTask [
 
 	DSSpy resetSpy.
@@ -81,7 +80,7 @@ DSSTONFileLoggerTest >> testForceRunningTask [
 		task title , '-' , SessionManager default currentSession id asString
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingDirectory [
 
 	self
@@ -89,7 +88,7 @@ DSSTONFileLoggerTest >> testLoggingDirectory [
 		equals: logger defaultLoggingDirectoryName asFileReference 
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileName [
 
 	self
@@ -97,7 +96,7 @@ DSSTONFileLoggerTest >> testLoggingFileName [
 		equals: logger defaultLoggingFileName
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskEnded [
 
 	DSSpy startTask: task.
@@ -107,7 +106,7 @@ DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskEnded [
 		equals: logger defaultLoggingFileName
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskStarted [
 	
 	DSSpy startTask: task.
@@ -117,7 +116,7 @@ DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskStarted [
 		equals: (task title, '-', logger defaultLoggingFileName)
 ]
 
-{ #category : 'tests - file handling' }
+{ #category : #'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileReference [
 
 	| fileReference |
@@ -128,7 +127,7 @@ DSSTONFileLoggerTest >> testLoggingFileReference [
 	self assert: fileReference exists
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 DSSTONFileLoggerTest >> testReset [
 	logger forceLoggingFileNameFor: task.
 	logger reset.
@@ -137,12 +136,12 @@ DSSTONFileLoggerTest >> testReset [
 		equals: logger defaultLoggingFileName
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSTONFileLoggerTest >> testSurveyFileExtension [
 	self assert: logger surveyFileExtension equals: 'survey'
 ]
 
-{ #category : 'tests - logging' }
+{ #category : #'tests - logging' }
 DSSTONFileLoggerTest >> testWriteToFile [
 
 	| str |

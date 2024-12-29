@@ -2,14 +2,12 @@
 I record when scrolling by dragging a slider stops.
 "
 Class {
-	#name : 'DSStartScrollingEventRecord',
-	#superclass : 'DSScrollEventRecord',
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#name : #DSStartScrollingEventRecord,
+	#superclass : #DSScrollEventRecord,
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStartScrollingEventRecord >> eventName [
 	^'Scroll start'
 ]

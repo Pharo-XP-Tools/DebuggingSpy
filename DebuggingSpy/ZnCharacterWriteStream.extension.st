@@ -1,6 +1,6 @@
-Extension { #name : 'ZnCharacterWriteStream' }
+Extension { #name : #ZnCharacterWriteStream }
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 ZnCharacterWriteStream >> writeStreamSize [
 	^stream streamSize
 ]

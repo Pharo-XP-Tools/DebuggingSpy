@@ -5,30 +5,28 @@ I hold a unique window ID that corresponds to the original window object's ident
 I should be used from my class-side interface, called on my subclasses to match particular window events.
 "
 Class {
-	#name : 'DSWindowEventRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSWindowEventRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'windowName'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSWindowEventRecord >> record: aWindowEvent [
 	self recordWindowIdFromEvent: aWindowEvent.
 	self recordWindowNameFromEvent: aWindowEvent
 ]
 
-{ #category : 'recording' }
+{ #category : #recording }
 DSWindowEventRecord >> recordWindowIdFromEvent: anEvent [
 	|win|
 	win := anEvent window.
 	windowId := win identityHash
 ]
 
-{ #category : 'recording' }
+{ #category : #recording }
 DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 
 	windowName := [ anEvent window label ]
@@ -36,18 +34,18 @@ DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 		              do: [ 'Unknown window' ]
 ]
 
-{ #category : 'comparing' }
+{ #category : #comparing }
 DSWindowEventRecord >> sameWindowAsIn: aDSWindowEventRecord [
 	^self windowId = aDSWindowEventRecord windowId
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSWindowEventRecord >> windowName [
 
 	^ windowName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSWindowEventRecord >> windowName: anObject [
 
 	windowName := anObject

@@ -2,14 +2,12 @@
 I record that a StPlayground opened.
 "
 Class {
-	#name : 'DSPlaygroundOpenedRecord',
-	#superclass : 'DSPlaygroundRecord',
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#name : #DSPlaygroundOpenedRecord,
+	#superclass : #DSPlaygroundRecord,
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSPlaygroundOpenedRecord >> eventName [
 	^'Playground open' 
 ]

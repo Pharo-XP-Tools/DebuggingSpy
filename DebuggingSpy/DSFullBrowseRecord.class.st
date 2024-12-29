@@ -7,60 +7,58 @@ If one of them is nil, for instance, `package>class>nil`, it means that the user
 I have to register names instead of objects, as there are no guarantees that the image that analyzes the record has these package/class/method.
 "
 Class {
-	#name : 'DSFullBrowseRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSFullBrowseRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'methodBrowsed',
 		'packageBrowsed',
 		'classBrowsed'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> classBrowsed [
 
 	^ classBrowsed
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> classBrowsed: anObject [
 
 	classBrowsed := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> eventName [
 	^'Browse'
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> methodBrowsed [
 
 	^ methodBrowsed
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> methodBrowsed: anObject [
 
 	methodBrowsed := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> packageBrowsed [
 
 	^ packageBrowsed
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSFullBrowseRecord >> packageBrowsed: anObject [
 
 	packageBrowsed := anObject
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSFullBrowseRecord >> record: aClyFullBrowser [
 	super record: aClyFullBrowser window.
 	packageBrowsed := aClyFullBrowser packageSelection isEmpty

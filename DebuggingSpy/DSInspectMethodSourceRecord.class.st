@@ -2,17 +2,15 @@
 I record inspections of the source of a method in the meta pane of an inspector
 "
 Class {
-	#name : 'DSInspectMethodSourceRecord',
-	#superclass : 'DSInspectMethodsRecord',
+	#name : #DSInspectMethodSourceRecord,
+	#superclass : #DSInspectMethodsRecord,
 	#instVars : [
 		'selectedMethod'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSInspectMethodSourceRecord >> record: inspectedObjectWithSelectedClassWithSelectedMethodWithWindow [
 
 	super record: { 
@@ -22,13 +20,13 @@ DSInspectMethodSourceRecord >> record: inspectedObjectWithSelectedClassWithSelec
 	selectedMethod := inspectedObjectWithSelectedClassWithSelectedMethodWithWindow third name
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSInspectMethodSourceRecord >> selectedMethod [
 
 	^ selectedMethod
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSInspectMethodSourceRecord >> selectedMethod: anObject [
 
 	selectedMethod := anObject

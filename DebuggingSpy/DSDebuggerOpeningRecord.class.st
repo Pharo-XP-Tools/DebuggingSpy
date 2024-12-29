@@ -2,34 +2,32 @@
 I am generated when a debugger is opened.
 "
 Class {
-	#name : 'DSDebuggerOpeningRecord',
-	#superclass : 'DSDebuggerRecord',
+	#name : #DSDebuggerOpeningRecord,
+	#superclass : #DSDebuggerRecord,
 	#instVars : [
 		'debuggerId'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSDebuggerOpeningRecord >> debuggerId [
 
 	^ debuggerId
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSDebuggerOpeningRecord >> debuggerId: anObject [
 
 	debuggerId := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSDebuggerOpeningRecord >> eventName [
 	^'Debugger open'
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSDebuggerOpeningRecord >> record: aDebugger [
 	debuggerId := aDebugger identityHash.
 	super record: { aDebugger currentContext. aDebugger window window }

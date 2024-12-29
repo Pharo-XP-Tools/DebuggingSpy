@@ -2,36 +2,34 @@
 I record a halt hitting at run time.
 "
 Class {
-	#name : 'DSHaltHitRecord',
-	#superclass : 'DSAbstractHaltRecord',
+	#name : #DSHaltHitRecord,
+	#superclass : #DSAbstractHaltRecord,
 	#instVars : [
 		'once',
 		'conditional',
 		'selector'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSHaltHitRecord >> conditional [
 
 	^ conditional
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSHaltHitRecord >> eventName [
 	^'Halt hit'
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSHaltHitRecord >> once [
 
 	^ once
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSHaltHitRecord >> record: anRBProgramNodeAndASelector [
 	once := false.
 	conditional := false.
@@ -42,7 +40,7 @@ DSHaltHitRecord >> record: anRBProgramNodeAndASelector [
 	
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSHaltHitRecord >> selector [
 
 	^ selector

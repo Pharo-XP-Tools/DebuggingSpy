@@ -1,6 +1,6 @@
 Class {
-	#name : 'DSSpyTest',
-	#superclass : 'TestCase',
+	#name : #DSSpyTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'record',
 		'browser',
@@ -12,11 +12,10 @@ Class {
 		'survey',
 		'recordSourceCode'
 	],
-	#category : 'DebuggingSpy-Tests',
-	#package : 'DebuggingSpy-Tests'
+	#category : #'DebuggingSpy-Tests'
 }
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBreakpointEventClass target: aTarget [
 	
 	self assert: record class equals: aDSRecordClass.
@@ -29,19 +28,19 @@ DSSpyTest >> assertBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBre
 	self assert: record node equals: self breakpointedMethod ast printString
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertMethodEventRecordedAs: aClass [
 	self assert: record class identicalTo: aClass.
 	self assert: record methodName equals: self methodEvent method name
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertMethodEventRecordedAs: aClass for: aMethod [
 	self assert: record class identicalTo: aClass.
 	self assert: record methodName equals: aMethod name
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertMethodSourceCodeNotRecorded [
 
 	self
@@ -49,7 +48,7 @@ DSSpyTest >> assertMethodSourceCodeNotRecorded [
 		equals: DSSpy recordSourceCodeDisabledErrorMessage
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertMethodSourceCodeRecorded [
 
 	self
@@ -57,7 +56,7 @@ DSSpyTest >> assertMethodSourceCodeRecorded [
 		equals: (self class >> #methodEvent) sourceCode
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertVariableBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBreakpointEventClass target: aTarget [
 	
 	self assert: record class equals: aDSRecordClass.
@@ -71,53 +70,55 @@ DSSpyTest >> assertVariableBreakpointRecordedAs: aDSRecordClass forBreakpointEve
 	self assert: record accessStrategy equals: #all
 ]
 
-{ #category : 'assertions' }
+{ #category : #assertions }
 DSSpyTest >> assertWindowEventRecordedAs: aClass [
 	self assert: record class identicalTo: aClass.
 	self assert: record windowId equals: self windowEvent window hash.
 	self assert: record windowName equals: self windowEvent window label
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> breakpointMethod [
 	|value|
 	value := 4 squared.
 	^value
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> breakpointedMethod [
 	^self class >> #breakpointMethod
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> compileModifyMethodWithHalt [
 	DSFakeTextEditor compile: 'newMethodWithHalt self halt. self haltIf:[true]'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> compileModifyMethodWithNoHaltChange [
 	DSFakeTextEditor compile: 'newMethodWithHalt self halt'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> compileNewMethodWithHalt [
 	DSFakeTextEditor compile: 'newMethodWithHalt self halt'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> compileTestMethod [
 	DSFakeTextEditor compile: 'dsTestMethod ^self'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> installBreakpoint [
 
-	breakpoint := Breakpoint new node: self breakpointedMethod ast.
+	breakpoint := Breakpoint new
+		              node: self breakpointedMethod ast;
+		              always.
 	breakpoint install
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> installVariableBreakpoint [
 
 	breakpoint := VariableBreakpoint
@@ -125,7 +126,7 @@ DSSpyTest >> installVariableBreakpoint [
 		              inClass: self breakpointedMethod
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> methodEvent [
 
 	^ methodEvent ifNil: [ 
@@ -134,7 +135,7 @@ DSSpyTest >> methodEvent [
 			                 yourself ]
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> methodModifiedEvent [
 
 	^ methodEvent ifNil: [ 
@@ -144,47 +145,47 @@ DSSpyTest >> methodModifiedEvent [
 			                 oldProtocol: #test ]
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> modifyTestMethod [
 	DSFakeTextEditor compile: 'dsTestMethod ^self + 1'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> recoverTestMethod [
 	^DSFakeTextEditor lookupSelector: #dsTestMethod
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> registry [
 	^DSRecordRegistry current records
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> removeBreakpoint [
 
 	breakpoint remove.
 	breakpoint := nil
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> removeHaltInMethodWithHalt [
 	DSFakeTextEditor compile: 'newMethodWithHalt ^self'
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> removeNewMethodWithHalt [
 
 	(DSFakeTextEditor lookupSelector: #newMethodWithHalt) ifNotNil: [ :c | 
 		c removeFromSystem ]
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> removeTestMethod [
 
 	self recoverTestMethod removeFromSystem
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 DSSpyTest >> setUp [
 
 	super setUp.
@@ -198,7 +199,7 @@ DSSpyTest >> setUp [
 	DSSpy scopeSourceCodeChangesRecording: true
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 DSSpyTest >> tearDown [
 	DSRecordRegistry autoSerialize: false.
 	instrumenter unsubscribeFromSystemAnnouncer.
@@ -211,7 +212,7 @@ DSSpyTest >> tearDown [
 	super tearDown
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testBreakpointAdded [
 
 	instrumenter listenToBreakpointChanges.
@@ -226,7 +227,7 @@ DSSpyTest >> testBreakpointAdded [
 		target: nil
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testBreakpointHit [
 
 	self installBreakpoint.	
@@ -243,7 +244,7 @@ DSSpyTest >> testBreakpointHit [
 	
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testBreakpointRemoved [
 
 	self installBreakpoint.
@@ -259,7 +260,7 @@ DSSpyTest >> testBreakpointRemoved [
 		target: nil
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testCloseSurvey [
 	
 	|taskLoggingFileName recordedSurvey|
@@ -295,13 +296,13 @@ DSSpyTest >> testCloseSurvey [
 	
 ]
 
-{ #category : 'tests - logging' }
+{ #category : #'tests - logging' }
 DSSpyTest >> testDefaultLogger [
 	DSSpy logger: nil.
 	self assert: DSSpy logger class equals: DSSpy defaultLoggerClass 
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testEndTask [
 	DSSpy endTask: task.
 	self assert: self registry size equals: 1.
@@ -312,7 +313,7 @@ DSSpyTest >> testEndTask [
 	self assert: record answer equals: DSTask dsTaskDescription
 ]
 
-{ #category : 'tests - halts events' }
+{ #category : #'tests - halts events' }
 DSSpyTest >> testIndexesOfHaltNodesIn [
 
 	| haltData realHaltNode |
@@ -324,7 +325,7 @@ DSSpyTest >> testIndexesOfHaltNodesIn [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
-{ #category : 'tests - logging' }
+{ #category : #'tests - logging' }
 DSSpyTest >> testLog [
 
 	DSSpy logger loggingFileReference ensureDelete.
@@ -333,7 +334,7 @@ DSSpyTest >> testLog [
 	self assert: DSSpy logger loggingFileReference readStream contents equals: '[''test'']'
 ]
 
-{ #category : 'tests - logging' }
+{ #category : #'tests - logging' }
 DSSpyTest >> testLogKey [
 	[DSSpy log: nil key: #TEST] on: Halt do:[:h| h proceed].
 	self assert: self registry size equals: 1.
@@ -341,7 +342,7 @@ DSSpyTest >> testLogKey [
 	self assert: record event equals: #TEST
 ]
 
-{ #category : 'tests - logging' }
+{ #category : #'tests - logging' }
 DSSpyTest >> testLogOnlyWhenTaskStarted [
 	|str dir|
 	dir := DSSpy logger loggingDirectory.
@@ -366,7 +367,7 @@ DSSpyTest >> testLogOnlyWhenTaskStarted [
 	
 ]
 
-{ #category : 'tests - window events' }
+{ #category : #'tests - window events' }
 DSSpyTest >> testLogWindowActivated [
 	DSSpy logWindowActivated: self windowEvent.
 	
@@ -376,7 +377,7 @@ DSSpyTest >> testLogWindowActivated [
 	self assertWindowEventRecordedAs: DSWindowActivatedRecord
 ]
 
-{ #category : 'tests - window events' }
+{ #category : #'tests - window events' }
 DSSpyTest >> testLogWindowClosed [
 
 	DSSpy logWindowClosed: self windowEvent.
@@ -387,7 +388,7 @@ DSSpyTest >> testLogWindowClosed [
 	self assertWindowEventRecordedAs: DSWindowClosedRecord
 ]
 
-{ #category : 'tests - window events' }
+{ #category : #'tests - window events' }
 DSSpyTest >> testLogWindowOpened [
 
 	DSSpy logWindowOpened: self windowEvent.
@@ -398,7 +399,7 @@ DSSpyTest >> testLogWindowOpened [
 	self assertWindowEventRecordedAs: DSWindowOpenedRecord
 ]
 
-{ #category : 'tests - serialize/materialize' }
+{ #category : #'tests - serialize/materialize' }
 DSSpyTest >> testMaterialize [
 	|records materializedRecords|
 	DSSpy logger loggingFileReference ensureDelete.
@@ -419,7 +420,7 @@ DSSpyTest >> testMaterialize [
 	self assert: materializedRecords second event equals: records second event
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodAdded [
 	DSSpy recordSourceCode: true.
 	DSSpy methodAdded: self methodEvent.
@@ -430,7 +431,7 @@ DSSpyTest >> testMethodAdded [
 	self assertMethodSourceCodeRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodAddedNoSourceCode [
 	DSSpy methodAdded: self methodEvent.
 	self assert: self registry size equals: 1.	
@@ -440,7 +441,7 @@ DSSpyTest >> testMethodAddedNoSourceCode [
 	self assertMethodSourceCodeNotRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodChanged [
 
 	DSSpy recordSourceCode: true.
@@ -452,7 +453,7 @@ DSSpyTest >> testMethodChanged [
 	self assertMethodSourceCodeRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodChangedNoSourceCode [
 
 	DSSpy methodChanged: self methodModifiedEvent.
@@ -463,7 +464,7 @@ DSSpyTest >> testMethodChangedNoSourceCode [
 	self assertMethodSourceCodeNotRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodEventsInstrumentation [
 	
 	|method|
@@ -485,7 +486,7 @@ DSSpyTest >> testMethodEventsInstrumentation [
 	self assertMethodEventRecordedAs: DSMethodRemovedRecord for: method
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodRemoved [
 
 	DSSpy recordSourceCode: true.
@@ -497,7 +498,7 @@ DSSpyTest >> testMethodRemoved [
 	self assertMethodSourceCodeRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMethodRemovedNoSourceCode [
 	DSSpy methodRemoved: self methodEvent.
 	self assert: self registry size equals: 1.	
@@ -507,7 +508,7 @@ DSSpyTest >> testMethodRemovedNoSourceCode [
 	self assertMethodSourceCodeNotRecorded
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testMonitorPackageForSourceCodeChanges [
 
 	DSSpy monitorPackageForSourceCodeChanges: self class package name.
@@ -523,7 +524,7 @@ DSSpyTest >> testMonitorPackageForSourceCodeChanges [
 	self assert: (DSSpy packagesMonitoredForSourceCodeChanges includes: self class package name).
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testObjectCentricBreakpointRecord [
 
 	|target|
@@ -556,7 +557,7 @@ DSSpyTest >> testObjectCentricBreakpointRecord [
 		target: (DSAbstractBreakpointEventRecord basicNew printTargetInstance: target).
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testObjectCentricVariableBreakpointRecord [
 
 	| target |
@@ -600,13 +601,13 @@ DSSpyTest >> testObjectCentricVariableBreakpointRecord [
 			 target)
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testPackagesMonitoredForSourceCodeChanges [
 
 	self assert: DSSpy packagesMonitoredForSourceCodeChanges isEmpty
 ]
 
-{ #category : 'tests - halts events' }
+{ #category : #'tests - halts events' }
 DSSpyTest >> testRecordHaltInAddedMethod [
 	| haltData realHaltNode |
 	instrumenter listenToMethodChanges.
@@ -628,7 +629,7 @@ DSSpyTest >> testRecordHaltInAddedMethod [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
-{ #category : 'tests - halts events' }
+{ #category : #'tests - halts events' }
 DSSpyTest >> testRecordHaltInMethodmodifiedBy [
 	| oldHaltData haltData addedHaltNode |
 		
@@ -662,7 +663,7 @@ DSSpyTest >> testRecordHaltInMethodmodifiedBy [
 	self assert: haltData second value equals: (addedHaltNode start to: addedHaltNode stop)
 ]
 
-{ #category : 'tests - halts events' }
+{ #category : #'tests - halts events' }
 DSSpyTest >> testRecordHaltInRemovedMethod [
 	| haltData methodName realHaltNode |
 		
@@ -687,7 +688,7 @@ DSSpyTest >> testRecordHaltInRemovedMethod [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testRecordMethodChangesSourceCode [
 
 	|method|
@@ -713,7 +714,7 @@ DSSpyTest >> testRecordMethodChangesSourceCode [
 	self assert: record newSource equals: method sourceCode
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testRecordMethodChangesSourceCodeActivated [
 
 	DSSpy methodChanged: self methodModifiedEvent.
@@ -722,7 +723,7 @@ DSSpyTest >> testRecordMethodChangesSourceCodeActivated [
 	self deny: record class identicalTo: DSSourceCodeChangeEventRecord
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testRecordMethodChangesSourceCodeNotScoped [
 
 	DSSpy scopeSourceCodeChangesRecording: false.
@@ -733,7 +734,7 @@ DSSpyTest >> testRecordMethodChangesSourceCodeNotScoped [
 	self assert: record class identicalTo: DSSourceCodeChangeEventRecord
 ]
 
-{ #category : 'tests - halts events' }
+{ #category : #'tests - halts events' }
 DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 	| haltData realHaltNode |
 	self compileNewMethodWithHalt.
@@ -757,7 +758,7 @@ DSSpyTest >> testRecordRemoveHaltInMethodmodified [
 	self assert: haltData first value equals: (realHaltNode start to: realHaltNode stop)
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testRecordSourceCodeChangeFromTo [
 
 	|oldMethod newMethod|
@@ -778,13 +779,13 @@ DSSpyTest >> testRecordSourceCodeChangeFromTo [
 	self assert: record newSource equals: newMethod sourceCode
 ]
 
-{ #category : 'tests - configuration' }
+{ #category : #'tests - configuration' }
 DSSpyTest >> testRecordSourceCodeDefaultValue [
 	DSSpy recordSourceCode: nil.
 	self deny: DSSpy recordSourceCode 
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testResetSpy [
 
 	DSSpy startTask: task.
@@ -795,13 +796,13 @@ DSSpyTest >> testResetSpy [
 		equals: DSSpy logger defaultLoggingFileName
 ]
 
-{ #category : 'tests - methods events' }
+{ #category : #'tests - methods events' }
 DSSpyTest >> testScopeSourceCodeChangesRecording [
 	DSSpy scopeSourceCodeChangesRecording: nil.
 	self deny: DSSpy scopeSourceCodeChangesRecording
 ]
 
-{ #category : 'tests - serialize/materialize' }
+{ #category : #'tests - serialize/materialize' }
 DSSpyTest >> testSerialize [
 
 	DSSpy logger loggingFileReference ensureDelete.
@@ -813,7 +814,7 @@ DSSpyTest >> testSerialize [
 		equals: '[' , (STON toString: record) , ']'
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testStartTask [
 	
 	DSSpy startTask: task.
@@ -824,7 +825,7 @@ DSSpyTest >> testStartTask [
 	self assert: record description equals: DSTask dsTaskDescription
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testStartTaskSerialization [
 
 	| recordedTask |
@@ -837,7 +838,7 @@ DSSpyTest >> testStartTaskSerialization [
 	self assert: recordedTask taskName equals: task title
 ]
 
-{ #category : 'tests - task management' }
+{ #category : #'tests - task management' }
 DSSpyTest >> testTaskStarted [
 
 	self deny: DSSpy taskStarted.
@@ -847,7 +848,7 @@ DSSpyTest >> testTaskStarted [
 	self deny: DSSpy taskStarted
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointAdded [
 	instrumenter listenToBreakpointChanges.
 
@@ -862,7 +863,7 @@ DSSpyTest >> testVariableBreakpointAdded [
 
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointAddedToMultipleVariables [
 
 	instrumenter listenToBreakpointChanges.
@@ -878,7 +879,7 @@ DSSpyTest >> testVariableBreakpointAddedToMultipleVariables [
 		(DSTestClassWithInstanceVariables allSlots collect: [ :s | s name ])
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointHit [
 		
 	self installVariableBreakpoint.
@@ -894,7 +895,7 @@ DSSpyTest >> testVariableBreakpointHit [
 		target: nil
 ]
 
-{ #category : 'tests - breakpoints events' }
+{ #category : #'tests - breakpoints events' }
 DSSpyTest >> testVariableBreakpointRemoved [
 	
 	self installVariableBreakpoint.
@@ -910,7 +911,7 @@ DSSpyTest >> testVariableBreakpointRemoved [
 		target: nil
 ]
 
-{ #category : 'tests - window events' }
+{ #category : #'tests - window events' }
 DSSpyTest >> testWindowOpenedListensToWindowActivatedAndClosedEvents [
 
 	DSSpy logWindowOpened: self windowEvent.
@@ -930,7 +931,7 @@ DSSpyTest >> testWindowOpenedListensToWindowActivatedAndClosedEvents [
 	self assert: record class identicalTo: DSWindowClosedRecord
 ]
 
-{ #category : 'helpers' }
+{ #category : #helpers }
 DSSpyTest >> windowEvent [
 
 	^ windowEvent ifNil: [ 

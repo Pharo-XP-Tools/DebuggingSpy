@@ -1,26 +1,25 @@
 Class {
-	#name : 'DSRecordRegistryTest',
-	#superclass : 'TestCase',
+	#name : #DSRecordRegistryTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'record'
 	],
-	#category : 'DebuggingSpy-Tests',
-	#package : 'DebuggingSpy-Tests'
+	#category : #'DebuggingSpy-Tests'
 }
 
-{ #category : 'running' }
+{ #category : #running }
 DSRecordRegistryTest >> tearDown [
 
 	DSRecordRegistry autoSerialize: nil.
 	super tearDown
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 DSRecordRegistryTest >> testAutoSerialize [
 	self deny: DSRecordRegistry autoSerialize 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 DSRecordRegistryTest >> testAutoSerializeRecord [
 	|materializedRecord|
 	DSSpy logger loggingFileReference ensureDelete.

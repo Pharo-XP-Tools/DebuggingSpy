@@ -4,8 +4,8 @@ In addition to the debugger window id, I also record the signature of the contex
 In confidentiality mode, this signature and node should be replaced by the current pc instead.
 "
 Class {
-	#name : 'DSStepActionRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSStepActionRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'context',
 		'node',
@@ -13,41 +13,39 @@ Class {
 		'receiver',
 		'receiverClass'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStepActionRecord >> context [
 
 	^ context
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStepActionRecord >> eventName [
 	^eventName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStepActionRecord >> node [
 
 	^ node
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStepActionRecord >> receiver [
 
 	^ receiver
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSStepActionRecord >> receiverClass [
 
 	^ receiverClass
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSStepActionRecord >> record: aDSDebuggerCommand [
 	super record: aDSDebuggerCommand context window window.
 	eventName := aDSDebuggerCommand class defaultName.

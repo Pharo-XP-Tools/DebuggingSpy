@@ -2,30 +2,28 @@
 I record breakpoint events information.
 "
 Class {
-	#name : 'DSBreakpointEventRecord',
-	#superclass : 'DSAbstractBreakpointEventRecord',
+	#name : #DSBreakpointEventRecord,
+	#superclass : #DSAbstractBreakpointEventRecord,
 	#instVars : [
 		'method',
 		'node'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBreakpointEventRecord >> method [
 
 	^ method
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBreakpointEventRecord >> node [
 
 	^ node
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSBreakpointEventRecord >> record: aBreakpointEvent [
 	super record: aBreakpointEvent.
 	method := aBreakpointEvent breakpoint node methodNode method name.
