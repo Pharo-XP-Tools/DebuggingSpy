@@ -85,18 +85,22 @@ DSRecordHistory >> callStackBrowing [
 { #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 
-	| time currentRecord disc |
-	disc := 0.
+	| time currentRecord deltas |
 	time := 0.
+	deltas := OrderedCollection new.
 	currentRecord := records first.
-	records do: [ :r | 
+	records do: [ :r |
 		| delta |
 		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
 		time := time
 		        + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		delta > 300 ifTrue: [ disc := disc + delta ].
+		delta > 30 ifTrue: [
+			deltas add: {
+					r.
+					currentRecord.
+					records } -> delta asSeconds ].
 		currentRecord := r ].
-	^ disc
+	^ deltas
 ]
 
 { #category : 'API-history' }
@@ -110,16 +114,20 @@ DSRecordHistory >> countDebugActions [
 
 { #category : 'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
-	|time currentRecord|
+	|time currentRecord totalDelta|
 	time := 0.
+	totalDelta := 0.
 	currentRecord := records first.
 	records do:[:r| |delta|
+				((r isKindOf: DSWindowOpenedRecord) and: [
+			                    'Finish task *' match:
+				                    r windowName asString ]) ifTrue:[^totalDelta].
 		delta := (r dateTime asSeconds - currentRecord dateTime asSeconds).
 		time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		(delta) > 60 ifTrue:[self halt]. 		
+		(delta) > 60 ifTrue:[totalDelta := totalDelta + delta]. 		
 		currentRecord := r.		
 		].
-	
+	^totalDelta
 	
 ]
 
