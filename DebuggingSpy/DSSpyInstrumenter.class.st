@@ -2,21 +2,19 @@
 I instrument the system by adding spying instructions (directly in the code, by meta-programming, or by registering to system-events)
 "
 Class {
-	#name : 'DSSpyInstrumenter',
-	#superclass : 'Object',
-	#category : 'DebuggingSpy-Instrumentation',
-	#package : 'DebuggingSpy',
-	#tag : 'Instrumentation'
+	#name : #DSSpyInstrumenter,
+	#superclass : #Object,
+	#category : #'DebuggingSpy-Instrumentation'
 }
 
-{ #category : 'system instrumentation' }
+{ #category : #'system instrumentation' }
 DSSpyInstrumenter class >> instrumentSystem [
 	<script>
 	self new instrumentSystem.
 	DSRecordRegistry autoSerialize: true
 ]
 
-{ #category : 'browsers' }
+{ #category : #browsers }
 DSSpyInstrumenter >> instrumentClyFullBrowser [
 
 	ClyFullBrowserMorph compile: 'newWindowTitle
@@ -32,7 +30,7 @@ DSSpyInstrumenter >> instrumentClyFullBrowser [
 	^newTitle'
 ]
 
-{ #category : 'browsers' }
+{ #category : #browsers }
 DSSpyInstrumenter >> instrumentClyQueryBrowser [
 
 	ClyQueryBrowserMorph compile: 'newWindowTitle
@@ -47,7 +45,7 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 	^title'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 
 	ClyTextEditor compile: 'printIt
@@ -66,7 +64,7 @@ DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 			self afterSelectionInsertAndSelect: printString ]'
 ]
 
-{ #category : 'debugger' }
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentCodePresenter [
 
 	SpCodePresenter compile: 'initialize 
@@ -93,7 +91,7 @@ DSSpyInstrumenter >> instrumentCodePresenter [
 				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
 ]
 
-{ #category : 'debugger' }
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerCommands [
 	StDebugger class compile:
 	'instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
@@ -103,7 +101,7 @@ DSSpyInstrumenter >> instrumentDebuggerCommands [
 	
 ]
 
-{ #category : 'debugger' }
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerOpening [
 
 	StDebugger compile: 'initializeWindow: aWindowPresenter
@@ -118,7 +116,7 @@ DSSpyInstrumenter >> instrumentDebuggerOpening [
 		[DSDebuggerOpeningRecord for: self ] on: Error do:[:err| DSSpy log: err key: #DEBUGGER_STACK ]	'
 ]
 
-{ #category : 'debugger' }
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
@@ -170,7 +168,7 @@ DSSpyInstrumenter >> instrumentDebuggerStack [
 			 asSpecGroup)'
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh
@@ -179,7 +177,7 @@ DSSpyInstrumenter >> instrumentExpandAttribute [
 	self refreshTable'
 ]
 
-{ #category : 'breakpoints' }
+{ #category : #breakpoints }
 DSSpyInstrumenter >> instrumentHaltHits [
 	Halt class compile: 'signalIn: ctx	
 		
@@ -209,10 +207,10 @@ DSSpyInstrumenter >> instrumentHaltHits [
 	super signal'.
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 
-	StMetaBrowserPresenter compile: 'methodsOf: aClass
+	StMetaBrowser compile: 'methodsOf: aClass
 
 	aClass ifNil: [ ^ #() ].
 	[DSInspectMethodsRecord for: {self model. self selectedClass. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
@@ -220,10 +218,10 @@ DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 '
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 
-	StMetaBrowserPresenter compile: 'updateSourceWith: method
+	StMetaBrowser compile: 'updateSourceWith: method
 	source userActionDuring: [
 		method
 			ifNotNil: [ 
@@ -233,10 +231,10 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 				source text: ''''; clearInteractionModel ] ]'
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
-	StInspectorPresenter compile: 'initializePresenters
+	StInspector compile: 'initializePresenters
 	[ 
 	self class == StPlayground ifFalse: [ 
 		DSInspectObjectRecord for: { 
@@ -252,13 +250,13 @@ DSSpyInstrumenter >> instrumentInspectorOnObject [
 		whenColumnsWillChangeDo: [ self keepLastPageSelectedTabName ]'
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentInspectorPageSelection [
 
 	StObjectInspectorPresenter compile: 'initializePresenters
 	views := self newNotebook.
 	header := self instantiate: StHeaderBar.
-	
+	self initializeLayout.
 	views whenSelectedPageChangedDo: [ :page | 
 		[ 
 		DSSelectInspectorPageRecord for: { 
@@ -266,10 +264,11 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 				self model inspectedObject.
 				[self window window] on: Error do:[0] } ]
 			on: Error
-			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]'
+			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]. .
+	self refresh'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 
 	FTSelectableMorph compile:'mouseDown: evt 
@@ -277,7 +276,7 @@ DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 	^super mouseDown: evt '
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 
 	FTSelectableMorph compile: 'mouseEnter: evt
@@ -286,7 +285,7 @@ DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseEnterWindow [
 
 	SystemWindow compile: 'handleMouseEnter: anEvent
@@ -296,7 +295,7 @@ DSSpyInstrumenter >> instrumentMouseEnterWindow [
 	^super handleMouseEnter: anEvent'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	
 	SystemWindow compile: 'handleMouseLeave: anEvent
@@ -305,10 +304,10 @@ DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	^super handleMouseLeave: anEvent'
 ]
 
-{ #category : 'inspector' }
+{ #category : #inspector }
 DSSpyInstrumenter >> instrumentNavigateAttribute [
 
-	StRawInspectionPresenter compile: 'setAttributeTable
+	StRawInspection compile: 'setAttributeTable
 
 	attributeTable
 		roots: self inspectorNodes;
@@ -321,18 +320,18 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
-{ #category : 'playground' }
+{ #category : #playground }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
-	StPlaygroundPresenter class compile: 'open 
+	StPlayground class compile: 'open 
 	<script>
 	|pg|
-	pg := self new open.
+	pg := self new openWithSpec.
 	[DSPlaygroundOpenedRecord for: pg] on: Error do:[:err| DSSpy log: err key: #PLAYGROUND_OPEN ].
 	^pg'
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> instrumentRubEditorCopySelection [
 
 RubTextEditor compile: 'copySelection
@@ -345,7 +344,7 @@ RubTextEditor compile: 'copySelection
 '
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorDebugIt [
 
 RubSmalltalkEditor compile: 'debug: aStream
@@ -363,7 +362,7 @@ RubSmalltalkEditor compile: 'debug: aStream
 		ifTrue: [ self debug: method receiver: receiver in: context ]'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorDoIt [
 
 	RubSmalltalkEditor compile: 'doIt
@@ -375,7 +374,7 @@ DSSpyInstrumenter >> instrumentRubEditorDoIt [
 	^ self evaluateSelection'
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> instrumentRubEditorPaste [
 
 	RubTextEditor compile: 'paste
@@ -388,7 +387,7 @@ DSSpyInstrumenter >> instrumentRubEditorPaste [
 	'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 
 	RubSmalltalkEditor compile: 'printIt
@@ -405,14 +404,14 @@ DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 			self afterSelectionInsertAndSelect: printString ]'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
 
 	RubScrolledTextMorph compile: 'handlesMouseOver: evt
 	^true'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 
 	RubScrolledTextMorph compile: 'mouseEnter: evt
@@ -420,7 +419,7 @@ DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 	^super mouseEnter: evt'
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> instrumentRubSmalltalkEditorCopySelection [
 
 RubSmalltalkEditor compile: 'copySelection
@@ -449,7 +448,7 @@ RubSmalltalkEditor compile: 'copySelection
 '
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> instrumentRubSmalltalkEditorPaste [
 	
 RubSmalltalkEditor compile:'paste
@@ -477,10 +476,10 @@ RubSmalltalkEditor compile:'paste
 	DSClipboardPasteRecord for: {escapedText . self textArea window hash . self class name}.'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingByDraggingSlider [
 	
-SliderMorph compile: 'dragging: aBoolean
+Slider compile: 'dragging: aBoolean
 
 	(aBoolean not and: [ dragging ]) ifTrue: [ 
 		[ DSStopScrollingEventRecord for: self window ]
@@ -493,11 +492,11 @@ SliderMorph compile: 'dragging: aBoolean
 			do: [ :e | DSSpy log: #ERROR key: #SCROLL_START ] ]'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingInScrollPanesEvents [
 	
 	
-GeneralScrollPaneMorph  compile: 'mouseWheel: event 
+GeneralScrollPane  compile: 'mouseWheel: event 
 	"Handle a mouseWheel event."
 	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
 	(self scrollTarget handlesMouseWheel: event)
@@ -509,7 +508,7 @@ GeneralScrollPaneMorph  compile: 'mouseWheel: event
 	event isRight  ifTrue: [ ^ hScrollbar scrollRight: 3 ].'
 ]
 
-{ #category : 'mouse events' }
+{ #category : #'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingInTablesEvents [
 	FTTableMorph compile:'mouseWheel: event
 
@@ -529,7 +528,7 @@ DSSpyInstrumenter >> instrumentScrollingInTablesEvents [
 	super mouseWheel: event'
 ]
 
-{ #category : 'debugger' }
+{ #category : #debugger }
 DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	StDebugger class compile:
 	'buildSindarinExtentionCommandsGroupWith: stDebuggerInstance forRoot: rootCommandGroup
@@ -560,7 +559,7 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 
 	SpCodeDebugItCommand compile: 'execute
@@ -577,7 +576,7 @@ DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 	self debug: selection readStream'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDoIt [
 
 	SpCodeDoItCommand compile: 'execute
@@ -592,7 +591,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 				DSSpy log: #ERROR key: #ACTION_DOIT ] ]'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 
 	StObjectContextPresenter compile: 'doEvaluateAndGo
@@ -614,7 +613,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 
 	StPlaygroundPagePresenter compile: 'doEvaluateAndGo
@@ -636,7 +635,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
 ]
 
-{ #category : 'interactions' }
+{ #category : #interactions }
 DSSpyInstrumenter >> instrumentSpCodePrintIt [
 
 	SpCodePrintItCommand compile: 'execute
@@ -649,7 +648,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 		self printObject: result ]'
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> instrumentSystem [
 	self instrumentDebuggerOpening.
 	self logTextEditorsClipbardActions.
@@ -664,33 +663,33 @@ DSSpyInstrumenter >> instrumentSystem [
 	self listenToMethodChanges
 ]
 
-{ #category : 'breakpoints' }
+{ #category : #breakpoints }
 DSSpyInstrumenter >> listenToBreakpointChanges [
 	SystemAnnouncer uniqueInstance weak when: BreakpointAdded  send: #recordBreakpointEvent: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: BreakpointHit  send: #recordBreakpointEvent: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: BreakpointRemoved  send: #recordBreakpointEvent: to: DSSpy
 ]
 
-{ #category : 'methods' }
+{ #category : #methods }
 DSSpyInstrumenter >> listenToMethodChanges [
 	SystemAnnouncer uniqueInstance weak when: MethodModified send: #methodChanged: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodRemoved send: #methodRemoved: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodAdded send: #methodAdded: to: DSSpy
 ]
 
-{ #category : 'windows' }
+{ #category : #windows }
 DSSpyInstrumenter >> listenToWindowEvents [
 
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logClyBrowsersOpenings [
 	self instrumentClyQueryBrowser.
 	self instrumentClyFullBrowser 
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentClyTextEditorPrintIt.
@@ -704,7 +703,7 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentSpCodeDoItAndGoForPlayground
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logDebuggerInteractions [
 
 	self instrumentCodePresenter.
@@ -713,13 +712,13 @@ DSSpyInstrumenter >> logDebuggerInteractions [
 	self instrumentSindarinDebuggerCommands
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self instrumentHaltHits.
 	self listenToBreakpointChanges 
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logInspectorInteractions [
 
 	self instrumentExpandAttribute.
@@ -730,7 +729,7 @@ DSSpyInstrumenter >> logInspectorInteractions [
 	self instrumentNavigateAttribute
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logMouseEvents [
 
 	self instrumentMouseDownFTSelectableMorph.
@@ -741,12 +740,12 @@ DSSpyInstrumenter >> logMouseEvents [
 	self instrumentRubScrollTextMorphMouseEnter
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logPlaygroundOpenings [
 	self instrumentPlaygroundCode
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> logTextEditorsClipbardActions [
 
 	self instrumentRubEditorCopySelection.
@@ -755,7 +754,7 @@ DSSpyInstrumenter >> logTextEditorsClipbardActions [
 	self instrumentRubSmalltalkEditorPaste.
 ]
 
-{ #category : 'system' }
+{ #category : #system }
 DSSpyInstrumenter >> unsubscribeFromSystemAnnouncer [
 
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy 

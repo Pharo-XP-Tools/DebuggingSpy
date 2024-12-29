@@ -1,6 +1,6 @@
-Extension { #name : 'StDebugger' }
+Extension { #name : #StDebugger }
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup [
 
 	| toolbarGroup |
@@ -10,7 +10,7 @@ StDebugger class >> buildInstrumentedCommandsWith: stDebuggerInstance forRoot: r
 		self replaceSubclass: ec inCommanderGroup: toolbarGroup ]
 ]
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> executionCommandGroupIn: rootCommandGroup [
 
 	^ rootCommandGroup / StDebuggerToolbarCommandTreeBuilder groupName
@@ -19,14 +19,14 @@ StDebugger class >> executionCommandGroupIn: rootCommandGroup [
 		  executionControlGroupName
 ]
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup [
 
 	<extensionCommands>
 	self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
 ]
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> replaceSubclass: ec inCommanderGroup: toolbarGroup [
 
 	| subcls |
@@ -38,13 +38,13 @@ StDebugger class >> replaceSubclass: ec inCommanderGroup: toolbarGroup [
 		in: toolbarGroup entries
 ]
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> specCommandNamed: aString inGroup: aGroup [
 
 	^ aGroup detect: [ :c | c decoratedCommand name = aString ]
 ]
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 StDebugger class >> transformDebuggerCommandNamed: aDebuggerCommandUniqueName as: aDSDebuggerCommand in: aDebuggerCommandGroup [
 
 	| originalCommand |

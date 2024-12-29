@@ -1,12 +1,10 @@
 Class {
-	#name : 'DSClipboardCopyRecord',
-	#superclass : 'DSClipboardActionRecord',
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#name : #DSClipboardCopyRecord,
+	#superclass : #DSClipboardActionRecord,
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSClipboardCopyRecord >> eventName [
 
 	^ 'Clipboard Copy'

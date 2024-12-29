@@ -1,6 +1,6 @@
-Extension { #name : 'SpAbstractMorphicAdapter' }
+Extension { #name : #SpAbstractMorphicAdapter }
 
-{ #category : '*DebuggingSpy-Tests' }
+{ #category : #'*DebuggingSpy-Tests' }
 SpAbstractMorphicAdapter >> sendMouseEnterEvent [
 
 	| evt |

@@ -1,6 +1,6 @@
-Extension { #name : 'BreakpointAnnouncement' }
+Extension { #name : #BreakpointAnnouncement }
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 BreakpointAnnouncement >> recordBreakpoint [
 	^self breakpoint breakpointRecordFor: self
 ]

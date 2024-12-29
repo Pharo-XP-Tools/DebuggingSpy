@@ -5,18 +5,16 @@ I record a change in source code:
 - I know the new source code
 "
 Class {
-	#name : 'DSSourceCodeChangeEventRecord',
-	#superclass : 'DSMethodEventRecord',
+	#name : #DSSourceCodeChangeEventRecord,
+	#superclass : #DSMethodEventRecord,
 	#instVars : [
 		'oldSource',
 		'newSource'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSSourceCodeChangeEventRecord class >> added: aMethod [
 
 	^ (self for: aMethod)
@@ -24,7 +22,7 @@ DSSourceCodeChangeEventRecord class >> added: aMethod [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSSourceCodeChangeEventRecord class >> modified: aMethod [
 
 	^ (self for: aMethod)
@@ -32,7 +30,7 @@ DSSourceCodeChangeEventRecord class >> modified: aMethod [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSSourceCodeChangeEventRecord class >> removed: aMethod [
 
 	^ (self for: aMethod)
@@ -40,24 +38,24 @@ DSSourceCodeChangeEventRecord class >> removed: aMethod [
 		  yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSSourceCodeChangeEventRecord >> eventName [
 	^'Source code modification'
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSSourceCodeChangeEventRecord >> newSource [
 
 	^ newSource
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSSourceCodeChangeEventRecord >> oldSource [
 
 	^ oldSource
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSSourceCodeChangeEventRecord >> record: anArray [
 	super record: anArray first.
 	oldSource := anArray second.

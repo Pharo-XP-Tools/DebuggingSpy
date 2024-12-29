@@ -1,6 +1,6 @@
-Extension { #name : 'ZnBufferedWriteStream' }
+Extension { #name : #ZnBufferedWriteStream }
 
-{ #category : '*DebuggingSpy' }
+{ #category : #'*DebuggingSpy' }
 ZnBufferedWriteStream >> streamSize [
 	^stream size
 ]

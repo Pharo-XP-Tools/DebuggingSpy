@@ -5,28 +5,26 @@ My subclasses specialize me to provide specific task management.
 Tasks should be objects answering `#name` and `#description`, both returning a string.
 "
 Class {
-	#name : 'DSAbstractTaskRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSAbstractTaskRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'task'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSAbstractTaskRecord >> description [
 
 	^ task description
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSAbstractTaskRecord >> record: aTask [
 	task := aTask
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSAbstractTaskRecord >> taskName [
 
 	^ task title

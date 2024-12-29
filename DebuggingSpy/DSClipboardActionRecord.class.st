@@ -4,42 +4,40 @@ The records might include the clipboard text if the the shared variable #registe
 The record also includes the windowId and the editor class name.
 "
 Class {
-	#name : 'DSClipboardActionRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSClipboardActionRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'clipboardText',
 		'editorClassName'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSClipboardActionRecord >> clipboardText [
 
 	^ clipboardText
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSClipboardActionRecord >> clipboardText: anObject [
 
 	clipboardText := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSClipboardActionRecord >> editorClassName [
 
 	^ editorClassName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSClipboardActionRecord >> editorClassName: anObject [
 
 	editorClassName := anObject
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSClipboardActionRecord >> record: recordInfo [
 	clipboardText  := DSSpy recordClipboardContent ifTrue: [ recordInfo first] ifFalse: ['RecordClipboarContent disabled'].
 	windowId := recordInfo second.

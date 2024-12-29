@@ -2,61 +2,60 @@
 I'm a class with instance variables to test variable breakpoints events.
 "
 Class {
-	#name : 'DSTestClassWithInstanceVariables',
-	#superclass : 'Object',
+	#name : #DSTestClassWithInstanceVariables,
+	#superclass : #Object,
 	#instVars : [
 		'a',
 		'b',
 		'c',
 		'd'
 	],
-	#category : 'DebuggingSpy-Tests',
-	#package : 'DebuggingSpy-Tests'
+	#category : #'DebuggingSpy-Tests'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> a [
 
 	^ a
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> a: anObject [
 
 	a := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> b [
 
 	^ b
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> b: anObject [
 
 	b := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> c [
 
 	^ c
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> c: anObject [
 
 	c := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> d [
 
 	^ d
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSTestClassWithInstanceVariables >> d: anObject [
 
 	d := anObject

@@ -4,35 +4,33 @@ I record printed representation of browsed contexts in the debugger:
 - the selector
 "
 Class {
-	#name : 'DSBrowseContextRecord',
-	#superclass : 'DSDebuggerRecord',
+	#name : #DSBrowseContextRecord,
+	#superclass : #DSDebuggerRecord,
 	#instVars : [
 		'receiver',
 		'selector'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBrowseContextRecord >> eventName [
 	^'Browse context'
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBrowseContextRecord >> receiver [
 
 	^ receiver
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBrowseContextRecord >> receiver: anObject [
 
 	receiver := anObject
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSBrowseContextRecord >> record: aContextAndWindow [ 
 	|ctx|
 	super record: aContextAndWindow.
@@ -41,13 +39,13 @@ DSBrowseContextRecord >> record: aContextAndWindow [
 	selector := ctx selector
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBrowseContextRecord >> selector [
 
 	^ selector
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSBrowseContextRecord >> selector: anObject [
 
 	selector := anObject

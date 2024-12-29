@@ -3,18 +3,16 @@ I register when a method event is generated, that is added, modified or removed.
 I just store the signature of the method.
 "
 Class {
-	#name : 'DSMethodEventRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#name : #DSMethodEventRecord,
+	#superclass : #DSAbstractEventRecord,
 	#instVars : [
 		'methodName',
 		'methodSource'
 	],
-	#category : 'DebuggingSpy-Records',
-	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#category : #'DebuggingSpy-Records'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSMethodEventRecord class >> added: aMethod [
 
 	^ (self for: aMethod)
@@ -22,7 +20,7 @@ DSMethodEventRecord class >> added: aMethod [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSMethodEventRecord class >> modified: aMethod [
 
 	^ (self for: aMethod)
@@ -30,7 +28,7 @@ DSMethodEventRecord class >> modified: aMethod [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 DSMethodEventRecord class >> removed: aMethod [
 
 	^ (self for: aMethod)
@@ -38,31 +36,31 @@ DSMethodEventRecord class >> removed: aMethod [
 		  yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSMethodEventRecord >> methodName [
 
 	^ methodName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSMethodEventRecord >> methodName: anObject [
 
 	methodName := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSMethodEventRecord >> methodSource [
 
 	^ methodSource
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 DSMethodEventRecord >> methodSource: anObject [
 
 	methodSource := anObject
 ]
 
-{ #category : 'actions api' }
+{ #category : #'actions api' }
 DSMethodEventRecord >> record: aCompiledMethod [
 
 	methodName := aCompiledMethod name.
