@@ -3,20 +3,23 @@ I record a PhexSurvey with its answer.
 Only closed surveys (that is, with an answer to all its questions) should be recored.
 "
 Class {
-	#name : #DSSurveyRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSSurveyRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'survey'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurveyRecord >> answer [
 	^survey answer
 ]
 
-{ #category : #'as yet unclassified' }
+
+{ #category : 'accessing' }
 DSSurveyRecord >> collectAnswers [
 	^survey collectAnswers
 ]
@@ -32,12 +35,12 @@ DSSurveyRecord >> description [
 	^ survey title
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurveyRecord >> eventName [
 	^'Survey closed'
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSSurveyRecord >> printOn: aStream [
 	super printOn: aStream.
 	survey ifNil:[^self].
@@ -47,12 +50,12 @@ DSSurveyRecord >> printOn: aStream [
 	aStream << survey title
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurveyRecord >> record: aSurvey [
 	survey := aSurvey
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurveyRecord >> survey [
 	^survey
 ]

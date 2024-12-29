@@ -2,16 +2,18 @@
 I am a simple key to sort logs by windows.
 "
 Class {
-	#name : #DSRecordHistoryWindowKey,
-	#superclass : #Object,
+	#name : 'DSRecordHistoryWindowKey',
+	#superclass : 'Object',
 	#instVars : [
 		'windowName',
 		'windowId'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSRecordHistoryWindowKey >> printOn: aStream [
 
 	aStream << (windowName ifNil: [ 'Unnamed window' ]).
@@ -21,25 +23,25 @@ DSRecordHistoryWindowKey >> printOn: aStream [
 	aStream << ']'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistoryWindowKey >> windowId [
 
 	^ windowId
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistoryWindowKey >> windowId: anObject [
 
 	windowId := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistoryWindowKey >> windowName [
 
 	^ windowName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistoryWindowKey >> windowName: anObject [
 
 	windowName := anObject

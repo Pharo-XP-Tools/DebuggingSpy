@@ -2,58 +2,60 @@
 I record the inspection of an inspected object's attribute
 "
 Class {
-	#name : #DSInspectAttributeRecord,
-	#superclass : #DSInspectorRecord,
+	#name : 'DSInspectAttributeRecord',
+	#superclass : 'DSInspectorRecord',
 	#instVars : [
 		'attributeName',
 		'attributeValue',
 		'attributeHash'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeHash [
 
 	^ attributeHash
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeHash: anObject [
 
 	attributeHash := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeName [
 
 	^ attributeName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeName: anObject [
 
 	attributeName := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeValue [
 
 	^ attributeValue
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> attributeValue: anObject [
 
 	attributeValue := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectAttributeRecord >> eventName [
 	^'Inspect object'
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSInspectAttributeRecord >> record: inspectorNodeWithInspectedObjectWithWindow [
 
 	| inspectorNode window |

@@ -1,13 +1,14 @@
 Class {
-	#name : #DSRecordTest,
-	#superclass : #TestCase,
+	#name : 'DSRecordTest',
+	#superclass : 'TestCase',
 	#instVars : [
 		'record'
 	],
-	#category : #'DebuggingSpy-Tests'
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
 }
 
-{ #category : #tests }
+{ #category : 'tests' }
 DSRecordTest >> testRecordPrinting [
 
 	| str |

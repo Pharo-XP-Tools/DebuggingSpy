@@ -2,12 +2,14 @@
 I record when a method is added.
 "
 Class {
-	#name : #DSMethodAddedRecord,
-	#superclass : #DSMethodEventRecord,
-	#category : #'DebuggingSpy-Records'
+	#name : 'DSMethodAddedRecord',
+	#superclass : 'DSMethodEventRecord',
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodAddedRecord >> eventName [
 	^'Method added'
 ]

@@ -3,12 +3,14 @@ I record events that happens in a StPlayground.
 I do not really serve any purpose as an abstract class, but I'm just there to provide quick access to my subclasses' instances.
 "
 Class {
-	#name : #DSPlaygroundRecord,
-	#superclass : #DSAbstractEventRecord,
-	#category : #'DebuggingSpy-Records'
+	#name : 'DSPlaygroundRecord',
+	#superclass : 'DSAbstractEventRecord',
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSPlaygroundRecord >> record: aPresenter [
 	super record: aPresenter window window
 ]

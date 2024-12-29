@@ -2,50 +2,51 @@
 I simulate a survey that can be managed through DSSpy.
 "
 Class {
-	#name : #DSSurvey,
-	#superclass : #Object,
+	#name : 'DSSurvey',
+	#superclass : 'Object',
 	#instVars : [
 		'answer',
 		'uuid'
 	],
-	#category : #'DebuggingSpy-Tests'
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey class >> dsSurveyDescription [
 
 	^ 'DS test survey'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey >> answer [ 	
 	^answer
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey >> answer: anObject [
 
 	answer := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey >> description [ 	
 	^self class dsSurveyDescription
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSSurvey >> initialize [
 
 	super initialize.
 	answer := self class dsSurveyDescription
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey >> title [
 	^self description 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurvey >> uuid [
 
 	^ uuid ifNil: [ uuid := UUID new ]

@@ -2,8 +2,8 @@
 I collect spy informations
 "
 Class {
-	#name : #DSSpy,
-	#superclass : #Object,
+	#name : 'DSSpy',
+	#superclass : 'Object',
 	#classVars : [
 		'HandlingError',
 		'monitor'
@@ -17,10 +17,12 @@ Class {
 		'recordClipboardContent',
 		'scopeSourceCodeChangesRecording'
 	],
-	#category : #'DebuggingSpy-Instrumentation'
+	#category : 'DebuggingSpy-Instrumentation',
+	#package : 'DebuggingSpy',
+	#tag : 'Instrumentation'
 }
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSpy class >> closeSurvey: aSurvey [
 
 	| currentTaskStarted |
@@ -34,17 +36,17 @@ DSSpy class >> closeSurvey: aSurvey [
 	logger setupLoggerAfterSurvey: aSurvey
 ]
 
-{ #category : #'mutual exclusion' }
+{ #category : 'mutual exclusion' }
 DSSpy class >> critical: aBlock [
 	self monitor critical: aBlock
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSpy class >> defaultLoggerClass [
 	^DSSTONFileLogger
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSpy class >> endTask: aTask [
 
 	DSEndingTaskRecord for: aTask.
@@ -52,19 +54,19 @@ DSSpy class >> endTask: aTask [
 	taskStarted := false
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSpy class >> forceRunningTask: aTask [
 	logger setupLoggerForTask: aTask.
 	taskStarted := true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> handlingError: anObject [
 
 	^ HandlingError := anObject
 ]
 
-{ #category : #'events - breakpoints' }
+{ #category : 'events - breakpoints' }
 DSSpy class >> indexesOfHaltNodesIn: aMethod [
 
 	| haltNodes |
@@ -72,7 +74,7 @@ DSSpy class >> indexesOfHaltNodesIn: aMethod [
 	^ haltNodes collect: [ :hn | hn selector -> (hn start to: hn stop) ]
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSpy class >> log: aDSRecord [
 
 	(self logOnlyWhenTaskStarted and: [ self taskStarted not ]) ifTrue: [ 
@@ -80,7 +82,7 @@ DSSpy class >> log: aDSRecord [
 	self critical: [ logger log: aDSRecord ]
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSpy class >> log: elements key: key [
 
 "	HandlingError ifNil: [ HandlingError := false ].
@@ -91,19 +93,19 @@ DSSpy class >> log: elements key: key [
 	DSLoggingErrorRecord for: key
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> logOnlyWhenTaskStarted [
 
 	^ logOnlyWhenTaskStarted ifNil:[logOnlyWhenTaskStarted := false]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> logOnlyWhenTaskStarted: anObject [
 
 	logOnlyWhenTaskStarted := anObject
 ]
 
-{ #category : #'events - windows' }
+{ #category : 'events - windows' }
 DSSpy class >> logWindowActivated: anEvent [
 
 	[ DSWindowActivatedRecord for: anEvent ]
@@ -111,14 +113,14 @@ DSSpy class >> logWindowActivated: anEvent [
 		do: [ self log: #ERROR key: #WINDOW_ACTIVATED ]
 ]
 
-{ #category : #'events - windows' }
+{ #category : 'events - windows' }
 DSSpy class >> logWindowClosed: anEvent [
 	[ DSWindowClosedRecord for: anEvent ]
 		on: Error
 		do: [ self log: #ERROR key: #WINDOW_CLOSED ]
 ]
 
-{ #category : #'events - windows' }
+{ #category : 'events - windows' }
 DSSpy class >> logWindowOpened: anEvent [
 	| window |
 	window := anEvent window.
@@ -132,25 +134,25 @@ DSSpy class >> logWindowOpened: anEvent [
 	window announcer when: WindowClosed send: #logWindowClosed: to: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> logger [
 
 	^ logger ifNil:[logger := self defaultLoggerClass new]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> logger: anObject [
 
 	logger := anObject
 ]
 
-{ #category : #'serialize/materialize' }
+{ #category : 'serialize/materialize' }
 DSSpy class >> materialize: aFilename [
 
 	^STON fromString: aFilename asFileReference contents
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> methodAdded: evt [
 
 	[ 
@@ -162,7 +164,7 @@ DSSpy class >> methodAdded: evt [
 		do: [ :e | self log: #ERROR key: #METHOD_ADDED ]
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> methodChanged: evt [
 
 	[ 
@@ -183,7 +185,7 @@ DSSpy class >> methodChanged: evt [
 		do: [ self log: #ERROR key: #METHOD_MODIFIED ]
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> methodRemoved: evt [
 
 	[ 
@@ -195,47 +197,47 @@ DSSpy class >> methodRemoved: evt [
 		do: [ self log: #ERROR key: #METHOD_REMOVED ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> monitor [
 	^monitor ifNil:[monitor := Monitor new]
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> monitorPackageForSourceCodeChanges: aString [ 
 	self packagesMonitoredForSourceCodeChanges add: aString
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> packagesMonitoredForSourceCodeChanges [
 
 	^ packagesMonitoredForSourceCodeChanges ifNil: [ 
 		  packagesMonitoredForSourceCodeChanges := Set new ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> packagesMonitoredForSourceCodeChanges: anObject [
 
 	packagesMonitoredForSourceCodeChanges := anObject
 ]
 
-{ #category : #'events - breakpoints' }
+{ #category : 'events - breakpoints' }
 DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
 	^aBreakpointEvent recordBreakpoint 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> recordClipboardContent [
 
 	^ recordClipboardContent  ifNil: [ recordClipboardContent := false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> recordClipboardContent: anObject [
 
 	recordClipboardContent := anObject
 ]
 
-{ #category : #'events - breakpoints' }
+{ #category : 'events - breakpoints' }
 DSSpy class >> recordHaltInAddedMethod: method [
 	|nodesSelectorsWithIndexes record|
 	nodesSelectorsWithIndexes := self indexesOfHaltNodesIn: method.
@@ -244,7 +246,7 @@ DSSpy class >> recordHaltInAddedMethod: method [
 	record method: method name
 ]
 
-{ #category : #'events - breakpoints' }
+{ #category : 'events - breakpoints' }
 DSSpy class >> recordHaltInMethod: oldMethod modifiedBy: newMethod [
 
 	| oldHalts newHalts record |
@@ -260,7 +262,7 @@ DSSpy class >> recordHaltInMethod: oldMethod modifiedBy: newMethod [
 	record method: newMethod name
 ]
 
-{ #category : #'events - breakpoints' }
+{ #category : 'events - breakpoints' }
 DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	|nodesSelectorsWithIndexes record|
 	nodesSelectorsWithIndexes := self indexesOfHaltNodesIn: oldMethod.
@@ -269,19 +271,19 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 	record method: oldMethod name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> recordSourceCode [
 
 	^ recordSourceCode ifNil: [ recordSourceCode := false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> recordSourceCode: aBoolean [
 
 	recordSourceCode := aBoolean
 ]
 
-{ #category : #'events - methods' }
+{ #category : 'events - methods' }
 DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 
 	self scopeSourceCodeChangesRecording ifTrue: [ 
@@ -295,13 +297,13 @@ DSSpy class >> recordSourceCodeChangeFrom: oldMethod to: newMethod [
 			newMethod sourceCode }
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> recordSourceCodeDisabledErrorMessage [
 
 	^ 'Source code recording disabled'
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSSpy class >> resetSpy [
 
 	logger ifNotNil:[:l| l reset].
@@ -309,25 +311,25 @@ DSSpy class >> resetSpy [
 	logOnlyWhenTaskStarted := false
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> scopeSourceCodeChangesRecording [
 
 	^ scopeSourceCodeChangesRecording ifNil: [ scopeSourceCodeChangesRecording := false ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> scopeSourceCodeChangesRecording: anObject [
 
 	scopeSourceCodeChangesRecording := anObject
 ]
 
-{ #category : #'serialize/materialize' }
+{ #category : 'serialize/materialize' }
 DSSpy class >> serialize: aDSEventRecord [
 
 	self log: aDSEventRecord
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSpy class >> startTask: aTask [
 
 	logger setupLoggerForTask: aTask.
@@ -335,7 +337,7 @@ DSSpy class >> startTask: aTask [
 	DSStartTaskRecord for: aTask
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSpy class >> taskStarted [
 
 	^ taskStarted ifNil: [ taskStarted := false ]

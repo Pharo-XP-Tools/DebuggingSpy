@@ -2,32 +2,34 @@
 I record the selection of an inspector page when inspecting an object
 "
 Class {
-	#name : #DSSelectInspectorPageRecord,
-	#superclass : #DSInspectorRecord,
+	#name : 'DSSelectInspectorPageRecord',
+	#superclass : 'DSInspectorRecord',
 	#instVars : [
 		'pageTitle'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSelectInspectorPageRecord >> eventName [
 	^'Selecting inspector page'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSelectInspectorPageRecord >> pageTitle [
 
 	^ pageTitle
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSelectInspectorPageRecord >> pageTitle: anObject [
 
 	pageTitle := anObject
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSSelectInspectorPageRecord >> record: pageTitleWithInspectedObjectWithWindow [
 
 	super record: { 
