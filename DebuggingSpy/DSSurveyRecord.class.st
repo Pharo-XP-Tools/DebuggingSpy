@@ -18,18 +18,17 @@ DSSurveyRecord >> answer [
 	^survey answer
 ]
 
-
 { #category : 'accessing' }
 DSSurveyRecord >> collectAnswers [
 	^survey collectAnswers
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSSurveyRecord >> collectAnswersFromQuestions [
 	^survey collectAnswersFromQuestions 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSurveyRecord >> description [
 
 	^ survey title
