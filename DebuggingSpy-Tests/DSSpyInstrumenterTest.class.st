@@ -1206,6 +1206,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 	instrumenter instrumentSpCodeDoItAndGoForPlayground.
 
 	presenter := StPlaygroundPagePresenter basicNew.
+	presenter forceDisableLoading.
 	presenter application: StPharoApplication new.
 	presenter initializePresenters.
 	presenter setModelBeforeInitialization: DSFakeTextEditor new.
