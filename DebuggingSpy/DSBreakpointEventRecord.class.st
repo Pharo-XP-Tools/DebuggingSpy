@@ -27,7 +27,9 @@ DSBreakpointEventRecord >> node [
 
 { #category : 'actions api' }
 DSBreakpointEventRecord >> record: aBreakpointEvent [
+
 	super record: aBreakpointEvent.
-	method := aBreakpointEvent breakpoint node methodNode method name.
+	method := aBreakpointEvent breakpoint node methodNode compiledMethod
+		          name.
 	node := aBreakpointEvent breakpoint node printString
 ]

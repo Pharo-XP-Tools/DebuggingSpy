@@ -6,7 +6,7 @@ StDebugger class >> buildInstrumentedCommandsWith: stDebuggerInstance forRoot: r
 	| toolbarGroup |
 	toolbarGroup := self executionCommandGroupIn: rootCommandGroup.
 	StDebuggerToolbarCommandTreeBuilder basicNew
-		executionControlCommandClasses do: [ :ec | 
+		executionControlCommandClasses do: [ :ec |
 		self replaceSubclass: ec inCommanderGroup: toolbarGroup ]
 ]
 

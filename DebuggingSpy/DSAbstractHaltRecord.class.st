@@ -21,7 +21,8 @@ DSAbstractHaltRecord >> method [
 
 { #category : 'actions api' }
 DSAbstractHaltRecord >> record: anRBProgramNode [
-	method := anRBProgramNode methodNode method name.
+
+	method := anRBProgramNode methodNode compiledMethod name.
 	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop
 ]
 
