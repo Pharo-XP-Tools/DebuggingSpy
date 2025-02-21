@@ -42,13 +42,6 @@ DSRecordRegistry class >> log: aDSRecord [
 	DSSpy serialize: aDSRecord
 ]
 
-{ #category : 'private' }
-DSRecordRegistry class >> serialize: aDSRecord [
-
-	self autoSerialize ifFalse: [ ^ self ].
-	DSSpy serialize: aDSRecord
-]
-
 { #category : 'initialization' }
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
