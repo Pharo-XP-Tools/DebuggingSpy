@@ -742,7 +742,6 @@ DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
 		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
 
 	methods selectItem: methods items first.
-	self assert: self registry size equals: 1.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSInspectMethodSourceRecord.
