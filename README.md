@@ -9,6 +9,28 @@ Metacello new
     repository: 'github://StevenCostiou/DebuggingSpy';
     load.
 ```
+
+To cite the use of this tool, please use: https://hal.science/hal-04858378v1
+
+```bib
+@softwareversion{costiou:hal-04858378v1,
+  TITLE = {{Debugging Spy}},
+  AUTHOR = {Costiou, Steven and Van{\`e}gue, Adrien},
+  URL = {https://inria.hal.science/hal-04858378},
+  NOTE = {},
+  INSTITUTION = {{Centre Inria de l'Universit{\'e} de Lille}},
+  YEAR = {2024},
+  MONTH = Dec,
+  SWHID = {swh:1:dir:0f63d67301c0ad3174d17c89a13b52e595837877;origin=https://github.com/Pharo-XP-Tools/DebuggingSpy;visit=swh:1:snp:ae7703ee9ee6f77eb10697b7d9fdf90678a768a0;anchor=swh:1:rev:fbec9a14cbdaa478f498196c0f993062441ef3ae},
+  VERSION = {1.0},
+  REPOSITORY = {https://github.com/Pharo-XP-Tools/DebuggingSpy},
+  LICENSE = {MIT License},
+  KEYWORDS = {Debug ; Software instrumentation},
+  HAL_ID = {hal-04858378},
+  HAL_VERSION = {v1},
+}
+```
+
 # Recorded events
 
 | **Type of traces**         | **User activity/block event or action** | **Debugging action** | **Navigation/inspection action** | **Debugging event** | **Code edition action** |
