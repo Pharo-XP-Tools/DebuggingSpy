@@ -1,6 +1,3 @@
-"
-I log DSRecords as STON into files.
-"
 Class {
 	#name : 'DSSTONFileLogger',
 	#superclass : 'Object',
@@ -57,7 +54,12 @@ DSSTONFileLogger >> log: aDSEventRecord [
 
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingDirectory [
-	^loggingDirectory ifNil:[loggingDirectory := self defaultLoggingDirectoryName asFileReference] 
+
+	^ loggingDirectory
+		  ifNil: [
+			  loggingDirectory := self defaultLoggingDirectoryName
+				                      asFileReference ]
+		  ifNotNil: [ loggingDirectory ]
 ]
 
 { #category : 'logging' }
@@ -69,13 +71,19 @@ DSSTONFileLogger >> loggingDirectory: aStringOrFileReference [
 
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingFileName [
-	^loggingFilename ifNil:[loggingFilename := self defaultLoggingFileName] 
+
+	^ loggingFilename
+		  ifNil: [ loggingFilename := self defaultLoggingFileName ]
+		  ifNotNil: [ loggingFilename ]
 ]
 
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingFileReference [
 
-	^loggingFileReference ifNil:[loggingFileReference := self ensureCreateLoggingFileReference] 
+	^ loggingFileReference
+		  ifNil: [
+		  loggingFileReference := self ensureCreateLoggingFileReference ]
+		  ifNotNil: [ loggingFileReference ]
 ]
 
 { #category : 'initialization' }
@@ -99,16 +107,16 @@ DSSTONFileLogger >> restoreCurrentConfiguration [
 DSSTONFileLogger >> saveCurrentConfiguration [
 
 	self savedConfiguration
-		at: #currentLoggingFilename
-		put: loggingFilename.
-	self savedConfiguration
-		at: #currentLoggingFileReference
-		put: loggingFileReference
+		at: #currentLoggingFilename put: loggingFilename;
+		at: #currentLoggingFileReference put: loggingFileReference
 ]
 
 { #category : 'accessing' }
 DSSTONFileLogger >> savedConfiguration [
-	 ^savedConfiguration ifNil:[savedConfiguration := Dictionary new]
+
+	^ savedConfiguration
+		  ifNil: [ savedConfiguration := Dictionary new ]
+		  ifNotNil: [ savedConfiguration ]
 ]
 
 { #category : 'setup' }

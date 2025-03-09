@@ -19,6 +19,12 @@ DSBreakpointEventRecord >> method [
 	^ method
 ]
 
+{ #category : 'converting' }
+DSBreakpointEventRecord >> modelClass [
+
+	^ DSMethodBreakpointRecord
+]
+
 { #category : 'accessing' }
 DSBreakpointEventRecord >> node [
 

@@ -9,16 +9,44 @@ Class {
 		'target',
 		'objectCentric',
 		'eventName',
-		'once'
+		'once',
+		'breakpointHash'
 	],
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
 
+
+
+{ #category : 'converting' }
+DSAbstractBreakpointEventRecord >> asBreakpointRecord [
+
+	^ self modelClass
+		  perform: eventName asLowercase asSymbol asMutator
+		  with: self
+]
+
+{ #category : 'accessing' }
+DSAbstractBreakpointEventRecord >> breakpointHash [
+	^breakpointHash
+]
+
+{ #category : 'testing' }
+DSAbstractBreakpointEventRecord >> canOpenDebuggers [
+	^eventName = 'BreakpointHit'
+]
+
 { #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
+]
+
+
+{ #category : 'converting' }
+DSAbstractBreakpointEventRecord >> modelClass [
+
+	^ self subclassResponsibility
 ]
 
 { #category : 'accessing' }
@@ -55,7 +83,8 @@ DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 			          self printTargetInstance:
 				          aBreakpointEvent breakpoint targetInstance ]
 		          ifFalse: [ nil ].
-	once := aBreakpointEvent breakpoint once
+	once := aBreakpointEvent breakpoint once.
+	breakpointHash := aBreakpointEvent breakpoint hash
 ]
 
 { #category : 'accessing' }

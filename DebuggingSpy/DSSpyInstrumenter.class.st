@@ -43,7 +43,7 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 		ifFalse: [title := ''Loading: '', title ].
 	self systemScope isCurrentImage ifFalse: [ 
 		title := title , '' in '', self systemScope description ].
-	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
+	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #QUERY].
 	^title'
 ]
 
@@ -151,7 +151,19 @@ stackTable := self newList.
 	stackHeader label: ''Stack'''
 ]
 
+
+{ #category : 'breakpoints' }
+DSSpyInstrumenter >> instrumentExceptionSignalling [
+	Exception compile: 'raiseUnhandledError
+
+	self class = Halt ifFalse:[[	DSUnhandledExceptionRecord for:  self] 
+		on: Error 
+		do:[:err| DSSpy log: #ERROR key: self class name asSymbol ]].
+	^ UnhandledError signalForException: self'.
+]
+
 { #category : 'inspector' }
+
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh

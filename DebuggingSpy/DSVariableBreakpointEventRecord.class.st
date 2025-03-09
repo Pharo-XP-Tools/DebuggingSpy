@@ -20,6 +20,12 @@ DSVariableBreakpointEventRecord >> accessStrategy [
 	^ accessStrategy
 ]
 
+{ #category : 'converting' }
+DSVariableBreakpointEventRecord >> modelClass [
+
+	^ DSVariableBreakpointRecord
+]
+
 { #category : 'actions api' }
 DSVariableBreakpointEventRecord >> record: aBreakpointEvent [
 	super record: aBreakpointEvent.

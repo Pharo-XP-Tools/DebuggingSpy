@@ -55,6 +55,13 @@ DSAbstractEventRecord >> >= aDSAbstractRecord [
 	^self dateTime >= aDSAbstractRecord dateTime
 ]
 
+
+{ #category : 'testing' }
+DSAbstractEventRecord >> canOpenDebuggers [
+
+	^ true
+]
+
 { #category : 'accessing' }
 DSAbstractEventRecord >> dateTime [
 
@@ -83,6 +90,11 @@ DSAbstractEventRecord >> printOn: aStream [
 	aStream << self eventName
 ]
 
+{ #category : 'accessing' }
+DSAbstractEventRecord >> realRecord [
+	^self
+]
+
 { #category : 'actions api' }
 DSAbstractEventRecord >> record: aWindow [
 	windowId := aWindow identityHash 
@@ -109,4 +121,9 @@ DSAbstractEventRecord >> windowId [
 DSAbstractEventRecord >> windowId: anObject [
 
 	windowId := anObject
+]
+
+{ #category : #accessing }
+DSAbstractEventRecord >> windowType [
+	^'Unknown Window'
 ]

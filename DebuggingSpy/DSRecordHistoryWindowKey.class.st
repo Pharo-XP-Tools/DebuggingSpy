@@ -8,7 +8,7 @@ Class {
 		'windowName',
 		'windowId'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }

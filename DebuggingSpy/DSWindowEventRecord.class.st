@@ -1,9 +1,3 @@
-"
-I represent an abstract window event record, typically an opening, closing, resizing, or activation of a window.
-I hold a unique window ID that corresponds to the original window object's identity hash. This ID should be used to group together all events related to that particular window.
-
-I should be used from my class-side interface, called on my subclasses to match particular window events.
-"
 Class {
 	#name : 'DSWindowEventRecord',
 	#superclass : 'DSAbstractEventRecord',
@@ -51,4 +45,21 @@ DSWindowEventRecord >> windowName [
 DSWindowEventRecord >> windowName: anObject [
 
 	windowName := anObject
+]
+
+{ #category : #'as yet unclassified' }
+DSWindowEventRecord >> windowType [
+
+	| rs type |
+	((windowName splitOn: Character space) includes: 'senders') ifTrue:[^'Senders'].
+	((windowName splitOn: Character space) includes: 'Senders') ifTrue:[^'Senders'].
+	((windowName splitOn: Character space) includes: 'implementors') ifTrue:[^'Implementors'].
+	((windowName splitOn: Character space) includes: 'Implementors') ifTrue:[^'Implementors'].
+
+	rs := windowName readStream.
+	type := rs upTo: Character space.
+	type size = 1 ifTrue: [ type := rs upTo: $( ].
+	(#('Spotter' 'implementors' 'Inspector'  'Debugger' 'Implementors' 'Breakpoint' 'Transcript' 'Browser' 'ClyQueryBrowserMorph' 'ClyFullBrowserMorph' 'CORMAS - ECECModel') includes: type) ifTrue:[^type].
+	type isNumber ifTrue:[^'X'].
+	^ 'Application'
 ]

@@ -1,9 +1,3 @@
-"
-I represent the result of an automatic evaluation of a task success.
-true = success.
-false = failure.
-This boolean is stored into the success inst var.
-"
 Class {
 	#name : 'DSTaskSuccessRecord',
 	#superclass : 'DSAbstractTaskRecord',
@@ -28,5 +22,6 @@ DSTaskSuccessRecord >> record: anArray [
 
 { #category : 'accessing' }
 DSTaskSuccessRecord >> success [
-	 ^success ifNil:[success := false]
+
+	^ success ifNil: [ success := false ] ifNotNil: [ success ]
 ]

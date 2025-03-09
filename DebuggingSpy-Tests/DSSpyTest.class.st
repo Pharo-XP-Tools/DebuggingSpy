@@ -10,7 +10,8 @@ Class {
 		'breakpoint',
 		'task',
 		'survey',
-		'recordSourceCode'
+		'recordSourceCode',
+		'breakpointHash'
 	],
 	#category : 'DebuggingSpy-Tests',
 	#package : 'DebuggingSpy-Tests'
@@ -26,7 +27,8 @@ DSSpyTest >> assertBreakpointRecordedAs: aDSRecordClass forBreakpointEvent: aBre
 			  ifNotNil: [self assert: record objectCentric].
 	self deny: record once.
 	self assert: record method equals: self breakpointedMethod name.
-	self assert: record node equals: self breakpointedMethod ast printString
+	self assert: record node equals: self breakpointedMethod ast printString.
+	self assert: record breakpointHash equals: breakpointHash
 ]
 
 { #category : 'assertions' }
@@ -68,7 +70,8 @@ DSSpyTest >> assertVariableBreakpointRecordedAs: aDSRecordClass forBreakpointEve
 	self deny: record once.
 	self assert: record targetClassOrMethod equals: self breakpointedMethod name.
 	self assert: record targetVariables first equals: #value.
-	self assert: record accessStrategy equals: #all
+	self assert: record accessStrategy equals: #all.
+	self assert: record breakpointHash equals: breakpointHash
 ]
 
 { #category : 'assertions' }
@@ -114,7 +117,8 @@ DSSpyTest >> compileTestMethod [
 DSSpyTest >> installBreakpoint [
 
 	breakpoint := Breakpoint new node: self breakpointedMethod ast.
-	breakpoint install
+	breakpoint install.
+	breakpointHash := breakpoint hash
 ]
 
 { #category : 'helpers' }
@@ -122,7 +126,8 @@ DSSpyTest >> installVariableBreakpoint [
 
 	breakpoint := VariableBreakpoint
 		              watchVariable: #value
-		              inClass: self breakpointedMethod
+		              inClass: self breakpointedMethod.
+	breakpointHash := breakpoint hash
 ]
 
 { #category : 'helpers' }
@@ -531,6 +536,7 @@ DSSpyTest >> testObjectCentricBreakpointRecord [
 	instrumenter listenToBreakpointChanges.
 	
 	breakpoint := target haltOnCallTo: #breakpointMethod.
+	breakpointHash := breakpoint hash.
 	self assert: self registry size equals: 1.	
 	record := self registry first.
 	self
@@ -566,6 +572,7 @@ DSSpyTest >> testObjectCentricVariableBreakpointRecord [
 	breakpoint := (self breakpointedMethod newBreakpointForVariable: #value)
 		              scopeTo: target;
 		              install.
+	breakpointHash := breakpoint hash.
 
 	self assert: self registry size equals: 1.
 	record := self registry first.

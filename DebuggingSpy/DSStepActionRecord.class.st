@@ -1,8 +1,3 @@
-"
-I record a debugging action from an opened debugger.
-In addition to the debugger window id, I also record the signature of the context I am performing the action as well as the current node of that context.
-In confidentiality mode, this signature and node should be replaced by the current pc instead.
-"
 Class {
 	#name : 'DSStepActionRecord',
 	#superclass : 'DSAbstractEventRecord',
@@ -17,6 +12,19 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'converting' }
+DSStepActionRecord >> asStepRecord [
+
+	((SindarinCommand allSubclasses collect: #defaultName) includes:
+		 eventName) ifTrue: [ ^ DSStepRecord sindarinStep: self ].
+
+	^ DSStepRecord
+		  perform:
+			  (eventName asLowercase copyReplaceAll: ' ' with: '') asSymbol
+				  asMutator
+		  with: self
+]
 
 { #category : 'accessing' }
 DSStepActionRecord >> context [
@@ -33,6 +41,23 @@ DSStepActionRecord >> eventName [
 DSStepActionRecord >> node [
 
 	^ node
+]
+
+{ #category : 'printing' }
+DSStepActionRecord >> printContextAndNode [
+
+	^ String streamContents: [ :s |
+		  | nodeStream peek |
+		  s << '['.
+		  s << context.
+		  s << ']'.
+		  s space.
+		  nodeStream := node readStream.
+		  peek := nodeStream upTo: $(.
+
+		  s << (nodeStream atEnd
+			   ifTrue: [ peek ]
+			   ifFalse: [ nodeStream upTo: $) ]) ]
 ]
 
 { #category : 'accessing' }

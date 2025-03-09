@@ -22,7 +22,7 @@ DSHaltHitRecord >> conditional [
 
 { #category : 'accessing' }
 DSHaltHitRecord >> eventName [
-	^'Halt hit'
+	^'HALT_HIT (', method, ')'
 ]
 
 { #category : 'accessing' }
