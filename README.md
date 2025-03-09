@@ -89,6 +89,16 @@ To cite the use of this tool, please use: https://hal.science/hal-04858378v1
 # User documentation
 ## Log data to local file
 
+Load the P12 baseline into a Pharo 12 image, then execute the following line:
+```Smalltalk
+DSSpyInstrumenter instrumentSystem
+```
+After that, the system starts logging.
+Logs are serialized in the image working directory, in the *ds-spy* folder:
+
+<img width="445" alt="Capture d’écran 2025-03-09 à 22 45 10" src="https://github.com/user-attachments/assets/c0f7595b-6d32-4101-b6c2-45f54c5fddd0" />
+
+
 ## Log data to a remote server
 
 ## Read logged data
