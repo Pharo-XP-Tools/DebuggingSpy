@@ -84,3 +84,13 @@ To cite the use of this tool, please use: https://hal.science/hal-04858378v1
 | Step into                  |                                          | x                     |                                   |                     |                          |
 | Step over                  |                                          | x                     |                                   |                     |                          |
 | Step through               |                                          | x                     |                                   |                     |                          |
+
+
+# User documentation
+## Log data to local file
+
+## Log data to a remote server
+
+## Read logged data
+### Materialize log history
+### Build visualizations
