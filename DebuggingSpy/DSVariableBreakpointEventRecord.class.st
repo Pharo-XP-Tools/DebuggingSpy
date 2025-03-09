@@ -2,29 +2,31 @@
 I record variable breakpoint events information.
 "
 Class {
-	#name : #DSVariableBreakpointEventRecord,
-	#superclass : #DSAbstractBreakpointEventRecord,
+	#name : 'DSVariableBreakpointEventRecord',
+	#superclass : 'DSAbstractBreakpointEventRecord',
 	#instVars : [
 		'targetClassOrMethod',
 		'targetVariables',
 		'accessStrategy'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointEventRecord >> accessStrategy [
 
 	^ accessStrategy
 ]
 
-{ #category : #converting }
+{ #category : 'converting' }
 DSVariableBreakpointEventRecord >> modelClass [
 
 	^ DSVariableBreakpointRecord
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSVariableBreakpointEventRecord >> record: aBreakpointEvent [
 	super record: aBreakpointEvent.
 	targetClassOrMethod := aBreakpointEvent breakpoint targetClassOrMethod name.
@@ -32,13 +34,13 @@ DSVariableBreakpointEventRecord >> record: aBreakpointEvent [
 	accessStrategy := aBreakpointEvent breakpoint accessStrategy
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointEventRecord >> targetClassOrMethod [
 
 	^ targetClassOrMethod
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointEventRecord >> targetVariables [
 
 	^ targetVariables

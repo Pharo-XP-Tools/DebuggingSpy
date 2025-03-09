@@ -3,8 +3,8 @@ I record breakpoint events information, whatever the type of breakpoint.
 My subclasses have to handle the real recording, depending on the breakpoint.
 "
 Class {
-	#name : #DSAbstractBreakpointEventRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSAbstractBreakpointEventRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'target',
 		'objectCentric',
@@ -12,10 +12,14 @@ Class {
 		'once',
 		'breakpointHash'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #converting }
+
+
+{ #category : 'converting' }
 DSAbstractBreakpointEventRecord >> asBreakpointRecord [
 
 	^ self modelClass
@@ -23,39 +27,40 @@ DSAbstractBreakpointEventRecord >> asBreakpointRecord [
 		  with: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> breakpointHash [
 	^breakpointHash
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DSAbstractBreakpointEventRecord >> canOpenDebuggers [
 	^eventName = 'BreakpointHit'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
 ]
 
-{ #category : #converting }
+
+{ #category : 'converting' }
 DSAbstractBreakpointEventRecord >> modelClass [
 
 	^ self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> objectCentric [
 
 	^ objectCentric
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> once [
 	^ once
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
 
 	| str |
@@ -68,7 +73,7 @@ DSAbstractBreakpointEventRecord >> printTargetInstance: anObject [
 	^ str contents
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 
 	eventName := aBreakpointEvent class name.
@@ -82,7 +87,7 @@ DSAbstractBreakpointEventRecord >> record: aBreakpointEvent [
 	breakpointHash := aBreakpointEvent breakpoint hash
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractBreakpointEventRecord >> target [
 
 	^ target

@@ -2,19 +2,21 @@
 I instrument the system by adding spying instructions (directly in the code, by meta-programming, or by registering to system-events)
 "
 Class {
-	#name : #DSSpyInstrumenter,
-	#superclass : #Object,
-	#category : #'DebuggingSpy-Instrumentation'
+	#name : 'DSSpyInstrumenter',
+	#superclass : 'Object',
+	#category : 'DebuggingSpy-Instrumentation',
+	#package : 'DebuggingSpy',
+	#tag : 'Instrumentation'
 }
 
-{ #category : #'system instrumentation' }
+{ #category : 'system instrumentation' }
 DSSpyInstrumenter class >> instrumentSystem [
 	<script>
 	self new instrumentSystem.
 	DSRecordRegistry autoSerialize: true
 ]
 
-{ #category : #browsers }
+{ #category : 'browsers' }
 DSSpyInstrumenter >> instrumentClyFullBrowser [
 
 	ClyFullBrowserMorph compile: 'newWindowTitle
@@ -30,7 +32,7 @@ DSSpyInstrumenter >> instrumentClyFullBrowser [
 	^newTitle'
 ]
 
-{ #category : #browsers }
+{ #category : 'browsers' }
 DSSpyInstrumenter >> instrumentClyQueryBrowser [
 
 	ClyQueryBrowserMorph compile: 'newWindowTitle
@@ -45,7 +47,7 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 	^title'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 
 	ClyTextEditor compile: 'printIt
@@ -53,18 +55,26 @@ DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
 	description of the result of evaluation after the selection and then make 
 	this description the new text selection."
 
-	| printString |
+	| pointerArea |
 	[DSPrintItRecord for: self selectionString] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-	self
-		evaluateSelectionAndDo: [ :result | 
-			
-			printString := [ result asScriptResultStringInCalypso ]
-				on: Error
-				do: [', '<error in printString: try ''Inspect it'' to debug>' printString,' ].
-			self afterSelectionInsertAndSelect: printString ]'
+	self evaluateSelectionAndDo: [ :result |
+		| popoverPresenter |
+		pointerArea := textArea cursor boundsInWorld.
+
+		popoverPresenter := SpPopoverPresenter new presenter:
+			                    (SpCodePopoverPrintPresenter
+				                     newCode: self
+				                     object: result).
+		popoverPresenter relativeTo: (SpPresenter new
+				 layout: SpBoxLayout new;
+				 build;
+				 yourself).
+		popoverPresenter bePositionRight.
+		popoverPresenter popupPointingTo: pointerArea.
+		popoverPresenter takeKeyboardFocus ]'
 ]
 
-{ #category : #debugger }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentCodePresenter [
 
 	SpCodePresenter compile: 'initialize 
@@ -75,6 +85,7 @@ DSSpyInstrumenter >> instrumentCodePresenter [
 	overrideContextMenu := false.
 	
 	self withSyntaxHighlight.
+	self withSmartCharacters.
 	self withLineNumbers.
 	
 	self registerEventsForStyling.
@@ -91,7 +102,7 @@ DSSpyInstrumenter >> instrumentCodePresenter [
 				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
 ]
 
-{ #category : #debugger }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerCommands [
 	StDebugger class compile:
 	'instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
@@ -101,7 +112,7 @@ DSSpyInstrumenter >> instrumentDebuggerCommands [
 	
 ]
 
-{ #category : #debugger }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerOpening [
 
 	StDebugger compile: 'initializeWindow: aWindowPresenter
@@ -113,62 +124,35 @@ DSSpyInstrumenter >> instrumentDebuggerOpening [
 		whenClosedDo: [ self clear ].
 
 	self initializeShortcuts: aWindowPresenter.
-		[DSDebuggerOpeningRecord for: self ] on: Error do:[:err| DSSpy log: err key: #DEBUGGER_STACK ]	'
+	
+	[DSDebuggerOpeningRecord for: self ] on: Error do:[:err| DSSpy log: err key: #DEBUGGER_STACK ]	'
 ]
 
-{ #category : #debugger }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
-
-	stackTable := self newTable.
+stackTable := self newList.
 	stackTable
-		addColumn: ((SpImageTableColumn
-				  title: ''''
-				  evaluated: [ :context | self stackIconForContext: context ])
-				 width: 8;
-				 sortFunction: nil;
-				 yourself);
-		addColumn: ((SpStringTableColumn
-				  title: ''Class''
-				  evaluated: [ :item | self printReceiverClassInContext: item ])
-				 sortFunction: nil;
-				 yourself);
-		addColumn:
-			((SpStringTableColumn title: ''Method'' evaluated: [ :item | 
-					  | method |
-					  method := item method.
-					  method isCompiledBlock
-						  ifTrue: [ method sourceNode sourceCode ]
-						  ifFalse: [ method selector ] ])
-				 sortFunction: nil;
-				 yourself);
-		addColumn:
-			((SpStringTableColumn title: ''Package'' evaluated: [ :item | 
-					  | package |
-					  package := item method package.
-					  package ifNil: [ ''-'' ] ifNotNil: [ package name asString ] ])
-				 sortFunction: nil;
-				 yourself).
-	stackTable transmitDo: [ :context | 
-		stackTable selection isEmpty ifFalse: [ 
+		activateOnDoubleClick;
+		whenActivatedDo: [ :selection | self doBrowseClass ].
+	stackTable display:[:selection| StContextPrinter printContext: selection].
+	stackTable displayColor:[ :context | self stackColorForContext: context ].
+	stackTable displayIcon: [ :context| self stackIconForContext: context ].	
+	stackTable transmitDo: [ :context |
+		stackTable selection isEmpty ifFalse: [
 			self updateInspectorFromContext: context.
 			self updateCodeFromContext: context.
+			self updateExtensionsFrom: self session.
 			self expandStackIfLastItemIsSelected.
 			self updateWindowTitle.
 			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0] } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
-	stackHeader label: ''Stack''.
-	stackHeader toolbarActions: (CmCommandGroup new
-			 register:
-				 ((StDebuggerToggleFilterStackCommand forSpecContext: self) 
-					  iconName: #changeSorter);
-			 register:
-				 (StDebuggerSettingsCommand forSpecWithIconNamed: #configuration);
-			 asSpecGroup)'
+	stackHeader label: ''Stack'''
 ]
 
-{ #category : #breakpoints }
+
+{ #category : 'breakpoints' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
 	Exception compile: 'raiseUnhandledError
 
@@ -178,16 +162,18 @@ DSSpyInstrumenter >> instrumentExceptionSignalling [
 	^ UnhandledError signalForException: self'.
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
+
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh
 	[DSExpandAttributeRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
-	self expand.
-	self refreshTable'
+	self dataSource preservingScrollbarPositionDo: [
+		self expand.
+		self refreshTable ]'
 ]
 
-{ #category : #breakpoints }
+{ #category : 'breakpoints' }
 DSSpyInstrumenter >> instrumentHaltHits [
 	Halt class compile: 'signalIn: ctx	
 		
@@ -217,10 +203,10 @@ DSSpyInstrumenter >> instrumentHaltHits [
 	super signal'.
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
 DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 
-	StMetaBrowser compile: 'methodsOf: aClass
+	StMetaBrowserPresenter compile: 'methodsOf: aClass
 
 	aClass ifNil: [ ^ #() ].
 	[DSInspectMethodsRecord for: {self model. self selectedClass. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
@@ -228,10 +214,10 @@ DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
 '
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
 DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 
-	StMetaBrowser compile: 'updateSourceWith: method
+	StMetaBrowserPresenter compile: 'updateSourceWith: method
 	source userActionDuring: [
 		method
 			ifNotNil: [ 
@@ -241,10 +227,10 @@ DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
 				source text: ''''; clearInteractionModel ] ]'
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
 DSSpyInstrumenter >> instrumentInspectorOnObject [
 
-	StInspector compile: 'initializePresenters
+	StInspectorPresenter compile: 'initializePresenters
 	[ 
 	self class == StPlayground ifFalse: [ 
 		DSInspectObjectRecord for: { 
@@ -260,7 +246,7 @@ DSSpyInstrumenter >> instrumentInspectorOnObject [
 		whenColumnsWillChangeDo: [ self keepLastPageSelectedTabName ]'
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
 DSSpyInstrumenter >> instrumentInspectorPageSelection [
 
 	StObjectInspectorPresenter compile: 'initializePresenters
@@ -277,7 +263,7 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 
 	FTSelectableMorph compile:'mouseDown: evt 
@@ -285,26 +271,28 @@ DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
 	^super mouseDown: evt '
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
 
 	FTSelectableMorph compile: 'mouseEnter: evt
 
 	[DSMouseEnterTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #ENTER_TABLE_ITEM].
-	self color: (selectionColor isTransparent ifTrue: [ self mouseOverColor ] ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
+	colorBeforeOver := self color.
+	self color: (selectionColor isTransparent
+			 ifTrue: [ self mouseOverColor ]
+			 ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentMouseEnterWindow [
 
 	SystemWindow compile: 'handleMouseEnter: anEvent
 	
-	[DSMouseEnterWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_ENTER ]	.
-	self submorphsDo: [:m | m unlock].
+	[DSMouseEnterWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_ENTER ].
 	^super handleMouseEnter: anEvent'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	
 	SystemWindow compile: 'handleMouseLeave: anEvent
@@ -313,10 +301,10 @@ DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 	^super handleMouseLeave: anEvent'
 ]
 
-{ #category : #inspector }
+{ #category : 'inspector' }
 DSSpyInstrumenter >> instrumentNavigateAttribute [
 
-	StRawInspection compile: 'setAttributeTable
+	StRawInspectionPresenter compile: 'setAttributeTable
 
 	attributeTable
 		roots: self inspectorNodes;
@@ -329,10 +317,10 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
-{ #category : #playground }
+{ #category : 'playground' }
 DSSpyInstrumenter >> instrumentPlaygroundCode [
 
-	StPlayground class compile: 'open 
+	StPlaygroundPresenter class compile: 'open 
 	<script>
 	|pg|
 	pg := self new open.
@@ -340,7 +328,7 @@ DSSpyInstrumenter >> instrumentPlaygroundCode [
 	^pg'
 ]
 
-{ #category : #system }
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentRubEditorCopySelection [
 
 RubTextEditor compile: 'copySelection
@@ -353,25 +341,23 @@ RubTextEditor compile: 'copySelection
 '
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentRubEditorDebugIt [
 
 RubSmalltalkEditor compile: 'debug: aStream
 	| method receiver context |
 	[DSDebugItRecord for: aStream contents] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	(self model respondsTo: #doItReceiver)
-		ifTrue: [ receiver := self model doItReceiver.
-			context := self model doItContext ]
-		ifFalse: [ receiver := context := nil ].
+	receiver := self doItReceiver.
+	context := self doItContext.
 	method := self compile: aStream for: receiver in: context.
+	method ifNil: [ ^self ].
 	method isReturnSpecial
 		ifTrue: [ self inform: ''Nothing to debug, the expression is optimized''.
 			^ self ].
-	method notNil
-		ifTrue: [ self debug: method receiver: receiver in: context ]'
+	 self debug: method receiver: receiver in: context'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentRubEditorDoIt [
 
 	RubSmalltalkEditor compile: 'doIt
@@ -383,7 +369,7 @@ DSSpyInstrumenter >> instrumentRubEditorDoIt [
 	^ self evaluateSelection'
 ]
 
-{ #category : #system }
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentRubEditorPaste [
 
 	RubTextEditor compile: 'paste
@@ -396,7 +382,7 @@ DSSpyInstrumenter >> instrumentRubEditorPaste [
 	'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 
 	RubSmalltalkEditor compile: 'printIt
@@ -413,14 +399,14 @@ DSSpyInstrumenter >> instrumentRubEditorPrintIt [
 			self afterSelectionInsertAndSelect: printString ]'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
 
 	RubScrolledTextMorph compile: 'handlesMouseOver: evt
 	^true'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 
 	RubScrolledTextMorph compile: 'mouseEnter: evt
@@ -428,7 +414,7 @@ DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 	^super mouseEnter: evt'
 ]
 
-{ #category : #system }
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentRubSmalltalkEditorCopySelection [
 
 RubSmalltalkEditor compile: 'copySelection
@@ -457,7 +443,7 @@ RubSmalltalkEditor compile: 'copySelection
 '
 ]
 
-{ #category : #system }
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentRubSmalltalkEditorPaste [
 	
 RubSmalltalkEditor compile:'paste
@@ -485,7 +471,7 @@ RubSmalltalkEditor compile:'paste
 	DSClipboardPasteRecord for: {escapedText . self textArea window hash . self class name}.'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingByDraggingSlider [
 	
 SliderMorph compile: 'dragging: aBoolean
@@ -501,7 +487,7 @@ SliderMorph compile: 'dragging: aBoolean
 			do: [ :e | DSSpy log: #ERROR key: #SCROLL_START ] ]'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingInScrollPanesEvents [
 	
 	
@@ -517,7 +503,7 @@ GeneralScrollPaneMorph  compile: 'mouseWheel: event
 	event isRight  ifTrue: [ ^ hScrollbar scrollRight: 3 ].'
 ]
 
-{ #category : #'mouse events' }
+{ #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentScrollingInTablesEvents [
 	FTTableMorph compile:'mouseWheel: event
 
@@ -537,7 +523,7 @@ DSSpyInstrumenter >> instrumentScrollingInTablesEvents [
 	super mouseWheel: event'
 ]
 
-{ #category : #debugger }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	StDebugger class compile:
 	'buildSindarinExtentionCommandsGroupWith: stDebuggerInstance forRoot: rootCommandGroup
@@ -561,14 +547,14 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	toolbarSindarinGroup := CmCommandGroup forSpec
 			beToolbarPopoverButton;
 			name: ''Advanced Step'';
-			icon: (stDebuggerInstance application iconNamed: #smallExpert);
+			icon: (stDebuggerInstance application iconNamed: #glamorousDropDown);
 			yourself.
 	toolbarGroup register: toolbarSindarinGroup.
 	commands do: [ :c | toolbarSindarinGroup register: c ]'
 	
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 
 	SpCodeDebugItCommand compile: 'execute
@@ -585,7 +571,7 @@ DSSpyInstrumenter >> instrumentSpCodeDebugIt [
 	self debug: selection readStream'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodeDoIt [
 
 	SpCodeDoItCommand compile: 'execute
@@ -600,7 +586,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoIt [
 				DSSpy log: #ERROR key: #ACTION_DOIT ] ]'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 
 	StObjectContextPresenter compile: 'doEvaluateAndGo
@@ -622,7 +608,7 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 
 	StPlaygroundPagePresenter compile: 'doEvaluateAndGo
@@ -636,15 +622,15 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 	
 	activationBlock ifNil: [ ^ self ].
 
-	value := text 
+	value := text
 		evaluate: text selectedTextOrLine
 		onCompileError: [ ^ self ]
 		onError: [ :e | e pass ].
-	
-	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
+
+	activationBlock value: value'
 ]
 
-{ #category : #interactions }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodePrintIt [
 
 	SpCodePrintItCommand compile: 'execute
@@ -657,7 +643,7 @@ DSSpyInstrumenter >> instrumentSpCodePrintIt [
 		self printObject: result ]'
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	self instrumentDebuggerOpening.
 	self logTextEditorsClipbardActions.
@@ -672,33 +658,33 @@ DSSpyInstrumenter >> instrumentSystem [
 	self listenToMethodChanges
 ]
 
-{ #category : #breakpoints }
+{ #category : 'breakpoints' }
 DSSpyInstrumenter >> listenToBreakpointChanges [
-	SystemAnnouncer uniqueInstance weak when: BreakpointAdded  send: #recordBreakpointEvent: to: DSSpy.
-	SystemAnnouncer uniqueInstance weak when: BreakpointHit  send: #recordBreakpointEvent: to: DSSpy.
-	SystemAnnouncer uniqueInstance weak when: BreakpointRemoved  send: #recordBreakpointEvent: to: DSSpy
+	Breakpoint codeSupportAnnouncer weak when: BreakpointAdded  send: #recordBreakpointEvent: to: DSSpy.
+	Breakpoint codeSupportAnnouncer weak when: BreakpointHit  send: #recordBreakpointEvent: to: DSSpy.
+	Breakpoint codeSupportAnnouncer weak when: BreakpointRemoved  send: #recordBreakpointEvent: to: DSSpy
 ]
 
-{ #category : #methods }
+{ #category : 'methods' }
 DSSpyInstrumenter >> listenToMethodChanges [
 	SystemAnnouncer uniqueInstance weak when: MethodModified send: #methodChanged: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodRemoved send: #methodRemoved: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodAdded send: #methodAdded: to: DSSpy
 ]
 
-{ #category : #windows }
+{ #category : 'windows' }
 DSSpyInstrumenter >> listenToWindowEvents [
 
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logClyBrowsersOpenings [
 	self instrumentClyQueryBrowser.
 	self instrumentClyFullBrowser 
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentClyTextEditorPrintIt.
@@ -712,7 +698,7 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentSpCodeDoItAndGoForPlayground
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logDebuggerInteractions [
 
 	self instrumentCodePresenter.
@@ -721,13 +707,13 @@ DSSpyInstrumenter >> logDebuggerInteractions [
 	self instrumentSindarinDebuggerCommands
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self instrumentHaltHits.
 	self listenToBreakpointChanges 
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logInspectorInteractions [
 
 	self instrumentExpandAttribute.
@@ -738,7 +724,7 @@ DSSpyInstrumenter >> logInspectorInteractions [
 	self instrumentNavigateAttribute
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logMouseEvents [
 
 	self instrumentMouseDownFTSelectableMorph.
@@ -749,12 +735,12 @@ DSSpyInstrumenter >> logMouseEvents [
 	self instrumentRubScrollTextMorphMouseEnter
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logPlaygroundOpenings [
 	self instrumentPlaygroundCode
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logTextEditorsClipbardActions [
 
 	self instrumentRubEditorCopySelection.
@@ -763,7 +749,7 @@ DSSpyInstrumenter >> logTextEditorsClipbardActions [
 	self instrumentRubSmalltalkEditorPaste.
 ]
 
-{ #category : #system }
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> unsubscribeFromSystemAnnouncer [
 
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy 

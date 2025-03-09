@@ -1,6 +1,6 @@
 Class {
-	#name : #DSRecordHistory,
-	#superclass : #Object,
+	#name : 'DSRecordHistory',
+	#superclass : 'Object',
 	#instVars : [
 		'taskName',
 		'user',
@@ -14,34 +14,36 @@ Class {
 		'filteredWindows',
 		'mergedWindowJumps'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSRecordHistory class >> on: anArray [
 	^self new processRecords: anArray
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSRecordHistory class >> readTrace: aStringOrFilename [
 	^self on: (STON fromString: aStringOrFilename asFileReference contents)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSRecordHistory class >> windowActivationEventTypes [
 
 	"Return a list of types that correspond to the user activating or entering a window."
 	^{DSMouseEnterWindowRecord }
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSRecordHistory class >> windowLeaveEventTypes [
 
 	"Return a list of types that correspond to the user activating or entering a window."
 	^{DSMouseLeaveWindowRecord. DSWindowClosedRecord  }
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> addWindowRecord: aDSRecord [
 
 	(self windowsHistory
@@ -49,19 +51,19 @@ DSRecordHistory >> addWindowRecord: aDSRecord [
 		 ifAbsentPut: [ OrderedCollection new ]) add: aDSRecord
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> allRecordsOfKind: aClass [
 
 	^ records select: [ :record | record isKindOf: aClass ]
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> breakpointAdds [
 
 	^ (self breakpointEvents: BreakpointAdded name) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> breakpointAnalysisMap [
 
 	| report |
@@ -74,7 +76,7 @@ DSRecordHistory >> breakpointAnalysisMap [
 	^ report
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> breakpointEvents [
 
 	^ self records select: [ :r |
@@ -82,26 +84,26 @@ DSRecordHistory >> breakpointEvents [
 			  r isKindOf: DSBreakpointRecord ] ]
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> breakpointEvents: aBreakpointEventName [
 
 	^ self breakpointEvents select: [ :bpEvent | 
 		  bpEvent eventName = aBreakpointEventName ]
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> breakpointHit [
 
 	^ (self breakpointEvents: BreakpointHit name) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> breakpointRemove [
 
 	^ (self breakpointEvents: BreakpointRemoved name) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
 	self windowsHistory removeAll.
@@ -110,7 +112,7 @@ DSRecordHistory >> buildWindowHistory [
 	self fixWindowRecordKeysNames
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> buildWindowJumps [
 
 	| jumps previousWindowActivity nextWindowActivity |
@@ -144,7 +146,7 @@ DSRecordHistory >> buildWindowJumps [
 	
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
@@ -159,13 +161,13 @@ DSRecordHistory >> buildWindows [
 					                    w type ] ]) or: [ w windowId = -1 ] ]
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> callStackBrowing [
 
 	^ (self allRecordsOfKind: DSBrowseContextRecord) size
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 
 	| time currentRecord deltas |
@@ -186,7 +188,7 @@ DSRecordHistory >> collectTimeDiscrepancies [
 	^ deltas
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> countDebugActions [
 
 	^ self breakpointAdds + self breakpointRemove + self executedCode
@@ -194,22 +196,27 @@ DSRecordHistory >> countDebugActions [
 	  + self numberOfSteps + self callStackBrowing
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
-	|time currentRecord|
+	|time currentRecord totalDelta|
 	time := 0.
+	totalDelta := 0.
 	currentRecord := records first.
 	records do:[:r| |delta|
+				((r isKindOf: DSWindowOpenedRecord) and: [
+			                    'Finish task *' match:
+				                    r windowName asString ]) ifTrue:[^totalDelta].
 		delta := (r dateTime asSeconds - currentRecord dateTime asSeconds).
 		time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		(delta) > 60 ifTrue:[self halt]. 		
+		(delta) > 60 ifTrue:[totalDelta := totalDelta + delta]. 		
 		currentRecord := r.		
 		].
-	
+	^totalDelta
 	
 ]
 
-{ #category : #'private - history' }
+
+{ #category : 'private - history' }
 DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecordList [
 
 	| eventIndex previousRecord |
@@ -249,35 +256,36 @@ DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecord
 	^ aRecordList at: eventIndex - 1
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> eventsAfter: aDateAndTime [ 
 	^records select:[:e| e dateTime > aDateAndTime]
 ]
 
-{ #category : #'API-history' }
+
+{ #category : 'API-history' }
 DSRecordHistory >> eventsBefore: aDateAndTime [ 
 	self shouldBeImplemented.
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> executedCode [
 
 	^ (self allRecordsOfKind: DSCodeActionRecord) size
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> filteredWindowJumps [
 
 	^ filteredWindowJumps
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> filteredWindows [
 
 	^ filteredWindows
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord in: aRecordList [
 
 	| eventIndex |
@@ -291,7 +299,7 @@ DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord 
 	^ nil
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> findWindowRecordKeyForID: id [
 
 	^ self windowsHistory keys
@@ -302,8 +310,10 @@ DSRecordHistory >> findWindowRecordKeyForID: id [
 				  yourself ]
 ]
 
-{ #category : #'private - history' }
-DSRecordHistory >> fixMissingWindowNames [
+
+{ #category : 'private - history' }
+DSRecordHistory >> fixMissingWindowIds [
+
 
 	windowNames := Dictionary new.
 	(records reject: [ :e | e windowId isNil ]) do: [ :r |
@@ -346,14 +356,15 @@ DSRecordHistory >> fixWindowIdsOf: aCollection [
 			do: [ :e | e windowId: enter windowId ] ]
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> fixWindowRecordKeysNames [
 
 	windowNames keysAndValuesDo: [ :id :name | 
 		(self findWindowRecordKeyForID: id) windowName: name ]
 ]
 
-{ #category : #'API-history' }
+
+{ #category : 'API-history' }
 DSRecordHistory >> haltAnalysisMap [
 
 	| report |
@@ -366,13 +377,13 @@ DSRecordHistory >> haltAnalysisMap [
 	^ report
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSRecordHistory >> initialize [
 	super initialize.
 	self flag: 'I am not tested! Please do it!' 
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> mergeFilteredWindowJumps [
 
 	| currentJump |
@@ -394,55 +405,64 @@ DSRecordHistory >> mergeFilteredWindowJumps [
 	self validateMergedJumps
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> mergedWindowJumps [
 
 	^ mergedWindowJumps
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
+
 DSRecordHistory >> methodsAdded [
 
 	^ (self allRecordsOfKind: DSMethodAddedRecord) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> methodsModified [
 
 	^ (self allRecordsOfKind: DSMethodModifiedRecord) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> methodsModifiedEvents [
 
 	^ (self allRecordsOfKind: DSMethodModifiedRecord)
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> methodsRemoved [
 
 	^ (self allRecordsOfKind: DSMethodRemovedRecord) size
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> name [
 
 	^ self user, ': ', self taskName, '(', tag, ')'
 ]
 
-{ #category : #'API-history' }
+
+{ #category : 'API-history' }
+DSRecordHistory >> numberOfSeekerActions [
+
+	^ (self records select: [ :r | 
+		   DSSeekerActionRecord withAllSubclasses includes: r class ]) size
+]
+
+{ #category : 'API-history' }
 DSRecordHistory >> numberOfSteps [
 
 	^ (self allRecordsOfKind: DSStepActionRecord) size
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> openedDebuggers [
 
 	^ (self allRecordsOfKind: DSDebuggerOpeningRecord) size
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSRecordHistory >> processRecords: array [
 
 	self fixWindowIdsOf: array.
@@ -484,48 +504,49 @@ DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 		w sourceEvent: sourceEvent ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> records [
 
 	^ records
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> records: anObject [
 
 	records := anObject
 ]
 
-{ #category : #initialization }
+
+{ #category : 'initialization' }
 DSRecordHistory >> reprocessRecords [
 	self processRecords: records asOrderedCollection 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> tag [
 
 	^ tag
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> tag: anObject [
 
 	tag := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> taskName [
 
 	^ taskName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> taskName: anObject [
 
 	taskName := anObject
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSRecordHistory >> timeTaken [
 	"The time taken to perform the recording of user events.
 	The time is calculated as:
@@ -536,19 +557,20 @@ DSRecordHistory >> timeTaken [
 	   - self collectTimeDiscrepancies) / 60) asFloat
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> user [
 
 	^ user
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> user: anObject [
 
 	user := anObject
 ]
 
-{ #category : #'private - history' }
+
+{ #category : 'private - history' }
 DSRecordHistory >> validateMergedJumps [
 
 	1 to: mergedWindowJumps size do:[:i|
@@ -568,7 +590,7 @@ DSRecordHistory >> validateMergedJumps [
 	]
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> validateWindows [
 	"Validates that each windows starts by a window entering or opening event, finishes by a window closing or leaving event, and that every event contained in the window happened between the opening event timestamp and the closing even timestamp"
 
@@ -611,12 +633,12 @@ DSRecordHistory >> validateWindows [
 				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]"
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> windows [
 	^ windows
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> windowsHistory [
 
 	^ windowsHistory
@@ -624,7 +646,7 @@ DSRecordHistory >> windowsHistory [
 		  ifNotNil: [ windowsHistory ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSRecordHistory >> windowsHistory: anObject [
 
 	windowsHistory := anObject

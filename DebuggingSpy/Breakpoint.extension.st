@@ -1,6 +1,6 @@
-Extension { #name : #Breakpoint }
+Extension { #name : 'Breakpoint' }
 
-{ #category : #'*DebuggingSpy' }
+{ #category : '*DebuggingSpy' }
 Breakpoint >> breakpointRecordFor: aBreakpointEvent [
 	^DSBreakpointEventRecord for: aBreakpointEvent 
 ]

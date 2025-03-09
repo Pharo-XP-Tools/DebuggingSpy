@@ -1,10 +1,11 @@
 Class {
-	#name : #NewValueHolderForTestWithDummyPlaygroundPage,
-	#superclass : #NewValueHolder,
-	#category : #'DebuggingSpy-Tests'
+	#name : 'NewValueHolderForTestWithDummyPlaygroundPage',
+	#superclass : 'NewValueHolder',
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 NewValueHolderForTestWithDummyPlaygroundPage >> ensureContentsFlushed [
 	"just to implement the StPlaygroundPage API"
 

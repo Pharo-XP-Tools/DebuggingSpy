@@ -1,26 +1,28 @@
 Class {
-	#name : #DSWindowEventRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSWindowEventRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'windowName'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSWindowEventRecord >> record: aWindowEvent [
 	self recordWindowIdFromEvent: aWindowEvent.
 	self recordWindowNameFromEvent: aWindowEvent
 ]
 
-{ #category : #recording }
+{ #category : 'recording' }
 DSWindowEventRecord >> recordWindowIdFromEvent: anEvent [
 	|win|
 	win := anEvent window.
 	windowId := win identityHash
 ]
 
-{ #category : #recording }
+{ #category : 'recording' }
 DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 
 	windowName := [ anEvent window label ]
@@ -28,18 +30,18 @@ DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 		              do: [ 'Unknown window' ]
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 DSWindowEventRecord >> sameWindowAsIn: aDSWindowEventRecord [
 	^self windowId = aDSWindowEventRecord windowId
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowEventRecord >> windowName [
 
 	^ windowName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowEventRecord >> windowName: anObject [
 
 	windowName := anObject

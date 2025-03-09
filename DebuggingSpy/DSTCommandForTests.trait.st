@@ -1,18 +1,20 @@
 Trait {
-	#name : #DSTCommandForTests,
+	#name : 'DSTCommandForTests',
 	#instVars : [
 		'forTests'
 	],
-	#category : #'DebuggingSpy-Commands'
+	#category : 'DebuggingSpy-Commands',
+	#package : 'DebuggingSpy',
+	#tag : 'Commands'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTCommandForTests >> forTests [
 
 	^ forTests ifNil: [ forTests := false ] ifNotNil: [ forTests ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSTCommandForTests >> forTests: anObject [
 
 	forTests := anObject

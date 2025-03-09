@@ -2,17 +2,19 @@
 I represent a recorded event, that happened from a tool.
 "
 Class {
-	#name : #DSAbstractEventRecord,
-	#superclass : #Object,
+	#name : 'DSAbstractEventRecord',
+	#superclass : 'Object',
 	#instVars : [
 		'dateTime',
 		'windowId',
 		'uuid'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSAbstractEventRecord class >> for: anObject [
 
 	| rec |
@@ -21,7 +23,7 @@ DSAbstractEventRecord class >> for: anObject [
 	^ rec
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSAbstractEventRecord class >> printStringMorphs: anArrayOfMorphs [
 
 	| str |
@@ -33,88 +35,89 @@ DSAbstractEventRecord class >> printStringMorphs: anArrayOfMorphs [
 	^ str contents
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 DSAbstractEventRecord >> < aDSAbstractRecord [
 	^self dateTime < aDSAbstractRecord dateTime
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 DSAbstractEventRecord >> <= aDSAbstractRecord [
 	^self dateTime <= aDSAbstractRecord dateTime
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 DSAbstractEventRecord >> > aDSAbstractRecord [
 	^self dateTime > aDSAbstractRecord dateTime
 ]
 
-{ #category : #comparing }
+{ #category : 'comparing' }
 DSAbstractEventRecord >> >= aDSAbstractRecord [
 	^self dateTime >= aDSAbstractRecord dateTime
 ]
 
-{ #category : #testing }
+
+{ #category : 'testing' }
 DSAbstractEventRecord >> canOpenDebuggers [
 
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> dateTime [
 
 	^ dateTime
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> dateTime: anObject [
 
 	dateTime := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> eventName [
 	^self subclassResponsibility 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSAbstractEventRecord >> initialize [
 	dateTime := DateAndTime now.
 	uuid := UUID new
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSAbstractEventRecord >> printOn: aStream [
 	aStream << self eventName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> realRecord [
 	^self
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractEventRecord >> record: aWindow [
 	windowId := aWindow identityHash 
 ]
 
-{ #category : #'API-history' }
+{ #category : 'API-history' }
 DSAbstractEventRecord >> recordWindowHistoryOn: aDSRecordHistory [
 	aDSRecordHistory addWindowRecord: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> uuid [
 
 	^ uuid
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> windowId [
 
 	^ windowId
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> windowId: anObject [
 
 	windowId := anObject

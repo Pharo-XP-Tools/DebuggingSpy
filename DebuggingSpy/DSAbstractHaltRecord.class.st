@@ -2,28 +2,31 @@
 My subclasses record particular halts events such as: installing a halt, or hitting a halt at run time.
 "
 Class {
-	#name : #DSAbstractHaltRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSAbstractHaltRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'method',
 		'sourceCodeInterval'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractHaltRecord >> method [
 
 	^ method
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractHaltRecord >> record: anRBProgramNode [
-	method := anRBProgramNode methodNode method name.
+
+	method := anRBProgramNode methodNode compiledMethod name.
 	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractHaltRecord >> sourceCodeInterval [
 
 	^ sourceCodeInterval

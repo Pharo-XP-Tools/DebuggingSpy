@@ -1,6 +1,6 @@
 Class {
-	#name : #DSStepActionRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSStepActionRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'context',
 		'node',
@@ -8,10 +8,12 @@ Class {
 		'receiver',
 		'receiverClass'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #converting }
+{ #category : 'converting' }
 DSStepActionRecord >> asStepRecord [
 
 	((SindarinCommand allSubclasses collect: #defaultName) includes:
@@ -24,24 +26,24 @@ DSStepActionRecord >> asStepRecord [
 		  with: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepActionRecord >> context [
 
 	^ context
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepActionRecord >> eventName [
 	^eventName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepActionRecord >> node [
 
 	^ node
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSStepActionRecord >> printContextAndNode [
 
 	^ String streamContents: [ :s |
@@ -58,19 +60,19 @@ DSStepActionRecord >> printContextAndNode [
 			   ifFalse: [ nodeStream upTo: $) ]) ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepActionRecord >> receiver [
 
 	^ receiver
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepActionRecord >> receiverClass [
 
 	^ receiverClass
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSStepActionRecord >> record: aDSDebuggerCommand [
 	super record: aDSDebuggerCommand context window window.
 	eventName := aDSDebuggerCommand class defaultName.

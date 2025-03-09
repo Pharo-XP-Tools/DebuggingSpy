@@ -2,59 +2,61 @@
 I record the installation or the modification of halt in the source code.
 "
 Class {
-	#name : #DSHaltChangeRecord,
-	#superclass : #DSAbstractHaltRecord,
+	#name : 'DSHaltChangeRecord',
+	#superclass : 'DSAbstractHaltRecord',
 	#instVars : [
 		'haltChange',
 		'haltData'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #adding }
+{ #category : 'adding' }
 DSHaltChangeRecord class >> add [
 	^#HALT_ADD
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DSHaltChangeRecord class >> modify [
 	^#HALT_MODIFY
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DSHaltChangeRecord class >> remove [
 	^#HALT_REMOVE
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSHaltChangeRecord >> eventName [
 	^haltChange, ' (', method, ')'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSHaltChangeRecord >> haltChange [
 
 	^ haltChange
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSHaltChangeRecord >> haltData [
 
 	^ haltData
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSHaltChangeRecord >> haltData: anObject [
 
 	haltData := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSHaltChangeRecord >> method: aMethodName [
 	method := aMethodName
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSHaltChangeRecord >> record: aSymbol [
 	haltChange := aSymbol
 	

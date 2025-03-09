@@ -1,6 +1,6 @@
 Class {
-	#name : #DSSpyInstrumenterTest,
-	#superclass : #TestCase,
+	#name : 'DSSpyInstrumenterTest',
+	#superclass : 'TestCase',
 	#instVars : [
 		'modifiedClass',
 		'modifiedMethodSource',
@@ -12,10 +12,11 @@ Class {
 		'methodsToRemove',
 		'recordSourceCode'
 	],
-	#category : #'DebuggingSpy-Tests'
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
 }
 
-{ #category : #assertions }
+{ #category : 'assertions' }
 DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method [
 
 	self assert: record class equals: DSHaltHitRecord.
@@ -24,7 +25,7 @@ DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method [
 	self assert: record sourceCodeInterval last equals: method ast statements first stop
 ]
 
-{ #category : #assertions }
+{ #category : 'assertions' }
 DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method conditional: isHaltIf once: isOnce [
 
 	self assert: record conditional equals: isHaltIf.
@@ -32,7 +33,7 @@ DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method conditional: isHal
 	self assertHaltHitRecordingMethod: method
 ]
 
-{ #category : #assertions }
+{ #category : 'assertions' }
 DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
 
 	| cmds cmd |
@@ -60,7 +61,7 @@ DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandNa
 	self assertStepActionRecordForCommandNamed: debuggerCommandName
 ]
 
-{ #category : #assertions }
+{ #category : 'assertions' }
 DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerCommandName [
 
 	| modifiedMethod cmds cmd |
@@ -102,7 +103,7 @@ DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerC
 	self assertStepActionRecordForCommandNamed: debuggerCommandName.
 ]
 
-{ #category : #assertions }
+{ #category : 'assertions' }
 DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandName [
 
 	self assert: self registry size equals: 1.
@@ -121,7 +122,7 @@ DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandN
 	self assert: record receiverClass equals: debugger currentContext receiver class name
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> clyTextEditor [
 
 	| editor textArea |
@@ -135,7 +136,7 @@ DSSpyInstrumenterTest >> clyTextEditor [
 	^ editor
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 
 	| codePresenter adapter |
@@ -153,7 +154,7 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 	^ codePresenter
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerForTesting [
 
 	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
@@ -162,7 +163,7 @@ DSSpyInstrumenterTest >> debuggerForTesting [
 	^ debugger
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerForTestingWithWindow [
 
 	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
@@ -172,7 +173,7 @@ DSSpyInstrumenterTest >> debuggerForTestingWithWindow [
 	^ debugger
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerOnRecursiveContextForTesting [
 
 	^ StTestDebuggerProvider new debuggerWithRecursiveContext
@@ -180,7 +181,7 @@ DSSpyInstrumenterTest >> debuggerOnRecursiveContextForTesting [
 		  initialize
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 
 	^ StTestDebuggerProvider new debuggerWithObjectHalting
@@ -188,66 +189,66 @@ DSSpyInstrumenterTest >> debuggerWithRunnableContext [
 		  initialize
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> execute1Halt [
  1 halt
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> executeHalt [ 
 
 	<haltOrBreakpointForTesting>
 	self halt
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> executeHaltIf [
 
 	<haltOrBreakpointForTesting>
 	self haltIf: [ true ]
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> executeHaltInBloc [
 	<haltOrBreakpointForTesting>
 	[self halt] value
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> executeHaltOnce [
 	<haltOrBreakpointForTesting>
 	self haltOnce
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> executeHaltWithMessage [
 	<haltOrBreakpointForTesting>
 	self halt: 'message'
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> metaPaneClassesItems: listName FromInspector: aMetaPane [
 
 	^ (aMetaPane class slotNamed: listName) read: aMetaPane
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> methodWithDNU [
 
 	self unknownMessage
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> methodWithException [
 
 	Exception new signal
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> newInspectorOn: anObject [
 
 	| inspector |
-	inspector := StInspector basicNew.
+	inspector := StInspectorPresenter basicNew.
 	self setDummyWindowForPresenter: inspector.
 	inspector setModelBeforeInitialization:
 		(StInspectorModel on: anObject).
@@ -255,7 +256,7 @@ DSSpyInstrumenterTest >> newInspectorOn: anObject [
 	^ inspector
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> playgroundPagePresenter [
 
 	| playground |
@@ -268,7 +269,7 @@ DSSpyInstrumenterTest >> playgroundPagePresenter [
 	^ playground
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> press: aCharacter in: aPresenter [
 
 	aPresenter adapter
@@ -279,7 +280,7 @@ DSSpyInstrumenterTest >> press: aCharacter in: aPresenter [
 		option: false
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> recompileExecuteHaltOnce [
 
 	self class compile: 'executeHaltOnce
@@ -287,12 +288,12 @@ DSSpyInstrumenterTest >> recompileExecuteHaltOnce [
 	self haltOnce'
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> registry [
 	^DSRecordRegistry current records
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> rubTextEditor [
 
 	| editor textArea |
@@ -308,7 +309,7 @@ DSSpyInstrumenterTest >> rubTextEditor [
 	^ editor
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 
 	| debuggerSelectionStrategy |
@@ -327,7 +328,7 @@ DSSpyInstrumenterTest >> runWithoutOpeningDebugger: aBlock [
 		debuggerSelectionStrategy
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> setDummyWindowForMorph: morph [
 
 	[ morph privateOwner: SystemWindow basicNew ]
@@ -335,7 +336,7 @@ DSSpyInstrumenterTest >> setDummyWindowForMorph: morph [
 		do: [  ]
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> setDummyWindowForPresenter: presenter [
 
 	| windowPresenter |
@@ -346,13 +347,13 @@ DSSpyInstrumenterTest >> setDummyWindowForPresenter: presenter [
 
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> setDummyWindowPresenter: windowPresenter forPresenter: presenter [
 
 	windowPresenter basicPresenter: presenter
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DSSpyInstrumenterTest >> setUp [
 	super setUp.
 	
@@ -362,7 +363,7 @@ DSSpyInstrumenterTest >> setUp [
 	DSRecordRegistry current reset
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
 
 	^ MouseMoveEvent new
@@ -375,7 +376,7 @@ DSSpyInstrumenterTest >> simulatedMouseEventFor: morph [
 		  stamp: 0
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> stObjectContextModelMock [
 
 	| model context |
@@ -390,7 +391,7 @@ DSSpyInstrumenterTest >> stObjectContextModelMock [
 		  yourself
 ]
 
-{ #category : #helpers }
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 	| ctxPresenter rawView attrTable widget |
@@ -408,7 +409,7 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 	^ widget dataSource rootItem children
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 DSSpyInstrumenterTest >> tearDown [
 
 	(modifiedClass notNil and: [ 
@@ -431,7 +432,7 @@ DSSpyInstrumenterTest >> tearDown [
 	super tearDown
 ]
 
-{ #category : #'tests - browsers' }
+{ #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
 	modifiedClass := ClyFullBrowserMorph.
@@ -452,7 +453,7 @@ DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 	self assert: record methodBrowsed equals: (Object>>#yourself) name
 ]
 
-{ #category : #'tests - browsers' }
+{ #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	
 	modifiedClass := ClyQueryBrowserMorph.
@@ -471,7 +472,7 @@ DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	self assert: record queryName equals: browser systemQuery description
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 
 	| clyEditor |
@@ -489,7 +490,7 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : #'tests - playground' }
+{ #category : 'tests - playground' }
 DSSpyInstrumenterTest >> testInstrumentCodePresenter [
 	|playground code|
 	modifiedClass := SpCodePresenter.	
@@ -515,7 +516,7 @@ DSSpyInstrumenterTest >> testInstrumentCodePresenter [
 	
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 	|code adapter|
 	modifiedClass := SpCodePresenter.	
@@ -545,7 +546,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
 	self assert: record windowId equals: code window window hash
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
 	modifiedClass := StDebugger.	
 	modifiedMethodSource :=  [(StDebugger >> #initializeWindow:) sourceCode] on: Error do:[nil].
@@ -565,7 +566,7 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
 	
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	|selectedItem|
 	modifiedClass := StDebugger.
@@ -604,29 +605,32 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: record selector equals: selectedItem selector
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
-	|inspector object items|
+
+	| inspector object items |
 	modifiedClass := FTBasicItem.
 	modifiedMethodSource := (FTBasicItem >> #expandAndRefresh) sourceCode.
 	instrumenter instrumentExpandAttribute.
-	
+
 	object := OrderedCollection new.
-	inspector := StInspector onObject: object.		
-	items := self tableItemsListFromInspector: inspector.	
+	inspector := StInspectorPresenter onObject: object.
+	items := self tableItemsListFromInspector: inspector.
 	items first expandAndRefresh.
-	
+
 	self assert: self registry size equals: 1.
 	record := self registry first.
-		
+
 	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self assert: record windowId equals: inspector window window identityHash.
-	self assert: record attributeName equals: 'self'. 	
+	self
+		assert: record windowId
+		equals: inspector window window identityHash.
+	self assert: record attributeName equals: 'self'.
 	self assert: record attributeHash equals: object identityHash.
-	self assert: record attributeValue equals: object displayString 
+	self assert: record attributeValue equals: object displayString
 ]
 
-{ #category : #'tests - halts' }
+{ #category : 'tests - halts' }
 DSSpyInstrumenterTest >> testInstrumentHaltHits [
 
 	instrumenter instrumentHaltHits.
@@ -676,7 +680,7 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	self assertHaltHitRecordingMethod:  (self class >> #execute1Halt) conditional: false once: false.
 ]
 
-{ #category : #'tests - halts' }
+{ #category : 'tests - halts' }
 DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	|executedMethod|
 	instrumenter instrumentHaltHits.
@@ -701,67 +705,85 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	self assert: record sourceCodeInterval last equals: executedMethod ast statements first receiver statements first stop
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
-	|metaPane object classes|
-	modifiedClass := StMetaBrowser.
-	modifiedMethodSource := (StMetaBrowser >> #methodsOf:) sourceCode.
+
+	| metaPane object classes |
+	modifiedClass := StMetaBrowserPresenter.
+	modifiedMethodSource := (StMetaBrowserPresenter >> #methodsOf:)
+		                        sourceCode.
 	instrumenter instrumentInspectMethodsOfClass.
-	
+
 	object := OrderedCollection new.
-	metaPane := StMetaBrowser basicNew.
+	metaPane := StMetaBrowserPresenter basicNew.
 	self setDummyWindowForPresenter: metaPane.
 	metaPane application: StPharoApplication current.
 	metaPane setModelBeforeInitialization: object.
-	metaPane	initialize.
-	classes := self metaPaneClassesItems: #classes FromInspector: metaPane.
-		
+
+	metaPane initialize.
+
+	classes := self
+		           metaPaneClassesItems: #classes
+		           FromInspector: metaPane.
+	classes selectPath:
+		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
+
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSInspectMethodsRecord.
 	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString.
-	
-	classes clickAtPath: { 1. 1. 1. 1}.
+
+	classes clickAtPath: { 1. 1. 1. 1 }.
 	record := self registry second.
-	self assert: record selectedClass equals: object class superclass name
+	self
+		assert: record selectedClass
+		equals: object class superclass name
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
-	|metaPane object methods|
-	modifiedClass := StMetaBrowser.
-	modifiedMethodSource := (StMetaBrowser >> #updateSourceWith:) sourceCode.
+
+	| metaPane object methods classes |
+	modifiedClass := StMetaBrowserPresenter.
+	modifiedMethodSource := (StMetaBrowserPresenter >> #updateSourceWith:)
+		                        sourceCode.
 	instrumenter instrumentInspectSourceOfMethod.
-	
+
 	object := OrderedCollection new.
-	metaPane := StMetaBrowser on: object.
-	methods := self metaPaneClassesItems: #methods FromInspector: metaPane.
-	
+	metaPane := StMetaBrowserPresenter on: object.
+	methods := self
+		           metaPaneClassesItems: #methods
+		           FromInspector: metaPane.
+	classes := self
+		           metaPaneClassesItems: #classes
+		           FromInspector: metaPane.
+
 	self setDummyWindowForPresenter: metaPane.
-	
+
+	classes selectPath:
+		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
+
 	methods selectItem: methods items first.
-	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSInspectMethodSourceRecord.
-	self assert: record selectedMethod equals: metaPane selectedMethod name.
-	
+	self
+		assert: record selectedMethod
+		equals: metaPane selectedMethod name.
+
 	self assert: record windowId equals: metaPane window window hash.
 	self assert: record selectedClass equals: object class name.
 	self assert: record inspectedObject equals: object printString
-	
-	
-	
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	|inspector object|
-	modifiedClass := StInspector.
-	modifiedMethodSource := (StInspector >> #initializePresenters) sourceCode.
+	modifiedClass := StInspectorPresenter.
+	modifiedMethodSource := (StInspectorPresenter >> #initializePresenters) sourceCode.
 	instrumenter instrumentInspectorOnObject.
 	
 	object := OrderedCollection new.
@@ -777,34 +799,39 @@ DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
 	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
-	|inspector object objectInspector pagesView|
+
+	| inspector object objectInspector pagesView |
 	modifiedClass := StObjectInspectorPresenter.
-	modifiedMethodSource := (StObjectInspectorPresenter >> #initializePresenters) sourceCode.
+	modifiedMethodSource := (StObjectInspectorPresenter
+	                         >> #initializePresenters) sourceCode.
 	instrumenter instrumentInspectorPageSelection.
-	
-	object := OrderedCollection new.	
+
+	object := OrderedCollection new.
 	inspector := self newInspectorOn: object.
 	objectInspector := inspector firstPage.
-	pagesView := (objectInspector class slotNamed: #views) read: objectInspector.	
+	pagesView := (objectInspector class slotNamed: #views) read:
+		             objectInspector.
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
+	record := self registry first.
+
 	self assert: record class identicalTo: DSSelectInspectorPageRecord.
-	self assert: record windowId equals: inspector window window identityHash.
-	self assert: record pageTitle equals: pagesView pages first title. 	
+	self
+		assert: record windowId
+		equals: inspector window window identityHash.
+	self assert: record pageTitle equals: pagesView pages first title.
 	self assert: record inspectedObjectHash equals: object identityHash.
 	self assert: record inspectedObject equals: object printString.
-	
+
 	pagesView selectPage: pagesView pages second.
 	self assert: self registry size equals: 2.
 	record := self registry second.
-	self assert: record pageTitle equals: pagesView pages second title	
+	self assert: record pageTitle equals: pagesView pages second title
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
 	
 	|morph|
@@ -823,7 +850,7 @@ DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseEnterFTSelectableMorph [
 	
 	|morph|
@@ -842,7 +869,7 @@ DSSpyInstrumenterTest >> testInstrumentMouseEnterFTSelectableMorph [
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
 	
 	|window|
@@ -860,7 +887,7 @@ DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 	
 	|window|
@@ -878,15 +905,15 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
 ]
 
-{ #category : #'tests - inspector' }
+{ #category : 'tests - inspector' }
 DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	|raw object|
-	modifiedClass := StRawInspection.
-	modifiedMethodSource := (StRawInspection >> #setAttributeTable) sourceCode.
+	modifiedClass := StRawInspectionPresenter.
+	modifiedMethodSource := (StRawInspectionPresenter >> #setAttributeTable) sourceCode.
 	instrumenter instrumentNavigateAttribute.
 	
 	object := OrderedCollection new.
-	raw := StRawInspection on: object.
+	raw := StRawInspectionPresenter on: object.
 	self setDummyWindowForPresenter: raw.	
 	raw selectPath: #(2).
 
@@ -899,25 +926,25 @@ DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
 	self assert: record inspectedObjectHash equals: object identityHash
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentProceed [
 
 	self assertInstrumentDebuggerCommandNamed: 'Proceed'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRestart [
 
 	self assertInstrumentDebuggerCommandNamed: 'Restart'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentReturn [
 
 	self assertInstrumentDebuggerCommandNamed: 'Return'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 
 	| rubEditor registerClipboardText |
@@ -945,7 +972,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 		ensure: [ DSSpy recordClipboardContent: registerClipboardText ]
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
 	| rubEditor |
@@ -965,7 +992,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 	self assert: record selectedString equals: '41+1' printString
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 
 	| rubEditor |
@@ -984,7 +1011,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 	self assert: record selectedString equals: '41+1'printString
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
 
 	| rubEditor registerClipboardText |
@@ -1015,7 +1042,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
 		DSSpy recordClipboardContent: registerClipboardText ]
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 
 	| rubEditor |
@@ -1033,7 +1060,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
 	
 	self should: [RubScrolledTextMorph >> #handlesMouseOver: ] raise: KeyNotFound.
@@ -1043,7 +1070,7 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
 	self assert: (RubScrolledTextMorph new handlesMouseOver: nil)
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	|morph|
 
@@ -1060,13 +1087,13 @@ DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
 	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRunTo [
 
 	self assertInstrumentDebuggerCommandNamed: 'Run to'
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 	
 	|slider|
@@ -1090,7 +1117,7 @@ DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
 	self assert: record windowId equals: slider window hash.
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
 	
 	|pane|
@@ -1108,7 +1135,7 @@ DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
 	self assert: record windowId equals: pane window hash
 ]
 
-{ #category : #'tests - mouse events' }
+{ #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentScrollingInTablesEvents [
 	
 	|table|
@@ -1126,7 +1153,7 @@ DSSpyInstrumenterTest >> testInstrumentScrollingInTablesEvents [
 	self assert: record windowId equals: table window hash
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |	
@@ -1149,7 +1176,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 
 	| codePresenter printItCommand |
@@ -1171,7 +1198,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
 
 	| presenter |
@@ -1194,7 +1221,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
 	self assert: record selectedString equals: '4+2'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 
 	| presenter |
@@ -1203,6 +1230,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 	instrumenter instrumentSpCodeDoItAndGoForPlayground.
 
 	presenter := StPlaygroundPagePresenter basicNew.
+	presenter forceDisableLoading.
 	presenter application: StPharoApplication new.
 	presenter initializePresenters.
 	presenter setModelBeforeInitialization: DSFakeTextEditor new.
@@ -1218,7 +1246,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 	self assert: record selectedString equals: '4+2'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 	| codePresenter printItCommand |
@@ -1238,13 +1266,13 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : #'tests - playground' }
+{ #category : 'tests - playground' }
 DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	|playground|
-	modifiedClass := StPlayground class.
-	modifiedMethodSource :=  (StPlayground class >> #open) sourceCode.
+	modifiedClass := StPlaygroundPresenter class.
+	modifiedMethodSource :=  (StPlaygroundPresenter class >> #open) sourceCode.
 	instrumenter instrumentPlaygroundCode.
-	playground := StPlayground open.
+	playground := StPlaygroundPresenter open.
 	
 	"On opening, the playground generates an opening record"
 	self assert: self registry size equals: 1.
@@ -1253,55 +1281,55 @@ DSSpyInstrumenterTest >> testInstrumentStPlayground [
 	self assert: record windowId equals: playground window window hash
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepInto [
 
 	self assertInstrumentDebuggerCommandNamed: 'Into'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepOver [
 
 	self assertInstrumentDebuggerCommandNamed: 'Over'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepThrough [
 
 	self assertInstrumentDebuggerCommandNamed: 'Through'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepToMethodEntry [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'To method entry'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepToNextCallInClass [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'Next call in class'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepToNextCallInObject [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'Next call in receiver'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepToNextInstanceCreation [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'Next instance creation'
 ]
 
-{ #category : #'tests - debugger' }
+{ #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepToReturnCommand [
 
 	self assertInstrumentSindarinDebuggerCommandNamed: 'To return'
 ]
 
-{ #category : #'tests - interactions' }
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testLoggingInteractionsWithNoSourceCode [
 	DSSpy recordSourceCode: false.
 	{ 

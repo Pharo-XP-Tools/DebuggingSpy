@@ -1,6 +1,6 @@
 Class {
-	#name : #DSSTONFileLogger,
-	#superclass : #Object,
+	#name : 'DSSTONFileLogger',
+	#superclass : 'Object',
 	#traits : 'TDSLogger',
 	#classTraits : 'TDSLogger classTrait',
 	#instVars : [
@@ -9,21 +9,23 @@ Class {
 		'loggingFileReference',
 		'savedConfiguration'
 	],
-	#category : #'DebuggingSpy-Loggers'
+	#category : 'DebuggingSpy-Loggers',
+	#package : 'DebuggingSpy',
+	#tag : 'Loggers'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> defaultLoggingDirectoryName [
 	^'ds-spy'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> defaultLoggingFileName [
 
 	^ SessionManager default currentSession id asString
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSTONFileLogger >> ensureCreateLoggingFileReference [
 
 	| fname fr |
@@ -33,24 +35,24 @@ DSSTONFileLogger >> ensureCreateLoggingFileReference [
 	^ fr
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSTONFileLogger >> filenameForSurvey: aSurvey [
 	^aSurvey uuid asString , '_' , self defaultLoggingFileName, '.', self surveyFileExtension
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSTONFileLogger >> forceLoggingFileNameFor: aTask [
 
 	loggingFilename := aTask title , '-' , self defaultLoggingFileName.
 	loggingFileReference := self ensureCreateLoggingFileReference 
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSTONFileLogger >> log: aDSEventRecord [
 	self writeToFile: (STON toString: aDSEventRecord)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> loggingDirectory [
 
 	^ loggingDirectory
@@ -60,14 +62,14 @@ DSSTONFileLogger >> loggingDirectory [
 		  ifNotNil: [ loggingDirectory ]
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSTONFileLogger >> loggingDirectory: aStringOrFileReference [
 
 	loggingDirectory := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
 	loggingDirectory ensureCreateDirectory
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> loggingFileName [
 
 	^ loggingFilename
@@ -75,7 +77,7 @@ DSSTONFileLogger >> loggingFileName [
 		  ifNotNil: [ loggingFilename ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> loggingFileReference [
 
 	^ loggingFileReference
@@ -84,7 +86,7 @@ DSSTONFileLogger >> loggingFileReference [
 		  ifNotNil: [ loggingFileReference ]
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSSTONFileLogger >> reset [
 
 	loggingDirectory := nil.
@@ -92,7 +94,7 @@ DSSTONFileLogger >> reset [
 	loggingFileReference := nil
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DSSTONFileLogger >> restoreCurrentConfiguration [
 
 	loggingFilename := self savedConfiguration at:
@@ -101,7 +103,7 @@ DSSTONFileLogger >> restoreCurrentConfiguration [
 		                        #currentLoggingFileReference
 ]
 
-{ #category : #private }
+{ #category : 'private' }
 DSSTONFileLogger >> saveCurrentConfiguration [
 
 	self savedConfiguration
@@ -109,7 +111,7 @@ DSSTONFileLogger >> saveCurrentConfiguration [
 		at: #currentLoggingFileReference put: loggingFileReference
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSSTONFileLogger >> savedConfiguration [
 
 	^ savedConfiguration
@@ -117,13 +119,13 @@ DSSTONFileLogger >> savedConfiguration [
 		  ifNotNil: [ savedConfiguration ]
 ]
 
-{ #category : #setup }
+{ #category : 'setup' }
 DSSTONFileLogger >> setupLoggerAfterSurvey: aSurvey [
 
 	self restoreCurrentConfiguration
 ]
 
-{ #category : #setup }
+{ #category : 'setup' }
 DSSTONFileLogger >> setupLoggerBeforeSurvey: aSurvey [
 
 	self saveCurrentConfiguration.
@@ -131,23 +133,23 @@ DSSTONFileLogger >> setupLoggerBeforeSurvey: aSurvey [
 	loggingFileReference := self ensureCreateLoggingFileReference
 ]
 
-{ #category : #setup }
+{ #category : 'setup' }
 DSSTONFileLogger >> setupLoggerForTask: aTask [
 
 	self forceLoggingFileNameFor: aTask
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSTONFileLogger >> stream [
 	^ self loggingFileReference writeStream
 ]
 
-{ #category : #'task management' }
+{ #category : 'task management' }
 DSSTONFileLogger >> surveyFileExtension [
 	^'survey'
 ]
 
-{ #category : #logging }
+{ #category : 'logging' }
 DSSTONFileLogger >> writeToFile: aString [
 
 	| str strSize firstWrite writingPosition |

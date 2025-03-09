@@ -1,10 +1,12 @@
 Class {
-	#name : #DSMouseEnterTextEditorRecord,
-	#superclass : #DSMouseEventRecord,
-	#category : #'DebuggingSpy-Records'
+	#name : 'DSMouseEnterTextEditorRecord',
+	#superclass : 'DSMouseEventRecord',
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEnterTextEditorRecord >> eventName [
 	^'Mouse on text editor'
 ]
