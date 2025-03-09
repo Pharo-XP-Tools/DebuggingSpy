@@ -100,7 +100,20 @@ Logs are serialized in the image working directory, in the *ds-spy* folder:
 
 
 ## Log data to a remote server
-
 ## Read logged data
-### Materialize log history
+### Materialize raw logs
+You need a reference to the log files, for example, to read the one from the screenshot above in the *ds-spy* folder, execute the following code:
+```Smalltalk
+raw := DSSpy materialize: 'ds-spy/eb41bb7a-51ec-0d00-9087-17590e41b7db' asFileReference
+```
+Upon inspection, you obtain a raw list of event, chronologically sorted:
+<img width="695" alt="Capture d’écran 2025-03-09 à 22 50 33" src="https://github.com/user-attachments/assets/5c52dfeb-4f9c-4c61-bbb9-1112d4323157" />
+
+### Build event history
+To build a history with API: TODO
+
+```Smalltalk
+history := DSRecordHistory on: raw
+```
+
 ### Build visualizations
