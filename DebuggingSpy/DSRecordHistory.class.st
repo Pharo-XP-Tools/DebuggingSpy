@@ -460,13 +460,6 @@ DSRecordHistory >> name [
 ]
 
 { #category : 'API-history' }
-DSRecordHistory >> numberOfSeekerActions [
-
-	^ (self records select: [ :r | 
-		   DSSeekerActionRecord withAllSubclasses includes: r class ]) size
-]
-
-{ #category : 'API-history' }
 DSRecordHistory >> numberOfSteps [
 
 	^ (self allRecordsOfKind: DSStepActionRecord) size
