@@ -18,9 +18,7 @@ Class {
 { #category : 'accessing' }
 DSRecordRegistry class >> autoSerialize [
 
-	^ autoSerialize
-		  ifNil: [ autoSerialize := false ]
-		  ifNotNil: [ autoSerialize ]
+	^ autoSerialize ifNil: [ autoSerialize := false ]
 ]
 
 { #category : 'accessing' }
@@ -32,7 +30,7 @@ DSRecordRegistry class >> autoSerialize: anObject [
 { #category : 'accessing' }
 DSRecordRegistry class >> current [
 
-	^ Current ifNil: [ Current := self new ] ifNotNil: [ Current ]
+	^ Current ifNil: [ Current := self new ]
 ]
 
 { #category : 'private' }

@@ -58,11 +58,9 @@ DSSTONFileLogger >> log: aDSEventRecord [
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingDirectory [
 
-	^ loggingDirectory
-		  ifNil: [
-			  loggingDirectory := self defaultLoggingDirectoryName
-				                      asFileReference ]
-		  ifNotNil: [ loggingDirectory ]
+	^ loggingDirectory ifNil: [
+		  loggingDirectory := self defaultLoggingDirectoryName
+			                      asFileReference ]
 ]
 
 { #category : 'logging' }
@@ -75,18 +73,15 @@ DSSTONFileLogger >> loggingDirectory: aStringOrFileReference [
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingFileName [
 
-	^ loggingFilename
-		  ifNil: [ loggingFilename := self defaultLoggingFileName ]
-		  ifNotNil: [ loggingFilename ]
+	^ loggingFilename ifNil: [
+		  loggingFilename := self defaultLoggingFileName ]
 ]
 
 { #category : 'accessing' }
 DSSTONFileLogger >> loggingFileReference [
 
-	^ loggingFileReference
-		  ifNil: [
+	^ loggingFileReference ifNil: [
 		  loggingFileReference := self ensureCreateLoggingFileReference ]
-		  ifNotNil: [ loggingFileReference ]
 ]
 
 { #category : 'initialization' }
@@ -117,9 +112,7 @@ DSSTONFileLogger >> saveCurrentConfiguration [
 { #category : 'accessing' }
 DSSTONFileLogger >> savedConfiguration [
 
-	^ savedConfiguration
-		  ifNil: [ savedConfiguration := Dictionary new ]
-		  ifNotNil: [ savedConfiguration ]
+	^ savedConfiguration ifNil: [ savedConfiguration := Dictionary new ]
 ]
 
 { #category : 'setup' }

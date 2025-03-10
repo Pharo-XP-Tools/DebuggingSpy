@@ -655,9 +655,7 @@ DSRecordHistory >> windows [
 { #category : 'accessing' }
 DSRecordHistory >> windowsHistory [
 
-	^ windowsHistory
-		  ifNil: [ windowsHistory := IdentityDictionary new ]
-		  ifNotNil: [ windowsHistory ]
+	^ windowsHistory ifNil: [ windowsHistory := IdentityDictionary new ]
 ]
 
 { #category : 'accessing' }

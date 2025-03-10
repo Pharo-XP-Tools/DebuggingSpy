@@ -93,9 +93,7 @@ DSSpy class >> log: elements key: key [
 { #category : 'accessing' }
 DSSpy class >> logOnlyWhenTaskStarted [
 
-	^ logOnlyWhenTaskStarted
-		  ifNil: [ logOnlyWhenTaskStarted := false ]
-		  ifNotNil: [ logOnlyWhenTaskStarted ]
+	^ logOnlyWhenTaskStarted ifNil: [ logOnlyWhenTaskStarted := false ]
 ]
 
 { #category : 'accessing' }
@@ -136,9 +134,7 @@ DSSpy class >> logWindowOpened: anEvent [
 { #category : 'accessing' }
 DSSpy class >> logger [
 
-	^ logger
-		  ifNil: [ logger := self defaultLoggerClass new ]
-		  ifNotNil: [ logger ]
+	^ logger ifNil: [ logger := self defaultLoggerClass new ]
 ]
 
 { #category : 'accessing' }
@@ -201,7 +197,7 @@ DSSpy class >> methodRemoved: evt [
 { #category : 'accessing' }
 DSSpy class >> monitor [
 
-	^ monitor ifNil: [ monitor := Monitor new ] ifNotNil: [ monitor ]
+	^ monitor ifNil: [ monitor := Monitor new ]
 ]
 
 { #category : 'events - methods' }
@@ -212,9 +208,8 @@ DSSpy class >> monitorPackageForSourceCodeChanges: aString [
 { #category : 'events - methods' }
 DSSpy class >> packagesMonitoredForSourceCodeChanges [
 
-	^ packagesMonitoredForSourceCodeChanges
-		  ifNil: [ packagesMonitoredForSourceCodeChanges := Set new ]
-		  ifNotNil: [ packagesMonitoredForSourceCodeChanges ]
+	^ packagesMonitoredForSourceCodeChanges ifNil: [
+		  packagesMonitoredForSourceCodeChanges := Set new ]
 ]
 
 { #category : 'accessing' }
@@ -231,9 +226,7 @@ DSSpy class >> recordBreakpointEvent: aBreakpointEvent [
 { #category : 'accessing' }
 DSSpy class >> recordClipboardContent [
 
-	^ recordClipboardContent
-		  ifNil: [ recordClipboardContent := false ]
-		  ifNotNil: [ recordClipboardContent ]
+	^ recordClipboardContent ifNil: [ recordClipboardContent := false ]
 ]
 
 { #category : 'accessing' }
@@ -279,9 +272,7 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 { #category : 'accessing' }
 DSSpy class >> recordSourceCode [
 
-	^ recordSourceCode
-		  ifNil: [ recordSourceCode := false ]
-		  ifNotNil: [ recordSourceCode ]
+	^ recordSourceCode ifNil: [ recordSourceCode := false ]
 ]
 
 { #category : 'accessing' }
@@ -321,9 +312,8 @@ DSSpy class >> resetSpy [
 { #category : 'accessing' }
 DSSpy class >> scopeSourceCodeChangesRecording [
 
-	^ scopeSourceCodeChangesRecording
-		  ifNil: [ scopeSourceCodeChangesRecording := false ]
-		  ifNotNil: [ scopeSourceCodeChangesRecording ]
+	^ scopeSourceCodeChangesRecording ifNil: [
+		  scopeSourceCodeChangesRecording := false ]
 ]
 
 { #category : 'accessing' }
@@ -349,7 +339,5 @@ DSSpy class >> startTask: aTask [
 { #category : 'accessing' }
 DSSpy class >> taskStarted [
 
-	^ taskStarted
-		  ifNil: [ taskStarted := false ]
-		  ifNotNil: [ taskStarted ]
+	^ taskStarted ifNil: [ taskStarted := false ]
 ]

@@ -14,7 +14,7 @@ Trait {
 { #category : 'accessing' }
 DSTCommandForTests >> forTests [
 
-	^ forTests ifNil: [ forTests := false ] ifNotNil: [ forTests ]
+	^ forTests ifNil: [ forTests := false ]
 ]
 
 { #category : 'accessing' }

@@ -29,5 +29,5 @@ DSTaskSuccessRecord >> record: anArray [
 { #category : 'accessing' }
 DSTaskSuccessRecord >> success [
 
-	^ success ifNil: [ success := false ] ifNotNil: [ success ]
+	^ success ifNil: [ success := false ]
 ]
