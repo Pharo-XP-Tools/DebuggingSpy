@@ -74,7 +74,7 @@ DSStepRecord >> eventName [
 	^ sourceRecord eventName
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSStepRecord >> eventSymbol [
 	^'V'
 ]
