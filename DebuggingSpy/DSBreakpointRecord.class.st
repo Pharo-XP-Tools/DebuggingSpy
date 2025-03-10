@@ -24,7 +24,7 @@ DSBreakpointRecord >> eventName [
 	^ sourceRecord eventName
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSBreakpointRecord >> eventSymbol [
 	^self subclassResponsibility
 ]
