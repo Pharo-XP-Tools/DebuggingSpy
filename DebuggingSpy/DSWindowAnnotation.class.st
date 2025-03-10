@@ -34,8 +34,8 @@ DSWindowAnnotation >> index: anObject [
 	index := anObject
 ]
 
-{ #category : 'as yet unclassified' }
-DSWindowAnnotation >> intialize [
+{ #category : 'initialization' }
+DSWindowAnnotation >> initialize [
 	annotation := String new.
 	index := 0
 ]
