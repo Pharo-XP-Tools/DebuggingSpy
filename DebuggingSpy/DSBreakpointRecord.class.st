@@ -43,7 +43,7 @@ DSBreakpointRecord >> once [
 
 { #category : 'printing' }
 DSBreakpointRecord >> printContextAndNode [
-
+	self flag: 'This cannot work with the DSVariableBreakpointRecord subclass: is this even called?'.
 	^ String streamContents: [ :s |
 		  | nodeStream peek |
 		  s << '['.
