@@ -10,7 +10,7 @@ Class {
 	#tag : 'Commands'
 }
 
-{ #category : 'executing' }
+{ #category : 'hooks' }
 DSRunToSelectionCommand >> execute [
 		[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #RUN_TO].
 		^super execute.

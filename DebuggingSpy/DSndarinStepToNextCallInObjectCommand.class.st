@@ -12,7 +12,7 @@ Class {
 	#tag : 'Commands'
 }
 
-{ #category : 'executing' }
+{ #category : 'hooks' }
 DSndarinStepToNextCallInObjectCommand >> execute [
 
 	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_NEXT_CALL_IN_OBJECT].

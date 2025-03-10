@@ -20,7 +20,7 @@ DSTaskSuccessRecord >> eventName [
 	^'Task success ', self success asString
 ]
 
-{ #category : 'accessing' }
+{ #category : 'actions api' }
 DSTaskSuccessRecord >> record: anArray [
 	super record: anArray first.
 	success := anArray second

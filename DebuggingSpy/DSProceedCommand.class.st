@@ -12,7 +12,7 @@ Class {
 	#tag : 'Commands'
 }
 
-{ #category : 'executing' }
+{ #category : 'hooks' }
 DSProceedCommand >> execute [
 
 	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #PROCEED].

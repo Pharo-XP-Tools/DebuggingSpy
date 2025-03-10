@@ -47,7 +47,7 @@ DSVariableBreakpointRecord >> eventName [
 		  s << super eventName ]
 ]
 
-{ #category : 'accessing - analysis' }
+{ #category : 'accessing' }
 DSVariableBreakpointRecord >> submethodTargets [
 
 	^ self targetVariables

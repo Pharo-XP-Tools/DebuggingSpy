@@ -17,7 +17,7 @@ DSAbstractExtendedRecord class >> for: anObject [
 		  yourself
 ]
 
-{ #category : 'actions api' }
+{ #category : 'accessing' }
 DSAbstractExtendedRecord >> dateTime [
 
 	^ sourceRecord dateTime
@@ -34,7 +34,7 @@ DSAbstractExtendedRecord >> record: aSourceRecord [
 	sourceRecord := aSourceRecord 
 ]
 
-{ #category : 'actions api' }
+{ #category : 'accessing' }
 DSAbstractExtendedRecord >> windowId [
 
 	^ sourceRecord windowId

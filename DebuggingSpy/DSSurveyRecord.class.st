@@ -50,7 +50,7 @@ DSSurveyRecord >> printOn: aStream [
 	aStream << survey title
 ]
 
-{ #category : 'accessing' }
+{ #category : 'actions api' }
 DSSurveyRecord >> record: aSurvey [
 	survey := aSurvey
 ]

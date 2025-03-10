@@ -10,7 +10,7 @@ Class {
 	#tag : 'Commands'
 }
 
-{ #category : 'executing' }
+{ #category : 'hooks' }
 DSStepOverCommand >> execute [
 		[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #OVER].
 		^super execute.

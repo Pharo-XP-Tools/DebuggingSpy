@@ -12,7 +12,7 @@ Class {
 	#tag : 'Commands'
 }
 
-{ #category : 'executing' }
+{ #category : 'actions' }
 DSReturnValueCommand >> execute [
 		[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #RETURN_VALUE].
 		self forTests ifTrue: [ ^ self ].
