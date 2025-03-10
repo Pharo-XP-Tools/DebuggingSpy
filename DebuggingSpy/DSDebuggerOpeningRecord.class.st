@@ -29,7 +29,7 @@ DSDebuggerOpeningRecord >> eventName [
 	^'Debugger open'
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'actions api' }
 DSDebuggerOpeningRecord >> primarySourcesOfWindowOpenings [
 
 	^ ({
@@ -45,7 +45,7 @@ DSDebuggerOpeningRecord >> record: aDebugger [
 	super record: { aDebugger currentContext. aDebugger window window }
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'actions api' }
 DSDebuggerOpeningRecord >> secondarySourcesOfWindowOpenings [
 
 	^ ({
@@ -59,7 +59,7 @@ DSDebuggerOpeningRecord >> windowName [
 	^contextName
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSDebuggerOpeningRecord >> windowType [
 	^'Debugger'
 ]

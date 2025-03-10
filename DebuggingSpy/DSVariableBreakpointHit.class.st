@@ -6,7 +6,7 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSVariableBreakpointHit >> eventSymbol [
 	^'*vb'
 ]

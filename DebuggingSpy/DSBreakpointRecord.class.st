@@ -6,17 +6,17 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSBreakpointRecord class >> breakpointadded: event [ 
 	^ self subclassResponsibility
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSBreakpointRecord class >> breakpointhit: event [ 
 	^ self subclassResponsibility
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSBreakpointRecord class >> breakpointremoved: event [ 
 	^ self subclassResponsibility
 ]

@@ -6,19 +6,19 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSVariableBreakpointRecord class >> breakpointadded: event [
 
 	^DSVariableBreakpointAdd for: event
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSVariableBreakpointRecord class >> breakpointhit: event [
 
 	^DSVariableBreakpointHit for: event
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSVariableBreakpointRecord class >> breakpointremoved: event [
 
 	^DSVariableBreakpointRemoved for: event
