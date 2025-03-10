@@ -626,10 +626,10 @@ DSRecordHistory >> validateWindows [
 				add: #closing -> lastEvent ].
 
 		w events do: [ :e |
-			(e dateTime >= firstEvent dateTime and: [
-				 e dateTime <= lastEvent dateTime ]) ifFalse: [
-				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
-					add: #timestamp -> e ] ] ].
+			(e dateTime between: firstEvent dateTime and: lastEvent dateTime)
+				ifFalse: [
+					(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
+						add: #timestamp -> e ] ] ]
 
 	"erroneousWindows ifNotEmpty: [
 		Warning signal: (String streamContents: [ :str |
