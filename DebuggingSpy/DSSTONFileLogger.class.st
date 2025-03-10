@@ -66,7 +66,7 @@ DSSTONFileLogger >> loggingDirectory [
 { #category : 'logging' }
 DSSTONFileLogger >> loggingDirectory: aStringOrFileReference [
 
-	loggingDirectory := aStringOrFileReference asFileReferenceWithRelativePath / self defaultLoggingDirectoryName asFileReference.
+	loggingDirectory := aStringOrFileReference asFileReference / self defaultLoggingDirectoryName.
 	loggingDirectory ensureCreateDirectory
 ]
 
