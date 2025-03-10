@@ -15,7 +15,7 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection [
 
 	^ self new
@@ -25,7 +25,7 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		  yourself
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection window: aDSWindowRecord [
 
 	^ (self

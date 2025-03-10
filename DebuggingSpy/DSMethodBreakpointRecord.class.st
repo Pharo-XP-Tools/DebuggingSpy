@@ -6,21 +6,21 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSMethodBreakpointRecord class >> breakpointadded: event [
 
 	^DSBreakpointAdd for: event
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSMethodBreakpointRecord class >> breakpointhit: event [
 
 	^DSBreakpointHit for: event
 	
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSMethodBreakpointRecord class >> breakpointremoved: event [
 
 	^DSBreakpointRemoved for: event

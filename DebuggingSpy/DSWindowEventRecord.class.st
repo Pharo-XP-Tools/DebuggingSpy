@@ -47,7 +47,7 @@ DSWindowEventRecord >> windowName: anObject [
 	windowName := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'actions api' }
 DSWindowEventRecord >> windowType [
 
 	| rs type |
