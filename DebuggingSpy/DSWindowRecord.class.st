@@ -44,7 +44,7 @@ DSWindowRecord >> addIdleTime: aDuration [
 	idleTime asSeconds = 3800 ifTrue: [ self halt ].
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'building' }
 DSWindowRecord >> buildEvents: aCollectionOfEvents [
 
 	events := aCollectionOfEvents.
@@ -75,7 +75,7 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 	name := self windowNameFor: events first
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'building' }
 DSWindowRecord >> computeActivePeriods [
 
 	| activityStartStopEvents start stop previous |
@@ -215,7 +215,7 @@ DSWindowRecord >> windowId [
 	^events first windowId
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSWindowRecord >> windowNameFor: aDSDebuggerOpeningRecord [
 
 	^ [ aDSDebuggerOpeningRecord windowName ]
@@ -223,7 +223,7 @@ DSWindowRecord >> windowNameFor: aDSDebuggerOpeningRecord [
 		  do: [ aDSDebuggerOpeningRecord windowId ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSWindowRecord >> windowTypeFor: aDSDebuggerOpeningRecord [ 
 	
 	^aDSDebuggerOpeningRecord windowType

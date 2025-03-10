@@ -20,7 +20,7 @@ DSInspectObjectRecord >> windowName [
 	^ inspectedObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSInspectObjectRecord >> windowType [
 	^'Inspector'
 ]

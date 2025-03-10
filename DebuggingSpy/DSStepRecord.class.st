@@ -6,7 +6,7 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> for: anEvent [
 
 	| step |
@@ -16,49 +16,49 @@ DSStepRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> into: aDSDebuggerActionRecord [
 
 	^ DSIntoRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> over: aDSDebuggerActionRecord [
 
 	^ DSOverRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> proceed: aDSDebuggerActionRecord [
 
 	^ DSProceedRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> restart: aDSDebuggerActionRecord [
 
 	^ DSRestartRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> return: aDSDebuggerActionRecord [
 
 	^ DSReturnRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> runto: aDSDebuggerActionRecord [
 
 	^ DSRunToRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> sindarinStep: aDSDebuggerActionRecord [
 
 	^ DSSindarinStepRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'instance creation' }
 DSStepRecord class >> through: aDSDebuggerActionRecord [
 
 	^ DSThroughRecord for: aDSDebuggerActionRecord

@@ -19,7 +19,7 @@ DSMouseEnterTextEditorRecord >> windowName [
 	^ windowId
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSMouseEnterTextEditorRecord >> windowType [
 
 	^ 'External Window'

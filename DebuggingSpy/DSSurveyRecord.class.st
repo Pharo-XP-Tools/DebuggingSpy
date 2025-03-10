@@ -23,7 +23,7 @@ DSSurveyRecord >> collectAnswers [
 	^survey collectAnswers
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'actions api' }
 DSSurveyRecord >> collectAnswersFromQuestions [
 
 	^ survey collectAnswersFromQuestions
@@ -65,7 +65,7 @@ DSSurveyRecord >> windowName [
 	^survey title
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSSurveyRecord >> windowType [
 	^'Survey'
 ]
