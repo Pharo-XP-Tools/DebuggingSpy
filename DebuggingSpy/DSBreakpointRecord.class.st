@@ -6,6 +6,21 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
+{ #category : 'as yet unclassified' }
+DSBreakpointRecord class >> breakpointadded: event [ 
+	^ self subclassResponsibility
+]
+
+{ #category : 'as yet unclassified' }
+DSBreakpointRecord class >> breakpointhit: event [ 
+	^ self subclassResponsibility
+]
+
+{ #category : 'as yet unclassified' }
+DSBreakpointRecord class >> breakpointremoved: event [ 
+	^ self subclassResponsibility
+]
+
 { #category : 'accessing' }
 DSBreakpointRecord >> breakpointHash [
 
