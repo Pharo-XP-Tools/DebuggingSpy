@@ -119,6 +119,7 @@ The history is obtained by executing:
 history := DSRecordHistory on: raw
 ```
 Upon inspection, the history looks like this:
+
 ![Capture d’écran 2025-03-10 à 14 08 43](https://github.com/user-attachments/assets/7b4464a5-7f5e-4b67-a6e5-3079cad98fcf)
 
 The history object exposes data organized in different perspectives:
@@ -135,6 +136,13 @@ Some windows may have unusual names, such as:
 - **Weird titles like "Color: a color window"** → this is an application window, typically the program being debugged, rather than a tool window.
 
 - Windows that correspond to the opening of a debugger, and only those, have a *source event* indicating which event triggered the window's opening. This applies only at the *window* level, not at the *jump* level. A jump is triggered by a mouse movement from one window to another. To determine the event that triggered the opening of the window being jumped to, one must use *"window sourceEvent"* from the jump.
+
+- The activity records, also referred to as *jumps* or *basic blocks* depending on the context, now respond to *windowId*. This information indicates that the activity was performed in a window of the same id. This is a lazy accessor.
+
+The history object exposes an API to explore the logged execution: (TODO: the API should be documented)
+
+![Capture d’écran 2025-03-10 à 14 37 33](https://github.com/user-attachments/assets/95592964-d3c8-4bae-92d0-5ee2aa82f6b1)
+
 
 ### Build visualizations
 TODO
