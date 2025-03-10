@@ -100,6 +100,8 @@ Logs are serialized in the image working directory, in the *ds-spy* folder:
 
 
 ## Log data to a remote server
+TODO
+
 ## Read logged data
 ### Materialize raw logs
 You need a reference to the log files, for example, to read the one from the screenshot above in the *ds-spy* folder, execute the following code:
@@ -110,10 +112,27 @@ Upon inspection, you obtain a raw list of event, chronologically sorted:
 <img width="695" alt="Capture d’écran 2025-03-09 à 22 50 33" src="https://github.com/user-attachments/assets/5c52dfeb-4f9c-4c61-bbb9-1112d4323157" />
 
 ### Build event history
-To build a history with API: TODO
+DebuggingSpy provides a history object with an API to explore what happened during logging.
+The history is obtained by executing:
 
 ```Smalltalk
 history := DSRecordHistory on: raw
 ```
+Upon inspection, the history looks like this:
+![Capture d’écran 2025-03-10 à 14 08 43](https://github.com/user-attachments/assets/7b4464a5-7f5e-4b67-a6e5-3079cad98fcf)
+
+The history object exposes data organized in different perspectives:
+- **records** → the sequential list of logged events.  
+
+- **windows** → the complete list of open windows. Each window contains its own list of events, a list of events grouped by active periods (*activePeriods*, i.e., each period marks an interruption in the window's activity), and the source event (*sourceEvent*) that triggered the window's opening. *(Note: this information is difficult to retrieve automatically and requires manual interpretation to be useful.)*  
+
+- **windowJumps** → the sequential list of activity per window. This allows us to track activity within each window until a switch occurs, showing which window the user jumps to, what they do there, and when they return. Each window jump includes a start event (*startEvent*), an end event (*stopEvent*), a collection of events (*events*) recorded from entry to exit of the window, and the window linked to the activity (*window*, see the previous point). Each window jump corresponds to an activity period from the previous point.  
+
+Some windows may have unusual names, such as:  
+
+- **external window** → a window that was already open before measurements began (typically, in our data, this is the window displaying instructions).  
+
+- **Weird titles like "Color: a color window"** → this is an application window, typically the program being debugged, rather than a tool window.
 
 ### Build visualizations
+TODO
