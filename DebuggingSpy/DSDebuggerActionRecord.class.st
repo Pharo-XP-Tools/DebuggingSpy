@@ -79,9 +79,3 @@ DSDebuggerActionRecord >> eventName: anObject [
 
 	eventName := anObject
 ]
-
-{ #category : 'actions api' }
-DSDebuggerActionRecord >> record: aContext [ 
-	super record: aContext.
-	
-]
