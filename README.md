@@ -134,5 +134,7 @@ Some windows may have unusual names, such as:
 
 - **Weird titles like "Color: a color window"** → this is an application window, typically the program being debugged, rather than a tool window.
 
+- Windows that correspond to the opening of a debugger, and only those, have a *source event* indicating which event triggered the window's opening. This applies only at the *window* level, not at the *jump* level. A jump is triggered by a mouse movement from one window to another. To determine the event that triggered the opening of the window being jumped to, one must use *"window sourceEvent"* from the jump.
+
 ### Build visualizations
 TODO
