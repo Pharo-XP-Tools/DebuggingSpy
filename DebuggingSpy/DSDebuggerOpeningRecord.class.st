@@ -45,7 +45,7 @@ DSDebuggerOpeningRecord >> record: aDebugger [
 	super record: { aDebugger currentContext. aDebugger window window }
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSDebuggerOpeningRecord >> secondarySourcesOfWindowOpenings [
 
 	^ ({
@@ -54,12 +54,12 @@ DSDebuggerOpeningRecord >> secondarySourcesOfWindowOpenings [
 		  flattened
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSDebuggerOpeningRecord >> windowName [
 	^contextName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSDebuggerOpeningRecord >> windowType [
 	^'Debugger'
 ]

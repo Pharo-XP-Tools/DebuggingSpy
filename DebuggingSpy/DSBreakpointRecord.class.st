@@ -1,45 +1,47 @@
 Class {
-	#name : #DSBreakpointRecord,
-	#superclass : #DSAbstractExtendedRecord,
-	#category : #'DebuggingSpy-Records-Extensions'
+	#name : 'DSBreakpointRecord',
+	#superclass : 'DSAbstractExtendedRecord',
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> breakpointHash [
 
 	^ sourceRecord breakpointHash
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DSBreakpointRecord >> canOpenDebuggers [
 
 	^ sourceRecord canOpenDebuggers
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> eventName [
 
 	^ sourceRecord eventName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSBreakpointRecord >> eventSymbol [
 	^self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> objectCentric [
 
 	^ sourceRecord objectCentric
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> once [
 
 	^ sourceRecord once
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSBreakpointRecord >> printContextAndNode [
 
 	^ String streamContents: [ :s |
@@ -51,24 +53,24 @@ DSBreakpointRecord >> printContextAndNode [
 		  s << self method]
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSBreakpointRecord >> printTargetInstance: anObject [
 	^sourceRecord printTargetInstance: anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> submethodTargets [
 
 	^ self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> target [
 
 	^ sourceRecord target
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSBreakpointRecord >> targetClassOrMethod [
 
 	^ self subclassResponsibility

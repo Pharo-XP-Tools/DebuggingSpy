@@ -1,3 +1,6 @@
+"
+This record is generated when the mouse enters an item in a text editor.
+"
 Class {
 	#name : 'DSMouseEnterTextEditorRecord',
 	#superclass : 'DSMouseEventRecord',
@@ -11,12 +14,12 @@ DSMouseEnterTextEditorRecord >> eventName [
 	^'Mouse on text editor'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEnterTextEditorRecord >> windowName [
 	^ windowId
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSMouseEnterTextEditorRecord >> windowType [
 
 	^ 'External Window'

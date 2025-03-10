@@ -1,13 +1,15 @@
 Class {
-	#name : #DSMergedWindowActivityRecord,
-	#superclass : #DSWindowActivityRecord,
+	#name : 'DSMergedWindowActivityRecord',
+	#superclass : 'DSWindowActivityRecord',
 	#instVars : [
 		'activities'
 	],
-	#category : #'DebuggingSpy-Records-Extensions'
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMergedWindowActivityRecord >> activities [
 
 	^ activities
@@ -15,13 +17,13 @@ DSMergedWindowActivityRecord >> activities [
 		  ifNotNil: [ activities ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMergedWindowActivityRecord >> activities: anObject [
 
 	activities := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMergedWindowActivityRecord >> duration [
 
 	^ (self activities
@@ -29,7 +31,7 @@ DSMergedWindowActivityRecord >> duration [
 		   into: [ :sum :n | sum + n duration asSeconds ]) asSeconds
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMergedWindowActivityRecord >> eventName [
 	
 	^ String streamContents: [ :ws |
@@ -39,19 +41,19 @@ DSMergedWindowActivityRecord >> eventName [
 		  ws << self duration humanReadablePrintString ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMergedWindowActivityRecord >> events [
 
 	^ (self activities collect: #events) flattened
 ]
 
-{ #category : #merging }
+{ #category : 'merging' }
 DSMergedWindowActivityRecord >> merge: aDSWindowActivityRecord [
 
 	self mergeWith: aDSWindowActivityRecord
 ]
 
-{ #category : #merging }
+{ #category : 'merging' }
 DSMergedWindowActivityRecord >> mergeWith: anActivityRecord [
 	self activities add: anActivityRecord.
 	windowId ifNil:[windowId := anActivityRecord windowId].

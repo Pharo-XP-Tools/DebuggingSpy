@@ -1,6 +1,6 @@
 Class {
-	#name : #DSWindowActivityRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSWindowActivityRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'start',
 		'stop',
@@ -10,10 +10,12 @@ Class {
 		'next',
 		'annotation'
 	],
-	#category : #'DebuggingSpy-Records-Extensions'
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection [
 
 	^ self new
@@ -23,7 +25,7 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		  yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection window: aDSWindowRecord [
 
 	^ (self
@@ -34,25 +36,25 @@ DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseL
 		  yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> annotation [
 
 	^ annotation ifNil:[annotation := DSWindowAnnotation new]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> annotation: anObject [
 
 	annotation := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> duration [
 
 	^ events last dateTime - events first dateTime
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> eventName [
 
 	^ String streamContents: [ :ws |
@@ -62,26 +64,26 @@ DSWindowActivityRecord >> eventName [
 		  ws << self duration humanReadablePrintString ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> events [
 
 	^ events
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> events: anObject [
 
 	events := anObject
 ]
 
-{ #category : #inspections }
+{ #category : 'inspections' }
 DSWindowActivityRecord >> inspectionAnnotation [
 
 	<inspectorPresentationOrder: 50 title: 'Annotation'>
 	^ DSWindowElementAnnotationPresenter on: self
 ]
 
-{ #category : #merging }
+{ #category : 'merging' }
 DSWindowActivityRecord >> merge: aDSWindowActivityRecord [
 	|merge become|
 	merge := DSMergedWindowActivityRecord new.
@@ -91,67 +93,67 @@ DSWindowActivityRecord >> merge: aDSWindowActivityRecord [
 	become mergeWith: aDSWindowActivityRecord
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> next [
 
 	^ next
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> next: anObject [
 
 	next := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> previous [
 
 	^ previous
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> previous: anObject [
 
 	previous := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> start [
 
 	^ start
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> start: anObject [
 
 	start := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> stop [
 
 	^ stop
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> stop: anObject [
 
 	stop := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> window [
 
 	^ window
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> window: anObject [
 
 	window := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowActivityRecord >> windowId [
 
 	^ windowId

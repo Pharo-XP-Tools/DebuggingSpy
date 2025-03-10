@@ -1,13 +1,15 @@
 Class {
-	#name : #DSAbstractExtendedRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSAbstractExtendedRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'sourceRecord'
 	],
-	#category : #'DebuggingSpy-Records-Extensions'
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSAbstractExtendedRecord class >> for: anObject [
 
 	^ self new
@@ -15,24 +17,24 @@ DSAbstractExtendedRecord class >> for: anObject [
 		  yourself
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractExtendedRecord >> dateTime [
 
 	^ sourceRecord dateTime
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractExtendedRecord >> realRecord [
 
 	^ sourceRecord
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractExtendedRecord >> record: aSourceRecord [
 	sourceRecord := aSourceRecord 
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSAbstractExtendedRecord >> windowId [
 
 	^ sourceRecord windowId

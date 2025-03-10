@@ -47,7 +47,7 @@ DSWindowEventRecord >> windowName: anObject [
 	windowName := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowEventRecord >> windowType [
 
 	| rs type |

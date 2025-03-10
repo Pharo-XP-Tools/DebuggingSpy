@@ -14,13 +14,13 @@ DSInspectObjectRecord >> eventName [
 	^'Inspect object'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSInspectObjectRecord >> windowName [
 
 	^ inspectedObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSInspectObjectRecord >> windowType [
 	^'Inspector'
 ]

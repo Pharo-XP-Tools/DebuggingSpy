@@ -1,28 +1,30 @@
 Class {
-	#name : #DSVariableBreakpointRecord,
-	#superclass : #DSBreakpointRecord,
-	#category : #'DebuggingSpy-Records-Extensions'
+	#name : 'DSVariableBreakpointRecord',
+	#superclass : 'DSBreakpointRecord',
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSVariableBreakpointRecord class >> breakpointadded: event [
 
 	^DSVariableBreakpointAdd for: event
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSVariableBreakpointRecord class >> breakpointhit: event [
 
 	^DSVariableBreakpointHit for: event
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSVariableBreakpointRecord class >> breakpointremoved: event [
 
 	^DSVariableBreakpointRemoved for: event
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSVariableBreakpointRecord class >> for: anEvent [
 
 	| breakpoint |
@@ -32,12 +34,12 @@ DSVariableBreakpointRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointRecord >> accessStrategy [
 	^sourceRecord accessStrategy
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointRecord >> eventName [
 
 	^ String streamContents: [ :s |
@@ -45,18 +47,18 @@ DSVariableBreakpointRecord >> eventName [
 		  s << super eventName ]
 ]
 
-{ #category : #'accessing - analysis' }
+{ #category : 'accessing - analysis' }
 DSVariableBreakpointRecord >> submethodTargets [
 
 	^ self targetVariables
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointRecord >> targetClassOrMethod [
 	^sourceRecord targetClassOrMethod
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSVariableBreakpointRecord >> targetVariables [
 	^sourceRecord targetVariables
 ]

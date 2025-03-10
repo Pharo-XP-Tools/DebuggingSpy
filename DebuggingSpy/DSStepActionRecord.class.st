@@ -1,3 +1,8 @@
+"
+I record a debugging action from an opened debugger.
+In addition to the debugger window id, I also record the signature of the context I am performing the action as well as the current node of that context.
+In confidentiality mode, this signature and node should be replaced by the current pc instead.
+"
 Class {
 	#name : 'DSStepActionRecord',
 	#superclass : 'DSAbstractEventRecord',

@@ -18,7 +18,7 @@ DSMouseEnterTableItemRecord >> eventName [
 		  str << itemElement ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DSMouseEnterTableItemRecord >> isOverTestCase [
 
 	^ itemElement isString and: [
@@ -26,7 +26,7 @@ DSMouseEnterTableItemRecord >> isOverTestCase [
 			  (itemElement copyFrom: 1 to: 4) = 'test' ] ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMouseEnterTableItemRecord >> windowName [
 	^windowId
 ]

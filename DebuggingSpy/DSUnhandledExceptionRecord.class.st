@@ -2,8 +2,8 @@
 I record unhandled exceptions with their context information
 "
 Class {
-	#name : #DSUnhandledExceptionRecord,
-	#superclass : #DSAbstractEventRecord,
+	#name : 'DSUnhandledExceptionRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
 		'exceptionClass',
 		'errorString',
@@ -11,40 +11,42 @@ Class {
 		'node',
 		'method'
 	],
-	#category : #'DebuggingSpy-Records'
+	#category : 'DebuggingSpy-Records',
+	#package : 'DebuggingSpy',
+	#tag : 'Records'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> errorString [
 	^ errorString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> eventName [
 	^exceptionClass 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> exceptionClass [
 	^ exceptionClass
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> method [
 	^ method
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> node [
 	^ node
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSUnhandledExceptionRecord >> receiver [
 	^ receiver
 ]
 
-{ #category : #'actions api' }
+{ #category : 'actions api' }
 DSUnhandledExceptionRecord >> record: anException [
 
 	|signalerContext context|

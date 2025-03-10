@@ -1,6 +1,6 @@
 Class {
-	#name : #DSWindowRecord,
-	#superclass : #Object,
+	#name : 'DSWindowRecord',
+	#superclass : 'Object',
 	#instVars : [
 		'type',
 		'name',
@@ -10,27 +10,29 @@ Class {
 		'idleTime',
 		'trueIdleTime'
 	],
-	#category : #'DebuggingSpy-Records-Extensions'
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSWindowRecord class >> for: events [ 
 	^self new buildEvents: events
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> activePeriods [
 
 	^ activePeriods
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> activePeriods: anObject [
 
 	activePeriods := anObject
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 DSWindowRecord >> addIdleTime: aDuration [
 	idleTime ifNil: [
 		idleTime := aDuration.
@@ -42,7 +44,7 @@ DSWindowRecord >> addIdleTime: aDuration [
 	idleTime asSeconds = 3800 ifTrue: [ self halt ].
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowRecord >> buildEvents: aCollectionOfEvents [
 
 	events := aCollectionOfEvents.
@@ -73,7 +75,7 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 	name := self windowNameFor: events first
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowRecord >> computeActivePeriods [
 
 	| activityStartStopEvents start stop previous |
@@ -107,44 +109,44 @@ DSWindowRecord >> computeActivePeriods [
 		previous := next ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> events [
 
 	^ events
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> events: anObject [
 
 	events := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> idleTime [
 
 	^ idleTime ifNil: [ idleTime := 0 seconds ] ifNotNil: [ idleTime ]
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 DSWindowRecord >> isDebugger [
 
 	events ifEmpty: [ ^ false ].
 	^ events first class == DSDebuggerOpeningRecord
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> name [
 
 	^ name
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> name: anObject [
 
 	name := anObject
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSWindowRecord >> printOn: ws [
 	ws << '['.
 	self printTypeOn: ws.
@@ -153,7 +155,7 @@ DSWindowRecord >> printOn: ws [
 	ws << (name isString ifTrue:[name] ifFalse:[name printString]) 
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSWindowRecord >> printTypeOn: aStream [
 
 	type isString ifTrue: [
@@ -162,19 +164,19 @@ DSWindowRecord >> printTypeOn: aStream [
 	aStream << 'External Window'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> sourceEvent [
 
 	^ sourceEvent
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> sourceEvent: anObject [
 
 	sourceEvent := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> totalTime [
 
 	^ (activePeriods
@@ -182,7 +184,7 @@ DSWindowRecord >> totalTime [
 		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> trueIdleTime [
 
 	^ trueIdleTime
@@ -190,30 +192,30 @@ DSWindowRecord >> trueIdleTime [
 		  ifNotNil: [ trueIdleTime ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> trueIdleTime: anObject [
 
 	trueIdleTime := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> type [
 
 	^ type
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> type: anObject [
 
 	type := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSWindowRecord >> windowId [ 
 	^events first windowId
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowRecord >> windowNameFor: aDSDebuggerOpeningRecord [
 
 	^ [ aDSDebuggerOpeningRecord windowName ]
@@ -221,7 +223,7 @@ DSWindowRecord >> windowNameFor: aDSDebuggerOpeningRecord [
 		  do: [ aDSDebuggerOpeningRecord windowId ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSWindowRecord >> windowTypeFor: aDSDebuggerOpeningRecord [ 
 	
 	^aDSDebuggerOpeningRecord windowType

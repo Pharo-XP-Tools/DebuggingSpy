@@ -1,3 +1,6 @@
+"
+I log DSRecords as STON into files.
+"
 Class {
 	#name : 'DSSTONFileLogger',
 	#superclass : 'Object',

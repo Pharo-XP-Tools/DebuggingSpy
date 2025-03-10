@@ -1,15 +1,17 @@
 Class {
-	#name : #DSWindowElementAnnotationPresenter,
-	#superclass : #StInspection,
+	#name : 'DSWindowElementAnnotationPresenter',
+	#superclass : 'StInspection',
 	#instVars : [
 		'windowElement',
 		'indexField',
 		'annotationText'
 	],
-	#category : #'DebuggingSpy-Presenters'
+	#category : 'DebuggingSpy-Presenters',
+	#package : 'DebuggingSpy',
+	#tag : 'Presenters'
 }
 
-{ #category : #layout }
+{ #category : 'layout' }
 DSWindowElementAnnotationPresenter >> defaultLayout [
 
 	^ SpBoxLayout newTopToBottom
@@ -23,7 +25,7 @@ DSWindowElementAnnotationPresenter >> defaultLayout [
 		  yourself
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 DSWindowElementAnnotationPresenter >> initializePresenters [ 
 	super initializePresenters.
 	
@@ -39,7 +41,7 @@ DSWindowElementAnnotationPresenter >> initializePresenters [
 
 ]
 
-{ #category : #'accessing - model' }
+{ #category : 'accessing - model' }
 DSWindowElementAnnotationPresenter >> setModelBeforeInitialization: aDSWindowOrWindowActivity [
 
 	windowElement := aDSWindowOrWindowActivity

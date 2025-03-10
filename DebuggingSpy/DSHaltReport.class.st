@@ -1,10 +1,12 @@
 Class {
-	#name : #DSHaltReport,
-	#superclass : #DSExceptionReport,
-	#category : #'DebuggingSpy-Records-Extensions'
+	#name : 'DSHaltReport',
+	#superclass : 'DSExceptionReport',
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSHaltReport >> printOn: aStream [
 
 	super printOn: aStream.

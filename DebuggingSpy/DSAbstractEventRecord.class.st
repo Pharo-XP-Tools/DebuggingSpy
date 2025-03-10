@@ -55,7 +55,6 @@ DSAbstractEventRecord >> >= aDSAbstractRecord [
 	^self dateTime >= aDSAbstractRecord dateTime
 ]
 
-
 { #category : 'testing' }
 DSAbstractEventRecord >> canOpenDebuggers [
 
@@ -123,7 +122,7 @@ DSAbstractEventRecord >> windowId: anObject [
 	windowId := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSAbstractEventRecord >> windowType [
 	^'Unknown Window'
 ]

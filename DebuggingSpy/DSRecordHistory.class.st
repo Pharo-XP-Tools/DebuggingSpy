@@ -1,3 +1,6 @@
+"
+I represent a user experiment record and expose an API to extract data from this record.
+"
 Class {
 	#name : 'DSRecordHistory',
 	#superclass : 'Object',
@@ -107,7 +110,7 @@ DSRecordHistory >> breakpointRemove [
 DSRecordHistory >> buildWindowHistory [
 
 	self windowsHistory removeAll.
-	self fixMissingWindowNames.
+	self fixMissingWindowIds.
 	self records do: [ :r | r recordWindowHistoryOn: self ].
 	self fixWindowRecordKeysNames
 ]
@@ -215,7 +218,6 @@ DSRecordHistory >> detectTimeDiscrepancies [
 	
 ]
 
-
 { #category : 'private - history' }
 DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecordList [
 
@@ -260,7 +262,6 @@ DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecord
 DSRecordHistory >> eventsAfter: aDateAndTime [ 
 	^records select:[:e| e dateTime > aDateAndTime]
 ]
-
 
 { #category : 'API-history' }
 DSRecordHistory >> eventsBefore: aDateAndTime [ 
@@ -310,20 +311,38 @@ DSRecordHistory >> findWindowRecordKeyForID: id [
 				  yourself ]
 ]
 
-
 { #category : 'private - history' }
 DSRecordHistory >> fixMissingWindowIds [
 
-
+	| openedWindowStack |
+	openedWindowStack := Stack new.
 	windowNames := Dictionary new.
-	(records reject: [ :e | e windowId isNil ]) do: [ :r |
-		(r respondsTo: #windowName) ifTrue: [
-			windowNames
-				at: (r windowId ifNil: [ self halt ])
-				ifAbsentPut: [ r windowName ifNil: [ self halt ] ] ] ]
+
+	records do: [ :r | 
+		r windowId ifNotNil: [ 
+			({ 
+				 DSWindowClosedRecord.
+				 DSMouseLeaveWindowRecord } includes: r class) ifTrue: [ 
+				openedWindowStack removeAllSuchThat: [ :id | r windowId = id ] ].
+
+			({ 
+				 DSWindowActivatedRecord.
+				 DSMouseEnterWindowRecord.
+				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
+				openedWindowStack push: r windowId ].
+
+			({ 
+				 DSWindowActivatedRecord.
+				 DSWindowOpenedRecord } includes: r class) ifTrue: [ 
+				(#( nil '' ) includes: r windowName) ifFalse: [ 
+					windowNames at: r windowId put: r windowName ] ] ].
+		r windowId ifNil: [ 
+			openedWindowStack isEmpty
+				ifTrue: [ r windowId: -1 ]
+				ifFalse: [ r windowId: openedWindowStack top ] ] ]
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> fixWindowIdsOf: aCollection [
 
 	| windowlessRecords validEvents enterAndLeaveSequences currentWindowId currentSequence |
@@ -362,7 +381,6 @@ DSRecordHistory >> fixWindowRecordKeysNames [
 	windowNames keysAndValuesDo: [ :id :name | 
 		(self findWindowRecordKeyForID: id) windowName: name ]
 ]
-
 
 { #category : 'API-history' }
 DSRecordHistory >> haltAnalysisMap [
@@ -412,7 +430,6 @@ DSRecordHistory >> mergedWindowJumps [
 ]
 
 { #category : 'API-history' }
-
 DSRecordHistory >> methodsAdded [
 
 	^ (self allRecordsOfKind: DSMethodAddedRecord) size
@@ -441,7 +458,6 @@ DSRecordHistory >> name [
 
 	^ self user, ': ', self taskName, '(', tag, ')'
 ]
-
 
 { #category : 'API-history' }
 DSRecordHistory >> numberOfSeekerActions [
@@ -487,7 +503,7 @@ DSRecordHistory >> processRecords: array [
 	self validateWindows
 ]
 
-{ #category : #'private - history' }
+{ #category : 'private - history' }
 DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 
 	| sortedDebuggerWindows recordsCopy |
@@ -515,7 +531,6 @@ DSRecordHistory >> records: anObject [
 
 	records := anObject
 ]
-
 
 { #category : 'initialization' }
 DSRecordHistory >> reprocessRecords [
@@ -568,7 +583,6 @@ DSRecordHistory >> user: anObject [
 
 	user := anObject
 ]
-
 
 { #category : 'private - history' }
 DSRecordHistory >> validateMergedJumps [

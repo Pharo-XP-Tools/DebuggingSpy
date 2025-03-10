@@ -1,10 +1,12 @@
 Class {
-	#name : #DSStepRecord,
-	#superclass : #DSAbstractExtendedRecord,
-	#category : #'DebuggingSpy-Records-Extensions'
+	#name : 'DSStepRecord',
+	#superclass : 'DSAbstractExtendedRecord',
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> for: anEvent [
 
 	| step |
@@ -14,85 +16,85 @@ DSStepRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> into: aDSDebuggerActionRecord [
 
 	^ DSIntoRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> over: aDSDebuggerActionRecord [
 
 	^ DSOverRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> proceed: aDSDebuggerActionRecord [
 
 	^ DSProceedRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> restart: aDSDebuggerActionRecord [
 
 	^ DSRestartRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> return: aDSDebuggerActionRecord [
 
 	^ DSReturnRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> runto: aDSDebuggerActionRecord [
 
 	^ DSRunToRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> sindarinStep: aDSDebuggerActionRecord [
 
 	^ DSSindarinStepRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord class >> through: aDSDebuggerActionRecord [
 
 	^ DSThroughRecord for: aDSDebuggerActionRecord
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepRecord >> context [
 	^sourceRecord context
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepRecord >> eventName [
 	^ sourceRecord eventName
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSStepRecord >> eventSymbol [
 	^'V'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepRecord >> node [
 	^sourceRecord node
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSStepRecord >> printContextAndNode [
 	^sourceRecord printContextAndNode 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepRecord >> receiver [
 	^sourceRecord receiver
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSStepRecord >> receiverClass [
 	^sourceRecord receiverClass
 ]

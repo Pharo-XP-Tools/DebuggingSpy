@@ -1,32 +1,34 @@
 Class {
-	#name : #DSExceptionReport,
-	#superclass : #Object,
+	#name : 'DSExceptionReport',
+	#superclass : 'Object',
 	#instVars : [
 		'records',
 		'method'
 	],
-	#category : #'DebuggingSpy-Records-Extensions'
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #adding }
+{ #category : 'adding' }
 DSExceptionReport >> add: aBreakpointRecord [
 
 	self records add: aBreakpointRecord
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSExceptionReport >> method [
 
 	^ method
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSExceptionReport >> method: anObject [
 
 	method := anObject
 ]
 
-{ #category : #printing }
+{ #category : 'printing' }
 DSExceptionReport >> printOn: aStream [
 
 	aStream << method.
@@ -35,7 +37,7 @@ DSExceptionReport >> printOn: aStream [
 	aStream << records size asString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSExceptionReport >> records [
 
 	^ records
@@ -43,7 +45,7 @@ DSExceptionReport >> records [
 		  ifNotNil: [ records ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSExceptionReport >> records: anObject [
 
 	records := anObject

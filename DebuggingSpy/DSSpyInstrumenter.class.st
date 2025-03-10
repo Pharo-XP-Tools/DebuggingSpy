@@ -151,7 +151,6 @@ stackTable := self newList.
 	stackHeader label: ''Stack'''
 ]
 
-
 { #category : 'breakpoints' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
 	Exception compile: 'raiseUnhandledError
@@ -163,7 +162,6 @@ DSSpyInstrumenter >> instrumentExceptionSignalling [
 ]
 
 { #category : 'inspector' }
-
 DSSpyInstrumenter >> instrumentExpandAttribute [
 
 	FTBasicItem compile: 'expandAndRefresh

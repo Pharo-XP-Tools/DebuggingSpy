@@ -1,31 +1,33 @@
 Class {
-	#name : #DSMethodBreakpointRecord,
-	#superclass : #DSBreakpointRecord,
-	#category : #'DebuggingSpy-Records-Extensions'
+	#name : 'DSMethodBreakpointRecord',
+	#superclass : 'DSBreakpointRecord',
+	#category : 'DebuggingSpy-Records-Extensions',
+	#package : 'DebuggingSpy',
+	#tag : 'Records-Extensions'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSMethodBreakpointRecord class >> breakpointadded: event [
 
 	^DSBreakpointAdd for: event
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSMethodBreakpointRecord class >> breakpointhit: event [
 
 	^DSBreakpointHit for: event
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : 'as yet unclassified' }
 DSMethodBreakpointRecord class >> breakpointremoved: event [
 
 	^DSBreakpointRemoved for: event
 	
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 DSMethodBreakpointRecord class >> for: anEvent [
 
 	| breakpoint |
@@ -35,7 +37,7 @@ DSMethodBreakpointRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodBreakpointRecord >> eventName [
 
 	^ String streamContents: [ :s |
@@ -43,23 +45,23 @@ DSMethodBreakpointRecord >> eventName [
 		  s << super eventName ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodBreakpointRecord >> method [
 	^sourceRecord method
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodBreakpointRecord >> node [
 	^sourceRecord node
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodBreakpointRecord >> submethodTargets [
 
 	^ {self node}
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 DSMethodBreakpointRecord >> targetClassOrMethod [
 
 	^ self method

@@ -17,8 +17,6 @@ Class {
 	#tag : 'Records'
 }
 
-
-
 { #category : 'converting' }
 DSAbstractBreakpointEventRecord >> asBreakpointRecord [
 
@@ -41,7 +39,6 @@ DSAbstractBreakpointEventRecord >> canOpenDebuggers [
 DSAbstractBreakpointEventRecord >> eventName [
 	^eventName
 ]
-
 
 { #category : 'converting' }
 DSAbstractBreakpointEventRecord >> modelClass [
