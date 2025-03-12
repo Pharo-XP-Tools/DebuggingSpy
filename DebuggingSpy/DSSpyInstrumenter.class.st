@@ -529,11 +529,11 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	<extensionCommands>
 	| commands codeGroup toolbarGroup toolbarSindarinGroup |
 	commands := { 
-		            DSndarinStepToMethodEntryCommand.
-		            DSndarinStepToNextCallInClassCommand.
-		            DSndarinStepToNextCallInObjectCommand.
-		            DSndarinStepToNextInstanceCreation.
-		            DSndarinStepToReturnCommand } collect: [ :class | 		         
+		            DSSindarinStepToMethodEntryCommand.
+		            DSSindarinStepToNextCallInClassCommand.
+		            DSSindarinStepToNextCallInObjectCommand.
+		            DSSindarinStepToNextInstanceCreation.
+		            DSSindarinStepToReturnCommand } collect: [ :class | 		         
 		            class forSpecContext: stDebuggerInstance ].
 
 	codeGroup := rootCommandGroup
