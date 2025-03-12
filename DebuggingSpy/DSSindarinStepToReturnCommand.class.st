@@ -3,7 +3,7 @@ I specialize SindarinStepToReturnCommand with debugging spy record creation.
 	I am meant to replace SindarinStepToReturnCommand commands in the debugger in order to provide such instrumentation.
 "
 Class {
-	#name : 'DSndarinStepToReturnCommand',
+	#name : 'DSSindarinStepToReturnCommand',
 	#superclass : 'SindarinStepToReturnCommand',
 	#traits : 'DSTCommandForTests',
 	#classTraits : 'DSTCommandForTests classTrait',
@@ -13,7 +13,7 @@ Class {
 }
 
 { #category : 'executing' }
-DSndarinStepToReturnCommand >> execute [
+DSSindarinStepToReturnCommand >> execute [
 
 	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_RETURN].
 	self forTests ifTrue: [ ^ self ].
