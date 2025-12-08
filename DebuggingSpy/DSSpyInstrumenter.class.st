@@ -114,22 +114,6 @@ DSSpyInstrumenter >> instrumentDebuggerCommands [
 ]
 
 { #category : 'debugger' }
-DSSpyInstrumenter >> instrumentDebuggerOpening [
-
-	StDebugger compile: 'initializeWindow: aWindowPresenter
-	
-	super initializeWindow: aWindowPresenter.
-	aWindowPresenter
-		initialPosition: self settings lastKnownPosition;
-		whenClosedDo: [ self clear ].
-
-	self settings initializeWindow: aWindowPresenter.
-	self initializeShortcuts: aWindowPresenter.
-	
-	[DSDebuggerOpeningRecord for: self ] on: Error do:[:err| DSSpy log: err key: #DEBUGGER_STACK ]	'
-]
-
-{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerStack [
 
 	StDebugger compile: 'initializeStack
@@ -314,17 +298,6 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 			[ DSNavigateAttributeRecord for: { {val. model}. self window window} ]
 				on: Error
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
-]
-
-{ #category : 'playground' }
-DSSpyInstrumenter >> instrumentPlaygroundCode [
-
-	StPlaygroundPresenter class compile: 'open 
-	<script>
-	|pg|
-	pg := (self newApplication: StPharoApplication current) open.
-	[DSPlaygroundOpenedRecord for: pg] on: Error do:[:err| DSSpy log: err key: #PLAYGROUND_OPEN ].
-	^pg'
 ]
 
 { #category : 'system' }
@@ -653,7 +626,6 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logHaltAndBreakpointEvents.
 	self logInspectorInteractions.
 	self logMouseEvents.
-	"self logPlaygroundOpenings."
 	self listenToWindowEvents.
 	self listenToMethodChanges
 ]
@@ -678,6 +650,8 @@ DSSpyInstrumenter >> listenToMethodChanges [
 DSSpyInstrumenter >> listenToWindowEvents [
 
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
+	self currentWorld announcer when: WindowClosed send: #logWindowClosed: to: DSSpy.
+	self currentWorld announcer when: WindowActivated send: #logWindowActivated: to: DSSpy
 ]
 
 { #category : 'system-instrumentation' }
@@ -735,11 +709,6 @@ DSSpyInstrumenter >> logMouseEvents [
 	self instrumentMouseLeaveWindow.
 	self instrumentRubScrollTextMorphHandleMouseOver.
 	self instrumentRubScrollTextMorphMouseEnter
-]
-
-{ #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logPlaygroundOpenings [
-	self instrumentPlaygroundCode
 ]
 
 { #category : 'system-instrumentation' }

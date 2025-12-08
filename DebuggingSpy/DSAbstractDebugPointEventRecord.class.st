@@ -9,7 +9,6 @@ Class {
 		'target',
 		'behaviors',
 		'arguments',
-		'link',
 		'enabled',
 		'eventName',
 		'debugPointHash'

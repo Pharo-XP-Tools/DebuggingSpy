@@ -7,7 +7,8 @@ Class {
 	#instVars : [
 		'dateTime',
 		'windowId',
-		'uuid'
+		'uuid',
+		'link'
 	],
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
