@@ -17,22 +17,6 @@ DSSpyInstrumenter class >> instrumentSystem [
 ]
 
 { #category : 'browsers' }
-DSSpyInstrumenter >> instrumentClyFullBrowser [
-
-	ClyFullBrowserMorph compile: 'newWindowTitle
-	| newTitle |
-	
-	packageView selection isEmpty ifTrue: [ ^self systemScope description].	
-	
-	newTitle := self buildTitleFromSelections.
-	self systemScope isCurrentImage ifFalse: [ 
-		newTitle := newTitle , '' in '', self systemScope description ].
-
-	[DSFullBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #BROWSE].
-	^newTitle'
-]
-
-{ #category : 'browsers' }
 DSSpyInstrumenter >> instrumentClyQueryBrowser [
 
 	ClyQueryBrowserMorph compile: 'newWindowTitle
@@ -45,33 +29,6 @@ DSSpyInstrumenter >> instrumentClyQueryBrowser [
 		title := title , '' in '', self systemScope description ].
 	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #QUERY].
 	^title'
-]
-
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentClyTextEditorPrintIt [
-
-	ClyTextEditor compile: 'printIt
-	"Treat the current text selection as an expression; evaluate it. Insert the 
-	description of the result of evaluation after the selection and then make 
-	this description the new text selection."
-
-	| pointerArea |
-	[DSPrintItRecord for: self selectionString] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-	self evaluateSelectionAndDo: [ :result |
-		| popoverPresenter |
-		pointerArea := textArea cursor boundsInWorld.
-
-		popoverPresenter := SpPopoverPresenter new presenter:
-			                    (SpCodePopoverPrintPresenter
-				                     newCode: self
-				                     object: result).
-		popoverPresenter relativeTo: (SpPresenter new
-				 layout: SpBoxLayout new;
-				 build;
-				 yourself).
-		popoverPresenter bePositionRight.
-		popoverPresenter popupPointingTo: pointerArea.
-		popoverPresenter takeKeyboardFocus ]'
 ]
 
 { #category : 'debugger' }
@@ -300,6 +257,15 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
+{ #category : 'as yet unclassified' }
+DSSpyInstrumenter >> instrumentPrintIt [
+	"Instruments different printIt methods"
+
+	RubSmalltalkEditor link: DSPrintItRecord link toAST: (RubSmalltalkEditor >> #printIt) ast.
+	ClyTextEditor link: DSPrintItRecord link toAST: (ClyTextEditor >> #printIt) ast.
+	SpCodePrintItCommand link: DSPrintItRecord link toAST: (SpCodePrintItCommand >> #execute) ast
+]
+
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentRubEditorCopySelection [
 
@@ -313,34 +279,6 @@ RubTextEditor compile: 'copySelection
 '
 ]
 
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentRubEditorDebugIt [
-
-RubSmalltalkEditor compile: 'debug: aStream
-	| method receiver context |
-	[DSDebugItRecord for: aStream contents] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	receiver := self doItReceiver.
-	context := self doItContext.
-	method := self compile: aStream for: receiver in: context.
-	method ifNil: [ ^self ].
-	method isReturnSpecial
-		ifTrue: [ self inform: ''Nothing to debug, the expression is optimized''.
-			^ self ].
-	 self debug: method receiver: receiver in: context'
-]
-
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentRubEditorDoIt [
-
-	RubSmalltalkEditor compile: 'doIt
-	"Set the context to include pool vars of the model.  Then evaluate."
-	[ DSDoItRecord for: self selectionString]
-			on: Error
-			do: [ :e | 
-				DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-	^ self evaluateSelection'
-]
-
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentRubEditorPaste [
 
@@ -352,27 +290,6 @@ DSSpyInstrumenter >> instrumentRubEditorPaste [
 		[self selectAt: self pointIndex].
 	DSClipboardPasteRecord for: {self clipboardText . self textArea window hash. self class name}.
 	'
-]
-
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentRubEditorPrintIt [
-
-	RubSmalltalkEditor compile: 'printIt
-	"Treat the current text selection as an expression; evaluate it. Insert the
-	description of the result of evaluation after the selection and then make
-	this description the new text selection."
-	
-	| printString |
-
-	self
-		evaluateSelectionAndDo: [ :result | 
-			[DSPrintItRecord for: result 
-			] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-			printString := [ result printString ]
-				on: Error
-				do: [ ''<error in printString: try ''''Inspect it'''' to debug>'' ].
-				
-			self afterSelectionInsertAndSelect: printString ]'
 ]
 
 { #category : 'mouse events' }
@@ -528,38 +445,6 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 ]
 
 { #category : 'interactions' }
-DSSpyInstrumenter >> instrumentSpCodeDebugIt [
-
-	SpCodeDebugItCommand compile: 'execute
-
-	| selection |
-	selection := self selectedTextOrLine.
-	selection ifEmpty: [ ^ '''' ].
-	[ 
-	DSDebugItRecord for:  
-			selection ]
-		on: Error
-		do: [ :e | 
-			DSSpy log: #ERROR key: #ACTION_DEBUGIT ].
-	self debug: selection readStream'
-]
-
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentSpCodeDoIt [
-
-	SpCodeDoItCommand compile: 'execute
-
-	"Treat the current text selection as an expression; evaluate it."
-
-	self evaluateSelectionAndDo: [ :result | 
-		[ 
-		DSDoItRecord for: self selectedTextOrLine ]
-			on: Error
-			do: [ :e | 
-				DSSpy log: #ERROR key: #ACTION_DOIT ] ]'
-]
-
-{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
 
 	StObjectContextPresenter compile: 'doEvaluateAndGo
@@ -603,31 +488,18 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 	activationBlock value: value'
 ]
 
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentSpCodePrintIt [
-
-	SpCodePrintItCommand compile: 'execute
-	"Treat the current text selection as an expression; evaluate it. Insert the 
-	description of the result of evaluation after the selection and then make 
-	this description the new text selection."
-
-	self evaluateSelectionAndDo: [ :result | 
-		[DSPrintItRecord for: self selectedTextOrLine] on: Error do:[:e| DSSpy log: #ERROR key: #ACTION_PRINTIT ].
-		self printObject: result ]'
-]
-
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"self instrumentDebuggerOpening."
-	self logTextEditorsClipbardActions.
+	"self logTextEditorsClipbardActions."
 	"self logClyBrowsersOpenings."
 	self logCodeInteractions.
-	self logDebuggerInteractions.
+	"self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
 	self logInspectorInteractions.
 	self logMouseEvents.
 	self listenToWindowEvents.
-	self listenToMethodChanges
+	self listenToMethodChanges"
 ]
 
 { #category : 'debugpoints  ' }
@@ -656,22 +528,15 @@ DSSpyInstrumenter >> listenToWindowEvents [
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logClyBrowsersOpenings [
-	self instrumentClyQueryBrowser.
-	self instrumentClyFullBrowser 
+	self instrumentClyQueryBrowser
 ]
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logCodeInteractions [
 
-	self instrumentClyTextEditorPrintIt.
-	self instrumentRubEditorDebugIt.
-	self instrumentRubEditorDoIt.
-	self instrumentRubEditorPrintIt.
-	self instrumentSpCodeDebugIt.
-	self instrumentSpCodeDoIt.
-	self instrumentSpCodePrintIt.
-	self instrumentSpCodeDoItAndGoForInspector.
-	self instrumentSpCodeDoItAndGoForPlayground
+	self instrumentPrintIt.
+	"self instrumentDebugIt.
+	self instrumentDoIt"
 ]
 
 { #category : 'system-instrumentation' }

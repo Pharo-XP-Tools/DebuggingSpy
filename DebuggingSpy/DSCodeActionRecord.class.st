@@ -13,13 +13,22 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'accessing' }
+DSCodeActionRecord class >> link [
+	^ MetaLink new
+		metaObject: self;
+		selector: #for:;
+		arguments: #(object);
+		control: #before
+]
+
 { #category : 'actions api' }
 DSCodeActionRecord >> record: aCodeString [
 
-	selectedString := DSSpy recordSourceCode
+	"selectedString := DSSpy recordSourceCode
 		                  ifTrue: [ aCodeString ]
 		                  ifFalse: [ 
-		                  DSSpy recordSourceCodeDisabledErrorMessage ]
+		                  DSSpy recordSourceCodeDisabledErrorMessage ]"
 ]
 
 { #category : 'accessing' }
