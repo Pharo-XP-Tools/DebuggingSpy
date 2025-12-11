@@ -60,6 +60,14 @@ DSSpyInstrumenter >> instrumentCodePresenter [
 				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
 ]
 
+{ #category : 'as yet unclassified' }
+DSSpyInstrumenter >> instrumentDebugIt [
+	"Instruments different printIt methods"
+
+	RubSmalltalkEditor link: DSDebugItRecord link toAST: (RubSmalltalkEditor >> #debugIt) ast.
+	SpCodePrintItCommand link: DSDebugItRecord link toAST: (SpCodeDebugItCommand >> #execute) ast
+]
+
 { #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerCommands [
 	StDebugger class compile:
@@ -91,6 +99,14 @@ stackTable := self newList.
 			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0] } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
 	stackHeader := self instantiate: StHeaderBar.
 	stackHeader label: ''Stack'''
+]
+
+{ #category : 'as yet unclassified' }
+DSSpyInstrumenter >> instrumentDoIt [
+	"Instruments different printIt methods"
+
+	RubSmalltalkEditor link: DSDoItRecord link toAST: (RubSmalltalkEditor >> #doIt) ast.
+	SpCodePrintItCommand link: DSDoItRecord link toAST: (SpCodeDoItCommand >> #execute) ast
 ]
 
 { #category : 'debugpoints  ' }
@@ -535,8 +551,8 @@ DSSpyInstrumenter >> logClyBrowsersOpenings [
 DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentPrintIt.
-	"self instrumentDebugIt.
-	self instrumentDoIt"
+	self instrumentDebugIt.
+	self instrumentDoIt
 ]
 
 { #category : 'system-instrumentation' }
