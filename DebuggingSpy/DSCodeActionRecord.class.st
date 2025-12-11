@@ -18,7 +18,7 @@ DSCodeActionRecord class >> link [
 	^ MetaLink new
 		metaObject: self;
 		selector: #for:;
-		arguments: #(object);
+		arguments: #(arguments);
 		control: #before
 ]
 
