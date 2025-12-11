@@ -18,17 +18,17 @@ DSCodeActionRecord class >> link [
 	^ MetaLink new
 		metaObject: self;
 		selector: #for:;
-		arguments: #(arguments);
+		arguments: #(receiver);
 		control: #before
 ]
 
 { #category : 'actions api' }
-DSCodeActionRecord >> record: aCodeString [
+DSCodeActionRecord >> record: anObject [
 
-	"selectedString := DSSpy recordSourceCode
-		                  ifTrue: [ aCodeString ]
+	selectedString := DSSpy recordSourceCode
+		                  ifTrue: [ anObject recordSelectedString ]
 		                  ifFalse: [ 
-		                  DSSpy recordSourceCodeDisabledErrorMessage ]"
+		                  DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
 
 { #category : 'accessing' }
