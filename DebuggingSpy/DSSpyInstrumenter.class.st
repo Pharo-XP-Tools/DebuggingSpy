@@ -116,6 +116,14 @@ DSSpyInstrumenter >> instrumentDoIt [
 	SpCodePrintItCommand link: DSDoItRecord link toAST: (SpCodeDoItCommand >> #execute) ast
 ]
 
+{ #category : 'interactions' }
+DSSpyInstrumenter >> instrumentDoItAndGo [
+	"Instruments different doEvaluateAndGo methods"
+
+	StObjectContextPresenter link: DSDoItAndGoRecord link toAST: (StObjectContextPresenter >> #doEvaluateAndGo) ast.
+	StPlaygroundPagePresenter link: DSDoItAndGoRecord link toAST: (StPlaygroundPagePresenter >> #doEvaluateAndGo) ast
+]
+
 { #category : 'debugpoints  ' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
 
@@ -490,7 +498,8 @@ DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentPrintIt.
 	self instrumentDebugIt.
-	self instrumentDoIt
+	self instrumentDoIt.
+	self instrumentDoItAndGo
 ]
 
 { #category : 'system-instrumentation' }
