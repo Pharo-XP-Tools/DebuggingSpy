@@ -407,50 +407,6 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	
 ]
 
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForInspector [
-
-	StObjectContextPresenter compile: 'doEvaluateAndGo
-	| value |
-
-	[ 
-		DSDoItAndGoRecord for: self evaluator selectedTextOrLine ]
-			on: Error
-			do: [ :e | 
-				DSSpy log: #ERROR key: #DOITANDGO ].
-	
-	activationBlock ifNil: [ ^ self ].
-
-	value := self evaluator 
-		evaluate: self evaluator selectedTextOrLine
-		onCompileError: [ ^ self ]
-		onError: [ :e | e pass ].
-	
-	activationBlock value: (StEvaluatedSelectionModel newValue: value)'
-]
-
-{ #category : 'interactions' }
-DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
-
-	StPlaygroundPagePresenter compile: 'doEvaluateAndGo
-	| value |
-	
-	[ 
-		DSDoItAndGoRecord for: text selectedTextOrLine ]
-			on: Error
-			do: [ :e | 
-				DSSpy log: #ERROR key: #DOITANDGO ].
-	
-	activationBlock ifNil: [ ^ self ].
-
-	value := text
-		evaluate: text selectedTextOrLine
-		onCompileError: [ ^ self ]
-		onError: [ :e | e pass ].
-
-	activationBlock value: value'
-]
-
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"self instrumentDebuggerOpening."
