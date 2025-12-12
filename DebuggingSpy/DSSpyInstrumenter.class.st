@@ -60,9 +60,16 @@ DSSpyInstrumenter >> instrumentCodePresenter [
 				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'system' }
+DSSpyInstrumenter >> instrumentCopySelection [
+
+	RubTextEditor link: DSClipboardCopyRecord link toAST: (RubTextEditor >> #copySelection) ast.
+	RubSmalltalkEditor link: DSClipboardCopyRecord link toAST: (RubSmalltalkEditor >> #copySelection) ast
+]
+
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDebugIt [
-	"Instruments different printIt methods"
+	"Instruments different debugIt methods"
 
 	RubSmalltalkEditor link: DSDebugItRecord link toAST: (RubSmalltalkEditor >> #debugIt) ast.
 	SpCodePrintItCommand link: DSDebugItRecord link toAST: (SpCodeDebugItCommand >> #execute) ast
@@ -101,9 +108,9 @@ stackTable := self newList.
 	stackHeader label: ''Stack'''
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDoIt [
-	"Instruments different printIt methods"
+	"Instruments different doIt methods"
 
 	RubSmalltalkEditor link: DSDoItRecord link toAST: (RubSmalltalkEditor >> #doIt) ast.
 	SpCodePrintItCommand link: DSDoItRecord link toAST: (SpCodeDoItCommand >> #execute) ast
@@ -159,6 +166,14 @@ DSSpyInstrumenter >> instrumentHaltHits [
 		on: Error 
 		do:[:err| DSSpy log: #ERROR key: #HALT_HIT ]].
 	super signal'.
+]
+
+{ #category : 'interactions' }
+DSSpyInstrumenter >> instrumentInspectIt [
+	"Instruments different inspectIt methods"
+
+	RubSmalltalkEditor link: DSInspectItRecord link toAST: (RubSmalltalkEditor >> #inspectIt) ast.
+	SpCodePrintItCommand link: DSInspectItRecord link toAST: (SpCodeInspectItCommand >> #execute) ast
 ]
 
 { #category : 'inspector' }
@@ -273,39 +288,20 @@ DSSpyInstrumenter >> instrumentNavigateAttribute [
 				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'system' }
+DSSpyInstrumenter >> instrumentPaste [
+
+	RubTextEditor link: DSClipboardPasteRecord link toAST: (RubTextEditor >> #paste) ast.
+	RubSmalltalkEditor link: DSClipboardPasteRecord link toAST: (RubSmalltalkEditor >> #paste) ast
+]
+
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentPrintIt [
 	"Instruments different printIt methods"
 
 	RubSmalltalkEditor link: DSPrintItRecord link toAST: (RubSmalltalkEditor >> #printIt) ast.
 	ClyTextEditor link: DSPrintItRecord link toAST: (ClyTextEditor >> #printIt) ast.
 	SpCodePrintItCommand link: DSPrintItRecord link toAST: (SpCodePrintItCommand >> #execute) ast
-]
-
-{ #category : 'system' }
-DSSpyInstrumenter >> instrumentRubEditorCopySelection [
-
-RubTextEditor compile: 'copySelection
-"Copy the current selection and store it in the paste buffer, unless a caret.  Undoer & Redoer: undoCutCopy"
-
-	self lineSelectAndEmptyCheck: [^ self].
-	self clipboardTextPut: self selection.
-	DSClipboardCopyRecord for: {self selection . self textArea window hash . self class name}.
-	self editingState previousInterval: self selectionInterval.
-'
-]
-
-{ #category : 'system' }
-DSSpyInstrumenter >> instrumentRubEditorPaste [
-
-	RubTextEditor compile: 'paste
-	"Paste the text from the shared buffer over the current selection and 
-	redisplay if necessary.  Undoer & Redoer: undoAndReselect."
-
-	self replace: self selectionInterval with: self clipboardText and:
-		[self selectAt: self pointIndex].
-	DSClipboardPasteRecord for: {self clipboardText . self textArea window hash. self class name}.
-	'
 ]
 
 { #category : 'mouse events' }
@@ -321,63 +317,6 @@ DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
 	RubScrolledTextMorph compile: 'mouseEnter: evt
 	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
 	^super mouseEnter: evt'
-]
-
-{ #category : 'system' }
-DSSpyInstrumenter >> instrumentRubSmalltalkEditorCopySelection [
-
-RubSmalltalkEditor compile: 'copySelection
-"Copy the current selection and store it in the paste buffer, unless a caret.  Undoer & Redoer: undoCutCopy"
-
-	| node escapingCharacter selection |
-	"Research of selected node for eventual nesting of comment or string."
-	self lineSelectAndEmptyCheck: [ ^ self ].
-	node := self bestNodeInTextArea.
-	escapingCharacter := self getEscapeCharacterFromAst: node.
-
-	selection := (escapingCharacter notNil and: [ "The node, if a comment or a string, should entirely contain the selection.
-		We convert the node source interval to an open interval to ignore the node delimiters." 
-		              node sourceInterval asOpenInterval includesAll:
-			              self selectionInterval ])
-		             ifTrue: [ 
-		             self selection asString unescapeCharacter:
-			             escapingCharacter ]
-		             ifFalse: [ self selection asString ].
-	self clipboardTextPut: selection.
-	self editingState previousInterval: self selectionInterval.
-	DSClipboardCopyRecord for: { 
-			selection.
-			self textArea window hash.
-			self class name }
-'
-]
-
-{ #category : 'system' }
-DSSpyInstrumenter >> instrumentRubSmalltalkEditorPaste [
-	
-RubSmalltalkEditor compile:'paste
-	"Paste the text from the shared buffer over the current selection and 
-	redisplay if necessary.  Undoer & Redoer: undoAndReselect."
-	| node character escapedText |
-	"This method is specialized for Pharo code.
-	If paste happens in the context of a comment or a string, the pasted contents should be properly escaped."
-	
-	"Get the AST node corresponding to where we are going to paste.
-	If there is a selection, cut it off, because pasting it will over-write it, and get the AST node at the cut position.
-	This is specially important when the selection spans multiple scopes (e.g., it starts inside a comment and finished in the middle of another)."
-	node := self bestNodeInTextAreaWithoutSelection.
-
-	"The pasted text could be inserted in some context requiring escaping, e.g., a comment, a string.
-	If so, get the escaping character, and escape the pasted text before pasting it."
-	character := self getEscapeCharacterFromAst: node.
-	escapedText := (self shouldEscapeCharacter: character)
-		  ifTrue: [ self escapeCharacter: character inString: self clipboardText ]
-		  ifFalse: [ self clipboardText ].
-	
-	self replace: self selectionInterval with: escapedText and:
-		[self selectAt: self pointIndex].
-	
-	DSClipboardPasteRecord for: {escapedText . self textArea window hash . self class name}.'
 ]
 
 { #category : 'mouse events' }
@@ -507,10 +446,9 @@ DSSpyInstrumenter >> instrumentSpCodeDoItAndGoForPlayground [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"self instrumentDebuggerOpening."
-	"self logTextEditorsClipbardActions."
-	"self logClyBrowsersOpenings."
-	self logCodeInteractions.
-	"self logDebuggerInteractions.
+
+	self logTextEditorsClipbardActions.
+	self logCodeInteractions "self logClyBrowsersOpenings." "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
 	self logInspectorInteractions.
 	self logMouseEvents.
@@ -595,10 +533,8 @@ DSSpyInstrumenter >> logMouseEvents [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logTextEditorsClipbardActions [
 
-	self instrumentRubEditorCopySelection.
-	self instrumentRubEditorPaste.
-	self instrumentRubSmalltalkEditorCopySelection.
-	self instrumentRubSmalltalkEditorPaste.
+	self instrumentCopySelection.
+	self instrumentPaste
 ]
 
 { #category : 'system-instrumentation' }

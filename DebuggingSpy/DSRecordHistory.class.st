@@ -527,7 +527,7 @@ DSRecordHistory >> processRecords: array [
 	"Windows"
 	self buildWindowHistory.
 	self buildWindows.
-	self buildWindowJumps.
+	"self buildWindowJumps."
 	self reconstructWindowsToolInfo.
 	
 	"Check data consistency (raises a warning that can be proceeded)"

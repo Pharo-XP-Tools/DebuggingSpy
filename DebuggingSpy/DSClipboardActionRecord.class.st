@@ -16,6 +16,16 @@ Class {
 }
 
 { #category : 'accessing' }
+DSClipboardActionRecord class >> link [
+
+	^ MetaLink new
+		  metaObject: self;
+		  selector: #for:;
+		  arguments: #( receiver );
+		  control: #before
+]
+
+{ #category : 'accessing' }
 DSClipboardActionRecord >> clipboardText [
 
 	^ clipboardText
@@ -40,8 +50,11 @@ DSClipboardActionRecord >> editorClassName: anObject [
 ]
 
 { #category : 'actions api' }
-DSClipboardActionRecord >> record: recordInfo [
-	clipboardText  := DSSpy recordClipboardContent ifTrue: [ recordInfo first] ifFalse: ['RecordClipboarContent disabled'].
-	windowId := recordInfo second.
-	editorClassName := recordInfo third
+DSClipboardActionRecord >> record: anEditor [
+
+	clipboardText := DSSpy recordClipboardContent
+		                 ifTrue: [ anEditor selection asString ]
+		                 ifFalse: [ 'RecordClipboarContent disabled' ].
+	windowId := anEditor textArea window hash.
+	editorClassName := anEditor class name
 ]

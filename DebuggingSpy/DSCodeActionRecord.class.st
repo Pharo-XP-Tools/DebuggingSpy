@@ -23,10 +23,10 @@ DSCodeActionRecord class >> link [
 ]
 
 { #category : 'actions api' }
-DSCodeActionRecord >> record: anObject [
+DSCodeActionRecord >> record: anEditor [
 
 	selectedString := DSSpy recordSourceCode
-		                  ifTrue: [ anObject recordSelectedString ]
+		                  ifTrue: [ anEditor recordSelectedString ]
 		                  ifFalse: [ 
 		                  DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
