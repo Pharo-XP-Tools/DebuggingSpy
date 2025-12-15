@@ -16,6 +16,13 @@ DSSpyInstrumenter class >> instrumentSystem [
 	DSRecordRegistry autoSerialize: true
 ]
 
+{ #category : 'system instrumentation' }
+DSSpyInstrumenter class >> stopInstrumentation [
+
+	SystemAnnouncer uniqueInstance unsubscribe: DSSpy.
+	MetaLink uninstallAll "TO CHANGED : just uninstall targeted MetaLinks"
+]
+
 { #category : 'browsers' }
 DSSpyInstrumenter >> instrumentClyQueryBrowser [
 
@@ -411,6 +418,8 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 DSSpyInstrumenter >> instrumentSystem [
 	"self instrumentDebuggerOpening."
 
+	self listenToWindowEvents.
+	self listenToDebugPointChanges.
 	self logTextEditorsClipbardActions.
 	self logCodeInteractions "self logClyBrowsersOpenings." "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.

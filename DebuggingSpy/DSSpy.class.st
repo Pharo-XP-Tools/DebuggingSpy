@@ -131,18 +131,14 @@ DSSpy class >> logWindowClosed: anEvent [
 DSSpy class >> logWindowOpened: anEvent [
 
 	| window |
+	
 	window := anEvent window.
 	[ DSToolWindowOpenedEventRecord for: window ]
 		on: Error
 		do: [ self log: #ERROR key: #WINDOW_TOOL_OPENED ].
 	[ DSWindowOpenedRecord for: anEvent ]
 		on: Error
-		do: [ self log: #ERROR key: #WINDOW_OPENED ].
-	window announcer
-		when: WindowActivated
-		send: #logWindowActivated:
-		to: self.
-	window announcer when: WindowClosed send: #logWindowClosed: to: self
+		do: [ self log: #ERROR key: #WINDOW_OPENED ]
 ]
 
 { #category : 'accessing' }
