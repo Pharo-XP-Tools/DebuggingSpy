@@ -556,8 +556,7 @@ DSRecordHistory >> reconstructWindowsToolInfo [
 
 	| toolInfos validWindows |
 	toolInfos := (((records select: [ :r |
-		                (r isKindOf: DSToolWindowEvent) or: [
-			                r class = DSMouseEnterWindowRecord ] ]) collect:
+			                (r class = DSMouseEnterWindowRecord) ]) collect:
 		               #toolInfo) reject: #isNil) asOrderedCollection
 		             groupedBy: #windowIdentityHash.
 

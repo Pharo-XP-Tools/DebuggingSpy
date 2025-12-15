@@ -30,7 +30,6 @@ DSMouseEnterWindowRecord >> record: morphsAndWindow [
 		            toolNamed: tool class name
 		            id: tool identityHash
 		            windowId: windowId
-		            action: 'enter'
 ]
 
 { #category : 'accessing' }

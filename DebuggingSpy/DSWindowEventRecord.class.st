@@ -1,3 +1,8 @@
+"
+Class which represent a record of a window event : openned, closed or activated.
+
+This type of record is useful to know which are the tools used by a developper.
+"
 Class {
 	#name : 'DSWindowEventRecord',
 	#superclass : 'DSAbstractEventRecord',
@@ -22,7 +27,6 @@ DSWindowEventRecord >> record: aWindowEvent [
 		            toolNamed: tool class name
 		            id: tool identityHash
 		            windowId: windowId
-		            action: self eventName
 ]
 
 { #category : 'recording' }

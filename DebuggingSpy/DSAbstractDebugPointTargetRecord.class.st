@@ -1,3 +1,6 @@
+"
+I am an abstract class representing a record of a debugPoint's target.
+"
 Class {
 	#name : 'DSAbstractDebugPointTargetRecord',
 	#superclass : 'Object',

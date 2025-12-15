@@ -8,8 +8,7 @@ Class {
 	#instVars : [
 		'toolClassName',
 		'toolIdentityHash',
-		'windowIdentityHash',
-		'toolAction'
+		'windowIdentityHash'
 	],
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
@@ -26,33 +25,11 @@ DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId [
 		  yourself
 ]
 
-{ #category : 'instance creation' }
-DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId action: aString [
-
-	^ (self toolNamed: aToolName id: aToolId windowId: aWindowId)
-		  toolAction: aString;
-		  yourself
-]
-
 { #category : 'printing' }
 DSToolInfo >> printOn: str [
 
 	str << (toolClassName ifNil: [ 'missing tool name' ]).
-	toolAction ifNil: [ ^ self ].
 	str space.
-	str << toolAction
-]
-
-{ #category : 'accessing' }
-DSToolInfo >> toolAction [
-
-	^ toolAction
-]
-
-{ #category : 'accessing' }
-DSToolInfo >> toolAction: anObject [
-
-	toolAction := anObject
 ]
 
 { #category : 'accessing' }

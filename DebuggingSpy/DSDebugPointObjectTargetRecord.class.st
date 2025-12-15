@@ -1,3 +1,6 @@
+"
+I am a class that reprensent object target record for debugPoint.
+"
 Class {
 	#name : 'DSDebugPointObjectTargetRecord',
 	#superclass : 'DSAbstractDebugPointTargetRecord',

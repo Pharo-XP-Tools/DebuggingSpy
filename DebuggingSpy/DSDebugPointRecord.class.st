@@ -1,3 +1,6 @@
+"
+I represent a debugPoint recorded event.
+"
 Class {
 	#name : 'DSDebugPointRecord',
 	#superclass : 'DSAbstractExtendedRecord',

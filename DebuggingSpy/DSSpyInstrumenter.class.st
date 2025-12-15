@@ -20,6 +20,9 @@ DSSpyInstrumenter class >> instrumentSystem [
 DSSpyInstrumenter class >> stopInstrumentation [
 
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy.
+	DebugPoint codeSupportAnnouncer unsubscribe: DSSpy.
+	self currentWorld announcer unsubscribe: DSSpy.
+	
 	MetaLink uninstallAll "TO CHANGED : just uninstall targeted MetaLinks"
 ]
 
