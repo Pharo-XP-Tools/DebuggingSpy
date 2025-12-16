@@ -9,7 +9,7 @@ Class {
 	#name : 'DSMouseEventRecord',
 	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
-		'itemElement'
+		'toolInfo'
 	],
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
@@ -17,20 +17,28 @@ Class {
 }
 
 { #category : 'accessing' }
-DSMouseEventRecord >> itemElement [
+DSMouseEventRecord class >> link [
 
-	^ itemElement
-]
-
-{ #category : 'accessing' }
-DSMouseEventRecord >> itemElement: anObject [
-
-	itemElement := anObject
+	^ MetaLink new
+		  metaObject: self;
+		  selector: #for:;
+		  arguments: #( receiver );
+		  control: #before
 ]
 
 { #category : 'actions api' }
-DSMouseEventRecord >> record: morphsAndWindow [
+DSMouseEventRecord >> record: aWindow [
 
-	itemElement := self class printStringMorphs: morphsAndWindow first.
-	windowId := morphsAndWindow last identityHash
+	| tool |
+	windowId := aWindow identityHash.
+
+	tool := DSSpy toolInWindow: aWindow.
+	tool ifNil: [ ^ self ].
+	toolInfo := DSToolInfo toolNamed: tool class name id: tool identityHash windowId: windowId
+]
+
+{ #category : 'accessing' }
+DSMouseEventRecord >> toolInfo [ 
+
+	^ toolInfo 
 ]

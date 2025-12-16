@@ -254,42 +254,16 @@ DSSpyInstrumenter >> instrumentInspectorPageSelection [
 			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]'
 ]
 
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentMouseDownFTSelectableMorph [
-
-	FTSelectableMorph compile:'mouseDown: evt 
-	[DSMouseDownTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #CLICK_ON_TABLE_ITEM].
-	^super mouseDown: evt '
-]
-
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentMouseEnterFTSelectableMorph [
-
-	FTSelectableMorph compile: 'mouseEnter: evt
-
-	[DSMouseEnterTableItemRecord for: {self allMorphs. self window}] on: Error do:[:e| DSSpy log: #ERROR key: #ENTER_TABLE_ITEM].
-	colorBeforeOver := self color.
-	self color: (selectionColor isTransparent
-			 ifTrue: [ self mouseOverColor ]
-			 ifFalse: [ self mouseOverColor mixed: 0.5 with: selectionColor ])'
-]
-
-{ #category : 'mouse events' }
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentMouseEnterWindow [
 
-	SystemWindow compile: 'handleMouseEnter: anEvent
-	
-	[DSMouseEnterWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_ENTER ].
-	^super handleMouseEnter: anEvent'
+	SystemWindow link: DSMouseEnterWindowRecord link toAST: (SystemWindow >> #handleMouseEnter:) ast
 ]
 
 { #category : 'mouse events' }
 DSSpyInstrumenter >> instrumentMouseLeaveWindow [
-	
-	SystemWindow compile: 'handleMouseLeave: anEvent
-	
-	[DSMouseLeaveWindowRecord for:{{self}. self}] on: Error do:[:e| DSSpy log: #ERROR key: #WINDOW_LEAVE ]	.
-	^super handleMouseLeave: anEvent'
+
+	SystemWindow link: DSMouseLeaveWindowRecord link toAST: (SystemWindow >> #handleMouseLeave:) ast
 ]
 
 { #category : 'inspector' }
@@ -322,73 +296,6 @@ DSSpyInstrumenter >> instrumentPrintIt [
 	SpCodePrintItCommand link: DSPrintItRecord link toAST: (SpCodePrintItCommand >> #execute) ast
 ]
 
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentRubScrollTextMorphHandleMouseOver [
-
-	RubScrolledTextMorph compile: 'handlesMouseOver: evt
-	^true'
-]
-
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentRubScrollTextMorphMouseEnter [
-
-	RubScrolledTextMorph compile: 'mouseEnter: evt
-	[DSMouseEnterTextEditorRecord for: {{self allMorphs}. self window}] on: Error do:[ DSSpy log: #ERROR key: #CODE_FOCUS ].
-	^super mouseEnter: evt'
-]
-
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentScrollingByDraggingSlider [
-	
-SliderMorph compile: 'dragging: aBoolean
-
-	(aBoolean not and: [ dragging ]) ifTrue: [ 
-		[ DSStopScrollingEventRecord for: self window ]
-			on: Error
-			do: [ :e | DSSpy log: #ERROR key: #SCROLL_STOP ] ].
-	dragging := aBoolean.
-	dragging ifTrue: [ 
-		[ DSStartScrollingEventRecord for: self window ]
-			on: Error
-			do: [ :e | DSSpy log: #ERROR key: #SCROLL_START ] ]'
-]
-
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentScrollingInScrollPanesEvents [
-	
-	
-GeneralScrollPaneMorph  compile: 'mouseWheel: event 
-	"Handle a mouseWheel event."
-	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
-	(self scrollTarget handlesMouseWheel: event)
-		ifTrue: [^self scrollTarget mouseWheel: event]. "pass on"
-	
-	event isUp ifTrue: [ ^ vScrollbar scrollUp: 3 ].
-	event isDown ifTrue: [ ^ vScrollbar scrollDown: 3 ].
-	event isLeft  ifTrue: [ ^ hScrollbar scrollLeft: 3 ].
-	event isRight  ifTrue: [ ^ hScrollbar scrollRight: 3 ].'
-]
-
-{ #category : 'mouse events' }
-DSSpyInstrumenter >> instrumentScrollingInTablesEvents [
-	FTTableMorph compile:'mouseWheel: event
-
-	"I tried scrolling up/down with a calculated value (check #scrollUpByPageDelta implementor)
-	 but the scrollbar proved been more intelligent than me... looks like hardcoded values 
-	 work better :/"
-	[DSScrollEventRecord for: self window] on: Error do:[:e| DSSpy log: #ERROR key: #SCROLL].
-	event isUp ifTrue: [ 
-		self verticalScrollBar scrollRestrictedUp: 3.
-		^ self
-	].
-	event isDown ifTrue: [ 
-		self verticalScrollBar scrollRestrictedDown: 3.
-		^ self
-	].
-	
-	super mouseWheel: event'
-]
-
 { #category : 'debugger' }
 DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 	StDebugger class compile:
@@ -419,15 +326,15 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
-	"self instrumentDebuggerOpening."
+	"Instrument every thing in the system, feel free to comment things you don't want to record"
 
 	self listenToWindowEvents.
 	self listenToDebugPointChanges.
 	self logTextEditorsClipbardActions.
+	self logMouseEvents.
 	self logCodeInteractions "self logClyBrowsersOpenings." "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
 	self logInspectorInteractions.
-	self logMouseEvents.
 	self listenToWindowEvents.
 	self listenToMethodChanges"
 ]
@@ -499,12 +406,8 @@ DSSpyInstrumenter >> logInspectorInteractions [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logMouseEvents [
 
-	self instrumentMouseDownFTSelectableMorph.
-	self instrumentMouseEnterFTSelectableMorph.
 	self instrumentMouseEnterWindow.
-	self instrumentMouseLeaveWindow.
-	self instrumentRubScrollTextMorphHandleMouseOver.
-	self instrumentRubScrollTextMorphMouseEnter
+	self instrumentMouseLeaveWindow
 ]
 
 { #category : 'system-instrumentation' }
