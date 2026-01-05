@@ -108,16 +108,6 @@ DSSpyInstrumenter >> instrumentExceptionSignalling [
 	^ UnhandledError signalForException: self'
 ]
 
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentExpandAttribute [
-
-	FTBasicItem compile: 'expandAndRefresh
-	[DSExpandAttributeRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_OBSERVE].
-	self dataSource preservingScrollbarPositionDo: [
-		self expand.
-		self refreshTable ]'
-]
-
 { #category : 'debugpoints  ' }
 DSSpyInstrumenter >> instrumentHaltHits [
 	Halt class compile: 'signalIn: ctx	
@@ -156,66 +146,6 @@ DSSpyInstrumenter >> instrumentInspectIt [
 	SpCodePrintItCommand link: DSInspectItRecord link toAST: (SpCodeInspectItCommand >> #execute) ast
 ]
 
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentInspectMethodsOfClass [
-
-	StMetaBrowserPresenter compile: 'methodsOf: aClass
-
-	aClass ifNil: [ ^ #() ].
-	[DSInspectMethodsRecord for: {self model. self selectedClass. self window window}] on: Error do:[:e| DSSpy log: #ERROR key: #INSPECTOR_META_CLASS].
-	^ aClass methods sorted: #selector ascending
-'
-]
-
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentInspectSourceOfMethod [
-
-	StMetaBrowserPresenter compile: 'updateSourceWith: method
-	source userActionDuring: [
-		method
-			ifNotNil: [ 
-				[DSInspectMethodSourceRecord for: {self model. self selectedClass. self selectedMethod. self window window}] on: Error do:[ DSSpy log: #ERROR key: #INSPECTOR_META_METHOD].
-				source text: method sourceCode; beForMethod: method  ]
-			ifNil: [ 
-				source text: ''''; clearInteractionModel ] ]'
-]
-
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentInspectorOnObject [
-
-	StInspectorPresenter compile: 'initializePresenters
-	[ 
-	self class == StPlayground ifFalse: [ 
-		DSInspectObjectRecord for: { 
-				self model inspectedObject.
-				([self window window] on: Error do: [ 0 ]) } ] ]
-		on: Error
-		do: [ DSSpy log: #ERROR key: #INSPECTOR_INSPECT ].	
-	millerList := self instantiate: SpMillerPaginatorPresenter.
-	millerList millerListPresenter
-		spacing: self spacing;
-		presenterBlock: [ :aModel | self newInspectorFor: aModel ];
-		setRootModel: self model;
-		whenColumnsWillChangeDo: [ self keepLastPageSelectedTabName ]'
-]
-
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentInspectorPageSelection [
-
-	StObjectInspectorPresenter compile: 'initializePresenters
-	views := self newNotebook.
-	header := self instantiate: StHeaderBar.
-	
-	views whenSelectedPageChangedDo: [ :page | 
-		[ 
-		DSSelectInspectorPageRecord for: { 
-				page title.
-				self model inspectedObject.
-				[self window window] on: Error do:[0] } ]
-			on: Error
-			do: [ :e | DSSpy log: #ERROR key: #INSPECTOR_META_CLASS ] ]'
-]
-
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentMouseEnterWindow [
 
@@ -226,20 +156,6 @@ DSSpyInstrumenter >> instrumentMouseEnterWindow [
 DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 
 	SystemWindow link: DSMouseLeaveWindowRecord link toAST: (SystemWindow >> #handleMouseLeave:) ast
-]
-
-{ #category : 'inspector' }
-DSSpyInstrumenter >> instrumentNavigateAttribute [
-
-	StRawInspectionPresenter compile: 'setAttributeTable
-
-	attributeTable children: [ :node | node children ].
-
-	self outputSelectionPort transmitDo: [ :val | 
-		val ifNotNil: [ 
-			[ DSNavigateAttributeRecord for: { {val. model}. self window window} ]
-				on: Error
-				do: [ :err | DSSpy log: #ERROR key: #INSPECTOR_OBSERVE ] ] ]'
 ]
 
 { #category : 'system' }
@@ -294,9 +210,8 @@ DSSpyInstrumenter >> instrumentSystem [
 	self listenToDebugPointChanges.
 	self logTextEditorsClipbardActions.
 	self logMouseEvents.
-	self logCodeInteractions "self logClyBrowsersOpenings." "self logDebuggerInteractions.
+	self logCodeInteractions "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
-	self logInspectorInteractions.
 	self listenToWindowEvents.
 	self listenToMethodChanges"
 ]
@@ -326,23 +241,18 @@ DSSpyInstrumenter >> listenToWindowEvents [
 ]
 
 { #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logClyBrowsersOpenings [
-	self instrumentClyQueryBrowser
-]
-
-{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentPrintIt.
 	self instrumentDebugIt.
 	self instrumentDoIt.
-	self instrumentDoItAndGo
+	self instrumentDoItAndGo.
+	self instrumentBrowsingActions 
 ]
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logDebuggerInteractions [
 
-	self instrumentCodePresenter.
 	self instrumentDebuggerCommands.
 	self instrumentDebuggerStack.
 	self instrumentSindarinDebuggerCommands
@@ -352,17 +262,6 @@ DSSpyInstrumenter >> logDebuggerInteractions [
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
 	self instrumentHaltHits.
 	self listenToDebugPointChanges 
-]
-
-{ #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logInspectorInteractions [
-
-	self instrumentExpandAttribute.
-	self instrumentInspectMethodsOfClass.
-	self instrumentInspectSourceOfMethod.
-	self instrumentInspectorOnObject.
-	self instrumentInspectorPageSelection.
-	self instrumentNavigateAttribute
 ]
 
 { #category : 'system-instrumentation' }
