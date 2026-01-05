@@ -16,16 +16,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'accessing' }
-DSMouseEventRecord class >> link [
-
-	^ MetaLink new
-		  metaObject: self;
-		  selector: #for:;
-		  arguments: #( receiver );
-		  control: #before
-]
-
 { #category : 'actions api' }
 DSMouseEventRecord >> record: aWindow [
 

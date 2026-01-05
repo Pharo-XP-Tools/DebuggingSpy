@@ -23,6 +23,16 @@ DSAbstractEventRecord class >> for: anObject [
 	^ rec
 ]
 
+{ #category : 'accessing' }
+DSAbstractEventRecord class >> link [
+
+	^ MetaLink new
+		  metaObject: self;
+		  selector: #for:;
+		  arguments: #( receiver );
+		  control: #before
+]
+
 { #category : 'comparing' }
 DSAbstractEventRecord >> < aDSAbstractRecord [
 	^self dateTime < aDSAbstractRecord dateTime

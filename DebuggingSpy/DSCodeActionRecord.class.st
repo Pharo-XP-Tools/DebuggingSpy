@@ -13,15 +13,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'accessing' }
-DSCodeActionRecord class >> link [
-	^ MetaLink new
-		metaObject: self;
-		selector: #for:;
-		arguments: #(receiver);
-		control: #before
-]
-
 { #category : 'actions api' }
 DSCodeActionRecord >> record: anEditor [
 

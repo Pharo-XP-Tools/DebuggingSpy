@@ -1,3 +1,6 @@
+"
+Abstract class for records on DebugPoint's actions
+"
 Class {
 	#name : 'DSMethodDebugPointRecord',
 	#superclass : 'DSDebugPointRecord',

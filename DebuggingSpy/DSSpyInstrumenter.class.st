@@ -26,48 +26,10 @@ DSSpyInstrumenter class >> stopInstrumentation [
 	MetaLink uninstallAll "TO CHANGED : just uninstall targeted MetaLinks"
 ]
 
-{ #category : 'browsers' }
-DSSpyInstrumenter >> instrumentClyQueryBrowser [
+{ #category : 'system' }
+DSSpyInstrumenter >> instrumentBrowsingActions [
 
-	ClyQueryBrowserMorph compile: 'newWindowTitle
-	| title | 
-	title := systemQuery description.
-	resultView areItemsLoaded 
-		ifTrue: [title := title capitalized , '' ['' ,  self itemCount asString, '']'']
-		ifFalse: [title := ''Loading: '', title ].
-	self systemScope isCurrentImage ifFalse: [ 
-		title := title , '' in '', self systemScope description ].
-	[DSQueryBrowseRecord for: self] on: Error do: [DSSpy log: #ERROR key: #QUERY].
-	^title'
-]
-
-{ #category : 'debugger' }
-DSSpyInstrumenter >> instrumentCodePresenter [
-
-	SpCodePresenter compile: 'initialize 
-
-	super initialize.
-
-	"Use the default menu"
-	overrideContextMenu := false.
-	
-	self withSyntaxHighlight.
-	self withSmartCharacters.
-	self showLineNumbers.
-	self subscribeToSettingsChangesAnnouncements.
-	
-	self registerEventsForStyling.
-	self clearInteractionModel.
-
-	self eventHandler
-		whenKeyDownDo: [ :event | 
-			[ DSPlaygroundWriteRecord for: self ]
-				on: Error
-				do: [:e| DSSpy log: #ERROR key: #PLAYGROUND_WRITE ] ];
-		whenMouseEnterDo: [ :evt |
-			[ DSPlaygroundReadRecord for: self.  ]
-				on: Error
-				do: [ DSSpy log: #ERROR key: #PLAYGROUND_READ ] ]'
+	ClyBrowserMorph link: DSBrowseRecord link toAST: (ClyBrowserMorph >> #prepareInitialStateBy:) ast
 ]
 
 { #category : 'system' }

@@ -1,3 +1,6 @@
+"
+I am a registry containing all records during a recording session.
+"
 Class {
 	#name : 'DSRecordRegistry',
 	#superclass : 'Object',

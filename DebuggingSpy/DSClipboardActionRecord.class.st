@@ -16,16 +16,6 @@ Class {
 }
 
 { #category : 'accessing' }
-DSClipboardActionRecord class >> link [
-
-	^ MetaLink new
-		  metaObject: self;
-		  selector: #for:;
-		  arguments: #( receiver );
-		  control: #before
-]
-
-{ #category : 'accessing' }
 DSClipboardActionRecord >> clipboardText [
 
 	^ clipboardText
