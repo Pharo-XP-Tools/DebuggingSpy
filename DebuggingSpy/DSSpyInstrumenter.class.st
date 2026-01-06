@@ -28,13 +28,14 @@ DSSpyInstrumenter class >> stopInstrumentation [
 
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentBrowseActions [
+	"Instruments browse actions"
 
-	ClyBrowserMorph link: DSBrowseRecord link toAST: (ClyBrowserMorph >> #prepareInitialStateBy:) ast
-	"SpBrowseClassCommand link: DSBrowseRecord link toAST: (SpBrowseClassCommand >> #execute) ast"
+	ClyBrowserMorph link: DSBrowseRecord link toAST: (ClyBrowserMorph >> #prepareInitialStateBy:) ast "SpBrowseClassCommand link: DSBrowseRecord link toAST: (SpBrowseClassCommand >> #execute) ast"
 ]
 
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentCopySelection [
+	"Instruments the action of copying to clipboard"
 
 	RubTextEditor link: DSClipboardCopyRecord link toAST: (RubTextEditor >> #copySelection) ast.
 	RubSmalltalkEditor link: DSClipboardCopyRecord link toAST: (RubSmalltalkEditor >> #copySelection) ast
@@ -83,7 +84,7 @@ stackTable := self newList.
 
 { #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDoIt [
-	"Instruments different doIt methods"
+	"Instruments different 'Do it' actions"
 
 	RubSmalltalkEditor link: DSDoItRecord link toAST: (RubSmalltalkEditor >> #doIt) ast.
 	SpCodePrintItCommand link: DSDoItRecord link toAST: (SpCodeDoItCommand >> #execute) ast
@@ -91,7 +92,7 @@ DSSpyInstrumenter >> instrumentDoIt [
 
 { #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDoItAndGo [
-	"Instruments different doEvaluateAndGo methods"
+	"Instruments different 'Do it and go' actions"
 
 	StObjectContextPresenter link: DSDoItAndGoRecord link toAST: (StObjectContextPresenter >> #doEvaluateAndGo) ast.
 	StPlaygroundPagePresenter link: DSDoItAndGoRecord link toAST: (StPlaygroundPagePresenter >> #doEvaluateAndGo) ast
@@ -141,6 +142,7 @@ DSSpyInstrumenter >> instrumentHaltHits [
 
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentImplementorsActions [
+	"Instruments actions to show implementors of a method"
 
 	ClyShowMessageImplementorCommand link: DSImplementorsRecord link toAST: (ClyShowMessageImplementorCommand >> #execute) ast.
 	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast
@@ -168,6 +170,7 @@ DSSpyInstrumenter >> instrumentMouseLeaveWindow [
 
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentPaste [
+	"Instruments the action of paste from clipboard"
 
 	RubTextEditor link: DSClipboardPasteRecord link toAST: (RubTextEditor >> #paste) ast.
 	RubSmalltalkEditor link: DSClipboardPasteRecord link toAST: (RubSmalltalkEditor >> #paste) ast
@@ -175,7 +178,7 @@ DSSpyInstrumenter >> instrumentPaste [
 
 { #category : 'interactions' }
 DSSpyInstrumenter >> instrumentPrintIt [
-	"Instruments different printIt methods"
+	"Instruments different 'Print it' actions"
 
 	RubSmalltalkEditor link: DSPrintItRecord link toAST: (RubSmalltalkEditor >> #printIt) ast.
 	ClyTextEditor link: DSPrintItRecord link toAST: (ClyTextEditor >> #printIt) ast.
@@ -184,6 +187,7 @@ DSSpyInstrumenter >> instrumentPrintIt [
 
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentSendersActions [
+	"Instruments actions to show senders of a method or class"
 
 	ClyShowMessageSenderCommand link: DSSendersRecord link toAST: (ClyShowMessageSenderCommand >> #execute) ast.
 	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
@@ -223,7 +227,7 @@ DSSpyInstrumenter >> instrumentSystem [
 
 	self listenToWindowEvents.
 	self listenToDebugPointChanges.
-	self logTextEditorsClipbardActions.
+	self logClipbardActions.
 	self logMouseEvents.
 	self logCodeInteractions. 
 	self logBrowsingActions "self logDebuggerInteractions.
@@ -234,6 +238,7 @@ DSSpyInstrumenter >> instrumentSystem [
 
 { #category : 'debugpoints  ' }
 DSSpyInstrumenter >> listenToDebugPointChanges [
+	"Listen to the announcements link to debugPoints modification and record the event"
 
 	DebugPoint codeSupportAnnouncer weak when: DebugPointAdded send: #recordDebugPointEvent: to: DSSpy.
 	DebugPoint codeSupportAnnouncer weak when: DebugPointHit send: #recordDebugPointEvent: to: DSSpy.
@@ -243,6 +248,8 @@ DSSpyInstrumenter >> listenToDebugPointChanges [
 
 { #category : 'methods' }
 DSSpyInstrumenter >> listenToMethodChanges [
+	"Listen to the announcements link to method modification and record the event"
+
 	SystemAnnouncer uniqueInstance weak when: MethodModified send: #methodChanged: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodRemoved send: #methodRemoved: to: DSSpy.
 	SystemAnnouncer uniqueInstance weak when: MethodAdded send: #methodAdded: to: DSSpy
@@ -250,6 +257,7 @@ DSSpyInstrumenter >> listenToMethodChanges [
 
 { #category : 'windows' }
 DSSpyInstrumenter >> listenToWindowEvents [
+	"Listen to the announcements link to windows and record the event"
 
 	self currentWorld announcer when: WindowOpened send: #logWindowOpened: to: DSSpy.
 	self currentWorld announcer when: WindowClosed send: #logWindowClosed: to: DSSpy.
@@ -258,6 +266,7 @@ DSSpyInstrumenter >> listenToWindowEvents [
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logBrowsingActions [
+	"Instrument all actions link to the Browser : browse, senders and implementors"
 
 	self instrumentBrowseActions.
 	self instrumentImplementorsActions.
@@ -265,7 +274,16 @@ DSSpyInstrumenter >> logBrowsingActions [
 ]
 
 { #category : 'system-instrumentation' }
+DSSpyInstrumenter >> logClipbardActions [
+	"Instruments commands linked to clipboard"
+
+	self instrumentCopySelection.
+	self instrumentPaste
+]
+
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logCodeInteractions [
+	"Instruments actions linked to code execution : do it, print it, inspect it, ..."
 
 	self instrumentPrintIt.
 	self instrumentDebugIt.
@@ -275,6 +293,7 @@ DSSpyInstrumenter >> logCodeInteractions [
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logDebuggerInteractions [
+	"Instruments the Debugger and the Sindarin Debugger"
 
 	self instrumentDebuggerCommands.
 	self instrumentDebuggerStack.
@@ -283,22 +302,18 @@ DSSpyInstrumenter >> logDebuggerInteractions [
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logHaltAndBreakpointEvents [
+	"Instrument halts and debugPoints"
+
 	self instrumentHaltHits.
 	self listenToDebugPointChanges 
 ]
 
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logMouseEvents [
+	"Instrument mouse events"
 
 	self instrumentMouseEnterWindow.
 	self instrumentMouseLeaveWindow
-]
-
-{ #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logTextEditorsClipbardActions [
-
-	self instrumentCopySelection.
-	self instrumentPaste
 ]
 
 { #category : 'system-instrumentation' }
