@@ -27,9 +27,10 @@ DSSpyInstrumenter class >> stopInstrumentation [
 ]
 
 { #category : 'system' }
-DSSpyInstrumenter >> instrumentBrowsingActions [
+DSSpyInstrumenter >> instrumentBrowseActions [
 
 	ClyBrowserMorph link: DSBrowseRecord link toAST: (ClyBrowserMorph >> #prepareInitialStateBy:) ast
+	"SpBrowseClassCommand link: DSBrowseRecord link toAST: (SpBrowseClassCommand >> #execute) ast"
 ]
 
 { #category : 'system' }
@@ -138,6 +139,13 @@ DSSpyInstrumenter >> instrumentHaltHits [
 	super signal'.
 ]
 
+{ #category : 'system' }
+DSSpyInstrumenter >> instrumentImplementorsActions [
+
+	ClyShowMessageImplementorCommand link: DSImplementorsRecord link toAST: (ClyShowMessageImplementorCommand >> #execute) ast.
+	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast
+]
+
 { #category : 'interactions' }
 DSSpyInstrumenter >> instrumentInspectIt [
 	"Instruments different inspectIt methods"
@@ -172,6 +180,13 @@ DSSpyInstrumenter >> instrumentPrintIt [
 	RubSmalltalkEditor link: DSPrintItRecord link toAST: (RubSmalltalkEditor >> #printIt) ast.
 	ClyTextEditor link: DSPrintItRecord link toAST: (ClyTextEditor >> #printIt) ast.
 	SpCodePrintItCommand link: DSPrintItRecord link toAST: (SpCodePrintItCommand >> #execute) ast
+]
+
+{ #category : 'system' }
+DSSpyInstrumenter >> instrumentSendersActions [
+
+	ClyShowMessageSenderCommand link: DSSendersRecord link toAST: (ClyShowMessageSenderCommand >> #execute) ast.
+	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
 ]
 
 { #category : 'debugger' }
@@ -210,7 +225,8 @@ DSSpyInstrumenter >> instrumentSystem [
 	self listenToDebugPointChanges.
 	self logTextEditorsClipbardActions.
 	self logMouseEvents.
-	self logCodeInteractions "self logDebuggerInteractions.
+	self logCodeInteractions. 
+	self logBrowsingActions "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
 	self listenToWindowEvents.
 	self listenToMethodChanges"
@@ -241,13 +257,20 @@ DSSpyInstrumenter >> listenToWindowEvents [
 ]
 
 { #category : 'system-instrumentation' }
+DSSpyInstrumenter >> logBrowsingActions [
+
+	self instrumentBrowseActions.
+	self instrumentImplementorsActions.
+	self instrumentSendersActions
+]
+
+{ #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logCodeInteractions [
 
 	self instrumentPrintIt.
 	self instrumentDebugIt.
 	self instrumentDoIt.
-	self instrumentDoItAndGo.
-	self instrumentBrowsingActions 
+	self instrumentDoItAndGo
 ]
 
 { #category : 'system-instrumentation' }
