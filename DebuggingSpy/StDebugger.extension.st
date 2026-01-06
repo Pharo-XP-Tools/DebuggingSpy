@@ -23,7 +23,7 @@ StDebugger class >> executionCommandGroupIn: rootCommandGroup [
 StDebugger class >> instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup [
 
 	<extensionCommands>
-	self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
+	DSSpy recordingSession ifTrue: [ self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup ]
 ]
 
 { #category : '*DebuggingSpy' }

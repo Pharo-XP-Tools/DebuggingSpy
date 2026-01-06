@@ -18,12 +18,18 @@ DSSpyInstrumenter class >> instrumentSystem [
 
 { #category : 'system instrumentation' }
 DSSpyInstrumenter class >> stopInstrumentation [
+	"Stop the instrumentation of the system"
 
+	"Stop the recording session"
+	DSSpy recordingSession: false.
+
+	"Stop listening to events for recording"
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy.
 	DebugPoint codeSupportAnnouncer unsubscribe: DSSpy.
 	self currentWorld announcer unsubscribe: DSSpy.
 	
-	MetaLink uninstallAll "TO CHANGED : just uninstall targeted MetaLinks"
+	"Uninstall MetaLinks used by the instrumenter"
+	MetaLink uninstallAll "TO CHANGE : just uninstall targeted MetaLinks"
 ]
 
 { #category : 'system' }
@@ -47,16 +53,6 @@ DSSpyInstrumenter >> instrumentDebugIt [
 
 	RubSmalltalkEditor link: DSDebugItRecord link toAST: (RubSmalltalkEditor >> #debugIt) ast.
 	SpCodePrintItCommand link: DSDebugItRecord link toAST: (SpCodeDebugItCommand >> #execute) ast
-]
-
-{ #category : 'debugger' }
-DSSpyInstrumenter >> instrumentDebuggerCommands [
-	StDebugger class compile:
-	'instrumentCommandsWith: stDebuggerInstance forRoot: rootCommandGroup
-
-	<extensionCommands>
-	self buildInstrumentedCommandsWith: stDebuggerInstance forRoot: rootCommandGroup'
-	
 ]
 
 { #category : 'debugger' }
@@ -108,36 +104,6 @@ DSSpyInstrumenter >> instrumentExceptionSignalling [
 		on: Error 
 		do:[:err| DSSpy log: #ERROR key: self class name asSymbol ]].
 	^ UnhandledError signalForException: self'
-]
-
-{ #category : 'debugpoints  ' }
-DSSpyInstrumenter >> instrumentHaltHits [
-	Halt class compile: 'signalIn: ctx	
-		
-	self = Halt ifTrue:[
-	[|sender|				
-		sender := thisContext sender sender sender sender sender sender sender sender sender.
-		ctx selector = #once: ifFalse:[sender := sender sender].
-		DSHaltHitRecord for: {sender sourceNodeExecuted. ctx selector}] 
-		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signalIn: ctx'.
-	
-	Halt class compile: 'signal: s
-	self = Halt ifTrue:[	[|sender|		
-		sender := thisContext sender sender sender sender sender.
-		DSHaltHitRecord for:  {sender sourceNodeExecuted. #now:}] 
-		on: Error 
-		do:[ DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signal: s'.
-	
-	Halt class compile: 'signal
-		self = Halt ifTrue:[	[|sender| 			
-		sender := thisContext sender sender sender sender sender.
-		DSHaltHitRecord for:  {sender sourceNodeExecuted. #halt}] 
-		on: Error 
-		do:[:err| DSSpy log: #ERROR key: #HALT_HIT ]].
-	super signal'.
 ]
 
 { #category : 'system' }
@@ -224,16 +190,19 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"Instrument every thing in the system, feel free to comment things you don't want to record"
+	
+	"Start debugging session"
+	DSSpy recordingSession: true.
 
 	self listenToWindowEvents.
+	self listenToMethodChanges.
 	self listenToDebugPointChanges.
 	self logClipbardActions.
 	self logMouseEvents.
 	self logCodeInteractions. 
 	self logBrowsingActions "self logDebuggerInteractions.
 	self logHaltAndBreakpointEvents.
-	self listenToWindowEvents.
-	self listenToMethodChanges"
+	"
 ]
 
 { #category : 'debugpoints  ' }
