@@ -194,15 +194,16 @@ DSSpyInstrumenter >> instrumentSystem [
 	"Start debugging session"
 	DSSpy recordingSession: true.
 
+	"Listen to announcements"
 	self listenToWindowEvents.
 	self listenToMethodChanges.
 	self listenToDebugPointChanges.
+	
+	"Instruments events/user's actions"
 	self logClipbardActions.
 	self logMouseEvents.
 	self logCodeInteractions. 
-	self logBrowsingActions "self logDebuggerInteractions.
-	self logHaltAndBreakpointEvents.
-	"
+	self logBrowsingActions "self logDebuggerInteraction."
 ]
 
 { #category : 'debugpoints  ' }
@@ -263,18 +264,9 @@ DSSpyInstrumenter >> logCodeInteractions [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logDebuggerInteractions [
 	"Instruments the Debugger and the Sindarin Debugger"
-
-	self instrumentDebuggerCommands.
+	
 	self instrumentDebuggerStack.
 	self instrumentSindarinDebuggerCommands
-]
-
-{ #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logHaltAndBreakpointEvents [
-	"Instrument halts and debugPoints"
-
-	self instrumentHaltHits.
-	self listenToDebugPointChanges 
 ]
 
 { #category : 'system-instrumentation' }
