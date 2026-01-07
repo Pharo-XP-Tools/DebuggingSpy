@@ -358,7 +358,7 @@ DSSpyInstrumenterTest >> setDummyWindowPresenter: windowPresenter forPresenter: 
 DSSpyInstrumenterTest >> setUp [
 	super setUp.
 	
-	instrumenter := DSSpyInstrumenter new.
+	DSSpyInstrumenter instrumentSystem.
 	recordSourceCode := DSSpy recordSourceCode.
 	DSSpy recordSourceCode: true.
 	DSRecordRegistry current reset
@@ -412,23 +412,11 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 { #category : 'running' }
 DSSpyInstrumenterTest >> tearDown [
-
-	(modifiedClass notNil and: [ 
-		 (#( nil '' ) includes: modifiedMethodSource) not ]) ifTrue: [ 
-		modifiedClass compile: modifiedMethodSource.
-		modifiedClass := nil.
-		modifiedMethodSource := nil ].
-	
-	methodToRemove ifNotNil: [ 
-		methodToRemove removeFromSystem.
-		methodToRemove := nil ].
-
-	methodsToRemove ifNotNil: [ 
-		methodsToRemove do: [ :m | m removeFromSystem ] ].
 	
 	DSSpy recordSourceCode: recordSourceCode.
-	
 	DSRecordRegistry current reset.
+	
+	DSSpyInstrumenter stopInstrumentation.
 	
 	super tearDown
 ]
@@ -436,18 +424,15 @@ DSSpyInstrumenterTest >> tearDown [
 { #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
-	modifiedClass := ClyFullBrowserMorph.
-	modifiedMethodSource := (ClyFullBrowserMorph >> #newWindowTitle) sourceCode.
-	instrumenter instrumentClyFullBrowser.
 	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.  
 	browser  prepareInitialStateBy:  [ :b |b selectMethod: (Object>>#yourself)].
-	self setDummyWindowForMorph: browser.
-	browser newWindowTitle.
+	"self setDummyWindowForMorph: browser.
+	browser newWindowTitle."
 	
 	self assert: self registry size equals: 1.
 	
 	record := self registry first.
-	self assert: record class identicalTo: DSFullBrowseRecord.
+	self assert: record class identicalTo: DSBrowseRecord.
 	self assert: record windowId equals: browser window hash.
 	self assert: record classBrowsed equals: Object name.
 	self assert: record packageBrowsed equals: Object package name.
