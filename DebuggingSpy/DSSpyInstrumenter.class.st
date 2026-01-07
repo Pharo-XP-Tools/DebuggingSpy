@@ -55,29 +55,6 @@ DSSpyInstrumenter >> instrumentDebugIt [
 	SpCodePrintItCommand link: DSDebugItRecord link toAST: (SpCodeDebugItCommand >> #execute) ast
 ]
 
-{ #category : 'debugger' }
-DSSpyInstrumenter >> instrumentDebuggerStack [
-
-	StDebugger compile: 'initializeStack
-stackTable := self newList.
-	stackTable
-		activateOnDoubleClick;
-		whenActivatedDo: [ :selection | self doBrowseClass ].
-	stackTable display:[:selection| StContextPrinter printContext: selection].
-	stackTable displayColor:[ :context | self stackColorForContext: context ].
-	stackTable displayIcon: [ :context| self stackIconForContext: context ].	
-	stackTable transmitDo: [ :context |
-		stackTable selection isEmpty ifFalse: [
-			self updateInspectorFromContext: context.
-			self updateCodeFromContext: context.
-			self updateExtensionsFromSession: self session.
-			self expandStackIfLastItemIsSelected.
-			self updateWindowTitle.
-			[DSBrowseContextRecord for: { context . [self window window] on: Error do:[0] } ] on: Error do:[:err| DSSpy log: #ERROR key: #DEBUGGER_STACK ] ] ].
-	stackHeader := self instantiate: StHeaderBar.
-	stackHeader label: ''Stack'''
-]
-
 { #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDoIt [
 	"Instruments different 'Do it' actions"
@@ -265,7 +242,6 @@ DSSpyInstrumenter >> logCodeInteractions [
 DSSpyInstrumenter >> logDebuggerInteractions [
 	"Instruments the Debugger and the Sindarin Debugger"
 	
-	self instrumentDebuggerStack.
 	self instrumentSindarinDebuggerCommands
 ]
 
