@@ -30,8 +30,7 @@ DSAbstractEventRecord class >> link [
 		  metaObject: self;
 		  selector: #for:;
 		  arguments: #( receiver );
-		  control: #before;
-		  optionCompileOnLinkInstallation: true
+		  control: #before
 ]
 
 { #category : 'comparing' }
@@ -102,7 +101,9 @@ DSAbstractEventRecord >> realRecord [
 { #category : 'actions api' }
 DSAbstractEventRecord >> record: aWindow [
 
-	windowId := aWindow identityHash
+	windowId := aWindow identityHash.
+
+	windowId = nil identityHash ifTrue: [ windowId := nil ]
 ]
 
 { #category : 'API-history' }
