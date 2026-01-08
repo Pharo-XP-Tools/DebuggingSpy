@@ -1,3 +1,6 @@
+"
+I record when a user is doing a copy to clipboard action.
+"
 Class {
 	#name : 'DSClipboardCopyRecord',
 	#superclass : 'DSClipboardActionRecord',

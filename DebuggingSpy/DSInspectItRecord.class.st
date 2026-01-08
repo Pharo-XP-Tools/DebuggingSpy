@@ -1,3 +1,6 @@
+"
+I record when the user selects code and inspects it.
+"
 Class {
 	#name : 'DSInspectItRecord',
 	#superclass : 'DSCodeActionRecord',

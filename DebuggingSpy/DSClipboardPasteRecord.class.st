@@ -1,3 +1,6 @@
+"
+I record when a user is doing a paste from clipboard action.
+"
 Class {
 	#name : 'DSClipboardPasteRecord',
 	#superclass : 'DSClipboardActionRecord',

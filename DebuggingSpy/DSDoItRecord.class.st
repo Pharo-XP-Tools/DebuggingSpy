@@ -1,5 +1,5 @@
 "
-I record when the user selects code and debugs it.
+I record when the user selects code and executes it by a ""Do it"".
 "
 Class {
 	#name : 'DSDoItRecord',

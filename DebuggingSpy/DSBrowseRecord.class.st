@@ -15,45 +15,12 @@ Class {
 }
 
 { #category : 'accessing' }
-DSBrowseRecord >> classBrowsed [ 
-
-	^ classBrowsed 
-]
-
-{ #category : 'accessing' }
 DSBrowseRecord >> eventName [
 	^ 'Browse'
 ]
 
-{ #category : 'accessing' }
-DSBrowseRecord >> methodBrowsed [ 
-
-	^ methodBrowsed 
-]
-
-{ #category : 'accessing' }
-DSBrowseRecord >> packageBrowsed [ 
-
-	^ packageBrowsed 
-]
-
-{ #category : 'accessing' }
+{ #category : 'actions api' }
 DSBrowseRecord >> record: aClyBrowser [
 
-	windowId := aClyBrowser window identityHash.
-	packageBrowsed := aClyBrowser packageSelection isEmpty
-		                  ifTrue: [ '' ]
-		                  ifFalse: [ 
-		                  aClyBrowser packageSelection lastSelectedItem
-			                  actualObject name ].
-	classBrowsed := aClyBrowser classSelection isEmpty
-		                ifTrue: [ '' ]
-		                ifFalse: [ 
-		                aClyBrowser classSelection lastSelectedItem
-			                actualObject name ].
-	methodBrowsed := aClyBrowser methodSelection isEmpty
-		                 ifTrue: [ '' ]
-		                 ifFalse: [ 
-		                 aClyBrowser methodSelection lastSelectedItem
-			                 actualObject name ].
+	super record: aClyBrowser window.
 ]

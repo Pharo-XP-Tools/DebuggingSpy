@@ -521,8 +521,8 @@ DSRecordHistory >> processRecords: array [
 	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord.
 	
 	"Detect if we're in a specific task"	
-	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
-		self taskName: self records first taskName ].
+"	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
+		self taskName: self records first taskName ]."
 	
 	"Windows"
 	self buildWindowHistory.

@@ -40,6 +40,13 @@ DSSpyInstrumenter >> instrumentBrowseActions [
 ]
 
 { #category : 'system' }
+DSSpyInstrumenter >> instrumentClyFullBrowserOpening [
+	"Instruments the browser on opening"
+
+	ClyFullBrowserMorph link: DSFullBrowseRecord link toAST: (ClyFullBrowserMorph >> #newWindowTitle) ast
+]
+
+{ #category : 'system' }
 DSSpyInstrumenter >> instrumentCopySelection [
 	"Instruments the action of copying to clipboard"
 

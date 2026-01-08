@@ -424,38 +424,27 @@ DSSpyInstrumenterTest >> tearDown [
 { #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
-	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.  
-	browser  prepareInitialStateBy:  [ :b |b selectMethod: (Object>>#yourself)].
-	"self setDummyWindowForMorph: browser.
-	browser newWindowTitle."
-	
+	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
+	browser prepareInitialStateBy: [ :b | b selectMethod: Object >> #yourself ].
+
 	self assert: self registry size equals: 1.
-	
+
 	record := self registry first.
 	self assert: record class identicalTo: DSBrowseRecord.
-	self assert: record windowId equals: browser window hash.
-	self assert: record classBrowsed equals: Object name.
-	self assert: record packageBrowsed equals: Object package name.
-	self assert: record methodBrowsed equals: (Object>>#yourself) name
+	self assert: record windowId equals: browser window hash
 ]
 
 { #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 	
-	modifiedClass := ClyQueryBrowserMorph.
-	modifiedMethodSource := (ClyQueryBrowserMorph >> #newWindowTitle) sourceCode.
-	instrumenter instrumentClyQueryBrowser.
 	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
-	browser showResultOf: (ClyMessageImplementorsQuery of: #instrumentClyQueryBrowser).
-	self setDummyWindowForMorph: browser.
-	browser newWindowTitle.
+	browser showResultOf: (ClyMessageImplementorsQuery of: #testInstrumentClyFullBrowser).
 	
 	self assert: self registry size equals: 1.
 	
 	record := self registry first.
-	self assert: record class identicalTo: DSQueryBrowseRecord.
-	self assert: record windowId equals: browser window hash.
-	self assert: record queryName equals: browser systemQuery description
+	self assert: record class identicalTo: DSImplementorsRecord.
+	self assert: record windowId equals: browser window hash
 ]
 
 { #category : 'tests - interactions' }
