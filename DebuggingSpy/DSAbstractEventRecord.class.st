@@ -26,11 +26,12 @@ DSAbstractEventRecord class >> for: anObject [
 { #category : 'accessing' }
 DSAbstractEventRecord class >> link [
 
-	^ MetaLink new
+	^ DSMetaLink new
 		  metaObject: self;
 		  selector: #for:;
 		  arguments: #( receiver );
-		  control: #before
+		  control: #before;
+		  optionCompileOnLinkInstallation: true
 ]
 
 { #category : 'comparing' }

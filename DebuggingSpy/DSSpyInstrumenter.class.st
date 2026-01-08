@@ -18,6 +18,7 @@ DSSpyInstrumenter class >> instrumentSystem [
 
 { #category : 'system instrumentation' }
 DSSpyInstrumenter class >> stopInstrumentation [
+	<example>
 	"Stop the instrumentation of the system"
 
 	"Stop the recording session"
@@ -29,7 +30,7 @@ DSSpyInstrumenter class >> stopInstrumentation [
 	self currentWorld announcer unsubscribe: DSSpy.
 	
 	"Uninstall MetaLinks used by the instrumenter"
-	MetaLink uninstallAll "TO CHANGE : just uninstall targeted MetaLinks"
+	DSMetaLink uninstallAll "TO CHANGE : just uninstall targeted MetaLinks"
 ]
 
 { #category : 'system' }
