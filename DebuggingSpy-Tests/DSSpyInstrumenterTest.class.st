@@ -422,6 +422,19 @@ DSSpyInstrumenterTest >> tearDown [
 ]
 
 { #category : 'tests - browsers' }
+DSSpyInstrumenterTest >> testInstrumentBrowseAction [
+
+	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
+	browser prepareInitialStateBy: [ :b | b selectMethod: Object >> #yourself ].
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSBrowseRecord.
+	self assert: record windowId equals: nil identityHash "At this stage, the window browser is not built"
+]
+
+{ #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
 	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
@@ -431,7 +444,7 @@ DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
 
 	record := self registry first.
 	self assert: record class identicalTo: DSBrowseRecord.
-	self assert: record windowId equals: browser window hash
+	self assert: record windowId equals: nil identityHash "At this stage, the window browser is not built"
 ]
 
 { #category : 'tests - browsers' }

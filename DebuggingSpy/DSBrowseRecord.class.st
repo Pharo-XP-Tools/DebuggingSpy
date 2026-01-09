@@ -18,9 +18,3 @@ Class {
 DSBrowseRecord >> eventName [
 	^ 'Browse'
 ]
-
-{ #category : 'actions api' }
-DSBrowseRecord >> record: aClyBrowser [
-
-	super record: aClyBrowser window.
-]

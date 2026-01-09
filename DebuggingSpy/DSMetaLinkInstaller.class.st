@@ -1,3 +1,6 @@
+"
+Installer for DSMetaLinks, it allows to uninstall all DSMetaLinks easily
+"
 Class {
 	#name : 'DSMetaLinkInstaller',
 	#superclass : 'MetaLinkInstaller',

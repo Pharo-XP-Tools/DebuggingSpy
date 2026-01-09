@@ -1,3 +1,6 @@
+"
+I am defining rules for recording and I am used by most of the DebuggingSpy's classes.
+"
 Class {
 	#name : 'DSSpy',
 	#superclass : 'Object',

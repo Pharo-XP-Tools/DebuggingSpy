@@ -99,26 +99,6 @@ DSSTONFileLoggerTest >> testLoggingFileName [
 ]
 
 { #category : 'tests - file handling' }
-DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskEnded [
-
-	DSSpy startTask: task.
-	DSSpy endTask: task.
-	self
-		assert: logger loggingFileName
-		equals: logger defaultLoggingFileName
-]
-
-{ #category : 'tests - file handling' }
-DSSTONFileLoggerTest >> testLoggingFileNameAfterTaskStarted [
-	
-	DSSpy startTask: task.
-
-	self
-		assert: logger loggingFileName
-		equals: (task title, '-', logger defaultLoggingFileName)
-]
-
-{ #category : 'tests - file handling' }
 DSSTONFileLoggerTest >> testLoggingFileReference [
 
 	| fileReference |

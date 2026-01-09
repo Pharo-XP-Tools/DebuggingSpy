@@ -1,3 +1,6 @@
+"
+MetaLinks only used by Debugging Spy for instrumentation purpose.
+"
 Class {
 	#name : 'DSMetaLink',
 	#superclass : 'MetaLink',
