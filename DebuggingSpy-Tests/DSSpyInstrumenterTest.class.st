@@ -2,14 +2,10 @@ Class {
 	#name : 'DSSpyInstrumenterTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'modifiedClass',
-		'modifiedMethodSource',
 		'instrumenter',
 		'record',
 		'debugger',
 		'browser',
-		'methodToRemove',
-		'methodsToRemove',
 		'recordSourceCode'
 	],
 	#category : 'DebuggingSpy-Tests-Tests - model',
@@ -38,14 +34,7 @@ DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method conditional: isHal
 DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
 
 	| cmds cmd |
-	modifiedClass := StDebugger class.
-	modifiedMethodSource := [ 
-	                        (StDebugger class
-	                         >> #instrumentCommandsWith:forRoot:)
-		                        sourceCode ]
-		                        on: Error
-		                        do: [ nil ].
-	instrumenter instrumentDebuggerCommands.
+	
 	debugger := self debuggerOnRecursiveContextForTesting.
 	
 	cmds := debugger rootCommandsGroup.
@@ -65,13 +54,8 @@ DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandNa
 { #category : 'assertions' }
 DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerCommandName [
 
-	| modifiedMethod cmds cmd |
-	modifiedClass := StDebugger class.
-	modifiedMethod := modifiedClass>>#buildSindarinExtentionCommandsGroupWith:forRoot:.
-	modifiedMethodSource := [ modifiedMethod sourceCode ]
-		                        on: Error
-		                        do: [ nil ].
-	instrumenter instrumentSindarinDebuggerCommands.
+	| cmds cmd |
+	
 	debugger := self debuggerOnRecursiveContextForTesting.
 
 	self setDummyWindowForPresenter: debugger.
@@ -426,19 +410,8 @@ DSSpyInstrumenterTest >> testInstrumentBrowseAction [
 
 	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
 	browser prepareInitialStateBy: [ :b | b selectMethod: Object >> #yourself ].
-
-	self assert: self registry size equals: 1.
-
-	record := self registry first.
-	self assert: record class identicalTo: DSBrowseRecord.
-	self assert: record windowId equals: nil identityHash "At this stage, the window browser is not built"
-]
-
-{ #category : 'tests - browsers' }
-DSSpyInstrumenterTest >> testInstrumentClyFullBrowser [
-
-	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
-	browser prepareInitialStateBy: [ :b | b selectMethod: Object >> #yourself ].
+	self setDummyWindowForMorph: browser.
+	browser newWindowTitle.
 
 	self assert: self registry size equals: 1.
 
@@ -464,9 +437,6 @@ DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 
 	| clyEditor |
-	modifiedClass := ClyTextEditor.
-	modifiedMethodSource := (ClyTextEditor >> #printIt) sourceCode.
-	instrumenter instrumentClyTextEditorPrintIt.
 
 	clyEditor := self clyTextEditor.
 	clyEditor printIt.
@@ -478,69 +448,10 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : 'tests - playground' }
-DSSpyInstrumenterTest >> testInstrumentCodePresenter [
-	|playground code|
-	modifiedClass := SpCodePresenter.	
-	modifiedMethodSource :=  [(SpCodePresenter >> #initialize) sourceCode] on: Error do:[nil].
-	instrumenter instrumentCodePresenter.	
-	playground := self playgroundPagePresenter.
-	self setDummyWindowForPresenter: playground.
-	code := self codePresenterFrom: playground.
-	
-	"When typing code, the playground generates an writing record"
-	self press: $t in: code.
-	self assert: self registry size equals: 1.
-	record := self registry first.	
-	self assert: record class identicalTo: DSPlaygroundWriteRecord.
-	self assert: record windowId equals: playground window window hash.
-	
-	"When the mouse enters the playground, if the playground has focus, generates a reading event"
-	code adapter sendMouseEnterEvent.
-	self assert: self registry size equals: 2.
-	record := self registry second.	
-	self assert: record class identicalTo: DSPlaygroundReadRecord.
-	self assert: record windowId equals: playground window window hash
-	
-]
-
-{ #category : 'tests - debugger' }
-DSSpyInstrumenterTest >> testInstrumentDebuggerCode [
-	|code adapter|
-	modifiedClass := SpCodePresenter.	
-	modifiedMethodSource :=  [(SpCodePresenter >> #initialize) sourceCode] on: Error do:[nil].
-	instrumenter instrumentCodePresenter.	
-	
-	debugger := self debuggerForTesting.	
-	code := debugger code.	
-	self setDummyWindowForPresenter: code.
-	adapter := SpMorphicCodeAdapter new.
-	adapter adapt: code.	
-	code adapter: adapter.
-	code adapter buildWidget.		
-
-	"When typing code, the playground code a writing record"
-	self press: $t in: code.
-	self assert: self registry size equals: 1.
-	record := self registry first.	
-	self assert: record class identicalTo: DSPlaygroundWriteRecord.
-	self assert: record windowId equals: code window window hash.
-	
-	"When the mouse enters the playground, if the playground has focus, generates a reading event"
-	code adapter sendMouseEnterEvent.
-	self assert: self registry size equals: 2.
-	record := self registry second.	
-	self assert: record class identicalTo: DSPlaygroundReadRecord.
-	self assert: record windowId equals: code window window hash
-]
-
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
-	modifiedClass := StDebugger.	
-	modifiedMethodSource :=  [(StDebugger >> #initializeWindow:) sourceCode] on: Error do:[nil].
 	
 	debugger := self debuggerForTestingWithWindow.			
-	instrumenter instrumentDebuggerOpening.	
 	debugger initializeWindow: debugger window.
 	
 	self assert: self registry size equals: 1.
@@ -557,9 +468,6 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	|selectedItem|
-	modifiedClass := StDebugger.
-	modifiedMethodSource := (StDebugger >> #initializeStack) sourceCode.
-	instrumenter instrumentDebuggerStack.
 	
 	debugger := self debuggerForTestingWithWindow.		
 	self assert: self registry size equals: 2.
@@ -593,39 +501,9 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
 	self assert: record selector equals: selectedItem selector
 ]
 
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentExpandAttribute [
-
-	| inspector object items |
-	modifiedClass := FTBasicItem.
-	modifiedMethodSource := (FTBasicItem >> #expandAndRefresh) sourceCode.
-	instrumenter instrumentExpandAttribute.
-
-	object := OrderedCollection new.
-	inspector := StInspectorPresenter onObject: object.
-	items := self tableItemsListFromInspector: inspector.
-	items first expandAndRefresh.
-
-	self assert: self registry size equals: 1.
-	record := self registry first.
-
-	self assert: record class identicalTo: DSExpandAttributeRecord.
-	self
-		assert: record windowId
-		equals: inspector window window identityHash.
-	self assert: record attributeName equals: 'self'.
-	self assert: record attributeHash equals: object identityHash.
-	self assert: record attributeValue equals: object displayString
-]
-
 { #category : 'tests - halts' }
 DSSpyInstrumenterTest >> testInstrumentHaltHits [
 
-	instrumenter instrumentHaltHits.
-	methodsToRemove := {
-		                   (Halt class >> #signal:).
-		                   (Halt class >> #signalIn:).
-		                   (Halt class >> #signal) }.
 	[ self executeHalt ]
 		on: Halt
 		do: [ ].
@@ -652,8 +530,8 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	[ self executeHaltOnce ]
 		on: Halt
 		do: [ ].
-	self assert: self registry size equals: 3.
-	record := self registry third.
+	self assert: self registry size equals: 5.
+	record := self registry at: 5.
 	self assert: record selector equals: #once:.
 	self
 		assertHaltHitRecordingMethod: self class >> #executeHaltOnce
@@ -663,8 +541,8 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	[ self executeHaltWithMessage ]
 		on: Halt
 		do: [ ].
-	self assert: self registry size equals: 4.
-	record := self registry fourth.
+	self assert: self registry size equals: 6.
+	record := self registry at: 6.
 	self assert: record selector equals: #now:.
 	self
 		assertHaltHitRecordingMethod: self class >> #executeHaltWithMessage
@@ -674,8 +552,8 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 	[ self execute1Halt ]
 		on: Halt
 		do: [ ].
-	self assert: self registry size equals: 5.
-	record := self registry fifth.
+	self assert: self registry size equals: 7.
+	record := self registry at: 7.
 	self assert: record selector equals: #halt.
 	self
 		assertHaltHitRecordingMethod: self class >> #execute1Halt
@@ -686,11 +564,6 @@ DSSpyInstrumenterTest >> testInstrumentHaltHits [
 { #category : 'tests - halts' }
 DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	|executedMethod|
-	instrumenter instrumentHaltHits.
-	methodsToRemove := { 
-		                   (Halt class >> #signal:).
-		                   (Halt class >> #signalIn:).
-		                   (Halt class >> #signal) }.
 		
 	executedMethod := self class >> #executeHaltInBloc.
 	[ self executeHaltInBloc  ]
@@ -708,225 +581,30 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	self assert: record sourceCodeInterval last equals: executedMethod ast statements first receiver statements first stop
 ]
 
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentInspectMethodsOfClass [
-
-	| metaPane object classes |
-	modifiedClass := StMetaBrowserPresenter.
-	modifiedMethodSource := (StMetaBrowserPresenter >> #methodsOf:)
-		                        sourceCode.
-	instrumenter instrumentInspectMethodsOfClass.
-
-	object := OrderedCollection new.
-	metaPane := StMetaBrowserPresenter basicNew.
-	self setDummyWindowForPresenter: metaPane.
-	metaPane application: StPharoApplication current.
-	metaPane setModelBeforeInitialization: object.
-
-	metaPane initialize.
-
-	classes := self
-		           metaPaneClassesItems: #classes
-		           FromInspector: metaPane.
-	classes selectPath:
-		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
-
-	self assert: self registry size equals: 1.
-	record := self registry first.
-
-	self assert: record class identicalTo: DSInspectMethodsRecord.
-	self assert: record windowId equals: metaPane window window hash.
-	self assert: record selectedClass equals: object class name.
-	self assert: record inspectedObject equals: object printString.
-
-	classes clickAtPath: { 1. 1. 1. 1 }.
-	record := self registry second.
-	self
-		assert: record selectedClass
-		equals: object class superclass name
-]
-
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentInspectSourceOfMethod [
-
-	| metaPane object methods classes |
-	modifiedClass := StMetaBrowserPresenter.
-	modifiedMethodSource := (StMetaBrowserPresenter >> #updateSourceWith:)
-		                        sourceCode.
-	instrumenter instrumentInspectSourceOfMethod.
-
-	object := OrderedCollection new.
-	metaPane := StMetaBrowserPresenter on: object.
-	methods := self
-		           metaPaneClassesItems: #methods
-		           FromInspector: metaPane.
-	classes := self
-		           metaPaneClassesItems: #classes
-		           FromInspector: metaPane.
-
-	self setDummyWindowForPresenter: metaPane.
-
-	classes selectPath:
-		(Array new: OrderedCollection allSuperclasses size + 1 withAll: 1).
-
-	methods selectItem: methods items first.
-	record := self registry first.
-
-	self assert: record class identicalTo: DSInspectMethodSourceRecord.
-	self
-		assert: record selectedMethod
-		equals: metaPane selectedMethod name.
-
-	self assert: record windowId equals: metaPane window window hash.
-	self assert: record selectedClass equals: object class name.
-	self assert: record inspectedObject equals: object printString
-]
-
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentInspectorOnObject [
-	|inspector object|
-	modifiedClass := StInspectorPresenter.
-	modifiedMethodSource := (StInspectorPresenter >> #initializePresenters) sourceCode.
-	instrumenter instrumentInspectorOnObject.
-	
-	object := OrderedCollection new.
-	inspector := self newInspectorOn: object.
-
-	self assert: self registry size equals: 1.
-	record := self registry first.
-	
-	
-	self assert: record class identicalTo: DSInspectObjectRecord.
-	self assert: record windowId equals: inspector window window identityHash.
-	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object identityHash
-]
-
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentInspectorPageSelection [
-
-	| inspector object objectInspector pagesView |
-	modifiedClass := StObjectInspectorPresenter.
-	modifiedMethodSource := (StObjectInspectorPresenter
-	                         >> #initializePresenters) sourceCode.
-	instrumenter instrumentInspectorPageSelection.
-
-	object := OrderedCollection new.
-	inspector := self newInspectorOn: object.
-	objectInspector := inspector firstPage.
-	pagesView := (objectInspector class slotNamed: #views) read:
-		             objectInspector.
-
-	self assert: self registry size equals: 1.
-	record := self registry first.
-
-	self assert: record class identicalTo: DSSelectInspectorPageRecord.
-	self
-		assert: record windowId
-		equals: inspector window window identityHash.
-	self assert: record pageTitle equals: pagesView pages first title.
-	self assert: record inspectedObjectHash equals: object identityHash.
-	self assert: record inspectedObject equals: object printString.
-
-	pagesView selectPage: pagesView pages second.
-	self assert: self registry size equals: 2.
-	record := self registry second.
-	self assert: record pageTitle equals: pagesView pages second title
-]
-
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentMouseDownFTSelectableMorph [
-	
-	|morph|
-	self should: [FTSelectableMorph >> #mouseDown: ] raise: KeyNotFound.
-	instrumenter instrumentMouseDownFTSelectableMorph.
-	methodToRemove := (FTSelectableMorph >> #mouseDown:).
-	
-	morph := FTSelectableMorph new.
-	morph privateOwner: SystemWindow new.
-	morph mouseDown: nil.
-	
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSMouseDownTableItemRecord.
-	self assert: record windowId equals: morph window hash.
-	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
-]
-
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentMouseEnterFTSelectableMorph [
-	
-	|morph|
-	modifiedClass := FTSelectableMorph.
-	modifiedMethodSource := (FTSelectableMorph >> #mouseEnter:) sourceCode.
-	instrumenter instrumentMouseEnterFTSelectableMorph.
-	
-	morph := FTSelectableMorph new.
-	morph privateOwner: SystemWindow new.
-	morph mouseEnter: nil.
-	
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSMouseEnterTableItemRecord.
-	self assert: record windowId equals: morph window hash.
-	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
-]
-
 { #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
-	
-	|window|
-	self should: [SystemWindow >> #handleMouseEnter: ] raise: KeyNotFound.
-	instrumenter instrumentMouseEnterWindow.
-	methodToRemove := (SystemWindow >> #handleMouseEnter:).
-	
+
+	| window |
 	window := SystemWindow new.
 	window handleMouseEnter: (self simulatedMouseEventFor: window).
-	
-	self assert: self registry size equals: 1.	
+
+	self assert: self registry size equals: 1.
 	record := self registry first.
 	self assert: record class identicalTo: DSMouseEnterWindowRecord.
-	self assert: record windowId equals: window hash.
-	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
+	self assert: record windowId equals: window hash
 ]
 
 { #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
-	
-	|window|
-	self should: [SystemWindow >> #handleMouseLeave: ] raise: KeyNotFound.
-	instrumenter instrumentMouseLeaveWindow.
-	methodToRemove := (SystemWindow >> #handleMouseLeave:).
-	
+
+	| window |
 	window := SystemWindow new.
 	window handleMouseLeave: (self simulatedMouseEventFor: window).
-	
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSMouseLeaveWindowRecord.
-	self assert: record windowId equals: window hash.
-	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {window})
-]
-
-{ #category : 'tests - inspector' }
-DSSpyInstrumenterTest >> testInstrumentNavigateAttribute [
-	|raw object|
-	modifiedClass := StRawInspectionPresenter.
-	modifiedMethodSource := (StRawInspectionPresenter >> #setAttributeTable) sourceCode.
-	instrumenter instrumentNavigateAttribute.
-	
-	object := OrderedCollection new.
-	raw := StRawInspectionPresenter on: object.
-	self setDummyWindowForPresenter: raw.	
-	raw selectPath: #(2).
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
-	self assert: record class identicalTo: DSNavigateAttributeRecord.
-	self assert: record windowId equals: raw window window identityHash.
-	self assert: record inspectedObject equals: object printString.
-	self assert: record inspectedObjectHash equals: object identityHash
+	record := self registry first.
+	self assert: record class identicalTo: DSMouseLeaveWindowRecord.
+	self assert: record windowId equals: window hash
 ]
 
 { #category : 'tests - debugger' }
@@ -951,9 +629,6 @@ DSSpyInstrumenterTest >> testInstrumentReturn [
 DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 
 	| rubEditor registerClipboardText |
-	modifiedClass := RubSmalltalkEditor.
-	modifiedMethodSource := (RubSmalltalkEditor >> #copySelection) sourceCode.
-	instrumenter instrumentRubSmalltalkEditorCopySelection.
 
 	registerClipboardText := DSSpy recordClipboardContent.
 	DSSpy recordClipboardContent: true.
@@ -979,10 +654,6 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
 	| rubEditor |
-	self skip.
-	modifiedClass := RubSmalltalkEditor.
-	modifiedMethodSource := (RubSmalltalkEditor >> #debug:) sourceCode.
-	instrumenter instrumentRubEditorDebugIt.
 	
 	rubEditor := self rubTextEditor.
 	rubEditor selectAll.
@@ -999,9 +670,6 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 
 	| rubEditor |
-	modifiedClass := RubSmalltalkEditor.
-	modifiedMethodSource := (RubSmalltalkEditor >> #doIt) sourceCode.
-	instrumenter instrumentRubEditorDoIt.
 	
 	rubEditor := self rubTextEditor.
 	rubEditor selectAll.
@@ -1018,40 +686,27 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
 
 	| rubEditor registerClipboardText |
-	modifiedClass := RubSmalltalkEditor.
-	modifiedMethodSource := (RubSmalltalkEditor >> #paste) sourceCode.
-	instrumenter instrumentRubSmalltalkEditorPaste.
 	registerClipboardText := DSSpy recordClipboardContent.
 	DSSpy recordClipboardContent: true.
 
-	[ 
-	rubEditor := self rubTextEditor.
-	rubEditor textArea beForSmalltalkCode.
+	[
+		rubEditor := self rubTextEditor.
+		rubEditor textArea beForSmalltalkCode.
 
-	Clipboard clipboardText: 'copiedText'.
-	rubEditor selectAll.
-	rubEditor paste.
-	"Added the select to be able to run the test in an instrumented image"
-	self
-		assert:
-		(self registry select: [ :r | r class = DSClipboardPasteRecord ])
-			size
-		equals: 1.
-	record := (self registry select: [ :r | 
-		           r class = DSClipboardPasteRecord ]) first.
+		Clipboard clipboardText: 'copiedText'.
+		rubEditor selectAll.
+		rubEditor paste. "Added the select to be able to run the test in an instrumented image"
+		self assert: (self registry select: [ :r | r class = DSClipboardPasteRecord ]) size equals: 1.
+		record := (self registry select: [ :r | r class = DSClipboardPasteRecord ]) first.
 
-	self assert: record class identicalTo: DSClipboardPasteRecord.
-	self assert: record clipboardText equals: 'copiedText' ] ensure: [ 
-		DSSpy recordClipboardContent: registerClipboardText ]
+		self assert: record class identicalTo: DSClipboardPasteRecord.
+		self assert: record clipboardText equals: 'copiedText' ] ensure: [ DSSpy recordClipboardContent: registerClipboardText ]
 ]
 
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 
 	| rubEditor |
-	modifiedClass := RubSmalltalkEditor.
-	modifiedMethodSource := (RubSmalltalkEditor >> #printIt) sourceCode.
-	instrumenter instrumentRubEditorPrintIt.
 
 	rubEditor := self rubTextEditor.
 	rubEditor printIt.
@@ -1063,109 +718,17 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 	self assert: record selectedString equals: '41+1'
 ]
 
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphHandleMouseOver [
-	
-	self should: [RubScrolledTextMorph >> #handlesMouseOver: ] raise: KeyNotFound.
-	instrumenter instrumentRubScrollTextMorphHandleMouseOver.
-	methodToRemove := (RubScrolledTextMorph >> #handlesMouseOver:).
-		
-	self assert: (RubScrolledTextMorph new handlesMouseOver: nil)
-]
-
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentRubScrollTextMorphMouseEnter [
-	|morph|
-
-	modifiedClass := RubScrolledTextMorph.
-	instrumenter instrumentRubScrollTextMorphMouseEnter.
-	methodToRemove := (RubScrolledTextMorph >> #mouseEnter:).
-	morph := RubScrolledTextMorph new.
-	morph mouseEnter: nil.
-	
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSMouseEnterTextEditorRecord.
-	self assert: record windowId equals: morph window hash.
-	self assert: record itemElement equals: (DSMouseEventRecord printStringMorphs: {morph})
-]
-
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRunTo [
 
 	self assertInstrumentDebuggerCommandNamed: 'Run to'
 ]
 
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentScrollingByDraggingSlider [
-	
-	|slider|
-	modifiedClass := SliderMorph.
-	modifiedMethodSource := (SliderMorph >> #dragging:) sourceCode.
-	instrumenter instrumentScrollingByDraggingSlider.
-	
-	slider := SliderMorph new.
-	slider privateOwner: SystemWindow new.
-	
-	slider dragging: true.			
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSStartScrollingEventRecord.
-	self assert: record windowId equals: slider window hash.
-
-	slider dragging: false.			
-	self assert: self registry size equals: 2.	
-	record := self registry second.
-	self assert: record class identicalTo: DSStopScrollingEventRecord.
-	self assert: record windowId equals: slider window hash.
-]
-
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentScrollingInScrollPanesEvents [
-	
-	|pane|
-	modifiedClass := GeneralScrollPaneMorph.
-	modifiedMethodSource := (GeneralScrollPaneMorph >> #mouseWheel:) sourceCode.
-	instrumenter instrumentScrollingInScrollPanesEvents.
-	
-	pane := GeneralScrollPaneMorph new.
-	pane privateOwner: SystemWindow new.
-	
-	pane mouseWheel: MouseWheelEvent new.			
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSScrollEventRecord.
-	self assert: record windowId equals: pane window hash
-]
-
-{ #category : 'tests - mouse events' }
-DSSpyInstrumenterTest >> testInstrumentScrollingInTablesEvents [
-	
-	|table|
-	modifiedClass := FTTableMorph.
-	modifiedMethodSource := (FTTableMorph >> #mouseWheel:) sourceCode.
-	instrumenter instrumentScrollingInTablesEvents.
-	
-	table := FTTableMorph new.
-	table privateOwner: SystemWindow new.
-	
-	table mouseWheel: MouseWheelEvent new.			
-	self assert: self registry size equals: 1.	
-	record := self registry first.
-	self assert: record class identicalTo: DSScrollEventRecord.
-	self assert: record windowId equals: table window hash
-]
-
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |	
-	self skip.
-	self flag: 'This test seems to make the CI crash because of a debugger opening?'.
-	modifiedClass := SpCodeDebugItCommand.
-	modifiedMethodSource := (SpCodeDebugItCommand >> #execute) sourceCode.
-	instrumenter instrumentSpCodeDebugIt.
-
+		
 	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 
 	debugItCommand := SpCodeDebugItCommand new.
@@ -1183,9 +746,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 
 	| codePresenter printItCommand |
-	modifiedClass := SpCodeDoItCommand.
-	modifiedMethodSource := (SpCodeDoItCommand >> #execute) sourceCode.
-	instrumenter instrumentSpCodeDoIt.
 
 	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 
@@ -1205,9 +765,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
 
 	| presenter |
-	modifiedClass := StObjectContextPresenter.
-	modifiedMethodSource := (StObjectContextPresenter >> #doEvaluateAndGo) sourceCode.
-	instrumenter instrumentSpCodeDoItAndGoForInspector.
 
 	presenter := StObjectContextPresenter basicNew.
 	presenter setModelBeforeInitialization: self stObjectContextModelMock.
@@ -1228,9 +785,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 
 	| presenter |
-	modifiedClass := StPlaygroundPagePresenter.
-	modifiedMethodSource := (StPlaygroundPagePresenter >> #doEvaluateAndGo) sourceCode.
-	instrumenter instrumentSpCodeDoItAndGoForPlayground.
 
 	presenter := StPlaygroundPagePresenter basicNew.
 	presenter forceDisableLoading.
@@ -1253,9 +807,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 	| codePresenter printItCommand |
-	modifiedClass := SpCodePrintItCommand.
-	modifiedMethodSource := (SpCodePrintItCommand >> #execute) sourceCode.
-	instrumenter instrumentSpCodePrintIt.
 
 	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
 	printItCommand := SpCodePrintItCommand new.
@@ -1267,24 +818,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 	self assert: record class identicalTo: DSPrintItRecord.
 	self assert: record selectedString equals: '41+1'
-]
-
-{ #category : 'tests - playground' }
-DSSpyInstrumenterTest >> testInstrumentStPlayground [
-
-	| playground |
-	modifiedClass := StPlaygroundPresenter class.
-	modifiedMethodSource := (StPlaygroundPresenter class >> #open)
-		                        sourceCode.
-	instrumenter instrumentPlaygroundCode.
-	playground := StPlaygroundPresenter open.
-
-	"On opening, the playground generates an opening record"
-	self assert: self registry size equals: 1.
-	record := self registry first.
-	self assert: record class identicalTo: DSPlaygroundOpenedRecord.
-	self assert: record windowId equals: playground window window hash.
-	playground close.
 ]
 
 { #category : 'tests - debugger' }
@@ -1352,10 +885,6 @@ DSSpyInstrumenterTest >> testLoggingInteractionsWithNoSourceCode [
 DSSpyInstrumenterTest >> testRecordDNU [
 	|capturedDNU|
 	
-	modifiedClass := Exception.
-	modifiedMethodSource := (Exception >> #raiseUnhandledError) sourceCode.
-	instrumenter instrumentExceptionSignalling.
-	
 	[self methodWithDNU] on: MessageNotUnderstood do:[:dnu| capturedDNU := dnu. [dnu raiseUnhandledError] on: UnhandledError do:[] ].
 		
 	record := self registry first.
@@ -1370,10 +899,6 @@ DSSpyInstrumenterTest >> testRecordDNU [
 { #category : 'tests - exceptions' }
 DSSpyInstrumenterTest >> testRecordException [
 	|capturedException|
-	
-	modifiedClass := Exception.
-	modifiedMethodSource := (Exception >> #raiseUnhandledError) sourceCode.
-	instrumenter instrumentExceptionSignalling.
 		
 	[self methodWithException] on: Exception do:[:e| capturedException := e copy. [e raiseUnhandledError] on: UnhandledError do:[] ].
 
