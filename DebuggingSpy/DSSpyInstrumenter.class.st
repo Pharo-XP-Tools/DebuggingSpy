@@ -82,14 +82,9 @@ DSSpyInstrumenter >> instrumentDoItAndGo [
 
 { #category : 'debugpoints  ' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
+	"Instruments exception (except halt)"
 
-	Exception compile: 'raiseUnhandledError
-	"No one has handled this error, but now give them a chance to decide how to debug it.  If none handle this either then open debugger (see UnhandedError>>#defaultAction)"
-
-	self class = Halt ifFalse:[[	DSUnhandledExceptionRecord for:  self] 
-		on: Error 
-		do:[:err| DSSpy log: #ERROR key: self class name asSymbol ]].
-	^ UnhandledError signalForException: self'
+	Exception link: DSUnhandledExceptionRecord link toAST: (Exception >> #raiseUnhandledError) ast.
 ]
 
 { #category : 'system' }
@@ -176,20 +171,21 @@ DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"Instrument every thing in the system, feel free to comment things you don't want to record"
-	
-	"Start debugging session"
-	DSSpy recordingSession: true.
 
+	"Start debugging session"
+	DSSpy recordingSession: true. 
+	
 	"Listen to announcements"
 	self listenToWindowEvents.
 	self listenToMethodChanges.
-	self listenToDebugPointChanges.
+	self listenToDebugPointChanges. 
 	
 	"Instruments events/user's actions"
 	self logClipbardActions.
 	self logMouseEvents.
-	self logCodeInteractions. 
-	self logBrowsingActions "self logDebuggerInteraction."
+	self logCodeInteractions.
+	self logBrowsingActions.
+	self logDebuggerInteractions
 ]
 
 { #category : 'debugpoints  ' }
@@ -250,8 +246,9 @@ DSSpyInstrumenter >> logCodeInteractions [
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> logDebuggerInteractions [
 	"Instruments the Debugger and the Sindarin Debugger"
-	
-	self instrumentSindarinDebuggerCommands
+
+	"self instrumentSindarinDebuggerCommands."
+	self instrumentExceptionSignalling
 ]
 
 { #category : 'system-instrumentation' }
