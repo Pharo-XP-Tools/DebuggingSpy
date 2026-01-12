@@ -420,19 +420,6 @@ DSSpyInstrumenterTest >> testInstrumentBrowseAction [
 	self assert: record windowId equals: nil identityHash "At this stage, the window browser is not built"
 ]
 
-{ #category : 'tests - browsers' }
-DSSpyInstrumenterTest >> testInstrumentClyQueryBrowser [
-	
-	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
-	browser showResultOf: (ClyMessageImplementorsQuery of: #testInstrumentClyFullBrowser).
-	
-	self assert: self registry size equals: 1.
-	
-	record := self registry first.
-	self assert: record class identicalTo: DSImplementorsRecord.
-	self assert: record windowId equals: browser window hash
-]
-
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 
@@ -581,6 +568,19 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	self assert: record sourceCodeInterval last equals: executedMethod ast statements first receiver statements first stop
 ]
 
+{ #category : 'tests - browsers' }
+DSSpyInstrumenterTest >> testInstrumentImplementorsAction [
+	
+	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
+	browser showResultOf: (ClyMessageImplementorsQuery of: #testInstrumentBrowseAction).
+	
+	self assert: self registry size equals: 1.
+	
+	record := self registry first.
+	self assert: record class identicalTo: DSImplementorsRecord.
+	self assert: record windowId equals: browser window hash
+]
+
 { #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
 
@@ -715,13 +715,26 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 	record := self registry first.	
 	
 	self assert: record class identicalTo: DSPrintItRecord.	
-	self assert: record selectedString equals: '41+1'
+	self assert: record selectedString equals: '''41+1'''
 ]
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRunTo [
 
 	self assertInstrumentDebuggerCommandNamed: 'Run to'
+]
+
+{ #category : 'tests - browsers' }
+DSSpyInstrumenterTest >> testInstrumentSendersAction [
+	
+	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
+	browser showResultOf: (ClyMessageSendersQuery of: #testInstrumentBrowseAction).
+	
+	self assert: self registry size equals: 1.
+	
+	record := self registry first.
+	self assert: record class identicalTo: DSSendersRecord.
+	self assert: record windowId equals: browser window hash
 ]
 
 { #category : 'tests - interactions' }

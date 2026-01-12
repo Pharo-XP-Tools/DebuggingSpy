@@ -42,9 +42,6 @@ DSClipboardActionRecord >> editorClassName: anObject [
 { #category : 'actions api' }
 DSClipboardActionRecord >> record: anEditor [
 
-	clipboardText := DSSpy recordClipboardContent
-		                 ifTrue: [ anEditor selection asString ]
-		                 ifFalse: [ 'RecordClipboarContent disabled' ].
 	windowId := anEditor textArea window hash.
 	editorClassName := anEditor class name
 ]

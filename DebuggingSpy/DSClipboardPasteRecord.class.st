@@ -14,3 +14,13 @@ DSClipboardPasteRecord >> eventName [
 
 	^ 'Clipboard Paste'
 ]
+
+{ #category : 'actions api' }
+DSClipboardPasteRecord >> record: anEditor [
+
+	clipboardText := DSSpy recordClipboardContent
+		                 ifTrue: [ Clipboard clipboardText ]
+		                 ifFalse: [ 'RecordClipboarContent disabled' ].
+
+	super record: anEditor
+]
