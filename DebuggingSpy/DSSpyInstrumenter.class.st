@@ -80,7 +80,7 @@ DSSpyInstrumenter >> instrumentDoItAndGo [
 	StPlaygroundPagePresenter link: DSDoItAndGoRecord link toAST: (StPlaygroundPagePresenter >> #doEvaluateAndGo) ast
 ]
 
-{ #category : 'debugpoints  ' }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
 	"Instruments exception (except halt)"
 
@@ -92,6 +92,8 @@ DSSpyInstrumenter >> instrumentImplementorsActions [
 	"Instruments actions to show implementors of a method"
 
 	ClyShowMessageImplementorCommand link: DSImplementorsRecord link toAST: (ClyShowMessageImplementorCommand >> #execute) ast.
+	ClyTextEditor link: DSImplementorsRecord link toAST: (ClyTextEditor>>#implementorsOf:) ast.
+	RubSmalltalkEditor link: DSImplementorsRecord link toAST: (RubSmalltalkEditor >> #implementorsOf:) ast.
 	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast
 ]
 
@@ -137,6 +139,8 @@ DSSpyInstrumenter >> instrumentSendersActions [
 	"Instruments actions to show senders of a method or class"
 
 	ClyShowMessageSenderCommand link: DSSendersRecord link toAST: (ClyShowMessageSenderCommand >> #execute) ast.
+	ClyTextEditor link: DSSendersRecord link toAST: (ClyTextEditor>>#sendersOf:) ast.
+	RubSmalltalkEditor link: DSImplementorsRecord link toAST: (RubSmalltalkEditor >> #sendersOf:) ast.
 	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
 ]
 
