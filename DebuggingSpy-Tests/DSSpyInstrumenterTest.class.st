@@ -279,7 +279,7 @@ DSSpyInstrumenterTest >> registry [
 ]
 
 { #category : 'helpers' }
-DSSpyInstrumenterTest >> rubTextEditor [
+DSSpyInstrumenterTest >> rubSmalltalkEditor [
 
 	| editor textArea |
 	editor := RubSmalltalkEditor forTextArea:
@@ -570,15 +570,16 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 
 { #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentImplementorsAction [
-	
-	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
-	browser showResultOf: (ClyMessageImplementorsQuery of: #testInstrumentBrowseAction).
-	
-	self assert: self registry size equals: 1.
-	
+
+	| rubEditor |
+	rubEditor := self rubSmalltalkEditor.
+	rubEditor sendersOf: #testInstrumentHaltHits.
+
+	self assert: self registry size equals: 2.
+
 	record := self registry first.
 	self assert: record class identicalTo: DSImplementorsRecord.
-	self assert: record windowId equals: browser window hash
+	self assert: record windowId equals: rubEditor hash
 ]
 
 { #category : 'tests - mouse events' }
@@ -633,7 +634,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorCopySelection [
 	registerClipboardText := DSSpy recordClipboardContent.
 	DSSpy recordClipboardContent: true.
 	[ 
-	rubEditor := self rubTextEditor.
+	rubEditor := self rubSmalltalkEditor.
 	rubEditor selectAll.
 	rubEditor copySelection.
 
@@ -655,7 +656,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDebugIt [
 
 	| rubEditor |
 	
-	rubEditor := self rubTextEditor.
+	rubEditor := self rubSmalltalkEditor.
 	rubEditor selectAll.
 	self runWithoutOpeningDebugger: [rubEditor debugIt].
 
@@ -671,7 +672,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 
 	| rubEditor |
 	
-	rubEditor := self rubTextEditor.
+	rubEditor := self rubSmalltalkEditor.
 	rubEditor selectAll.
 	rubEditor doIt.
 
@@ -690,7 +691,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
 	DSSpy recordClipboardContent: true.
 
 	[
-		rubEditor := self rubTextEditor.
+		rubEditor := self rubSmalltalkEditor.
 		rubEditor textArea beForSmalltalkCode.
 
 		Clipboard clipboardText: 'copiedText'.
@@ -708,7 +709,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 
 	| rubEditor |
 
-	rubEditor := self rubTextEditor.
+	rubEditor := self rubSmalltalkEditor.
 	rubEditor printIt.
 
 	self assert: self registry size equals: 1.
