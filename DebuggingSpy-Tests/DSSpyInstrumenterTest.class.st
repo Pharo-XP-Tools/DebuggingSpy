@@ -586,7 +586,7 @@ DSSpyInstrumenterTest >> testInstrumentImplementorsAction [
 
 	| rubEditor |
 	rubEditor := self rubSmalltalkEditor.
-	rubEditor sendersOf: #testInstrumentHaltHits.
+	rubEditor implementorsOf: #testInstrumentHaltHits.
 
 	self assert: self registry size equals: 2.
 
@@ -743,7 +743,7 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 	
 	| rubEditor |
 	rubEditor := self rubSmalltalkEditor.
-	rubEditor implementorsOf: #testInstrumentHaltHits.
+	rubEditor sendersOf: #testInstrumentHaltHits.
 
 	self assert: self registry size equals: 2.
 
