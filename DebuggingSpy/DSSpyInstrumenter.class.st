@@ -244,6 +244,7 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentPrintIt.
 	self instrumentDebugIt.
 	self instrumentDoIt.
+	self instrumentInspectIt.
 	self instrumentDoItAndGo
 ]
 

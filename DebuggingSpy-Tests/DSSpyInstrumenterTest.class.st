@@ -434,6 +434,51 @@ DSSpyInstrumenterTest >> testInstrumentBrowseAction [
 ]
 
 { #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentClyTextEditorDebugIt [
+
+	| clyEditor |
+
+	clyEditor := self clyTextEditor.
+	clyEditor debugIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSDebugItRecord.	
+	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentClyTextEditorDoIt [
+
+	| clyEditor |
+
+	clyEditor := self clyTextEditor.
+	clyEditor doIt.
+
+	self assert: self registry size equals: 1.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSDoItRecord.	
+	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentClyTextEditorInspectIt [
+
+	| clyEditor |
+
+	clyEditor := self clyTextEditor.
+	clyEditor inspectIt.
+
+	self assert: self registry size equals: 2.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSInspectItRecord.	
+	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 
 	| clyEditor |
@@ -697,6 +742,22 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorDoIt [
 ]
 
 { #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentRubEditorInspectIt [
+
+	| rubEditor |
+	
+	rubEditor := self rubSmalltalkEditor.
+	rubEditor selectAll.
+	rubEditor inspectIt.
+
+	self assert: self registry size equals: 2.
+	record := self registry first.	
+	
+	self assert: record class identicalTo: DSInspectItRecord.	
+	self assert: record selectedString equals: '41+1'printString
+]
+
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentRubEditorPaste [
 
 	| rubEditor registerClipboardText |
@@ -829,6 +890,25 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 
 	self assert: record class identicalTo: DSDoItAndGoRecord.
 	self assert: record selectedString equals: '4+2'
+]
+
+{ #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeInspectIt [
+
+	| codePresenter inspectItCommand |
+
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
+
+	inspectItCommand := SpCodeInspectItCommand new.
+	inspectItCommand context: codePresenter.
+	codePresenter rawSelection: (1 to: 4).
+	inspectItCommand execute.
+
+	self assert: self registry size equals: 2.
+	record := self registry first.
+
+	self assert: record class identicalTo: DSInspectItRecord .
+	self assert: record selectedString equals: '41+1'
 ]
 
 { #category : 'tests - interactions' }
