@@ -6,7 +6,8 @@ Class {
 		'record',
 		'debugger',
 		'browser',
-		'recordSourceCode'
+		'recordSourceCode',
+		'intialWindows'
 	],
 	#category : 'DebuggingSpy-Tests-Tests - model',
 	#package : 'DebuggingSpy-Tests',
@@ -105,6 +106,15 @@ DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandN
 		equals: debugger currentContext sourceNodeExecuted printString.
 	self assert: record receiver equals: debugger currentContext receiver printString.
 	self assert: record receiverClass equals: debugger currentContext receiver class name
+]
+
+{ #category : 'running' }
+DSSpyInstrumenterTest >> closeOpenedWindows [
+
+	| currentWindows windowsToClose |
+	currentWindows := self currentWorld windowsSatisfying: [ :window | window isInWorld ].
+	windowsToClose := currentWindows reject: [ :window | intialWindows includes: window ].
+	windowsToClose collect: [ :window | window close ]
 ]
 
 { #category : 'helpers' }
@@ -345,7 +355,8 @@ DSSpyInstrumenterTest >> setUp [
 	DSSpyInstrumenter instrumentSystem.
 	recordSourceCode := DSSpy recordSourceCode.
 	DSSpy recordSourceCode: true.
-	DSRecordRegistry current reset
+	DSRecordRegistry current reset.
+	intialWindows := self currentWorld windowsSatisfying: [ :window | window isInWorld ]
 ]
 
 { #category : 'helpers' }
@@ -396,12 +407,14 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 
 { #category : 'running' }
 DSSpyInstrumenterTest >> tearDown [
-	
+
+	self closeOpenedWindows.
+
 	DSSpy recordSourceCode: recordSourceCode.
 	DSRecordRegistry current reset.
-	
+
 	DSSpyInstrumenter stopInstrumentation.
-	
+
 	super tearDown
 ]
 
@@ -728,14 +741,15 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 { #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentSendersAction [
 	
-	browser := ClyQueryBrowserMorph on: ClyNavigationEnvironment currentImage.  
-	browser showResultOf: (ClyMessageSendersQuery of: #testInstrumentBrowseAction).
-	
-	self assert: self registry size equals: 1.
-	
+	| rubEditor |
+	rubEditor := self rubSmalltalkEditor.
+	rubEditor implementorsOf: #testInstrumentHaltHits.
+
+	self assert: self registry size equals: 2.
+
 	record := self registry first.
-	self assert: record class identicalTo: DSSendersRecord.
-	self assert: record windowId equals: browser window hash
+	self assert: record class identicalTo: DSImplementorsRecord.
+	self assert: record windowId equals: rubEditor hash
 ]
 
 { #category : 'tests - interactions' }
