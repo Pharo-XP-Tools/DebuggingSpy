@@ -42,13 +42,6 @@ DSSpyInstrumenter >> instrumentBrowseActions [
 ]
 
 { #category : 'system' }
-DSSpyInstrumenter >> instrumentClyFullBrowserOpening [
-	"Instruments the browser on opening"
-
-	ClyFullBrowserMorph link: DSFullBrowseRecord link toAST: (ClyFullBrowserMorph >> #newWindowTitle) ast
-]
-
-{ #category : 'system' }
 DSSpyInstrumenter >> instrumentCopySelection [
 	"Instruments the action of copying to clipboard"
 
@@ -185,11 +178,11 @@ DSSpyInstrumenter >> instrumentSystem [
 	self listenToDebugPointChanges. 
 	
 	"Instruments events/user's actions"
-	self logClipbardActions.
+	self logClipboardActions.
 	self logMouseEvents.
 	self logCodeInteractions.
 	self logBrowsingActions.
-	self logDebuggerInteractions
+	"self logDebuggerInteractions"
 ]
 
 { #category : 'debugpoints  ' }
@@ -230,7 +223,7 @@ DSSpyInstrumenter >> logBrowsingActions [
 ]
 
 { #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logClipbardActions [
+DSSpyInstrumenter >> logClipboardActions [
 	"Instruments commands linked to clipboard"
 
 	self instrumentCopySelection.
