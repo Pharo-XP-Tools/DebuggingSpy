@@ -8,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'actions api' }
+DSAbstractBrowserRecord >> record: aCommandObject [
+
+	windowId := aCommandObject recordWindow identityHash 
+]

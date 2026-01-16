@@ -814,6 +814,25 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 ]
 
 { #category : 'tests - interactions' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeBrowse [
+
+	| codePresenter browseCommand |
+
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter.
+
+	browseCommand := SpBrowseClassCommand new.
+	browseCommand context: codePresenter.
+	codePresenter rawSelection: (1 to: 4).
+	browseCommand execute.
+
+	self assert: self registry size equals: 2.
+	record := self registry first.
+
+	self assert: record class identicalTo: DSBrowseRecord.
+	self assert: record windowId equals: codePresenter window identityHash
+]
+
+{ #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDebugIt [
 
 	| codePresenter debugItCommand |	
