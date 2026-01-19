@@ -150,6 +150,22 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter [
 ]
 
 { #category : 'helpers' }
+DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter withText: aText [
+
+	| codePresenter adapter |
+	codePresenter := (aPlaygroundPagePresenter class slotNamed: #text) 
+		                 read: aPlaygroundPagePresenter.
+	self setDummyWindowPresenter: aPlaygroundPagePresenter window forPresenter: codePresenter.
+	codePresenter text: aText.
+	
+	adapter := SpMorphicCodeAdapter new.
+	adapter adapt: codePresenter.	
+	codePresenter adapter: adapter.
+	codePresenter adapter buildWidget.
+	^ codePresenter
+]
+
+{ #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerForTesting [
 
 	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
@@ -418,21 +434,6 @@ DSSpyInstrumenterTest >> tearDown [
 	super tearDown
 ]
 
-{ #category : 'tests - browsers' }
-DSSpyInstrumenterTest >> testInstrumentBrowseAction [
-
-	browser := ClyFullBrowserMorph on: ClyNavigationEnvironment currentImage.
-	browser prepareInitialStateBy: [ :b | b selectMethod: Object >> #yourself ].
-	self setDummyWindowForMorph: browser.
-	browser newWindowTitle.
-
-	self assert: self registry size equals: 1.
-
-	record := self registry first.
-	self assert: record class identicalTo: DSBrowseRecord.
-	self assert: record windowId equals: nil identityHash "At this stage, the window browser is not built"
-]
-
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorDebugIt [
 
@@ -626,20 +627,6 @@ DSSpyInstrumenterTest >> testInstrumentHaltHitsInBlock [
 	self assert: record sourceCodeInterval last equals: executedMethod ast statements first receiver statements first stop
 ]
 
-{ #category : 'tests - browsers' }
-DSSpyInstrumenterTest >> testInstrumentImplementorsAction [
-
-	| rubEditor |
-	rubEditor := self rubSmalltalkEditor.
-	rubEditor implementorsOf: #testInstrumentHaltHits.
-
-	self assert: self registry size equals: 2.
-
-	record := self registry first.
-	self assert: record class identicalTo: DSImplementorsRecord.
-	self assert: record windowId equals: rubEditor hash
-]
-
 { #category : 'tests - mouse events' }
 DSSpyInstrumenterTest >> testInstrumentMouseEnterWindow [
 
@@ -813,7 +800,7 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 	self assert: record windowId equals: rubEditor hash
 ]
 
-{ #category : 'tests - interactions' }
+{ #category : 'tests - browsers' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeBrowse [
 
 	| codePresenter browseCommand |
@@ -911,6 +898,27 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 	self assert: record selectedString equals: '4+2'
 ]
 
+{ #category : 'tests - browsers' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeImplementors [
+
+	| codePresenter browseCommand |
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter withText: 'execute'.
+
+	browseCommand := SpBrowseImplementorsCommand new.
+	browseCommand context: codePresenter.
+	codePresenter selectionInterval: (1 to: 7).
+	browseCommand execute.
+
+	self assert: self registry size equals: 2.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSImplementorsRecord.
+	self assert: record windowId equals: codePresenter window identityHash.
+
+	record := self registry second.
+	self assert: record class identicalTo: DSWindowOpenedRecord
+]
+
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeInspectIt [
 
@@ -945,6 +953,27 @@ DSSpyInstrumenterTest >> testInstrumentSpCodePrintIt [
 
 	self assert: record class identicalTo: DSPrintItRecord.
 	self assert: record selectedString equals: '41+1'
+]
+
+{ #category : 'tests - browsers' }
+DSSpyInstrumenterTest >> testInstrumentSpCodeSenders [
+
+	| codePresenter browseCommand |
+	codePresenter := self codePresenterFrom: self playgroundPagePresenter withText: 'execute'.
+
+	browseCommand := SpBrowseSendersCommand new.
+	browseCommand context: codePresenter.
+	codePresenter selectionInterval: (1 to: 7).
+	browseCommand execute.
+
+	self assert: self registry size equals: 2.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSSendersRecord.
+	self assert: record windowId equals: codePresenter window identityHash.
+
+	record := self registry second.
+	self assert: record class identicalTo: DSWindowOpenedRecord
 ]
 
 { #category : 'tests - debugger' }
