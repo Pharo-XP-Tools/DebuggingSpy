@@ -52,25 +52,6 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 	self computeActivePeriods.
 
 	type := self windowTypeFor: events first.
-	type = 'ClyQueryBrowserMorph' ifTrue: [
-		(events
-			 detect: [ :e | e class == DSQueryBrowseRecord ]
-			 ifNone: [ nil ]) ifNotNil: [ :e |
-			type := (e queryName readStream upTo: Character space) capitalized.
-			name := (e queryName splitOn: Character space) last ] ].
-
-
-	type = 'ClyFullBrowserMorph' ifTrue: [
-		type := 'Browser'.
-		(events
-			 detect: [ :e | e class == DSFullBrowseRecord ]
-			 ifNone: [ nil ]) ifNotNil: [ :e |
-			name := String streamContents: [ :ws |
-				        (#( nil '' ) includes: e classBrowsed) ifFalse: [
-					        ws << e classBrowsed ].
-				        (#( nil '' ) includes: e methodBrowsed) ifFalse: [
-					        ws << '>>'.
-					        ws << e methodBrowsed ] ] ] ].
 	
 	name ifNotNil: [ ^ self ].
 	name := self windowNameFor: events first
