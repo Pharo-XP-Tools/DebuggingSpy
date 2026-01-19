@@ -42,6 +42,6 @@ DSClipboardActionRecord >> editorClassName: anObject [
 { #category : 'actions api' }
 DSClipboardActionRecord >> record: anEditor [
 
-	windowId := anEditor textArea window hash.
+	self windowId: anEditor textArea window hash.
 	editorClassName := anEditor class name
 ]

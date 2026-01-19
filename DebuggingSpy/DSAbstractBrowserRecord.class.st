@@ -12,5 +12,5 @@ Class {
 { #category : 'actions api' }
 DSAbstractBrowserRecord >> record: aCommandObject [
 
-	windowId := aCommandObject recordWindow identityHash 
+	self windowId: aCommandObject recordWindow identityHash 
 ]

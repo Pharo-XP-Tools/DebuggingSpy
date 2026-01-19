@@ -11,6 +11,31 @@ StDebugger class >> buildInstrumentedCommandsWith: stDebuggerInstance forRoot: r
 ]
 
 { #category : '*DebuggingSpy' }
+StDebugger class >> buildSindarinExtentionCommandsGroupWith: stDebuggerInstance forRoot: rootCommandGroup [
+
+	<extensionCommands>
+	| commands codeGroup toolbarGroup toolbarSindarinGroup |
+	commands := { 
+		            DSSindarinStepToMethodEntryCommand.
+		            DSSindarinStepToNextExecutionInClassCommand.
+		            DSSindarinStepToNextExecutionInObjectCommand.
+		            DSSindarinStepToNextInstanceCreation.
+		            DSSindarinStepToReturnCommand } collect: [ :class | 		         
+		            class forSpecContext: stDebuggerInstance ].
+
+	codeGroup := self debuggerCodeCommandGroupFor: rootCommandGroup.
+	commands do: [ :c | codeGroup register: c ].
+
+	toolbarSindarinGroup := CmCommandGroup forSpec
+			beToolbarPopoverButton;
+			name: 'Advanced';
+			icon: (stDebuggerInstance application iconNamed: #smallDebugIt);
+			yourself.
+	(self debuggerToolbarCommandGroupFor: rootCommandGroup) register: toolbarSindarinGroup.
+	commands do: [ :c | toolbarSindarinGroup register: c ].
+]
+
+{ #category : '*DebuggingSpy' }
 StDebugger class >> executionCommandGroupIn: rootCommandGroup [
 
 	^ rootCommandGroup / StDebuggerToolbarCommandTreeBuilder groupName

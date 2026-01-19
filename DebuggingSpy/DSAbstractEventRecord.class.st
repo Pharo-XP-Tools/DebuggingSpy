@@ -101,9 +101,7 @@ DSAbstractEventRecord >> realRecord [
 { #category : 'actions api' }
 DSAbstractEventRecord >> record: aWindow [
 
-	windowId := aWindow identityHash.
-
-	windowId = nil identityHash ifTrue: [ windowId := nil ]
+	self windowId: aWindow identityHash.
 ]
 
 { #category : 'API-history' }
@@ -124,9 +122,9 @@ DSAbstractEventRecord >> windowId [
 ]
 
 { #category : 'accessing' }
-DSAbstractEventRecord >> windowId: anObject [
+DSAbstractEventRecord >> windowId: aWindowId [
 
-	windowId := anObject
+	windowId := aWindowId = nil identityHash ifTrue: [ nil ] ifFalse: [ aWindowId ]
 ]
 
 { #category : 'accessing' }

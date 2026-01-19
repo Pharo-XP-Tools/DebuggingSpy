@@ -20,7 +20,7 @@ Class {
 DSMouseEventRecord >> record: aWindow [
 
 	| tool |
-	windowId := aWindow identityHash.
+	self windowId: aWindow identityHash.
 
 	tool := DSSpy toolInWindow: aWindow.
 	tool ifNil: [ ^ self ].

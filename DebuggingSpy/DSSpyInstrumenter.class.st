@@ -73,7 +73,7 @@ DSSpyInstrumenter >> instrumentDoItAndGo [
 	StPlaygroundPagePresenter link: DSDoItAndGoRecord link toAST: (StPlaygroundPagePresenter >> #doEvaluateAndGo) ast
 ]
 
-{ #category : 'debugger' }
+{ #category : 'exceptions' }
 DSSpyInstrumenter >> instrumentExceptionSignalling [
 	"Instruments exception (except halt)"
 
@@ -137,34 +137,6 @@ DSSpyInstrumenter >> instrumentSendersActions [
 	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
 ]
 
-{ #category : 'debugger' }
-DSSpyInstrumenter >> instrumentSindarinDebuggerCommands [
-	StDebugger class compile:
-	'buildSindarinExtentionCommandsGroupWith: stDebuggerInstance forRoot: rootCommandGroup
-
-	<extensionCommands>
-	| commands codeGroup toolbarGroup toolbarSindarinGroup |
-	commands := { 
-		            DSSindarinStepToMethodEntryCommand.
-		            DSSindarinStepToNextExecutionInClassCommand.
-		            DSSindarinStepToNextExecutionInObjectCommand.
-		            DSSindarinStepToNextInstanceCreation.
-		            DSSindarinStepToReturnCommand } collect: [ :class | 		         
-		            class forSpecContext: stDebuggerInstance ].
-
-	codeGroup := self debuggerCodeCommandGroupFor: rootCommandGroup.
-	commands do: [ :c | codeGroup register: c ].
-
-	toolbarSindarinGroup := CmCommandGroup forSpec
-			beToolbarPopoverButton;
-			name: ''Advanced'';
-			icon: (stDebuggerInstance application iconNamed: #smallDebugIt);
-			yourself.
-	(self debuggerToolbarCommandGroupFor: rootCommandGroup) register: toolbarSindarinGroup.
-	commands do: [ :c | toolbarSindarinGroup register: c ].'
-	
-]
-
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"Instrument every thing in the system, feel free to comment things you don't want to record"
@@ -182,7 +154,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logMouseEvents.
 	self logCodeInteractions.
 	self logBrowsingActions.
-	"self logDebuggerInteractions"
+	self instrumentExceptionSignalling
 ]
 
 { #category : 'debugpoints  ' }
@@ -239,14 +211,6 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentDoIt.
 	self instrumentInspectIt.
 	self instrumentDoItAndGo
-]
-
-{ #category : 'system-instrumentation' }
-DSSpyInstrumenter >> logDebuggerInteractions [
-	"Instruments the Debugger and the Sindarin Debugger"
-
-	"self instrumentSindarinDebuggerCommands."
-	self instrumentExceptionSignalling
 ]
 
 { #category : 'system-instrumentation' }

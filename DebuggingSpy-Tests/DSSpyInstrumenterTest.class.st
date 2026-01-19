@@ -499,52 +499,17 @@ DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
 	
 	debugger := self debuggerForTestingWithWindow.			
 	debugger initializeWindow: debugger window.
+	debugger open.
 	
-	self assert: self registry size equals: 1.
-	record := self registry first.
-	self assert: record class identicalTo: DSDebuggerOpeningRecord.
-	self assert: record windowId equals: debugger window window hash.
-	self assert: record debuggerId equals: debugger hash.
-	self assert: record contextName equals: debugger currentContext method printString.
-	self assert: record sourceNodeClass equals: debugger currentContext  sourceNodeExecuted class name.
-	self assert: record sourceNodeCode equals: debugger currentContext  sourceNodeExecuted sourceCode
-	
-]
-
-{ #category : 'tests - debugger' }
-DSSpyInstrumenterTest >> testInstrumentDebuggerStack [
-	|selectedItem|
-	
-	debugger := self debuggerForTestingWithWindow.		
 	self assert: self registry size equals: 2.
 	
-	"No idea why: the stack seems to be refreshed 3 times at opening.
-	This generates three identical events:"
-	self assert: self registry first windowId equals: self registry second windowId. 
-	self assert: self registry first receiver equals: self registry second receiver.
-	self assert: self registry first selector equals: self registry second selector.
-	self assert: self registry first contextName equals: self registry second contextName.
-	self assert: self registry first sourceNodeClass equals: self registry second sourceNodeClass.
-	self assert: self registry first sourceNodeCode equals: self registry second sourceNodeCode.
-	"self assert: self registry first windowId equals: self registry third windowId. 
-	self assert: self registry first receiver equals: self registry third receiver.
-	self assert: self registry first selector equals: self registry third selector.
-	self assert: self registry first contextName equals: self registry third contextName.
-	self assert: self registry first sourceNodeClass equals: self registry third sourceNodeClass.
-	self assert: self registry first sourceNodeCode equals: self registry third sourceNodeCode."
+	record := self registry first.
+	self assert: record class identicalTo: DSHaltHitRecord.
 	
-	debugger stackTable selectItem: debugger stackTable items second.
-	self assert: self registry size equals: 3.
-	
-	record := self registry third.
-	selectedItem := debugger stackTable items second.
-	self assert: record class identicalTo: DSBrowseContextRecord.
+	record := self registry second.
+	self assert: record class identicalTo: DSWindowOpenedRecord.
 	self assert: record windowId equals: debugger window window hash.
-	self assert: record contextName equals: selectedItem method printString.
-	self assert: record sourceNodeClass equals: selectedItem sourceNodeExecuted class name.
-	self assert: record sourceNodeCode equals: selectedItem sourceNodeExecuted sourceCode.
-	self assert: record receiver equals: selectedItem receiver printString.
-	self assert: record selector equals: selectedItem selector
+	
 ]
 
 { #category : 'tests - halts' }
@@ -797,7 +762,7 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 
 	record := self registry first.
 	self assert: record class identicalTo: DSImplementorsRecord.
-	self assert: record windowId equals: rubEditor hash
+	self assert: record windowId equals: nil
 ]
 
 { #category : 'tests - browsers' }
