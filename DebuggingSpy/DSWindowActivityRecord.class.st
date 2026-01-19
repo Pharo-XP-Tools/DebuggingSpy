@@ -54,7 +54,6 @@ DSWindowActivityRecord >> debuggingActionsClasses [
 	| classes |
 	classes := OrderedCollection withAll: DSStepActionRecord allSubclasses.
 	classes addAll: DSStepRecord allSubclasses.
-	classes add: DSBrowseContextRecord.
 	^ classes
 ]
 
