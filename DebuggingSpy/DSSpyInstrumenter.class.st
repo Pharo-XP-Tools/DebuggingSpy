@@ -154,7 +154,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logMouseEvents.
 	self logCodeInteractions.
 	self logBrowsingActions.
-	"self instrumentExceptionSignalling"
+	self instrumentExceptionSignalling
 ]
 
 { #category : 'debugpoints  ' }

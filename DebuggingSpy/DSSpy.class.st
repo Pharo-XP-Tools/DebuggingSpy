@@ -16,7 +16,8 @@ Class {
 		'recordSourceCode',
 		'recordClipboardContent',
 		'scopeSourceCodeChangesRecording',
-		'recordingSession'
+		'recordingSession',
+		'id'
 	],
 	#category : 'DebuggingSpy-Instrumentation',
 	#package : 'DebuggingSpy',
