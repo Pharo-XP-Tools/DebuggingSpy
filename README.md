@@ -82,6 +82,10 @@ Logs are serialized in the image working directory, in the *ds-spy* folder:
 
 <img width="445" alt="Capture d’écran 2025-03-09 à 22 45 10" src="https://github.com/user-attachments/assets/c0f7595b-6d32-4101-b6c2-45f54c5fddd0" />
 
+To stop the instrumentation, execute the following line:
+```Smalltalk
+DSSpyInstrumenter stopInstrumentation
+```
 
 ## Log data to a remote server
 TODO
