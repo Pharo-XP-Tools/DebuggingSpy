@@ -49,6 +49,14 @@ DSSpy class >> defaultLoggerClass [
 ]
 
 { #category : 'task management' }
+DSSpy class >> endTask: aTask [
+
+	DSEndingTaskRecord for: aTask.
+	logger reset.
+	taskStarted := false
+]
+
+{ #category : 'task management' }
 DSSpy class >> forceRunningTask: aTask [
 	logger setupLoggerForTask: aTask.
 	taskStarted := true
@@ -219,6 +227,7 @@ DSSpy class >> packagesMonitoredForSourceCodeChanges: anObject [
 
 { #category : 'accessing' }
 DSSpy class >> recordClipboardContent [
+	"Indicates if the clipboard content should be recorded or not"
 
 	^ recordClipboardContent ifNil: [ recordClipboardContent := false ]
 ]
@@ -271,6 +280,7 @@ DSSpy class >> recordHaltInRemovedMethod: oldMethod [
 
 { #category : 'accessing' }
 DSSpy class >> recordSourceCode [
+	"Indicates if source code should be recorded or not (when doing actions like Print It, Do It, ...)"
 
 	^ recordSourceCode ifNil: [ recordSourceCode := false ]
 ]
@@ -339,6 +349,14 @@ DSSpy class >> scopeSourceCodeChangesRecording: anObject [
 DSSpy class >> serialize: aDSEventRecord [
 
 	self log: aDSEventRecord
+]
+
+{ #category : 'task management' }
+DSSpy class >> startTask: aTask [
+
+	logger setupLoggerForTask: aTask.
+	taskStarted := true.
+	DSStartTaskRecord for: aTask
 ]
 
 { #category : 'accessing' }

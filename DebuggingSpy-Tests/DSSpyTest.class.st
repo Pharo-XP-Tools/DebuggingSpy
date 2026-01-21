@@ -200,6 +200,42 @@ DSSpyTest >> tearDown [
 	super tearDown
 ]
 
+{ #category : 'tests - task management' }
+DSSpyTest >> testCloseSurvey [
+
+	| taskLoggingFileName recordedSurvey |
+	DSSpy logOnlyWhenTaskStarted: true.
+	DSSpy startTask: task.
+	DSRecordRegistry autoSerialize: true.
+	taskLoggingFileName := task title , '-' , DSSpy logger defaultLoggingFileName.
+
+	self assert: self registry size equals: 1.
+	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.
+
+	DSSpy closeSurvey: survey.
+	self assert: self registry size equals: 2.
+	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
+	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.
+
+	record := self registry first.
+	self assert: record class equals: DSStartTaskRecord.
+	self assert: record taskName equals: DSTestTask dsTaskDescription.
+	self assert: record description equals: DSTestTask dsTaskDescription.
+
+	record := self registry last.
+	self assert: record class equals: DSSurveyRecord.
+	self assert: record answer equals: survey answer.
+	self assert: record description equals: DSTestSurvey dsSurveyDescription.
+
+	recordedSurvey := (STON fromString:
+		                   (DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) readStream contents) first.
+	self assert: recordedSurvey class equals: DSSurveyRecord.
+	self assert: recordedSurvey answer equals: survey answer.
+	self assert: recordedSurvey description equals: DSTestSurvey dsSurveyDescription.
+	(DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) delete
+]
+
 { #category : 'tests - debugpoints events' }
 DSSpyTest >> testDebugPointAdded [
 
@@ -283,6 +319,18 @@ DSSpyTest >> testDebugPointRemoved [
 DSSpyTest >> testDefaultLogger [
 	DSSpy logger: nil.
 	self assert: DSSpy logger class equals: DSSpy defaultLoggerClass 
+]
+
+{ #category : 'tests - task management' }
+DSSpyTest >> testEndTask [
+
+	DSSpy endTask: task.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSEndingTaskRecord.
+	self assert: record taskName equals: DSTestTask dsTaskDescription.
+	self assert: record description equals: DSTestTask dsTaskDescription.
+	self assert: record answer equals: DSTestTask dsTaskDescription
 ]
 
 { #category : 'tests - halts events' }
@@ -729,6 +777,15 @@ DSSpyTest >> testRecordSourceCodeDefaultValue [
 	self deny: DSSpy recordSourceCode 
 ]
 
+{ #category : 'tests - task management' }
+DSSpyTest >> testResetSpy [
+
+	DSSpy startTask: task.
+	DSSpy resetSpy.
+	self deny: DSSpy taskStarted.
+	self assert: DSSpy logger loggingFileName equals: DSSpy logger defaultLoggingFileName
+]
+
 { #category : 'tests - methods events' }
 DSSpyTest >> testScopeSourceCodeChangesRecording [
 	DSSpy scopeSourceCodeChangesRecording: nil.
@@ -745,6 +802,40 @@ DSSpyTest >> testSerialize [
 	self
 		assert: DSSpy logger loggingFileReference contents
 		equals: '[' , (STON toString: record) , ']'
+]
+
+{ #category : 'tests - task management' }
+DSSpyTest >> testStartTask [
+
+	DSSpy startTask: task.
+	self assert: self registry size equals: 1.
+	record := self registry first.
+	self assert: record class equals: DSStartTaskRecord.
+	self assert: record taskName equals: DSTestTask dsTaskDescription.
+	self assert: record description equals: DSTestTask dsTaskDescription
+]
+
+{ #category : 'tests - task management' }
+DSSpyTest >> testStartTaskSerialization [
+
+	| recordedTask |
+	DSSpy logger loggingDirectory deleteAllChildren.
+	DSRecordRegistry autoSerialize: true.
+	DSSpy resetSpy.
+	DSSpy startTask: task.
+	recordedTask := (DSSpy materialize: DSSpy logger loggingFileReference) first.
+	self assert: recordedTask class equals: DSStartTaskRecord.
+	self assert: recordedTask taskName equals: task title
+]
+
+{ #category : 'tests - task management' }
+DSSpyTest >> testTaskStarted [
+
+	self deny: DSSpy taskStarted.
+	DSSpy startTask: task.
+	self assert: DSSpy taskStarted.
+	DSSpy endTask: task.
+	self deny: DSSpy taskStarted
 ]
 
 { #category : 'tests - debugpoints events' }

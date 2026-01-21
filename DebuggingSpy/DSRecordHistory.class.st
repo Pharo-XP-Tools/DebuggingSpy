@@ -55,7 +55,7 @@ DSRecordHistory class >> windowLeaveEventTypes [
 
 { #category : 'API-history' }
 DSRecordHistory >> absoluteTimeTaken [
-	"The absoulte time taken to perform the recording of user events, including unmonitoring activities (interruptions or activities outside the IDE)."
+	"The absolute time taken to perform the recording of user events, including unmonitoring activities (interruptions or activities outside the IDE)."
 
 	^ ((records last dateTime asSeconds - records first dateTime asSeconds)
 	   / 60) asFloat
@@ -159,7 +159,7 @@ DSRecordHistory >> countDebugActions [
 
 	^ self debugPointAdds + self debugPointRemove + self executedCode
 	  + self methodsAdded + self methodsModified + self methodsRemoved
-	  + self numberOfSteps + self callStackBrowing
+	  + self numberOfSteps
 ]
 
 { #category : 'accessing' }
@@ -491,20 +491,22 @@ DSRecordHistory >> numberOfSteps [
 { #category : 'initialization' }
 DSRecordHistory >> processRecords: array [
 
-	self fixWindowIdsOf: array.
+	self fixWindowIdsOf: array. 
 	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
-	self records:
-		(array reject: [ :e | #( 0 ) includes: e windowId ]).
-		
+	self records: (array reject: [ :e | #( 0 ) includes: e windowId ]). 
+	
 	"Transform raw events to model events"
 	(self allRecordsOfKind: DSStepActionRecord) do: #asStepRecord.
-	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord.
+	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord. 
+	
+	"Detect if we're in a specific task"
+	(self records first isKindOf: DSStartTaskRecord) ifTrue: [ self taskName: self records first taskName ]. 
 	
 	"Windows"
 	self buildWindowHistory.
-	self buildWindows.
+	self buildWindows. 
 	"self buildWindowJumps."
-	self reconstructWindowsToolInfo.
+	self reconstructWindowsToolInfo. 
 	
 	"Check data consistency (raises a warning that can be proceeded)"
 	self validateWindows
