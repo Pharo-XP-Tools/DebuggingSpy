@@ -12,19 +12,22 @@ Class {
 { #category : 'running' }
 DSRecordRegistryTest >> tearDown [
 
+	DSSpy logger loggingFileReference ensureDelete.
+	DSSpy resetSpy.
 	DSRecordRegistry autoSerialize: nil.
 	super tearDown
 ]
 
 { #category : 'tests' }
 DSRecordRegistryTest >> testAutoSerialize [
-	self deny: DSRecordRegistry autoSerialize 
+
+	self deny: DSRecordRegistry autoSerialize
 ]
 
 { #category : 'tests' }
 DSRecordRegistryTest >> testAutoSerializeRecord [
-	|materializedRecord|
-	DSSpy logger loggingFileReference ensureDelete.
+
+	| materializedRecord |
 	DSRecordRegistry autoSerialize: true.
 	record := DSLoggingErrorRecord for: #TEST.
 	materializedRecord := (DSSpy materialize: DSSpy logger loggingFileReference) first.

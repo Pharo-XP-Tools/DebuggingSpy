@@ -33,7 +33,7 @@ DSSpyInstrumenter class >> stopInstrumentation [
 	DSMetaLink uninstallAll.
 	
 	"Change recording file"
-	DSSpy changeRecordingFile
+	DSSpy resetSpy
 ]
 
 { #category : 'system' }

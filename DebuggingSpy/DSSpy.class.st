@@ -24,12 +24,6 @@ Class {
 	#tag : 'Instrumentation'
 }
 
-{ #category : 'logging' }
-DSSpy class >> changeRecordingFile [
-
-	recordFileName := nil
-]
-
 { #category : 'task management' }
 DSSpy class >> closeSurvey: aSurvey [
 
@@ -333,9 +327,10 @@ DSSpy class >> recordingSession: aBoolean [
 { #category : 'initialization' }
 DSSpy class >> resetSpy [
 
-	logger ifNotNil:[:l| l reset].
+	logger ifNotNil: [ :l | l reset ].
 	taskStarted := false.
-	logOnlyWhenTaskStarted := false
+	logOnlyWhenTaskStarted := false.
+	recordFileName := nil
 ]
 
 { #category : 'accessing' }

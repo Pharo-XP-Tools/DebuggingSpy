@@ -25,6 +25,7 @@ DSSTONFileLoggerTest >> setUp [
 { #category : 'running' }
 DSSTONFileLoggerTest >> tearDown [
 
+	logger loggingFileReference ensureDelete.
 	DSSpy logger: oldLogger.
 	super tearDown
 ]
@@ -47,9 +48,8 @@ DSSTONFileLoggerTest >> testEnsureCreateLoggingFileReference [
 
 	| fileReference |
 	fileReference := logger loggingDirectory / logger loggingFileName.
-	fileReference ensureDelete.
 	self deny: fileReference exists.
-	logger ensureCreateLoggingFileReference.
+	fileReference := logger ensureCreateLoggingFileReference.
 	self assert: fileReference exists
 ]
 

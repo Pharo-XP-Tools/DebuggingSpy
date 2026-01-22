@@ -189,6 +189,9 @@ DSSpyTest >> setUp [
 
 { #category : 'running' }
 DSSpyTest >> tearDown [
+
+	DSSpy logger loggingFileReference ensureDelete.
+	DSSpy resetSpy.
 	DSRecordRegistry autoSerialize: false.
 	instrumenter unsubscribeFromSystemAnnouncer.
 	debugpoint ifNotNil: [ debugpoint remove ].
@@ -795,8 +798,6 @@ DSSpyTest >> testScopeSourceCodeChangesRecording [
 { #category : 'tests - serialize/materialize' }
 DSSpyTest >> testSerialize [
 
-	DSSpy logger loggingFileReference ensureDelete.
-	DSSpy resetSpy.
 	record := DSLoggingErrorRecord for: #TEST.
 	DSSpy serialize: record.
 	self
