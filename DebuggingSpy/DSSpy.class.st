@@ -1,5 +1,5 @@
 "
-I am defining rules for recording and I am used by most of the DebuggingSpy's classes.
+I am defining rules for recording and I am used by most of the DebuggingSpy's classes as an helper.
 "
 Class {
 	#name : 'DSSpy',
@@ -17,7 +17,7 @@ Class {
 		'recordClipboardContent',
 		'scopeSourceCodeChangesRecording',
 		'recordingSession',
-		'id'
+		'recordFileName'
 	],
 	#category : 'DebuggingSpy-Instrumentation',
 	#package : 'DebuggingSpy',
@@ -62,16 +62,16 @@ DSSpy class >> forceRunningTask: aTask [
 	taskStarted := true
 ]
 
+{ #category : 'logging' }
+DSSpy class >> getRecordFileName [
+
+	^ recordFileName ifNil: [ recordFileName := UUID new asString]
+]
+
 { #category : 'accessing' }
 DSSpy class >> handlingError: anObject [
 
 	^ HandlingError := anObject
-]
-
-{ #category : 'logging' }
-DSSpy class >> id [
-
-	^ id ifNil: [ id := UUID new ]
 ]
 
 { #category : 'events - debugpoints' }

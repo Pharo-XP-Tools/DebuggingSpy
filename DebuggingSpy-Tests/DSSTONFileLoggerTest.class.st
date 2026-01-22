@@ -39,7 +39,7 @@ DSSTONFileLoggerTest >> testDefaultLoggingDirectoryName [
 
 { #category : 'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingFileName [
- 	self assert: logger defaultLoggingFileName equals: DSSpy id asString
+ 	self assert: logger defaultLoggingFileName equals: DSSpy getRecordFileName 
 ]
 
 { #category : 'tests - file handling' }
@@ -66,7 +66,7 @@ DSSTONFileLoggerTest >> testFilenameForSurvey [
 DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 	logger reset.
 	logger forceLoggingFileNameFor: task.	
-	self assert: logger loggingFileName equals: (task title, '-', DSSpy id asString).
+	self assert: logger loggingFileName equals: (task title, '-', DSSpy getRecordFileName).
 	self assert: logger loggingFileName equals: logger loggingFileReference basename.
 	self assert: logger loggingFileReference exists
 ]
@@ -79,7 +79,7 @@ DSSTONFileLoggerTest >> testForceRunningTask [
 	self
 		assert: logger loggingFileName
 		equals:
-		task title , '-' , DSSpy id asString
+		task title , '-' , DSSpy getRecordFileName 
 ]
 
 { #category : 'tests - file handling' }
