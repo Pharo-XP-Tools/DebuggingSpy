@@ -24,6 +24,12 @@ Class {
 	#tag : 'Instrumentation'
 }
 
+{ #category : 'logging' }
+DSSpy class >> changeRecordingFile [
+
+	recordFileName := nil
+]
+
 { #category : 'task management' }
 DSSpy class >> closeSurvey: aSurvey [
 
@@ -65,7 +71,7 @@ DSSpy class >> forceRunningTask: aTask [
 { #category : 'logging' }
 DSSpy class >> getRecordFileName [
 
-	^ recordFileName ifNil: [ recordFileName := UUID new asString]
+	^ recordFileName ifNil: [ recordFileName := DateAndTime now asFileNameCompatibleString copyReplaceAll: '.' with: '_']
 ]
 
 { #category : 'accessing' }

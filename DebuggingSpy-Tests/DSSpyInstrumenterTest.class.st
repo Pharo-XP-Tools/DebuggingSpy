@@ -358,12 +358,17 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 { #category : 'running' }
 DSSpyInstrumenterTest >> tearDown [
 
+	| recordingFile |
+	recordingFile := DSSpy logger loggingDirectory / DSSpy logger loggingFileName.
+
 	self closeOpenedWindows.
 
 	DSSpy recordSourceCode: recordSourceCode.
 	DSRecordRegistry current reset.
 
 	DSSpyInstrumenter stopInstrumentation.
+
+	recordingFile ensureDelete.
 
 	super tearDown
 ]
