@@ -438,14 +438,13 @@ DSSpyInstrumenterTest >> tearDown [
 DSSpyInstrumenterTest >> testInstrumentClyTextEditorDebugIt [
 
 	| clyEditor |
-
-	clyEditor := self clyTextEditor.
-	clyEditor debugIt.
+	
+	self runWithoutOpeningDebugger: [clyEditor := self clyTextEditor. clyEditor debugIt].
 
 	self assert: self registry size equals: 1.
-	record := self registry first.	
-	
-	self assert: record class identicalTo: DSDebugItRecord.	
+	record := self registry first.
+
+	self assert: record class identicalTo: DSDebugItRecord.
 	self assert: record selectedString equals: '41+1'
 ]
 

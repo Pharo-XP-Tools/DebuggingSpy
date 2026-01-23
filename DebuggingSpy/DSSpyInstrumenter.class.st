@@ -58,6 +58,19 @@ DSSpyInstrumenter >> instrumentDebugIt [
 ]
 
 { #category : 'interactions' }
+DSSpyInstrumenter >> instrumentDebuggerCommands [
+	"Instruments different debugIt methods"
+
+	StProceedCommand link: DSStepActionRecord link toAST: (StProceedCommand >> #execute) ast.
+	StRestartCommand link: DSStepActionRecord link toAST: (StRestartCommand >> #execute) ast.
+	StReturnValueCommand link: DSStepActionRecord link toAST: (StReturnValueCommand >> #execute) ast.
+	StRunToSelectionCommand link: DSStepActionRecord link toAST: (StRunToSelectionCommand >> #execute) ast.
+	StStepIntoCommand link: DSStepActionRecord link toAST: (StStepIntoCommand >> #execute) ast.
+	StStepOverCommand link: DSStepActionRecord link toAST: (StStepOverCommand >> #execute) ast.
+	StStepThroughCommand link: DSStepActionRecord link toAST: (StStepThroughCommand >> #execute) ast
+]
+
+{ #category : 'interactions' }
 DSSpyInstrumenter >> instrumentDoIt [
 	"Instruments different 'Do it' actions"
 
@@ -137,6 +150,21 @@ DSSpyInstrumenter >> instrumentSendersActions [
 	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
 ]
 
+{ #category : 'interactions' }
+DSSpyInstrumenter >> instrumentSindarinCommands [
+	"Instruments different debugIt methods"
+
+	SindarinStepToMethodEntryCommand link: DSStepActionRecord link toAST: (SindarinStepToMethodEntryCommand >> #execute) ast.
+	SindarinStepToNextExecutionInClassCommand
+		link: DSStepActionRecord link
+		toAST: (SindarinStepToNextExecutionInClassCommand >> #execute) ast.
+	SindarinStepToNextExecutionInObjectCommand
+		link: DSStepActionRecord link
+		toAST: (SindarinStepToNextExecutionInObjectCommand >> #execute) ast.
+	SindarinStepToNextInstanceCreation link: DSStepActionRecord link toAST: (SindarinStepToNextInstanceCreation >> #execute) ast.
+	SindarinStepToReturnCommand link: DSStepActionRecord link toAST: (SindarinStepToReturnCommand >> #execute) ast
+]
+
 { #category : 'system-instrumentation' }
 DSSpyInstrumenter >> instrumentSystem [
 	"Instrument every thing in the system, feel free to comment things you don't want to record"
@@ -154,6 +182,9 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logMouseEvents.
 	self logCodeInteractions.
 	self logBrowsingActions.
+	self logDebuggerActions.
+	
+	"Intruments exceptions"
 	self instrumentExceptionSignalling
 ]
 
@@ -211,6 +242,14 @@ DSSpyInstrumenter >> logCodeInteractions [
 	self instrumentDoIt.
 	self instrumentInspectIt.
 	self instrumentDoItAndGo
+]
+
+{ #category : 'system-instrumentation' }
+DSSpyInstrumenter >> logDebuggerActions [
+	"Instruments actions on Debugger and Sindarin"
+
+	self instrumentDebuggerCommands.
+	self instrumentSindarinCommands
 ]
 
 { #category : 'system-instrumentation' }

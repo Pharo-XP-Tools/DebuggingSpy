@@ -5,7 +5,7 @@ In confidentiality mode, this signature and node should be replaced by the curre
 "
 Class {
 	#name : 'DSStepActionRecord',
-	#superclass : 'DSAbstractEventRecord',
+	#superclass : 'DSAbstractDebuggerActionRecord',
 	#instVars : [
 		'context',
 		'node',
