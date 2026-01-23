@@ -57,7 +57,7 @@ DSSpyInstrumenter >> instrumentDebugIt [
 	SpCodePrintItCommand link: DSDebugItRecord link toAST: (SpCodeDebugItCommand >> #execute) ast
 ]
 
-{ #category : 'interactions' }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentDebuggerCommands [
 	"Instruments different debugIt methods"
 
@@ -150,17 +150,12 @@ DSSpyInstrumenter >> instrumentSendersActions [
 	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
 ]
 
-{ #category : 'interactions' }
+{ #category : 'debugger' }
 DSSpyInstrumenter >> instrumentSindarinCommands [
 	"Instruments different debugIt methods"
 
 	SindarinStepToMethodEntryCommand link: DSStepActionRecord link toAST: (SindarinStepToMethodEntryCommand >> #execute) ast.
-	SindarinStepToNextExecutionInClassCommand
-		link: DSStepActionRecord link
-		toAST: (SindarinStepToNextExecutionInClassCommand >> #execute) ast.
-	SindarinStepToNextExecutionInObjectCommand
-		link: DSStepActionRecord link
-		toAST: (SindarinStepToNextExecutionInObjectCommand >> #execute) ast.
+	SindarinStepToNextExecutionCommand link: DSStepActionRecord link toAST: (SindarinStepToNextExecutionCommand >> #execute) ast.
 	SindarinStepToNextInstanceCreation link: DSStepActionRecord link toAST: (SindarinStepToNextInstanceCreation >> #execute) ast.
 	SindarinStepToReturnCommand link: DSStepActionRecord link toAST: (SindarinStepToReturnCommand >> #execute) ast
 ]
@@ -188,7 +183,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self instrumentExceptionSignalling
 ]
 
-{ #category : 'debugpoints  ' }
+{ #category : 'debugpoints' }
 DSSpyInstrumenter >> listenToDebugPointChanges [
 	"Listen to the announcements link to debugPoints modification and record the event"
 
