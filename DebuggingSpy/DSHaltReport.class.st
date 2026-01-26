@@ -1,9 +1,9 @@
 Class {
 	#name : 'DSHaltReport',
 	#superclass : 'DSExceptionReport',
-	#category : 'DebuggingSpy-Records-Extensions',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Records-Extensions'
+	#tag : 'Records'
 }
 
 { #category : 'printing' }

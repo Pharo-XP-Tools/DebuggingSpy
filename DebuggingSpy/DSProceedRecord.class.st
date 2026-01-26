@@ -1,12 +1,7 @@
 Class {
 	#name : 'DSProceedRecord',
-	#superclass : 'DSStepRecord',
-	#category : 'DebuggingSpy-Records-Extensions',
+	#superclass : 'DSAbstractDebuggerActionRecord',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Records-Extensions'
+	#tag : 'Records'
 }
-
-{ #category : 'accessing' }
-DSProceedRecord >> eventSymbol [
-	^'P'
-]

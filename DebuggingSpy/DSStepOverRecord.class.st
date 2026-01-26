@@ -1,5 +1,5 @@
 Class {
-	#name : 'DSRestartRecord',
+	#name : 'DSStepOverRecord',
 	#superclass : 'DSAbstractDebuggerActionRecord',
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',

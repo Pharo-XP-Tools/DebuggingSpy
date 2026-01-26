@@ -1,6 +1,6 @@
 Class {
-	#name : 'DSRestartRecord',
-	#superclass : 'DSAbstractDebuggerActionRecord',
+	#name : 'DSAbstractSindarinActionRecord',
+	#superclass : 'DSAbstractEventRecord',
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
 	#tag : 'Records'

@@ -10,9 +10,9 @@ Class {
 		'next',
 		'annotation'
 	],
-	#category : 'DebuggingSpy-Records-Extensions',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Records-Extensions'
+	#tag : 'Records'
 }
 
 { #category : 'instance creation' }

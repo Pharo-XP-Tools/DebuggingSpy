@@ -4,8 +4,6 @@ Class {
 	#instVars : [
 		'instrumenter',
 		'record',
-		'debugger',
-		'browser',
 		'recordSourceCode',
 		'intialWindows'
 	],
@@ -29,27 +27,6 @@ DSSpyInstrumenterTest >> assertHaltHitRecordingMethod: method conditional: isHal
 	self assert: record conditional equals: isHaltIf.
 	self assert: record once equals: isOnce.
 	self assertHaltHitRecordingMethod: method
-]
-
-{ #category : 'assertions' }
-DSSpyInstrumenterTest >> assertInstrumentDebuggerCommandNamed: debuggerCommandName [
-
-	| cmds cmd |
-	
-	debugger := self debuggerOnRecursiveContextForTesting.
-	
-	cmds := debugger rootCommandsGroup.
-	cmd := StDebugger
-		       specCommandNamed: debuggerCommandName
-		       inGroup: (StDebugger executionCommandGroupIn: cmds) entries.
-	(#('Return' 'Proceed') includes: debuggerCommandName) 
-		ifTrue:[cmd decoratedCommand forTests: true].
-		
-	self setDummyWindowForPresenter: debugger.
-	
-	cmd execute.
-
-	self assertStepActionRecordForCommandNamed: debuggerCommandName
 ]
 
 { #category : 'assertions' }
@@ -87,25 +64,6 @@ DSSpyInstrumenterTest >> assertInstrumentSindarinDebuggerCommandNamed: debuggerC
 	cmd execute.
 
 	self assertStepActionRecordForCommandNamed: debuggerCommandName.
-]
-
-{ #category : 'assertions' }
-DSSpyInstrumenterTest >> assertStepActionRecordForCommandNamed: debuggerCommandName [
-
-	self assert: self registry size equals: 1.
-
-	record := self registry first.
-	self assert: record class identicalTo: DSStepActionRecord.
-	self assert: record eventName equals: debuggerCommandName.
-	self assert: record windowId equals: debugger window window identityHash.
-	self
-		assert: record context
-		equals: debugger currentContext printString.
-	self
-		assert: record node
-		equals: debugger currentContext sourceNodeExecuted printString.
-	self assert: record receiver equals: debugger currentContext receiver printString.
-	self assert: record receiverClass equals: debugger currentContext receiver class name
 ]
 
 { #category : 'running' }
@@ -168,6 +126,7 @@ DSSpyInstrumenterTest >> codePresenterFrom: aPlaygroundPagePresenter withText: a
 { #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerForTesting [
 
+	| debugger |
 	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
 	debugger application: StDebugger currentApplication.
 	debugger initialize.
@@ -177,6 +136,7 @@ DSSpyInstrumenterTest >> debuggerForTesting [
 { #category : 'helpers' }
 DSSpyInstrumenterTest >> debuggerForTestingWithWindow [
 
+	| debugger |
 	debugger := StTestDebuggerProvider new debuggerWithObjectHalting.
 	self setDummyWindowForPresenter: debugger.
 	debugger application: StDebugger currentApplication.
@@ -495,20 +455,20 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorPrintIt [
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentDebuggerOpening [
-	
-	debugger := self debuggerForTestingWithWindow.			
+
+	| debugger |
+	debugger := self debuggerForTestingWithWindow.
 	debugger initializeWindow: debugger window.
 	debugger open.
-	
+
 	self assert: self registry size equals: 2.
-	
+
 	record := self registry first.
 	self assert: record class identicalTo: DSHaltHitRecord.
-	
+
 	record := self registry second.
 	self assert: record class identicalTo: DSWindowOpenedRecord.
-	self assert: record windowId equals: debugger window window hash.
-	
+	self assert: record windowId equals: debugger window window hash
 ]
 
 { #category : 'tests - halts' }
@@ -620,19 +580,43 @@ DSSpyInstrumenterTest >> testInstrumentMouseLeaveWindow [
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentProceed [
 
-	self assertInstrumentDebuggerCommandNamed: 'Proceed'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StProceedCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSProceedRecord
 ]
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRestart [
 
-	self assertInstrumentDebuggerCommandNamed: 'Restart'
+	|debugger command|
+	debugger := StDummyDebuggerPresenter new.
+	command := StRestartCommand forContext: debugger.
+	command execute.
+	
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSRestartRecord 
 ]
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentReturn [
 
-	self assertInstrumentDebuggerCommandNamed: 'Return'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StReturnValueCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSReturnValue 
 ]
 
 { #category : 'tests - interactions' }
@@ -747,7 +731,15 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorPrintIt [
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentRunTo [
 
-	self assertInstrumentDebuggerCommandNamed: 'Run to'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StRunToSelectionCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSRunToSelectionRecord 
 ]
 
 { #category : 'tests - browsers' }
@@ -943,19 +935,43 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeSenders [
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepInto [
 
-	self assertInstrumentDebuggerCommandNamed: 'Into'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StStepIntoCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSStepIntoRecord 
 ]
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepOver [
 
-	self assertInstrumentDebuggerCommandNamed: 'Over'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StStepOverCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSStepOverRecord 
 ]
 
 { #category : 'tests - debugger' }
 DSSpyInstrumenterTest >> testInstrumentStepThrough [
 
-	self assertInstrumentDebuggerCommandNamed: 'Through'
+	| debugger command |
+	debugger := StDummyDebuggerPresenter new.
+	command := StStepThroughCommand forContext: debugger.
+	command execute.
+
+	self assert: self registry size equals: 1.
+
+	record := self registry first.
+	self assert: record class identicalTo: DSStepThroughRecord 
 ]
 
 { #category : 'tests - debugger' }

@@ -61,13 +61,13 @@ DSSpyInstrumenter >> instrumentDebugIt [
 DSSpyInstrumenter >> instrumentDebuggerCommands [
 	"Instruments different debugIt methods"
 
-	StProceedCommand link: DSStepActionRecord link toAST: (StProceedCommand >> #execute) ast.
-	StRestartCommand link: DSStepActionRecord link toAST: (StRestartCommand >> #execute) ast.
-	StReturnValueCommand link: DSStepActionRecord link toAST: (StReturnValueCommand >> #execute) ast.
-	StRunToSelectionCommand link: DSStepActionRecord link toAST: (StRunToSelectionCommand >> #execute) ast.
-	StStepIntoCommand link: DSStepActionRecord link toAST: (StStepIntoCommand >> #execute) ast.
-	StStepOverCommand link: DSStepActionRecord link toAST: (StStepOverCommand >> #execute) ast.
-	StStepThroughCommand link: DSStepActionRecord link toAST: (StStepThroughCommand >> #execute) ast
+	StProceedCommand link: DSProceedRecord link toAST: (StProceedCommand >> #execute) ast.
+	StRestartCommand link: DSRestartRecord link toAST: (StRestartCommand >> #execute) ast.
+	StReturnValueCommand link: DSReturnValue link toAST: (StReturnValueCommand >> #execute) ast.
+	StRunToSelectionCommand link: DSRunToSelectionRecord link toAST: (StRunToSelectionCommand >> #execute) ast.
+	StStepIntoCommand link: DSStepIntoRecord link toAST: (StStepIntoCommand >> #execute) ast.
+	StStepOverCommand link: DSStepOverRecord link toAST: (StStepOverCommand >> #execute) ast.
+	StStepThroughCommand link: DSStepThroughRecord link toAST: (StStepThroughCommand >> #execute) ast
 ]
 
 { #category : 'interactions' }
@@ -154,10 +154,10 @@ DSSpyInstrumenter >> instrumentSendersActions [
 DSSpyInstrumenter >> instrumentSindarinCommands [
 	"Instruments different debugIt methods"
 
-	SindarinStepToMethodEntryCommand link: DSStepActionRecord link toAST: (SindarinStepToMethodEntryCommand >> #execute) ast.
-	SindarinStepToNextExecutionCommand link: DSStepActionRecord link toAST: (SindarinStepToNextExecutionCommand >> #execute) ast.
-	SindarinStepToNextInstanceCreation link: DSStepActionRecord link toAST: (SindarinStepToNextInstanceCreation >> #execute) ast.
-	SindarinStepToReturnCommand link: DSStepActionRecord link toAST: (SindarinStepToReturnCommand >> #execute) ast
+	SindarinStepToMethodEntryCommand link: DSSindarinStepToMethodEntry link toAST: (SindarinStepToMethodEntryCommand >> #execute) ast.
+	SindarinStepToNextExecutionCommand link: DSSindarinStepToNextExecution link toAST: (SindarinStepToNextExecutionCommand >> #execute) ast.
+	SindarinStepToNextInstanceCreation link: DSSindarinStepToNextInstanceCreation link toAST: (SindarinStepToNextInstanceCreation >> #execute) ast.
+	SindarinStepToReturnCommand link: DSSindarinStepToReturn link toAST: (SindarinStepToReturnCommand >> #execute) ast
 ]
 
 { #category : 'system-instrumentation' }
@@ -180,7 +180,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logDebuggerActions.
 	
 	"Intruments exceptions"
-	self instrumentExceptionSignalling
+	"self instrumentExceptionSignalling"
 ]
 
 { #category : 'debugpoints' }

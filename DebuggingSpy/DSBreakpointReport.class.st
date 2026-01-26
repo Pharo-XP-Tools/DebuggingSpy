@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'targets'
 	],
-	#category : 'DebuggingSpy-Records-Extensions',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Records-Extensions'
+	#tag : 'Records'
 }
 
 { #category : 'adding' }
