@@ -1,3 +1,6 @@
+"
+I am a record for the 'Step through' command in the Debugger.
+"
 Class {
 	#name : 'DSStepThroughRecord',
 	#superclass : 'DSAbstractDebuggerActionRecord',
@@ -5,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+DSStepThroughRecord >> eventName [
+
+	^ 'Step through'
+]

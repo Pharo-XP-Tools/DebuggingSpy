@@ -1,3 +1,6 @@
+"
+I am a record for the 'Proceed' command in the Debugger.
+"
 Class {
 	#name : 'DSProceedRecord',
 	#superclass : 'DSAbstractDebuggerActionRecord',
@@ -5,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+DSProceedRecord >> eventName [
+
+	^ 'Proceed'
+]

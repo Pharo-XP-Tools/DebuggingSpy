@@ -1,3 +1,6 @@
+"
+I am a record for the 'Step to next execution' commands in the Sindarin debugger.
+"
 Class {
 	#name : 'DSSindarinStepToNextExecution',
 	#superclass : 'DSAbstractSindarinActionRecord',
@@ -5,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+DSSindarinStepToNextExecution >> eventName [
+
+	^ 'Step to next execution'
+]
