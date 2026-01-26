@@ -180,7 +180,7 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logDebuggerActions.
 	
 	"Intruments exceptions"
-	"self instrumentExceptionSignalling"
+	self instrumentExceptionSignalling
 ]
 
 { #category : 'debugpoints' }
