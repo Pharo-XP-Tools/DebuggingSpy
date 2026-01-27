@@ -402,19 +402,18 @@ DSSpyTest >> testLogWindowOpened [
 
 { #category : 'tests - serialize/materialize' }
 DSSpyTest >> testMaterialize [
-	|records materializedRecords|
-	DSSpy logger loggingFileReference ensureDelete.
-	DSSpy resetSpy.
-	records := OrderedCollection with:  (DSLoggingErrorRecord for: #TEST) with:  (DSLoggingErrorRecord for: #TEST).
-	records do:[:r| DSSpy serialize: r].
+
+	| records materializedRecords |
+	records := OrderedCollection with: (DSLoggingErrorRecord for: #TEST) with: (DSLoggingErrorRecord for: #TEST).
+	records do: [ :r | DSSpy serialize: r ].
 	materializedRecords := DSSpy materialize: DSSpy logger loggingFileReference.
 	self assert: materializedRecords size equals: 2.
-	
+
 	self assert: materializedRecords first class equals: DSLoggingErrorRecord.
 	self assert: materializedRecords first dateTime equals: records first dateTime.
 	self assert: materializedRecords first eventName equals: records first eventName.
 	self assert: materializedRecords first event equals: records first event.
-	
+
 	self assert: materializedRecords second class equals: DSLoggingErrorRecord.
 	self assert: materializedRecords second dateTime equals: records second dateTime.
 	self assert: materializedRecords second eventName equals: records second eventName.
