@@ -822,9 +822,7 @@ DSSpyTest >> testStartTask [
 DSSpyTest >> testStartTaskSerialization [
 
 	| recordedTask |
-	DSSpy logger loggingDirectory deleteAllChildren.
 	DSRecordRegistry autoSerialize: true.
-	DSSpy resetSpy.
 	DSSpy startTask: task.
 	recordedTask := (DSSpy materialize: DSSpy logger loggingFileReference) first.
 	self assert: recordedTask class equals: DSStartTaskRecord.
