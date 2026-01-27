@@ -184,19 +184,20 @@ DSSpyTest >> setUp [
 	DSSpy packagesMonitoredForSourceCodeChanges: nil.
 	recordSourceCode := DSSpy recordSourceCode.
 	DSSpy recordSourceCode: false.
-	DSSpy scopeSourceCodeChangesRecording: true
+	DSSpy scopeSourceCodeChangesRecording: true.
+	DSSpy testingSession: true
 ]
 
 { #category : 'running' }
 DSSpyTest >> tearDown [
 
 	DSSpy logger loggingFileReference ensureDelete.
-	DSSpy resetSpy.
 	DSRecordRegistry autoSerialize: false.
-	instrumenter unsubscribeFromSystemAnnouncer.
+	instrumenter stopInstrumentation.
 	debugpoint ifNotNil: [ debugpoint remove ].
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
 	self removeNewMethodWithHalt.
+	DSSpy resetSpy.
 	DSRecordRegistry current reset.
 	DSSpy recordSourceCode: recordSourceCode.
 	DSSpy scopeSourceCodeChangesRecording: nil.

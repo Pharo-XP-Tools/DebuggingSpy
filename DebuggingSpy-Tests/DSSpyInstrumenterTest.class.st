@@ -305,6 +305,7 @@ DSSpyInstrumenterTest >> setUp [
 	DSSpyInstrumenter instrumentSystem.
 	recordSourceCode := DSSpy recordSourceCode.
 	DSSpy recordSourceCode: true.
+	DSSpy testingSession: true.
 	DSRecordRegistry current reset.
 	intialWindows := self currentWorld windowsSatisfying: [ :window | window isInWorld ]
 ]
@@ -363,6 +364,8 @@ DSSpyInstrumenterTest >> tearDown [
 
 	DSSpy logger loggingFileReference ensureDelete.
 	DSSpyInstrumenter stopInstrumentation.
+	
+	DSSpy resetSpy.
 
 	self closeOpenedWindows.
 

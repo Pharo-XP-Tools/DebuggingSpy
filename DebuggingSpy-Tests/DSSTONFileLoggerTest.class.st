@@ -2,10 +2,9 @@ Class {
 	#name : 'DSSTONFileLoggerTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'logger',
 		'survey',
 		'task',
-		'oldLogger'
+		'logger'
 	],
 	#category : 'DebuggingSpy-Tests-Tests - model',
 	#package : 'DebuggingSpy-Tests',
@@ -15,9 +14,8 @@ Class {
 { #category : 'running' }
 DSSTONFileLoggerTest >> setUp [
 	super setUp.
-	oldLogger := DSSpy logger.
-	logger := DSSTONFileLogger new.
-	DSSpy logger: logger.
+	DSSpy testingSession: true.
+	logger := DSSpy logger.
 	survey := DSTestSurvey new.
 	task := DSTestTask new
 ]
@@ -26,16 +24,18 @@ DSSTONFileLoggerTest >> setUp [
 DSSTONFileLoggerTest >> tearDown [
 
 	logger loggingFileReference ensureDelete.
-	DSSpy logger: oldLogger.
+	DSSpy resetSpy.
 	super tearDown
 ]
 
 { #category : 'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingDirectoryName [
 
-	self
-		assert: logger defaultLoggingDirectoryName
-		equals: 'ds-spy'
+	self assert: logger defaultLoggingDirectoryName equals: 'tests'.
+
+	DSSpy testingSession: false.
+
+	self assert: logger defaultLoggingDirectoryName equals: 'ds-spy'
 ]
 
 { #category : 'tests - file handling' }

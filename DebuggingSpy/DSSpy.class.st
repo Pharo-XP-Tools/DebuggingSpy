@@ -17,7 +17,8 @@ Class {
 		'recordClipboardContent',
 		'scopeSourceCodeChangesRecording',
 		'recordingSession',
-		'recordFileName'
+		'recordFileName',
+		'testingSession'
 	],
 	#category : 'DebuggingSpy-Instrumentation',
 	#package : 'DebuggingSpy',
@@ -330,6 +331,7 @@ DSSpy class >> resetSpy [
 	logger ifNotNil: [ :l | l reset ].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false.
+	testingSession := false.
 	recordFileName := nil
 ]
 
@@ -364,6 +366,19 @@ DSSpy class >> startTask: aTask [
 DSSpy class >> taskStarted [
 
 	^ taskStarted ifNil: [ taskStarted := false ]
+]
+
+{ #category : 'accessing' }
+DSSpy class >> testingSession [
+	"Indicates if we are in a testing session"
+
+	^ testingSession ifNil: [ recordingSession := false ]
+]
+
+{ #category : 'accessing' }
+DSSpy class >> testingSession: aBoolean [
+
+	testingSession := aBoolean
 ]
 
 { #category : 'utils' }

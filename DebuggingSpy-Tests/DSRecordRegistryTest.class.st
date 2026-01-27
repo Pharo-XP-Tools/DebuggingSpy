@@ -10,6 +10,14 @@ Class {
 }
 
 { #category : 'running' }
+DSRecordRegistryTest >> setUp [
+
+	super setUp.
+
+	DSSpy testingSession: true
+]
+
+{ #category : 'running' }
 DSRecordRegistryTest >> tearDown [
 
 	DSSpy logger loggingFileReference ensureDelete.
