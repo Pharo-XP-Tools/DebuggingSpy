@@ -200,6 +200,8 @@ DSSpyTest >> tearDown [
 	DSSpy recordSourceCode: recordSourceCode.
 	DSSpy scopeSourceCodeChangesRecording: nil.
 	DSSpy resetSpy.
+	
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 

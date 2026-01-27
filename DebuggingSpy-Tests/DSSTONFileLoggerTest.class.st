@@ -23,8 +23,9 @@ DSSTONFileLoggerTest >> setUp [
 { #category : 'running' }
 DSSTONFileLoggerTest >> tearDown [
 
-	logger loggingFileReference ensureDelete.
 	DSSpy resetSpy.
+	
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 

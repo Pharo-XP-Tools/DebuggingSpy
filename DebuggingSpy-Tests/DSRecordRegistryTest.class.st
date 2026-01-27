@@ -20,9 +20,11 @@ DSRecordRegistryTest >> setUp [
 { #category : 'running' }
 DSRecordRegistryTest >> tearDown [
 
-	DSSpy logger loggingFileReference ensureDelete.
+	DSSpy logger loggingDirectory ensureDeleteAll.
 	DSSpy resetSpy.
 	DSRecordRegistry autoSerialize: nil.
+	
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 

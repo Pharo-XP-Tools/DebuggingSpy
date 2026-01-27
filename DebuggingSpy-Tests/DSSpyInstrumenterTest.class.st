@@ -361,14 +361,11 @@ DSSpyInstrumenterTest >> tearDown [
 
 	DSSpy recordSourceCode: recordSourceCode.
 	DSRecordRegistry current reset.
-
-	DSSpy logger loggingFileReference ensureDelete.
 	DSSpyInstrumenter stopInstrumentation.
-	
 	DSSpy resetSpy.
-
 	self closeOpenedWindows.
 
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 
