@@ -75,12 +75,8 @@ DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 { #category : 'tests - task management' }
 DSSTONFileLoggerTest >> testForceRunningTask [
 
-	DSSpy resetSpy.
 	DSSpy forceRunningTask: task.
-	self
-		assert: logger loggingFileName
-		equals:
-		task title , '-' , DSSpy getRecordFileName 
+	self assert: logger loggingFileName equals: task title , '-' , DSSpy getRecordFileName
 ]
 
 { #category : 'tests - file handling' }

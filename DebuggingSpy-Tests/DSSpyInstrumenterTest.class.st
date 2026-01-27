@@ -300,14 +300,16 @@ DSSpyInstrumenterTest >> setDummyWindowPresenter: windowPresenter forPresenter: 
 
 { #category : 'running' }
 DSSpyInstrumenterTest >> setUp [
+
 	super setUp.
-	
-	DSSpyInstrumenter instrumentSystem.
-	recordSourceCode := DSSpy recordSourceCode.
-	DSSpy recordSourceCode: true.
+
 	DSSpy testingSession: true.
-	DSRecordRegistry current reset.
-	intialWindows := self currentWorld windowsSatisfying: [ :window | window isInWorld ]
+	DSSpy recordSourceCode: true.
+	recordSourceCode := DSSpy recordSourceCode.
+
+	intialWindows := self currentWorld windowsSatisfying: [ :window | window isInWorld ].
+
+	DSSpyInstrumenter instrumentSystem
 ]
 
 { #category : 'helpers' }
