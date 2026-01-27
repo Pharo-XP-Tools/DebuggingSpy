@@ -191,16 +191,15 @@ DSSpyTest >> setUp [
 { #category : 'running' }
 DSSpyTest >> tearDown [
 
-	DSSpy logger loggingFileReference ensureDelete.
 	DSRecordRegistry autoSerialize: false.
-	instrumenter stopInstrumentation.
+	instrumenter unsubscribeFromSystemAnnouncer.
 	debugpoint ifNotNil: [ debugpoint remove ].
 	self recoverTestMethod ifNotNil: [ self removeTestMethod ].
 	self removeNewMethodWithHalt.
-	DSSpy resetSpy.
 	DSRecordRegistry current reset.
 	DSSpy recordSourceCode: recordSourceCode.
 	DSSpy scopeSourceCodeChangesRecording: nil.
+	DSSpy resetSpy.
 	super tearDown
 ]
 
