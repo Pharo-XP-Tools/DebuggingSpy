@@ -361,10 +361,12 @@ DSSpyInstrumenterTest >> tableItemsListFromInspector: anInspector [
 { #category : 'running' }
 DSSpyInstrumenterTest >> tearDown [
 
+	DSSpyInstrumenter stopInstrumentation.
+	
 	DSSpy recordSourceCode: recordSourceCode.
 	DSRecordRegistry current reset.
-	DSSpyInstrumenter stopInstrumentation.
 	DSSpy resetSpy.
+	
 	self closeOpenedWindows.
 
 	'tests' asFileReference ensureDeleteAll.
