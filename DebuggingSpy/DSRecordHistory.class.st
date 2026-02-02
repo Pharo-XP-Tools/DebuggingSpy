@@ -485,7 +485,7 @@ DSRecordHistory >> name [
 { #category : 'API-history' }
 DSRecordHistory >> numberOfSteps [
 
-	^ (self allRecordsOfKind: DSStepActionRecord) size
+	^ (self allRecordsOfKind: DSAbstractDebuggerActionRecord) size
 ]
 
 { #category : 'initialization' }
@@ -496,7 +496,6 @@ DSRecordHistory >> processRecords: array [
 	self records: (array reject: [ :e | #( 0 ) includes: e windowId ]). 
 	
 	"Transform raw events to model events"
-	(self allRecordsOfKind: DSStepActionRecord) do: #asStepRecord.
 	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord. 
 	
 	"Detect if we're in a specific task"
