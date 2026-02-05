@@ -9,7 +9,8 @@ Class {
 		'listPresenter',
 		'addButton',
 		'toolbar',
-		'fileContent'
+		'selectedRecordsPresenter',
+		'selectedRecords'
 	],
 	#category : 'RecordBrowser',
 	#package : 'RecordBrowser'
@@ -22,6 +23,15 @@ RecordBrowserPresenter >> addFile: newFile [
 	listPresenter items: files
 ]
 
+{ #category : 'initialization' }
+RecordBrowserPresenter >> connectPresenters [
+
+	selectedRecords ifNotNil: [
+			selectedRecordsPresenter
+				roots: selectedRecords records;
+				children: [ :item | OrderedCollection new ] ]
+]
+
 { #category : 'layout' }
 RecordBrowserPresenter >> defaultLayout [
 
@@ -30,7 +40,7 @@ RecordBrowserPresenter >> defaultLayout [
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
 				   add: listPresenter;
-				   add: fileContent;
+				   add: selectedRecordsPresenter;
 				   yourself);
 		  yourself
 ]
@@ -60,21 +70,32 @@ RecordBrowserPresenter >> initializePresenters [
 		                 display: [ :file | file basenameWithoutExtension ];
 		                 whenSelectionChangedDo: [ :file | file ifNotNil: [ self updateContentViewer: file selectedItem ] ].
 
-	fileContent := self newText beNotEditable
+	selectedRecordsPresenter := self newTreeTable
+		                            addColumn: (SpStringTableColumn title: 'Event type' evaluated: [ :item | item eventName asString ]);
+		                            addColumn: (SpStringTableColumn title: 'Date' evaluated: [ :item | item dateTime asString ]);
+		                            beResizable;
+		                            yourself
 ]
 
 { #category : 'operations' }
 RecordBrowserPresenter >> openAddFileDialog [
 
 	| fileNames |
-	fileNames := StOpenFilePresenter chooseModal.
+	fileNames := StOpenFilePresenter new
+		             defaultFolder: DSSpy logger loggingDirectory;
+		             openModal.
 	fileNames do: [ :file | self addFile: file asFileReference ]
 ]
 
 { #category : 'operations' }
 RecordBrowserPresenter >> updateContentViewer: aFileReference [
 
-	fileContent text: aFileReference contents
+	| raw history |
+	aFileReference ifNotNil: [
+			raw := DSSpy materialize: aFileReference.
+			history := DSRecordHistory on: raw.
+			selectedRecords := history.
+			self connectPresenters ]
 ]
 
 { #category : 'accessing' }
