@@ -17,10 +17,11 @@ Class {
 }
 
 { #category : 'adding' }
-RecordBrowserPresenter >> addFile: newFile [
+RecordBrowserPresenter >> addFile: aFileReference [
 
-	files add: newFile.
-	listPresenter items: files
+	files add: aFileReference.
+	listPresenter items: files.
+	self updateContentViewer: aFileReference
 ]
 
 { #category : 'initialization' }
