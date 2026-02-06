@@ -187,9 +187,17 @@ DSSpyInstrumenter >> instrumentSystem [
 	self logCodeInteractions.
 	self logBrowsingActions.
 	self logDebuggerActions.
+	self logClyBrowserActions.
 	
 	"Intruments exceptions"
 	self instrumentExceptionSignalling
+]
+
+{ #category : 'interactions' }
+DSSpyInstrumenter >> instrumentTabMorph [
+	"Instruments the active Tab Morph"
+
+	TabSelectorMorph link: DSMorphTabRecord link toAST: (TabSelectorMorph >> #selectedIndex:) ast
 ]
 
 { #category : 'debugpoints' }
@@ -235,6 +243,13 @@ DSSpyInstrumenter >> logClipboardActions [
 
 	self instrumentCopySelection.
 	self instrumentPaste
+]
+
+{ #category : 'system-instrumentation' }
+DSSpyInstrumenter >> logClyBrowserActions [
+	"Instrument actions link to the Browser UI : scrolling, change in tabs, ..."
+
+	self instrumentTabMorph 
 ]
 
 { #category : 'system-instrumentation' }
