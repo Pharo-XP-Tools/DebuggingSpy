@@ -207,7 +207,7 @@ DSSpyInstrumenter >> instrumentSystem [
 DSSpyInstrumenter >> instrumentTabMorph [
 	"Instruments the active Tab Morph"
 
-	TabGroupMorph link: DSMorphTabRecord link toAST: (TabGroupMorph >> #update:with:) ast
+	TabSelectorMorph link: DSMorphTabRecord link toAST: (TabSelectorMorph >> #selectedIndex:) ast
 ]
 
 { #category : 'debugpoints' }
