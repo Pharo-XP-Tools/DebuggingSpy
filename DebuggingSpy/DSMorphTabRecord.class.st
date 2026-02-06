@@ -21,5 +21,5 @@ DSMorphTabRecord >> eventName [
 { #category : 'actions api' }
 DSMorphTabRecord >> record: aTabMorphSelector [
 
-	tabName := (aTabMorphSelector submorphs select: #isSelected) first 
+	tabName := ((aTabMorphSelector submorphs select: [:morph | morph class = TabLabelMorph]) select: #isSelected) first asString
 ]
