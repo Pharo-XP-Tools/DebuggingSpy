@@ -1,27 +1,60 @@
 "
-Record browser for DsSpy data.
+Debugging Spy interface.
 "
 Class {
 	#name : 'RecordBrowserPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'files',
-		'listPresenter',
-		'addButton',
 		'toolbar',
 		'selectedRecordsPresenter',
-		'selectedRecords'
+		'selectedRecords',
+		'addedFilesPresenter',
+		'startRecordButton',
+		'stopRecordButton',
+		'addRecordButton'
+	],
+	#classInstVars : [
+		'browser'
 	],
 	#category : 'RecordBrowser',
 	#package : 'RecordBrowser'
 }
 
+{ #category : 'accessing' }
+RecordBrowserPresenter class >> browser [
+
+	^ browser
+]
+
+{ #category : 'world menu' }
+RecordBrowserPresenter class >> menuCommandOn: aBuilder [
+
+	<worldMenu>
+	(aBuilder item: #DSSpy)
+		order: 100;
+		help: 'Open the Debugging Spy browser.';
+		action: [ self new open ]
+]
+
 { #category : 'adding' }
 RecordBrowserPresenter >> addFile: aFileReference [
 
 	files add: aFileReference.
-	listPresenter items: files.
+	addedFilesPresenter items: files.
 	self updateContentViewer: aFileReference
+]
+
+{ #category : 'layout' }
+RecordBrowserPresenter >> addRecordButton [
+
+	^ addRecordButton ifNil: [
+			  addRecordButton := SpToolbarButtonPresenter new
+				                     label: 'Add';
+				                     icon: (self iconNamed: #smallAdd);
+				                     help: 'Add a new record.';
+				                     action: [ self openAddFileDialog ];
+				                     yourself ]
 ]
 
 { #category : 'initialization' }
@@ -40,7 +73,7 @@ RecordBrowserPresenter >> defaultLayout [
 		  add: toolbar expand: false;
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
-				   add: listPresenter;
+				   add: addedFilesPresenter;
 				   add: selectedRecordsPresenter;
 				   yourself);
 		  yourself
@@ -49,31 +82,26 @@ RecordBrowserPresenter >> defaultLayout [
 { #category : 'accessing' }
 RecordBrowserPresenter >> files [
 
-	^ files
+	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
 { #category : 'initialization' }
 RecordBrowserPresenter >> initializePresenters [
 
-	files := OrderedCollection new.
+	toolbar := self newToolbar
+		           addItem: self addRecordButton;
+		           addItem: self startRecordButton;
+		           addItem: self stopRecordButton.
 
-	addButton := SpToolbarButtonPresenter new
-		             label: 'Add';
-		             icon: (self iconNamed: #smallAdd);
-		             help: 'Add a new record';
-		             action: [ self openAddFileDialog ];
-		             yourself.
-
-	toolbar := self newToolbar addItem: addButton.
-
-	listPresenter := self newList
-		                 items: files;
-		                 display: [ :file | file basenameWithoutExtension ];
-		                 whenSelectionChangedDo: [ :file | file ifNotNil: [ self updateContentViewer: file selectedItem ] ].
+	addedFilesPresenter := self newList
+		                       items: self files;
+		                       display: [ :file | file basenameWithoutExtension ];
+		                       whenSelectionChangedDo: [ :file | file ifNotNil: [ self updateContentViewer: file selectedItem ] ];
+		                       yourself.
 
 	selectedRecordsPresenter := self newTreeTable
 		                            addColumn: (SpStringTableColumn title: 'Event type' evaluated: [ :item | item eventName asString ]);
-		                            addColumn: (SpStringTableColumn title: 'Date' evaluated: [ :item | item dateTime asString ]);
+		                            addColumn: (SpStringTableColumn title: 'Time' evaluated: [ :item | item dateTime asTime print24 ]);
 		                            beResizable;
 		                            yourself
 ]
@@ -85,7 +113,39 @@ RecordBrowserPresenter >> openAddFileDialog [
 	fileNames := StOpenFilePresenter new
 		             defaultFolder: DSSpy logger loggingDirectory;
 		             openModal.
-	fileNames do: [ :file | self addFile: file asFileReference ]
+	fileNames ifNotNil: [ fileNames do: [ :file | self addFile: file asFileReference ] ]
+]
+
+{ #category : 'layout' }
+RecordBrowserPresenter >> startRecordButton [
+
+	^ startRecordButton ifNil: [
+			  startRecordButton := SpToolbarButtonPresenter new
+				                       label: 'Start';
+				                       icon: (self iconNamed: #glamorousGo);
+				                       help: 'Start recording events.';
+				                       action: [
+						                       DSSpyInstrumenter instrumentSystem.
+						                       startRecordButton enabled: false.
+						                       stopRecordButton enabled: true ];
+				                       enabled: DSSpy recordingSession not;
+				                       yourself ]
+]
+
+{ #category : 'layout' }
+RecordBrowserPresenter >> stopRecordButton [
+
+	^ stopRecordButton ifNil: [
+			  stopRecordButton := SpToolbarButtonPresenter new
+				                      label: 'Stop';
+				                      icon: (self iconNamed: #stop);
+				                      help: 'Stop recording events.';
+				                      action: [
+						                      DSSpyInstrumenter stopInstrumentation.
+						                      startRecordButton enabled: true.
+						                      stopRecordButton enabled: false ];
+				                      enabled: DSSpy recordingSession;
+				                      yourself ]
 ]
 
 { #category : 'operations' }
