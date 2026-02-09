@@ -12,6 +12,16 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'instance creation' }
+DSMorphTabRecord class >> for: aTabMorphSelector [
+
+	| rec |
+	rec := self new record: aTabMorphSelector.
+	rec ifNotNil: [ DSRecordRegistry current addRecord: rec ].
+
+	^ rec
+]
+
 { #category : 'accessing' }
 DSMorphTabRecord >> eventName [
 
@@ -22,8 +32,8 @@ DSMorphTabRecord >> eventName [
 DSMorphTabRecord >> record: aTabMorphSelector [
 
 	| selectedTab |
+	selectedTab := (aTabMorphSelector submorphs select: [ :morph | morph class = TabLabelMorph ]) select: #isSelected.
+	selectedTab ifEmpty: [ ^ nil ].
 
-	selectedTab := ((aTabMorphSelector submorphs select: [:morph | morph class = TabLabelMorph]) select: #isSelected).
-	
-	tabName := selectedTab isEmpty ifTrue: [ nil ] ifFalse: [ selectedTab first asString ]
+	tabName := selectedTab first asString
 ]
