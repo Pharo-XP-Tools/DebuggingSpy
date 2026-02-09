@@ -408,7 +408,7 @@ DSSpyInstrumenterTest >> testInstrumentClyTextEditorInspectIt [
 	clyEditor := self clyTextEditor.
 	clyEditor inspectIt.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSInspectItRecord.
@@ -658,7 +658,7 @@ DSSpyInstrumenterTest >> testInstrumentRubEditorInspectIt [
 	rubEditor selectAll.
 	rubEditor inspectIt.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSInspectItRecord.
@@ -721,7 +721,7 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 	rubEditor := self rubSmalltalkEditor.
 	rubEditor sendersOf: #testInstrumentHaltHits.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 
 	record := self registry first.
 	self assert: record class identicalTo: DSImplementorsRecord.
@@ -739,7 +739,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeBrowse [
 	codePresenter rawSelection: (1 to: 4).
 	browseCommand execute.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 6.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSBrowseRecord.
@@ -835,13 +835,16 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeImplementors [
 	codePresenter selectionInterval: (1 to: 7).
 	browseCommand execute.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 
 	record := self registry first.
 	self assert: record class identicalTo: DSImplementorsRecord.
 	self assert: record windowId equals: codePresenter window identityHash.
-
+	
 	record := self registry second.
+	self assert: record class identicalTo: DSMorphTabRecord.
+
+	record := self registry third.
 	self assert: record class identicalTo: DSWindowOpenedRecord
 ]
 
@@ -856,7 +859,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeInspectIt [
 	codePresenter rawSelection: (1 to: 4).
 	inspectItCommand execute.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSInspectItRecord.
@@ -890,13 +893,16 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeSenders [
 	codePresenter selectionInterval: (1 to: 7).
 	browseCommand execute.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 3.
 
 	record := self registry first.
 	self assert: record class identicalTo: DSSendersRecord.
 	self assert: record windowId equals: codePresenter window identityHash.
 
 	record := self registry second.
+	self assert: record class identicalTo: DSMorphTabRecord.
+	
+	record := self registry third.
 	self assert: record class identicalTo: DSWindowOpenedRecord
 ]
 

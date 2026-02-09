@@ -21,5 +21,9 @@ DSMorphTabRecord >> eventName [
 { #category : 'actions api' }
 DSMorphTabRecord >> record: aTabMorphSelector [
 
-	tabName := ((aTabMorphSelector submorphs select: [:morph | morph class = TabLabelMorph]) select: #isSelected) first asString
+	| selectedTab |
+
+	selectedTab := ((aTabMorphSelector submorphs select: [:morph | morph class = TabLabelMorph]) select: #isSelected).
+	
+	tabName := selectedTab isEmpty ifTrue: [ nil ] ifFalse: [ selectedTab first asString ]
 ]
