@@ -13,11 +13,12 @@ Class {
 }
 
 { #category : 'instance creation' }
-DSMorphTabRecord class >> for: anObject [
+DSMorphTabRecord class >> for: aTabMorphSelector [
 
 	| rec |
-	rec := self new record: anObject.
+	rec := self new record: aTabMorphSelector.
 	rec ifNotNil: [ DSRecordRegistry current addRecord: rec ].
+
 	^ rec
 ]
 
