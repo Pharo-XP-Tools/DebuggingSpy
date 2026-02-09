@@ -1,44 +1,65 @@
 "
-Debugging Spy interface.
+Debugging Spy main interface thats includes :
+- an interface that could be opened with a button on the topside bar 
+- a button that adds files to the list displayed on the interface
+- a button to start the instrumentation and another to stop it
+- an interface that shows the content of a selected file
 "
 Class {
-	#name : 'RecordBrowserPresenter',
+	#name : 'DSRecordBrowserPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'files',
-		'toolbar',
-		'selectedRecordsPresenter',
 		'selectedRecords',
-		'addedFilesPresenter',
 		'startRecordButton',
 		'stopRecordButton',
-		'addRecordButton'
+		'addRecordButton',
+		'toolbar',
+		'addedFilesPresenter',
+		'selectedRecordsPresenter',
+		'recorderWindow'
 	],
 	#classInstVars : [
-		'browser'
+		'presenterWindow'
 	],
-	#category : 'RecordBrowser',
-	#package : 'RecordBrowser'
+	#category : 'DebuggingSpy-Browser',
+	#package : 'DebuggingSpy-Browser'
 }
 
-{ #category : 'accessing' }
-RecordBrowserPresenter class >> browser [
-
-	^ browser
-]
-
 { #category : 'world menu' }
-RecordBrowserPresenter class >> menuCommandOn: aBuilder [
+DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
+	"Adds the DSSpy button on topside bar, the order is 100 just to make sure the DSSpy button is at the end"
 
 	<worldMenu>
 	(aBuilder item: #DSSpy)
 		order: 100;
 		help: 'Open the Debugging Spy browser.';
-		action: [ self new open ]
+		action: [ self toggleBrowser ]
+]
+
+{ #category : 'initialization' }
+DSRecordBrowserPresenter class >> resetBrowser [
+
+	<script>
+	presenterWindow := nil
+]
+
+{ #category : 'open/close' }
+DSRecordBrowserPresenter class >> toggleBrowser [
+
+	| presenter |
+	presenterWindow ifNotNil: [
+			^ presenterWindow isOpen
+				  ifTrue: [ presenterWindow close ]
+				  ifFalse: [ presenterWindow open ] ].
+
+	presenter := self new.
+	presenter open.
+	presenterWindow := presenter window
 ]
 
 { #category : 'adding' }
-RecordBrowserPresenter >> addFile: aFileReference [
+DSRecordBrowserPresenter >> addFile: aFileReference [
 
 	files add: aFileReference.
 	addedFilesPresenter items: files.
@@ -46,7 +67,7 @@ RecordBrowserPresenter >> addFile: aFileReference [
 ]
 
 { #category : 'layout' }
-RecordBrowserPresenter >> addRecordButton [
+DSRecordBrowserPresenter >> addRecordButton [
 
 	^ addRecordButton ifNil: [
 			  addRecordButton := SpToolbarButtonPresenter new
@@ -58,7 +79,7 @@ RecordBrowserPresenter >> addRecordButton [
 ]
 
 { #category : 'initialization' }
-RecordBrowserPresenter >> connectPresenters [
+DSRecordBrowserPresenter >> connectPresenters [
 
 	selectedRecords ifNotNil: [
 			selectedRecordsPresenter
@@ -67,7 +88,7 @@ RecordBrowserPresenter >> connectPresenters [
 ]
 
 { #category : 'layout' }
-RecordBrowserPresenter >> defaultLayout [
+DSRecordBrowserPresenter >> defaultLayout [
 
 	^ SpBoxLayout newVertical
 		  add: toolbar expand: false;
@@ -80,13 +101,13 @@ RecordBrowserPresenter >> defaultLayout [
 ]
 
 { #category : 'accessing' }
-RecordBrowserPresenter >> files [
+DSRecordBrowserPresenter >> files [
 
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
 { #category : 'initialization' }
-RecordBrowserPresenter >> initializePresenters [
+DSRecordBrowserPresenter >> initializePresenters [
 
 	toolbar := self newToolbar
 		           addItem: self addRecordButton;
@@ -107,49 +128,69 @@ RecordBrowserPresenter >> initializePresenters [
 ]
 
 { #category : 'operations' }
-RecordBrowserPresenter >> openAddFileDialog [
+DSRecordBrowserPresenter >> openAddFileDialog [
 
 	| fileNames |
 	fileNames := StOpenFilePresenter new
+		             beMultipleSelection;
 		             defaultFolder: DSSpy logger loggingDirectory;
 		             openModal.
 	fileNames ifNotNil: [ fileNames do: [ :file | self addFile: file asFileReference ] ]
 ]
 
 { #category : 'layout' }
-RecordBrowserPresenter >> startRecordButton [
+DSRecordBrowserPresenter >> startRecordButton [
 
 	^ startRecordButton ifNil: [
 			  startRecordButton := SpToolbarButtonPresenter new
 				                       label: 'Start';
 				                       icon: (self iconNamed: #glamorousGo);
 				                       help: 'Start recording events.';
-				                       action: [
-						                       DSSpyInstrumenter instrumentSystem.
-						                       startRecordButton enabled: false.
-						                       stopRecordButton enabled: true ];
+				                       action: [ self startRecording ];
 				                       enabled: DSSpy recordingSession not;
 				                       yourself ]
 ]
 
+{ #category : 'recording' }
+DSRecordBrowserPresenter >> startRecording [
+	"Starts recording events and instianciates a new RecorderWindow that displays a timer and shows that Debugging Spy is recordering."
+
+	DSSpyInstrumenter instrumentSystem.
+	startRecordButton enabled: false.
+	stopRecordButton enabled: true.
+	recorderWindow := DSRecorderWindow new.
+	recorderWindow
+		openInWorld;
+		startTimer
+]
+
 { #category : 'layout' }
-RecordBrowserPresenter >> stopRecordButton [
+DSRecordBrowserPresenter >> stopRecordButton [
 
 	^ stopRecordButton ifNil: [
 			  stopRecordButton := SpToolbarButtonPresenter new
 				                      label: 'Stop';
 				                      icon: (self iconNamed: #stop);
 				                      help: 'Stop recording events.';
-				                      action: [
-						                      DSSpyInstrumenter stopInstrumentation.
-						                      startRecordButton enabled: true.
-						                      stopRecordButton enabled: false ];
+				                      action: [ self stopRecording ];
 				                      enabled: DSSpy recordingSession;
 				                      yourself ]
 ]
 
+{ #category : 'recording' }
+DSRecordBrowserPresenter >> stopRecording [
+	"Stops the recording session and closes the RecorderWindow."
+
+	DSSpyInstrumenter stopInstrumentation.
+	startRecordButton enabled: true.
+	stopRecordButton enabled: false.
+	recorderWindow
+		stopTimer;
+		close
+]
+
 { #category : 'operations' }
-RecordBrowserPresenter >> updateContentViewer: aFileReference [
+DSRecordBrowserPresenter >> updateContentViewer: aFileReference [
 
 	| raw history |
 	aFileReference ifNotNil: [
@@ -160,7 +201,7 @@ RecordBrowserPresenter >> updateContentViewer: aFileReference [
 ]
 
 { #category : 'accessing' }
-RecordBrowserPresenter >> windowTitle [
+DSRecordBrowserPresenter >> windowTitle [
 
 	^ 'Debugging record browser'
 ]
