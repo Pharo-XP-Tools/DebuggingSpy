@@ -12,14 +12,14 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'instance creation' }
-DSMorphTabRecord class >> for: aTabMorphSelector [
+{ #category : 'accessing' }
+DSMorphTabRecord class >> link [ 
 
-	| rec |
-	rec := self new record: aTabMorphSelector.
-	rec ifNotNil: [ DSRecordRegistry current addRecord: rec ].
-
-	^ rec
+	^ DSMetaLink new
+		  metaObject: self;
+		  selector: #for:;
+		  arguments: #( arguments );
+		  control: #before
 ]
 
 { #category : 'accessing' }
@@ -29,11 +29,11 @@ DSMorphTabRecord >> eventName [
 ]
 
 { #category : 'actions api' }
-DSMorphTabRecord >> record: aTabMorphSelector [
+DSMorphTabRecord >> record: anArrayOfArguments [
 
-	| selectedTab |
-	selectedTab := (aTabMorphSelector submorphs select: [ :morph | morph class = TabLabelMorph ]) select: #isSelected.
-	selectedTab ifEmpty: [ ^ nil ].
+	| newTabMorph |
+	
+	newTabMorph := anArrayOfArguments second.
 
-	tabName := selectedTab first asString
+	tabName := newTabMorph asString
 ]
