@@ -739,7 +739,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeBrowse [
 	codePresenter rawSelection: (1 to: 4).
 	browseCommand execute.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 4.
 	record := self registry first.
 
 	self assert: record class identicalTo: DSBrowseRecord.
