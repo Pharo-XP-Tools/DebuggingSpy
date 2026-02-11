@@ -12,14 +12,13 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'accessing' }
-DSMorphTabRecord class >> link [ 
+{ #category : 'instance creation' }
+DSMorphTabRecord class >> for: anObject [
 
-	^ DSMetaLink new
-		  metaObject: self;
-		  selector: #for:;
-		  arguments: #( arguments );
-		  control: #before
+	| rec |
+	rec := self new record: anObject.
+	rec ifNotNil: [ DSRecordRegistry current addRecord: rec ].
+	^ rec
 ]
 
 { #category : 'accessing' }

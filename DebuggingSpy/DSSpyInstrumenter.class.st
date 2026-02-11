@@ -207,8 +207,10 @@ DSSpyInstrumenter >> instrumentSystem [
 DSSpyInstrumenter >> instrumentTabMorph [
 	"Instruments the active Tab Morph"
 
-	ClyNotebookMorph link: DSMorphTabRecord link toAST: (ClyNotebookMorph >> #updateContentMorph:with:) ast.
-	SpNotebookMorph link: DSMorphTabRecord link toAST: (SpNotebookMorph >> #updateContentMorph:with:) ast
+	"ClyNotebookMorph link: DSMorphTabRecord link toAST: (ClyNotebookMorph >> #updateContentMorph:with:) ast.
+	SpNotebookMorph link: DSMorphTabRecord link toAST: (SpNotebookMorph >> #updateContentMorph:with:) ast"
+	
+	TabGroupMorph link: DSMorphTabRecord link toAST: (TabGroupMorph >> #update:with:) ast
 ]
 
 { #category : 'debugpoints' }
