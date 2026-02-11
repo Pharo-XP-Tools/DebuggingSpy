@@ -46,6 +46,12 @@ DSRecorderWindow >> buildUI [
 		addMorph: stopButton
 ]
 
+{ #category : 'resize/collapse' }
+DSRecorderWindow >> collapseOrExpand [
+
+	^ self
+]
+
 { #category : 'initialization' }
 DSRecorderWindow >> initialize [
 
@@ -60,6 +66,7 @@ DSRecorderWindow >> initialize [
 DSRecorderWindow >> initializeProperties [
 
 	self
+		setLabel: 'DSSpy recorder';
 		extent: self size;
 		beSticky;
 		makeUnclosable;

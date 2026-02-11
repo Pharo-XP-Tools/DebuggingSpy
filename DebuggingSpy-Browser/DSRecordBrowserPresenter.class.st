@@ -229,6 +229,12 @@ DSRecordBrowserPresenter >> updateContentViewer: aFileReference [
 ]
 
 { #category : 'accessing' }
+DSRecordBrowserPresenter >> windowIcon [
+
+	^ self iconNamed: #browse
+]
+
+{ #category : 'accessing' }
 DSRecordBrowserPresenter >> windowTitle [
 
 	^ 'Debugging record browser'
