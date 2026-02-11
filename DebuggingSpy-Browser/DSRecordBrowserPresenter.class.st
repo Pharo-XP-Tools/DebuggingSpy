@@ -106,6 +106,12 @@ DSRecordBrowserPresenter >> files [
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
+
+	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> initializePresenters [
 
@@ -118,6 +124,7 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                       items: self files;
 		                       display: [ :file | file basenameWithoutExtension ];
 		                       whenSelectionChangedDo: [ :file | file ifNotNil: [ self updateContentViewer: file selectedItem ] ];
+		                       actions: self listAddedFilesActions;
 		                       yourself.
 
 	selectedRecordsPresenter := self newTreeTable
@@ -125,6 +132,25 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                            addColumn: (SpStringTableColumn title: 'Time' evaluated: [ :item | item dateTime asTime print24 ]);
 		                            beResizable;
 		                            yourself
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> listAddedFilesActions [
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  description: 'Inspect the raw records';
+					  shortcutKey: $i meta;
+					  action: [ (DSSpy materialize: addedFilesPresenter selectedItem) inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect history';
+					  description: 'Inspect the record history';
+					  shortcutKey: $h meta;
+					  action: [ (self getHistoryOf: addedFilesPresenter selectedItem) inspect ] ];
+		  yourself
 ]
 
 { #category : 'operations' }
@@ -192,11 +218,8 @@ DSRecordBrowserPresenter >> stopRecording [
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateContentViewer: aFileReference [
 
-	| raw history |
 	aFileReference ifNotNil: [
-			raw := DSSpy materialize: aFileReference.
-			history := DSRecordHistory on: raw.
-			selectedRecords := history.
+			selectedRecords := self getHistoryOf: aFileReference.
 			self connectPresenters ]
 ]
 
