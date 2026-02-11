@@ -37,6 +37,12 @@ DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 		action: [ self toggleBrowser ]
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> presenterWindow [
+
+	^ presenterWindow
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter class >> resetBrowser [
 
@@ -210,9 +216,8 @@ DSRecordBrowserPresenter >> stopRecording [
 	DSSpyInstrumenter stopInstrumentation.
 	startRecordButton enabled: true.
 	stopRecordButton enabled: false.
-	recorderWindow
-		stopTimer;
-		close
+	recorderWindow stopTimer.
+	self currentWorld removeMorph: recorderWindow
 ]
 
 { #category : 'operations' }

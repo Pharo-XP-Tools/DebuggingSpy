@@ -5,10 +5,11 @@ Class {
 	#name : 'DSRecorderWindow',
 	#superclass : 'SystemWindow',
 	#instVars : [
-		'labelMorph',
+		'timerMorph',
 		'running',
 		'startTime',
-		'timer'
+		'timer',
+		'timeNowMorph'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -17,11 +18,32 @@ Class {
 { #category : 'initialization' }
 DSRecorderWindow >> buildUI [
 
-	labelMorph := StringMorph new.
-	labelMorph contents: '00:00:000'.
-	labelMorph position: 10 @ 40.
-	labelMorph extent: 230 @ 60.
-	self addMorph: labelMorph
+	| recordingIcon stopButton |
+	recordingIcon := ImageMorph new
+		                 image: (self iconNamed: #glamorousRedCircle);
+		                 position: 0 @ 7;
+		                 yourself.
+
+	timerMorph := StringMorph new
+		              contents: '00:00:000';
+		              position: 15 @ 6.
+
+	timeNowMorph := StringMorph new
+		                contents: Time now print24;
+		                position: 75 @ 6.
+
+	stopButton := PluggableButtonMorph new
+		              label: (IconicListItemMorph new icon: (self iconNamed: #stop));
+		              model: DSRecordBrowserPresenter presenterWindow presenter;
+		              actionSelector: #stopRecording;
+		              position: 125 @ 4;
+		              yourself.
+
+	self
+		addMorph: recordingIcon;
+		addMorph: timerMorph;
+		addMorph: timeNowMorph;
+		addMorph: stopButton
 ]
 
 { #category : 'initialization' }
@@ -29,6 +51,7 @@ DSRecorderWindow >> initialize [
 
 	super initialize.
 	running := false.
+	self minimumExtent: self size.
 	self initializeProperties.
 	self buildUI
 ]
@@ -37,24 +60,12 @@ DSRecorderWindow >> initialize [
 DSRecorderWindow >> initializeProperties [
 
 	self
-		setLabel: 'Debugging spy recorder';
 		extent: self size;
-		lock;
-		"makeUnclosable;"
-		"makeBorderless ;"
+		beSticky;
+		makeUnclosable;
+		removeLabelArea;
+		removeBoxes;
 		beUnresizeable
-]
-
-{ #category : 'initialization' }
-DSRecorderWindow >> makeButton: aLabel action: anAction [
-    | btn |
-    btn := PluggableButtonMorph new.
-    btn label: aLabel.
-    btn target: self.
-    btn actionSelector: anAction.
-    btn extent: 70@30.
-    ^btn
-
 ]
 
 { #category : 'accessing' }
@@ -71,6 +82,37 @@ DSRecorderWindow >> morphicLayerNumber [
 	^ 12
 ]
 
+{ #category : 'initialization' }
+DSRecorderWindow >> obuildUI [
+
+	| recordingIcon stopButton |
+	recordingIcon := ImageMorph new
+		                 image: (self iconNamed: #glamorousRedCircle);
+		                 position: 0 @ 7;
+		                 yourself.
+
+	timerMorph := StringMorph new
+		              contents: '00:00:000';
+		              position: 15 @ 6.
+
+	timeNowMorph := StringMorph new
+		                contents: Time now print24;
+		                position: 75 @ 6.
+
+	stopButton := PluggableButtonMorph new
+		              icon: (self iconNamed: #stop);
+		              position: 128 @ 6;
+		              beIconTop;
+		              "target: self;
+		              actionSelector: #stopRecording;"yourself.
+
+	self
+		addMorph: recordingIcon;
+		addMorph: timerMorph;
+		addMorph: timeNowMorph;
+		addMorph: stopButton
+]
+
 { #category : 'opening' }
 DSRecorderWindow >> openInWorld [
 
@@ -78,17 +120,10 @@ DSRecorderWindow >> openInWorld [
 	self position: self currentWorld extent - self extent - self margin
 ]
 
-{ #category : 'timer' }
-DSRecorderWindow >> resetTimer [
-    startTime := Time millisecondClockValue.
-    labelMorph contents: '00:00:000'.
-
-]
-
 { #category : 'accessing' }
 DSRecorderWindow >> size [
 
-	^ 150 @ 40
+	^ 150 @ 30
 ]
 
 { #category : 'timer' }
@@ -100,25 +135,13 @@ DSRecorderWindow >> startTimer [
 	running := true.
 	timer := [
 		         [ running ] whileTrue: [
-				         | elapsed minutes seconds milliseconds text |
-				         elapsed := Time millisecondClockValue - startTime.
-
-				         minutes := elapsed // 60000 \\ 60.
-				         seconds := elapsed // 1000 \\ 60.
-				         milliseconds := elapsed \\ 1000.
-
-				         text := String streamContents: [ :s |
-						                 s nextPutAll: (minutes printPaddedWith: $0 to: 2).
-						                 s nextPut: $:.
-						                 s nextPutAll: (seconds printPaddedWith: $0 to: 2).
-						                 s nextPut: $:.
-						                 s nextPutAll: (milliseconds printPaddedWith: $0 to: 3) ].
-
-				         labelMorph contents: text.
+				         timerMorph contents: (Time millisecondClockValue - startTime) seconds asString.
+				         timeNowMorph contents: Time now print24.
 				         (Delay forMilliseconds: 50) wait ] ] fork
 ]
 
 { #category : 'timer' }
 DSRecorderWindow >> stopTimer [
-    running := false.
+
+	running := false
 ]
