@@ -137,6 +137,7 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                            addColumn: (SpStringTableColumn title: 'Event type' evaluated: [ :item | item eventName asString ]);
 		                            addColumn: (SpStringTableColumn title: 'Time' evaluated: [ :item | item dateTime asTime print24 ]);
 		                            beResizable;
+		                            actions: self listRecordActions;
 		                            yourself
 ]
 
@@ -156,6 +157,19 @@ DSRecordBrowserPresenter >> listAddedFilesActions [
 					  description: 'Inspect the record history';
 					  shortcutKey: $h meta;
 					  action: [ (self getHistoryOf: addedFilesPresenter selectedItem) inspect ] ];
+		  yourself
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> listRecordActions [
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  description: 'Inspect the raw records';
+					  shortcutKey: $i meta;
+					  action: [ selectedRecordsPresenter selectedItem inspect ] ];
 		  yourself
 ]
 
