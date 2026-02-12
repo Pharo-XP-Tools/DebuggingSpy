@@ -89,7 +89,7 @@ DSRecordBrowserPresenter >> connectPresenters [
 
 	selectedRecords ifNotNil: [
 			selectedRecordsPresenter
-				roots: selectedRecords records;
+				roots: selectedRecords;
 				children: [ :item | OrderedCollection new ] ]
 ]
 
@@ -113,9 +113,38 @@ DSRecordBrowserPresenter >> files [
 ]
 
 { #category : 'operations' }
+DSRecordBrowserPresenter >> getColoredRecordsOf: aWindowRecordCollection [
+
+	| coloredRecords |
+	coloredRecords := OrderedCollection new.
+	aWindowRecordCollection do: [ :windowRecord |
+			coloredRecords addAll:
+				(windowRecord events collect: [ :record | DSColoredRecord for: record withColor: (self getWindowColorFor: windowRecord) ]) ].
+	coloredRecords sort: [ :i :j | i record dateTime < j record dateTime ].
+	^ coloredRecords
+]
+
+{ #category : 'operations' }
 DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
 
 	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
+]
+
+{ #category : 'color' }
+DSRecordBrowserPresenter >> getWindowColorFor: aWindowRecord [
+
+	aWindowRecord isBrowser ifTrue: [ ^ Color green ]. "aWindowRecord isImplementorOrSender ifTrue: [ ^ Color lightGreen ]"
+	aWindowRecord isInspector ifTrue: [ ^ Color blue ].
+	aWindowRecord isDebugger ifTrue: [ ^ Color pink ].
+
+	aWindowRecord isPlayground ifTrue: [ ^ Color blue muchLighter ].
+	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color pink muchDarker ].
+	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color green muchDarker ].
+	aWindowRecord isEpicea ifTrue: [ ^ Color green muchDarker muchDarker ].
+	aWindowRecord isIceberg ifTrue: [ ^ Color blue muchDarker ].
+	aWindowRecord isRewriter ifTrue: [ ^ Color blue muchLighter muchLighter ].
+
+	^ nil
 ]
 
 { #category : 'initialization' }
@@ -134,8 +163,15 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                       yourself.
 
 	selectedRecordsPresenter := self newTreeTable
-		                            addColumn: (SpStringTableColumn title: 'Event type' evaluated: [ :item | item eventName asString ]);
-		                            addColumn: (SpStringTableColumn title: 'Time' evaluated: [ :item | item dateTime asTime print24 ]);
+		                            addColumn: (SpStringTableColumn new
+				                             title: 'Event type';
+				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				                             evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
+				                             yourself);
+		                            addColumn: (SpStringTableColumn new
+				                             title: 'Time';
+				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				                             evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ]);
 		                            beResizable;
 		                            actions: self listRecordActions;
 		                            yourself
@@ -237,8 +273,10 @@ DSRecordBrowserPresenter >> stopRecording [
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateContentViewer: aFileReference [
 
+	| history |
 	aFileReference ifNotNil: [
-			selectedRecords := self getHistoryOf: aFileReference.
+			history := self getHistoryOf: aFileReference.
+			selectedRecords := self getColoredRecordsOf: history windows.
 			self connectPresenters ]
 ]
 
