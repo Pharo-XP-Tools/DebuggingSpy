@@ -133,16 +133,16 @@ DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
 { #category : 'color' }
 DSRecordBrowserPresenter >> getWindowColorFor: aWindowRecord [
 
-	aWindowRecord isBrowser ifTrue: [ ^ Color green ]. "aWindowRecord isImplementorOrSender ifTrue: [ ^ Color lightGreen ]"
-	aWindowRecord isInspector ifTrue: [ ^ Color blue ].
-	aWindowRecord isDebugger ifTrue: [ ^ Color pink ].
+	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ]. "aWindowRecord isImplementorOrSender ifTrue: [ ^ Color lightGreen ]"
+	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
+	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
 
-	aWindowRecord isPlayground ifTrue: [ ^ Color blue muchLighter ].
-	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color pink muchDarker ].
-	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color green muchDarker ].
-	aWindowRecord isEpicea ifTrue: [ ^ Color green muchDarker muchDarker ].
-	aWindowRecord isIceberg ifTrue: [ ^ Color blue muchDarker ].
-	aWindowRecord isRewriter ifTrue: [ ^ Color blue muchLighter muchLighter ].
+	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E'].
+	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
+	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
+	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
+	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
+	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
 
 	^ nil
 ]
@@ -164,18 +164,13 @@ DSRecordBrowserPresenter >> initializePresenters [
 
 	selectedRecordsPresenter := self newTreeTable
 		                            addColumn: (SpStringTableColumn new
-				                             title: ' ';
-				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				                             evaluated: [ ' ' ];
-				                             width: 10;
-				                             beNotExpandable;
-				                             yourself);
-		                            addColumn: (SpStringTableColumn new
 				                             title: 'Event type';
+				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
 				                             evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
 				                             yourself);
 		                            addColumn: (SpStringTableColumn new
 				                             title: 'Time';
+				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
 				                             evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ]);
 		                            beResizable;
 		                            actions: self listRecordActions;
