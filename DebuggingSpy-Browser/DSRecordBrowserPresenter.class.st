@@ -164,13 +164,18 @@ DSRecordBrowserPresenter >> initializePresenters [
 
 	selectedRecordsPresenter := self newTreeTable
 		                            addColumn: (SpStringTableColumn new
-				                             title: 'Event type';
+				                             title: ' ';
 				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				                             evaluated: [ ' ' ];
+				                             width: 10;
+				                             beNotExpandable;
+				                             yourself);
+		                            addColumn: (SpStringTableColumn new
+				                             title: 'Event type';
 				                             evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
 				                             yourself);
 		                            addColumn: (SpStringTableColumn new
 				                             title: 'Time';
-				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
 				                             evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ]);
 		                            beResizable;
 		                            actions: self listRecordActions;
