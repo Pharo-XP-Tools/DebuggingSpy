@@ -104,6 +104,14 @@ DSWindowRecord >> events: anObject [
 ]
 
 { #category : 'accessing' }
+DSWindowRecord >> getWindowType [
+
+	toolInfos ifNotNil: [ ^ toolInfos first toolClassName ].
+	type isString ifTrue: [ ^ type ].
+	^ 'External Window'
+]
+
+{ #category : 'accessing' }
 DSWindowRecord >> idleTime [
 
 	^ idleTime ifNil: [ idleTime := 0 seconds ] ifNotNil: [ idleTime ]
@@ -213,13 +221,7 @@ DSWindowRecord >> printOn: ws [
 { #category : 'printing' }
 DSWindowRecord >> printTypeOn: aStream [
 
-	toolInfos ifNotNil: [
-		aStream << toolInfos first toolClassName.
-		^ self ].
-	type isString ifTrue: [
-		aStream << type.
-		^ self ].
-	aStream << 'External Window'
+	aStream << self getWindowType
 ]
 
 { #category : 'accessing' }

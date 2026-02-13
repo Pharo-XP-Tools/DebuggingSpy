@@ -17,7 +17,8 @@ Class {
 		'toolbar',
 		'addedFilesPresenter',
 		'selectedRecordsPresenter',
-		'recorderWindow'
+		'recorderWindow',
+		'timeline'
 	],
 	#classInstVars : [
 		'presenterWindow'
@@ -41,6 +42,12 @@ DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 DSRecordBrowserPresenter class >> presenterWindow [
 
 	^ presenterWindow
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> presenterWindow: aWindow [
+
+	presenterWindow := aWindow
 ]
 
 { #category : 'initialization' }
@@ -68,10 +75,11 @@ DSRecordBrowserPresenter class >> toggleBrowser [
 DSRecordBrowserPresenter >> addFile: aFileReference [
 
 	(files includes: aFileReference)
-		ifFalse: [ files add: aFileReference ]
-		ifTrue: [ ^ self inform: 'File already added in the browser !' ].
-	addedFilesPresenter items: files.
-	self updateContentViewer: aFileReference
+		ifTrue: [ ^ self inform: 'File already added in the browser !' ]
+		ifFalse: [
+				files add: aFileReference.
+				addedFilesPresenter items: files.
+				addedFilesPresenter selectItem: aFileReference ]
 ]
 
 { #category : 'layout' }
@@ -89,10 +97,14 @@ DSRecordBrowserPresenter >> addRecordButton [
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> connectPresenters [
 
-	selectedRecords ifNotNil: [
-			selectedRecordsPresenter
-				roots: selectedRecords;
-				children: [ :item | OrderedCollection new ] ]
+	addedFilesPresenter whenSelectionChangedDo: [ :presenter |
+			presenter selectedItem ifNotNil: [
+					selectedRecords := self getColoredRecordsOf: (self getHistoryOf: presenter selectedItem) windows.
+					selectedRecordsPresenter
+						roots: selectedRecords;
+						children: [ :item | OrderedCollection new ].
+					timeline script: [ :canvas | self timelineChart renderIn: canvas ].
+					timeline refresh ] ]
 ]
 
 { #category : 'layout' }
@@ -103,9 +115,13 @@ DSRecordBrowserPresenter >> defaultLayout [
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
 				   add: addedFilesPresenter;
-				   add: selectedRecordsPresenter;
-				   yourself);
-		  yourself
+				   add: (SpBoxLayout newTopToBottom
+						    add: (SpTabLayout new
+								     add: selectedRecordsPresenter label: 'Records';
+								     add: timeline label: 'Timeline';
+								     yourself);
+						    yourself);
+				   yourself)
 ]
 
 { #category : 'accessing' }
@@ -135,11 +151,11 @@ DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
 { #category : 'color' }
 DSRecordBrowserPresenter >> getWindowColorFor: aWindowRecord [
 
-	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ]. "aWindowRecord isImplementorOrSender ifTrue: [ ^ Color lightGreen ]"
+	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
 	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
 	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
-
-	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E'].
+	
+	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
 	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
 	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
 	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
@@ -160,7 +176,6 @@ DSRecordBrowserPresenter >> initializePresenters [
 	addedFilesPresenter := self newList
 		                       items: self files;
 		                       display: [ :file | file basenameWithoutExtension ];
-		                       whenSelectionChangedDo: [ :file | file ifNotNil: [ self updateContentViewer: file selectedItem ] ];
 		                       actions: self listAddedFilesActions;
 		                       yourself.
 
@@ -176,7 +191,9 @@ DSRecordBrowserPresenter >> initializePresenters [
 				                             evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ]);
 		                            beResizable;
 		                            actions: self listRecordActions;
-		                            yourself
+		                            yourself.
+
+	timeline := self newRoassal
 ]
 
 { #category : 'operations' }
@@ -214,12 +231,18 @@ DSRecordBrowserPresenter >> listRecordActions [
 { #category : 'operations' }
 DSRecordBrowserPresenter >> openAddFileDialog [
 
-	| fileNames |
-	fileNames := StOpenFilePresenter new
+	| newFiles |
+	newFiles := StOpenFilePresenter new
 		             beMultipleSelection;
 		             defaultFolder: DSSpy logger loggingDirectory;
 		             openModal.
-	fileNames ifNotNil: [ fileNames do: [ :file | self addFile: file asFileReference ] ]
+	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
+]
+
+{ #category : 'initialization' }
+DSRecordBrowserPresenter >> resetBrowser [
+
+	<script: 'self resetBrowser'>
 ]
 
 { #category : 'layout' }
@@ -272,20 +295,45 @@ DSRecordBrowserPresenter >> stopRecording [
 	self currentWorld removeMorph: recorderWindow
 ]
 
-{ #category : 'operations' }
-DSRecordBrowserPresenter >> updateContentViewer: aFileReference [
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> timelineChart [
 
-	| history |
-	aFileReference ifNotNil: [
-			history := self getHistoryOf: aFileReference.
-			selectedRecords := self getColoredRecordsOf: history windows.
-			self connectPresenters ]
+	| history names chart data plot |
+	addedFilesPresenter selectedItem ifNil: [ ^ nil ].
+	history := self getHistoryOf: addedFilesPresenter selectedItem.
+
+	names := history windows collect: [ :i | i getWindowType ].
+
+	data := history windows collect: [ :w |
+			        {
+				        w events first dateTime asSeconds.
+				        w events last dateTime asSeconds } ].
+
+	data ifEmpty: [ ^ nil ].
+
+	chart := RSCompositeChart new.
+	data doWithIndex: [ :line :index |
+			plot := RSTimeLinePlot new entries: line at: index.
+			chart add: plot ].
+
+	chart verticalTick fromNames: names.
+
+	chart horizontalTick
+		useNiceLabel;
+		numberOfTicks: history windows size // 2;
+		useDiagonalLabel;
+		labelConversion: [ :v | (DateAndTime fromSeconds: v) asTime ].
+
+	chart build.
+	chart plots doWithIndex: [ :p :index | p bars @ (RSPopup text: [ :assoc | (names at: index) , String cr , assoc asString ]) ].
+
+	^ chart
 ]
 
 { #category : 'accessing' }
 DSRecordBrowserPresenter >> windowIcon [
 
-	^ self iconNamed: #browse
+	^ self iconNamed: #smallObjects 
 ]
 
 { #category : 'accessing' }
