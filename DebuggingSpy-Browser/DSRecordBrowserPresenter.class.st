@@ -67,7 +67,9 @@ DSRecordBrowserPresenter class >> toggleBrowser [
 { #category : 'adding' }
 DSRecordBrowserPresenter >> addFile: aFileReference [
 
-	files add: aFileReference.
+	(files includes: aFileReference)
+		ifFalse: [ files add: aFileReference ]
+		ifTrue: [ ^ self inform: 'File already added in the browser !' ].
 	addedFilesPresenter items: files.
 	self updateContentViewer: aFileReference
 ]
