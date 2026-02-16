@@ -27,6 +27,23 @@ Class {
 	#package : 'DebuggingSpy-Browser'
 }
 
+{ #category : 'color' }
+DSRecordBrowserPresenter class >> getWindowColorFor: aWindowRecord [
+
+	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
+	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
+	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
+	
+	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
+	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
+	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
+	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
+	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
+	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
+
+	^ Color gray
+]
+
 { #category : 'world menu' }
 DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 	"Adds the DSSpy button on topside bar, the order is 100 just to make sure the DSSpy button is at the end"
@@ -137,7 +154,7 @@ DSRecordBrowserPresenter >> getColoredRecordsOf: aWindowRecordCollection [
 	coloredRecords := OrderedCollection new.
 	aWindowRecordCollection do: [ :windowRecord |
 			coloredRecords addAll:
-				(windowRecord events collect: [ :record | DSColoredRecord for: record withColor: (self getWindowColorFor: windowRecord) ]) ].
+				(windowRecord events collect: [ :record | DSColoredRecord for: record withColor: (self class getWindowColorFor: windowRecord) ]) ].
 	coloredRecords sort: [ :i :j | i record dateTime < j record dateTime ].
 	^ coloredRecords
 ]
@@ -148,21 +165,10 @@ DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
 	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
 ]
 
-{ #category : 'color' }
-DSRecordBrowserPresenter >> getWindowColorFor: aWindowRecord [
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 
-	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
-	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
-	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
-	
-	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
-	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
-	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
-	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
-	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
-	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
-
-	^ nil
+	^ aHistory windows collect: [ :w | DSTimelineWindow for: w ]
 ]
 
 { #category : 'initialization' }
@@ -300,20 +306,17 @@ DSRecordBrowserPresenter >> timelineChart [
 
 	| history names chart data plot |
 	addedFilesPresenter selectedItem ifNil: [ ^ nil ].
-	history := self getHistoryOf: addedFilesPresenter selectedItem.
 
+	history := self getHistoryOf: addedFilesPresenter selectedItem.
 	names := history windows collect: [ :i | i getWindowType ].
 
-	data := history windows collect: [ :w |
-			        {
-				        w events first dateTime asSeconds.
-				        w events last dateTime asSeconds } ].
-
-	data ifEmpty: [ ^ nil ].
+	data := self getTimelinePointsFrom: history.
 
 	chart := RSCompositeChart new.
-	data doWithIndex: [ :line :index |
-			plot := RSTimeLinePlot new entries: line at: index.
+	data doWithIndex: [ :timelineWindow :index |
+			plot := RSTimeLinePlot new
+				        entries: timelineWindow points at: index;
+				        color: timelineWindow color.
 			chart add: plot ].
 
 	chart verticalTick fromNames: names.
@@ -325,8 +328,6 @@ DSRecordBrowserPresenter >> timelineChart [
 		labelConversion: [ :v | (DateAndTime fromSeconds: v) asTime ].
 
 	chart build.
-	chart plots doWithIndex: [ :p :index | p bars @ (RSPopup text: [ :assoc | (names at: index) , String cr , assoc asString ]) ].
-
 	^ chart
 ]
 
