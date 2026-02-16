@@ -168,7 +168,13 @@ DSRecordBrowserPresenter >> getHistoryOf: aFileReference [
 { #category : 'operations' }
 DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 
-	^ aHistory windows collect: [ :w | DSTimelineWindow for: w ]
+	^ aHistory windows collectWithIndex: [ :w :index |
+			  RSTimeLinePlot new
+				  entries: {
+						  w events first dateTime asNanoSeconds.
+						  w events last dateTime asNanoSeconds }
+				  at: index;
+				  color: (self class getWindowColorFor: w) ]
 ]
 
 { #category : 'initialization' }
@@ -304,7 +310,7 @@ DSRecordBrowserPresenter >> stopRecording [
 { #category : 'layout' }
 DSRecordBrowserPresenter >> timelineChart [
 
-	| history names chart data plot |
+	| history names chart data |
 	addedFilesPresenter selectedItem ifNil: [ ^ nil ].
 
 	history := self getHistoryOf: addedFilesPresenter selectedItem.
@@ -313,11 +319,7 @@ DSRecordBrowserPresenter >> timelineChart [
 	data := self getTimelinePointsFrom: history.
 
 	chart := RSCompositeChart new.
-	data doWithIndex: [ :timelineWindow :index |
-			plot := RSTimeLinePlot new
-				        entries: timelineWindow points at: index;
-				        color: timelineWindow color.
-			chart add: plot ].
+	chart addAll: data.
 
 	chart verticalTick fromNames: names.
 
@@ -325,7 +327,7 @@ DSRecordBrowserPresenter >> timelineChart [
 		useNiceLabel;
 		numberOfTicks: history windows size // 2;
 		useDiagonalLabel;
-		labelConversion: [ :v | (DateAndTime fromSeconds: v) asTime ].
+		labelConversion: [ :v | (DateAndTime fromSeconds: v // 1000000000) asTime ].
 
 	chart build.
 	^ chart
