@@ -11,9 +11,6 @@ Class {
 	#instVars : [
 		'files',
 		'selectedRecords',
-		'startRecordButton',
-		'stopRecordButton',
-		'addRecordButton',
 		'toolbar',
 		'addedFilesPresenter',
 		'selectedRecordsPresenter',
@@ -102,13 +99,12 @@ DSRecordBrowserPresenter >> addFile: aFileReference [
 { #category : 'layout' }
 DSRecordBrowserPresenter >> addRecordButton [
 
-	^ addRecordButton ifNil: [
-			  addRecordButton := SpToolbarButtonPresenter new
-				                     label: 'Add';
-				                     icon: (self iconNamed: #smallAdd);
-				                     help: 'Add a new record.';
-				                     action: [ self openAddFileDialog ];
-				                     yourself ]
+	^ SpToolbarButtonPresenter new
+		  label: 'Add';
+		  icon: (self iconNamed: #smallAdd);
+		  help: 'Add a new record.';
+		  action: [ self openAddFileDialog ];
+		  yourself
 ]
 
 { #category : 'initialization' }
@@ -147,6 +143,17 @@ DSRecordBrowserPresenter >> files [
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> filterRecordsButton [
+
+	^ SpToolbarButtonPresenter new
+		  label: 'Filter';
+		  icon: (self iconNamed: #diff);
+		  help: 'Filter the records.';
+		  action: [ self openAddFileDialog ];
+		  yourself
+]
+
 { #category : 'operations' }
 DSRecordBrowserPresenter >> getColoredRecordsOf: aWindowRecordCollection [
 
@@ -183,7 +190,10 @@ DSRecordBrowserPresenter >> initializePresenters [
 	toolbar := self newToolbar
 		           addItem: self addRecordButton;
 		           addItem: self startRecordButton;
-		           addItem: self stopRecordButton.
+		           addItem: self stopRecordButton;
+		           addItem: self filterRecordsButton.
+
+	toolbar inspect.
 
 	addedFilesPresenter := self newList
 		                       items: self files;
@@ -260,14 +270,13 @@ DSRecordBrowserPresenter >> resetBrowser [
 { #category : 'layout' }
 DSRecordBrowserPresenter >> startRecordButton [
 
-	^ startRecordButton ifNil: [
-			  startRecordButton := SpToolbarButtonPresenter new
-				                       label: 'Start';
-				                       icon: (self iconNamed: #glamorousGo);
-				                       help: 'Start recording events.';
-				                       action: [ self startRecording ];
-				                       enabled: DSSpy recordingSession not;
-				                       yourself ]
+	^ SpToolbarButtonPresenter new
+		  label: 'Start';
+		  icon: (self iconNamed: #glamorousGo);
+		  help: 'Start recording events.';
+		  action: [ self startRecording ];
+		  enabled: DSSpy recordingSession not;
+		  yourself
 ]
 
 { #category : 'recording' }
@@ -275,8 +284,8 @@ DSRecordBrowserPresenter >> startRecording [
 	"Starts recording events and instianciates a new RecorderWindow that displays a timer and shows that Debugging Spy is recordering."
 
 	DSSpyInstrumenter instrumentSystem.
-	startRecordButton enabled: false.
-	stopRecordButton enabled: true.
+	(toolbar leftItems at: 2) enabled: false. "Disable the start recording button."
+	(toolbar leftItems at: 3) enabled: true. "Enable the stop recording button."
 	recorderWindow := DSRecorderWindow new.
 	recorderWindow
 		openInWorld;
@@ -286,14 +295,13 @@ DSRecordBrowserPresenter >> startRecording [
 { #category : 'layout' }
 DSRecordBrowserPresenter >> stopRecordButton [
 
-	^ stopRecordButton ifNil: [
-			  stopRecordButton := SpToolbarButtonPresenter new
-				                      label: 'Stop';
-				                      icon: (self iconNamed: #stop);
-				                      help: 'Stop recording events.';
-				                      action: [ self stopRecording ];
-				                      enabled: DSSpy recordingSession;
-				                      yourself ]
+	^ SpToolbarButtonPresenter new
+		  label: 'Stop';
+		  icon: (self iconNamed: #stop);
+		  help: 'Stop recording events.';
+		  action: [ self stopRecording ];
+		  enabled: DSSpy recordingSession;
+		  yourself
 ]
 
 { #category : 'recording' }
@@ -301,8 +309,8 @@ DSRecordBrowserPresenter >> stopRecording [
 	"Stops the recording session and closes the RecorderWindow."
 
 	DSSpyInstrumenter stopInstrumentation.
-	startRecordButton enabled: true.
-	stopRecordButton enabled: false.
+	(toolbar leftItems at: 2) enabled: true. "Enable the start recording button."
+	(toolbar leftItems at: 3) enabled: false. "Disable the stop recording button."
 	recorderWindow stopTimer.
 	self currentWorld removeMorph: recorderWindow
 ]
