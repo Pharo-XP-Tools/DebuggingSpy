@@ -9,6 +9,12 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'testing' }
+DSAbstractBrowserRecord class >> isAbstract [
+
+	^ self == DSAbstractBrowserRecord
+]
+
 { #category : 'actions api' }
 DSAbstractBrowserRecord >> record: aCommandObject [
 

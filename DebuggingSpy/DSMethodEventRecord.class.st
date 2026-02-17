@@ -21,6 +21,12 @@ DSMethodEventRecord class >> added: aMethod [
 		  yourself
 ]
 
+{ #category : 'testing' }
+DSMethodEventRecord class >> isAbstract [
+
+	^ self == DSMethodEventRecord
+]
+
 { #category : 'instance creation' }
 DSMethodEventRecord class >> modified: aMethod [
 

@@ -13,6 +13,12 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'testing' }
+DSCodeActionRecord class >> isAbstract [
+
+	^ self == DSCodeActionRecord
+]
+
 { #category : 'actions api' }
 DSCodeActionRecord >> record: anEditor [
 

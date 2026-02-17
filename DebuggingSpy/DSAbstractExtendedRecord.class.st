@@ -17,6 +17,12 @@ DSAbstractExtendedRecord class >> for: anObject [
 		  yourself
 ]
 
+{ #category : 'testing' }
+DSAbstractExtendedRecord class >> isAbstract [
+
+	^ self == DSAbstractExtendedRecord
+]
+
 { #category : 'accessing' }
 DSAbstractExtendedRecord >> dateTime [
 

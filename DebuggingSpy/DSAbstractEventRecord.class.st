@@ -24,6 +24,16 @@ DSAbstractEventRecord class >> for: anObject [
 ]
 
 { #category : 'accessing' }
+DSAbstractEventRecord class >> getRecordClasses [
+
+	| classes |
+	classes := (self subclasses reject: [ :c | c isAbstract ]) asOrderedCollection.
+	self subclasses do: [ :subclass | classes addAll: subclass getRecordClasses ].
+
+	^ classes
+]
+
+{ #category : 'accessing' }
 DSAbstractEventRecord class >> link [
 
 	^ DSMetaLink new

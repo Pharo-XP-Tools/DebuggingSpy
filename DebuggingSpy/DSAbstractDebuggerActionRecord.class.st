@@ -8,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'testing' }
+DSAbstractDebuggerActionRecord class >> isAbstract [
+
+	^ self == DSAbstractDebuggerActionRecord
+]

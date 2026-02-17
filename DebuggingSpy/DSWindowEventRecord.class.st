@@ -15,6 +15,12 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'testing' }
+DSWindowEventRecord class >> isAbstract [
+
+	^ self == DSWindowEventRecord
+]
+
 { #category : 'actions api' }
 DSWindowEventRecord >> record: aWindowEvent [
 

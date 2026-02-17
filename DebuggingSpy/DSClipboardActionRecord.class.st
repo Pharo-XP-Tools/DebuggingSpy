@@ -15,6 +15,12 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'testing' }
+DSClipboardActionRecord class >> isAbstract [
+
+	^ self == DSClipboardActionRecord
+]
+
 { #category : 'accessing' }
 DSClipboardActionRecord >> clipboardText [
 

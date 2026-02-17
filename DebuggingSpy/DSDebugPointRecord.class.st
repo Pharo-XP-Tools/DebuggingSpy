@@ -25,6 +25,12 @@ DSDebugPointRecord class >> debugpointremoved: event [
 ]
 
 { #category : 'testing' }
+DSDebugPointRecord class >> isAbstract [
+
+	^ self == DSDebugPointRecord
+]
+
+{ #category : 'testing' }
 DSDebugPointRecord >> canOpenDebuggers [
 
 	^ sourceRecord canOpenDebuggers
