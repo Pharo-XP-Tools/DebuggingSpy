@@ -15,7 +15,8 @@ Class {
 		'addedFilesPresenter',
 		'selectedRecordsPresenter',
 		'recorderWindow',
-		'timeline'
+		'timeline',
+		'recordsFilter'
 	],
 	#classInstVars : [
 		'presenterWindow'
@@ -112,12 +113,14 @@ DSRecordBrowserPresenter >> connectPresenters [
 
 	addedFilesPresenter whenSelectionChangedDo: [ :presenter |
 			presenter selectedItem ifNotNil: [
-					selectedRecords := self getColoredRecordsOf: (self getHistoryOf: presenter selectedItem) windows.
-					selectedRecordsPresenter
-						roots: selectedRecords;
-						children: [ :item | OrderedCollection new ].
-					timeline script: [ :canvas | self timelineChart renderIn: canvas ].
-					timeline refresh ] ]
+					self updateSelectedRecords: presenter.
+					self updateTimelineChart ] ].
+
+
+	recordsFilter whenChangedDo: [
+			addedFilesPresenter selectedItem ifNotNil: [
+					self updateSelectedRecords: addedFilesPresenter.
+					self updateTimelineChart ] ]
 ]
 
 { #category : 'layout' }
@@ -150,7 +153,7 @@ DSRecordBrowserPresenter >> filterRecordsButton [
 		  label: 'Filter';
 		  icon: (self iconNamed: #diff);
 		  help: 'Filter the records.';
-		  action: [ self openAddFileDialog ];
+		  action: [ self recordsFilter open ];
 		  yourself
 ]
 
@@ -193,8 +196,6 @@ DSRecordBrowserPresenter >> initializePresenters [
 		           addItem: self stopRecordButton;
 		           addItem: self filterRecordsButton.
 
-	toolbar inspect.
-
 	addedFilesPresenter := self newList
 		                       items: self files;
 		                       display: [ :file | file basenameWithoutExtension ];
@@ -203,9 +204,14 @@ DSRecordBrowserPresenter >> initializePresenters [
 
 	selectedRecordsPresenter := self newTreeTable
 		                            addColumn: (SpStringTableColumn new
-				                             title: 'Event type';
+				                             title: 'Event';
 				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
 				                             evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
+				                             yourself);
+		                            addColumn: (SpStringTableColumn new
+				                             title: 'Event type';
+				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				                             evaluated: [ :coloredRecord | coloredRecord record class ];
 				                             yourself);
 		                            addColumn: (SpStringTableColumn new
 				                             title: 'Time';
@@ -215,7 +221,8 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                            actions: self listRecordActions;
 		                            yourself.
 
-	timeline := self newRoassal
+	timeline := self newRoassal.
+	recordsFilter := self recordsFilter
 ]
 
 { #category : 'operations' }
@@ -259,6 +266,12 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 		             defaultFolder: DSSpy logger loggingDirectory;
 		             openModal.
 	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> recordsFilter [
+
+	^ recordsFilter ifNil: [ recordsFilter := SpChooserPresenter new sourceItems: DSAbstractEventRecord getRecordClasses ]
 ]
 
 { #category : 'initialization' }
@@ -325,7 +338,8 @@ DSRecordBrowserPresenter >> timelineChart [
 	names := history windows collect: [ :i | i getWindowType ].
 
 	data := self getTimelinePointsFrom: history.
-
+	data size < 2 ifTrue: [^ nil].
+	
 	chart := RSCompositeChart new.
 	chart addAll: data.
 
@@ -339,6 +353,27 @@ DSRecordBrowserPresenter >> timelineChart [
 
 	chart build.
 	^ chart
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateSelectedRecords: aPresenter [
+
+	| records |
+	records := self getColoredRecordsOf: (self getHistoryOf: aPresenter selectedItem) windows.
+	records := records reject: [ :coloredRecord | self recordsFilter chosenItems includes: coloredRecord record class ].
+	selectedRecords := records.
+	selectedRecordsPresenter
+		roots: selectedRecords;
+		children: [ :item | OrderedCollection new ]
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateTimelineChart [
+
+	| chart |
+	chart := self timelineChart.
+	chart ifNotNil: [ timeline script: [ :canvas | chart renderIn: canvas ] ].
+	timeline refresh
 ]
 
 { #category : 'accessing' }
