@@ -120,7 +120,10 @@ DSRecordBrowserPresenter >> connectPresenters [
 	recordsFilter whenChangedDo: [
 			addedFilesPresenter selectedItem ifNotNil: [
 					self updateSelectedRecords: addedFilesPresenter.
-					self updateTimelineChart ] ]
+					self updateTimelineChart ] ].
+
+	selectedRecordsPresenter whenSelectionChangedDo: [
+		selectedRecordsPresenter selectedItem ifNotNil: [ selectedRecordsPresenter selectedItem inspect ] ]
 ]
 
 { #category : 'layout' }
