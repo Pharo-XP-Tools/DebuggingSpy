@@ -202,25 +202,7 @@ DSRecordBrowserPresenter >> initializePresenters [
 		                       actions: self listAddedFilesActions;
 		                       yourself.
 
-	selectedRecordsPresenter := self newTreeTable
-		                            addColumn: (SpStringTableColumn new
-				                             title: 'Event';
-				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				                             evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
-				                             yourself);
-		                            addColumn: (SpStringTableColumn new
-				                             title: 'Event type';
-				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				                             evaluated: [ :coloredRecord | coloredRecord record class ];
-				                             yourself);
-		                            addColumn: (SpStringTableColumn new
-				                             title: 'Time';
-				                             displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				                             evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ]);
-		                            beResizable;
-		                            actions: self listRecordActions;
-		                            yourself.
-
+	selectedRecordsPresenter := self recordsTable.
 	timeline := self newRoassal.
 	recordsFilter := self recordsFilter
 ]
@@ -272,6 +254,33 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 DSRecordBrowserPresenter >> recordsFilter [
 
 	^ recordsFilter ifNil: [ recordsFilter := SpChooserPresenter new sourceItems: DSAbstractEventRecord getRecordClasses ]
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> recordsTable [
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   title: 'Event';
+				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				   evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
+				   displayColor: [ :aRecord | Color white ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Event type';
+				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				   evaluated: [ :coloredRecord | coloredRecord record class asString ];
+				   displayColor: [ :aRecord | Color white ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Time';
+				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
+				   evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ];
+				   displayColor: [ :aRecord | Color white ];
+				   yourself);
+		  beResizable;
+		  actions: self listRecordActions;
+		  yourself
 ]
 
 { #category : 'initialization' }
