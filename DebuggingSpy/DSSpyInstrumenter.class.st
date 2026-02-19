@@ -149,6 +149,16 @@ DSSpyInstrumenter >> instrumentPrintIt [
 	SpCodePrintItCommand link: DSPrintItRecord link toAST: (SpCodePrintItCommand >> #execute) ast
 ]
 
+{ #category : 'interactions' }
+DSSpyInstrumenter >> instrumentScrolling [
+	"Instruments the scrolling in different components"
+
+	Morph link: DSScrollingRecord link toAST: (Morph >> #mouseWheel:) ast.
+	Morph link: DSScrollingRecord link toAST: (Morph >> #dragging:) ast.
+	GeneralScrollPaneMorph link: DSScrollingRecord link toAST: (GeneralScrollPaneMorph >> #mouseWheel:) ast
+	
+]
+
 { #category : 'system' }
 DSSpyInstrumenter >> instrumentSendersActions [
 	"Instruments actions to show senders of a method or class"
@@ -197,9 +207,6 @@ DSSpyInstrumenter >> instrumentSystem [
 DSSpyInstrumenter >> instrumentTabMorph [
 	"Instruments the active Tab Morph"
 
-	"ClyNotebookMorph link: DSMorphTabRecord link toAST: (ClyNotebookMorph >> #updateContentMorph:with:) ast.
-	SpNotebookMorph link: DSMorphTabRecord link toAST: (SpNotebookMorph >> #updateContentMorph:with:) ast"
-	
 	TabGroupMorph link: DSMorphTabRecord link toAST: (TabGroupMorph >> #update:with:) ast
 ]
 
