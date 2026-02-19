@@ -121,9 +121,6 @@ DSRecordBrowserPresenter >> connectPresenters [
 			addedFilesPresenter selectedItem ifNotNil: [
 					self updateSelectedRecords: addedFilesPresenter.
 					self updateTimelineChart ] ].
-
-	selectedRecordsPresenter whenSelectionChangedDo: [
-		selectedRecordsPresenter selectedItem ifNotNil: [ selectedRecordsPresenter selectedItem inspect ] ]
 ]
 
 { #category : 'layout' }
@@ -238,7 +235,7 @@ DSRecordBrowserPresenter >> listRecordActions [
 					  name: 'Inspect';
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ selectedRecordsPresenter selectedItem inspect ] ];
+					  action: [ selectedRecordsPresenter selectedItem record inspect ] ];
 		  yourself
 ]
 
