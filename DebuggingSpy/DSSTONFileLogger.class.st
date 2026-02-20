@@ -81,6 +81,12 @@ DSSTONFileLogger >> loggingFileName [
 ]
 
 { #category : 'accessing' }
+DSSTONFileLogger >> loggingFileName: aFileName [
+
+	loggingFilename := aFileName
+]
+
+{ #category : 'accessing' }
 DSSTONFileLogger >> loggingFileReference [
 
 	^ loggingFileReference ifNil: [
