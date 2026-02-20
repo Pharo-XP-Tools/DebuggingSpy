@@ -9,7 +9,8 @@ Class {
 		'running',
 		'startTime',
 		'timer',
-		'timeNowMorph'
+		'timeNowMorph',
+		'timeElapsed'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -34,7 +35,7 @@ DSRecorderWindow >> buildUI [
 
 	stopButton := PluggableButtonMorph new
 		              label: (IconicListItemMorph new icon: (self iconNamed: #stop));
-		              model: DSRecordBrowserPresenter presenterWindow presenter;
+		              model: DSRecordBrowser presenterWindow presenter;
 		              actionSelector: #stopRecording;
 		              position: 125 @ 4;
 		              yourself.
@@ -89,37 +90,6 @@ DSRecorderWindow >> morphicLayerNumber [
 	^ 12
 ]
 
-{ #category : 'initialization' }
-DSRecorderWindow >> obuildUI [
-
-	| recordingIcon stopButton |
-	recordingIcon := ImageMorph new
-		                 image: (self iconNamed: #glamorousRedCircle);
-		                 position: 0 @ 7;
-		                 yourself.
-
-	timerMorph := StringMorph new
-		              contents: '00:00:000';
-		              position: 15 @ 6.
-
-	timeNowMorph := StringMorph new
-		                contents: Time now print24;
-		                position: 75 @ 6.
-
-	stopButton := PluggableButtonMorph new
-		              icon: (self iconNamed: #stop);
-		              position: 128 @ 6;
-		              beIconTop;
-		              "target: self;
-		              actionSelector: #stopRecording;"yourself.
-
-	self
-		addMorph: recordingIcon;
-		addMorph: timerMorph;
-		addMorph: timeNowMorph;
-		addMorph: stopButton
-]
-
 { #category : 'opening' }
 DSRecorderWindow >> openInWorld [
 
@@ -138,11 +108,12 @@ DSRecorderWindow >> startTimer [
 
 	running ifTrue: [ ^ self ].
 
-	startTime := Time millisecondClockValue.
+	startTime := Time current asSeconds.
 	running := true.
 	timer := [
 		         [ running ] whileTrue: [
-				         timerMorph contents: (Time millisecondClockValue - startTime) seconds asString.
+				         timeElapsed := Time current asSeconds - startTime.
+				         timerMorph contents: (Time fromSeconds: timeElapsed) print24.
 				         timeNowMorph contents: Time now print24.
 				         (Delay forMilliseconds: 50) wait ] ] fork
 ]
@@ -151,4 +122,10 @@ DSRecorderWindow >> startTimer [
 DSRecorderWindow >> stopTimer [
 
 	running := false
+]
+
+{ #category : 'accessing' }
+DSRecorderWindow >> timeElapsed [
+
+	^ timeElapsed
 ]
