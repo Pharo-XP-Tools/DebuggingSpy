@@ -76,6 +76,19 @@ DSRecordHistory >> allRecordsOfKind: aClass [
 ]
 
 { #category : 'API-history' }
+DSRecordHistory >> breakpointAnalysisMap [
+
+	| report |
+	report := Dictionary new.
+	(self allRecordsOfKind: DSDebugPointRecord) do: [ :bp |
+		(report at: bp targetClassOrMethod ifAbsentPut: [
+			 DSDebugPointReport new
+				 method: bp targetClassOrMethod;
+				 yourself ]) add: bp ].
+	^ report
+]
+
+{ #category : 'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
 	self windowsHistory removeAll.
@@ -180,7 +193,7 @@ DSRecordHistory >> debugPointAnalysisMap [
 	report := Dictionary new.
 	(self allRecordsOfKind: DSDebugPointRecord) do: [ :bp |
 		(report at: bp targetClassOrMethod ifAbsentPut: [
-			 DSBreakpointReport new
+			 DSDebugPointReport new
 				 method: bp targetClassOrMethod;
 				 yourself ]) add: bp ].
 	^ report
@@ -235,7 +248,7 @@ DSRecordHistory >> detectTimeDiscrepancies [
 { #category : 'private - history' }
 DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecordList [
 
-	| eventIndex previousRecord |
+	| eventIndex |
 	eventIndex := aRecordList indexOf: aDSDebuggerOpeningRecord.
 
 	eventIndex = 1 ifTrue: [ ^ nil ].
@@ -245,9 +258,6 @@ DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecord
 		 findSourceEventLike: aDSDebuggerOpeningRecord primarySourcesOfWindowOpenings
 		 forRecord: aDSDebuggerOpeningRecord
 		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
-
-
-	previousRecord := aRecordList at: eventIndex - 1.
 
 
 	(self

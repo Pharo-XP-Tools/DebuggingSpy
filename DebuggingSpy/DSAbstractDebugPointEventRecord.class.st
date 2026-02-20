@@ -21,7 +21,7 @@ Class {
 { #category : 'converting' }
 DSAbstractDebugPointEventRecord >> asDebugPointRecord [
 
-	^ self modelClass
+	^ DSMethodDebugPointRecord
 		  perform: eventName asLowercase asSymbol asMutator
 		  with: self
 ]

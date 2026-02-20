@@ -1,6 +1,6 @@
 Class {
 	#name : 'DSDebugPointRemoved',
-	#superclass : 'DSMethodDebugPointRecord',
+	#superclass : 'DSDebugPointRecord',
 	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
 	#tag : 'Records-Extensions'

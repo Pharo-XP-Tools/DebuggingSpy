@@ -31,7 +31,8 @@ DSAbstractExtendedRecord >> realRecord [
 
 { #category : 'actions api' }
 DSAbstractExtendedRecord >> record: aSourceRecord [
-	sourceRecord := aSourceRecord 
+
+	sourceRecord := aSourceRecord
 ]
 
 { #category : 'accessing' }

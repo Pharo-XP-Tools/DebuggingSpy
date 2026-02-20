@@ -48,6 +48,18 @@ DSDebugPointRecord >> eventSymbol [
 ]
 
 { #category : 'accessing' }
+DSDebugPointRecord >> method [
+
+	^ sourceRecord method
+]
+
+{ #category : 'accessing' }
+DSDebugPointRecord >> node [
+
+	^ sourceRecord node
+]
+
+{ #category : 'accessing' }
 DSDebugPointRecord >> objectCentric [
 
 	^ sourceRecord objectCentric
@@ -79,7 +91,7 @@ DSDebugPointRecord >> printTargetInstance: anObject [
 { #category : 'accessing' }
 DSDebugPointRecord >> submethodTargets [
 
-	^ self subclassResponsibility
+	^ { self node }
 ]
 
 { #category : 'accessing' }
@@ -91,5 +103,5 @@ DSDebugPointRecord >> target [
 { #category : 'accessing' }
 DSDebugPointRecord >> targetClassOrMethod [
 
-	^ self subclassResponsibility
+	^ self method
 ]

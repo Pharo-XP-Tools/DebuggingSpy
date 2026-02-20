@@ -1,25 +1,25 @@
 Class {
-	#name : 'DSBreakpointReport',
+	#name : 'DSDebugPointReport',
 	#superclass : 'DSExceptionReport',
 	#instVars : [
 		'targets'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'adding' }
-DSBreakpointReport >> add: aBreakpointRecord [
+DSDebugPointReport >> add: aDebugPointRecord [
 
-	super add: aBreakpointRecord.
-	aBreakpointRecord submethodTargets do: [ :target |
+	super add: aDebugPointRecord.
+	aDebugPointRecord submethodTargets do: [ :target |
 		(self targets at: target ifAbsentPut: [ OrderedCollection new ]) add:
-			aBreakpointRecord ]
+			aDebugPointRecord ]
 ]
 
 { #category : 'printing' }
-DSBreakpointReport >> printOn: aStream [
+DSDebugPointReport >> printOn: aStream [
 
 	super printOn: aStream.
 	aStream space.
@@ -31,13 +31,13 @@ DSBreakpointReport >> printOn: aStream [
 ]
 
 { #category : 'accessing' }
-DSBreakpointReport >> targets [
+DSDebugPointReport >> targets [
 
 	^ targets ifNil: [ targets := Dictionary new ] ifNotNil: [ targets ]
 ]
 
 { #category : 'accessing' }
-DSBreakpointReport >> targets: anObject [
+DSDebugPointReport >> targets: anObject [
 
 	targets := anObject
 ]
