@@ -15,7 +15,8 @@ BaselineOfDebuggingSpy >> baseline: spec [
 			spec postLoadDoIt: #postloadAction.
 			spec package: 'DebuggingSpy'.
 			spec package: 'DebuggingSpy-Tests'.
-			spec package: 'DebuggingSpy-Browser' ]
+			spec package: 'DebuggingSpy-Browser'.
+			spec package: 'DebuggingSpy-Browser-Tests' ]
 ]
 
 { #category : 'baselines' }
