@@ -19,10 +19,8 @@ DSRecordBrowserTest >> filesPresenter [
 DSRecordBrowserTest >> generateRecordFile: aNumberOfRecords [
 
 	| recordFileRef records |
+	browser startRecording.
 	recordFileRef := logger ensureCreateLoggingFileReference.
-	Transcript
-		show: recordFileRef;
-		cr.
 	records := OrderedCollection new.
 	1 to: aNumberOfRecords do: [ :i |
 			records add: (DSMouseEnterWindowRecord new
@@ -108,6 +106,7 @@ DSRecordBrowserTest >> testGetColoredRecordsOf [
 
 { #category : 'tests' }
 DSRecordBrowserTest >> testGetHistoryOf [
+
 	| fileRef |
 	fileRef := self generateRecordFile: 5.
 	self assert: (DSRecordBrowser getHistoryOf: fileRef) records size equals: 5
@@ -117,11 +116,13 @@ DSRecordBrowserTest >> testGetHistoryOf [
 DSRecordBrowserTest >> testStartRecording [
 
 	self assert: browser recorderWindow isNil.
+	self deny: DSRecordRegistry autoSerialize.
 	self deny: DSSpy recordingSession.
 
 	browser startRecording.
 	self assert: DSSpy recordingSession.
-	self deny: browser recorderWindow isNil.
+	self assert: DSRecordRegistry autoSerialize.
+	self deny: browser recorderWindow isNil
 ]
 
 { #category : 'helpers' }

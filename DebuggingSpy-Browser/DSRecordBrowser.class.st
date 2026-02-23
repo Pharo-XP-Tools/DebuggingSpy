@@ -304,13 +304,13 @@ DSRecordBrowser >> startRecordButton [
 DSRecordBrowser >> startRecording [
 	"Starts recording events and instianciates a new RecorderWindow that displays a timer and shows that Debugging Spy is recordering."
 
-	DSSpyInstrumenter instrumentSystem.
 	(toolbar leftItems at: 2) enabled: false. "Disable the start recording button."
 	(toolbar leftItems at: 3) enabled: true. "Enable the stop recording button."
 	recorderWindow := DSRecorderWindow new.
 	recorderWindow
 		openInWorld;
-		startTimer
+		startTimer.
+	DSSpyInstrumenter instrumentSystem.
 ]
 
 { #category : 'layout' }

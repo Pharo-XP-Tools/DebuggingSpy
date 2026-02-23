@@ -23,6 +23,9 @@ DSSpyInstrumenter class >> stopInstrumentation [
 
 	"Stop the recording session"
 	DSSpy recordingSession: false.
+	
+	"Stop the auto serialization"
+	DSRecordRegistry autoSerialize: false.
 
 	"Stop listening to events for recording"
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy.
