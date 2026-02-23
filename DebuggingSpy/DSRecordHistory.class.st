@@ -64,7 +64,7 @@ DSRecordHistory >> absoluteTimeTaken [
 { #category : 'API-history' }
 DSRecordHistory >> addWindowRecord: aDSRecord [
 
-	(windowsHistory
+	(self windowsHistory
 		 at: (self findWindowRecordKeyForID: aDSRecord windowId)
 		 ifAbsentPut: [ OrderedCollection new ]) add: aDSRecord
 ]
@@ -316,7 +316,7 @@ DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord 
 { #category : 'private - history' }
 DSRecordHistory >> findWindowRecordKeyForID: id [
 
-	^ windowsHistory keys
+	^ self windowsHistory keys
 		  detect: [ :k | k windowId = id ]
 		  ifNone: [ 
 			  DSRecordHistoryWindowKey new
