@@ -64,7 +64,7 @@ DSRecordHistory >> absoluteTimeTaken [
 { #category : 'API-history' }
 DSRecordHistory >> addWindowRecord: aDSRecord [
 
-	(self windowsHistory
+	(windowsHistory
 		 at: (self findWindowRecordKeyForID: aDSRecord windowId)
 		 ifAbsentPut: [ OrderedCollection new ]) add: aDSRecord
 ]
@@ -91,9 +91,9 @@ DSRecordHistory >> breakpointAnalysisMap [
 { #category : 'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
-	self windowsHistory removeAll.
+	windowsHistory removeAll.
 	self fixMissingWindowIds.
-	self records do: [ :r | r recordWindowHistoryOn: self ].
+	records do: [ :r | self addWindowRecord: r].
 	self fixWindowRecordKeysNames
 ]
 
@@ -135,15 +135,12 @@ DSRecordHistory >> buildWindowJumps [
 DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
-	windowsHistory valuesDo: [ :events |
-		windows add: (DSWindowRecord for: events) ].
+	windowsHistory valuesDo: [ :events | windows add: (DSWindowRecord for: events) ].
 	self reconstructSourcesOfDebuggerOpenings.
 
 	filteredWindows := windows reject: [ :w |
-		                   (w totalTime < 0.5 seconds or: [
-			                    (w respondsTo: #type) and: [
-				                    #( 'Finish' 'Post-task' 'Survey' ) includes:
-					                    w type ] ]) or: [ w windowId = -1 ] ]
+			                   w totalTime < 0.5 seconds or: [
+				                   ((w respondsTo: #type) and: [ #( 'Finish' 'Post-task' 'Survey' ) includes: w type ]) or: [ w windowId = -1 ] ] ]
 ]
 
 { #category : 'private - history' }
@@ -319,7 +316,7 @@ DSRecordHistory >> findSourceEventLike: possibleSourceEvents forRecord: aRecord 
 { #category : 'private - history' }
 DSRecordHistory >> findWindowRecordKeyForID: id [
 
-	^ self windowsHistory keys
+	^ windowsHistory keys
 		  detect: [ :k | k windowId = id ]
 		  ifNone: [ 
 			  DSRecordHistoryWindowKey new
@@ -329,6 +326,7 @@ DSRecordHistory >> findWindowRecordKeyForID: id [
 
 { #category : 'private - history' }
 DSRecordHistory >> fixMissingWindowIds [
+	"Process all records, when the windowId is nil change it by the predecessor one. If there is no predecessor, put -1."
 
 	| openedWindowStack |
 	openedWindowStack := Stack new.
@@ -362,33 +360,31 @@ DSRecordHistory >> fixMissingWindowIds [
 DSRecordHistory >> fixWindowIdsOf: aCollection [
 
 	| windowlessRecords validEvents enterAndLeaveSequences currentWindowId currentSequence |
-
+	
 	windowlessRecords := aCollection select: [ :e | e windowId isNil ].
-	validEvents := aCollection select:[ :e | (#( nil 0 ) includes: e windowId) not ].
-
+	validEvents := aCollection reject: [ :e | #( nil 0 ) includes: e windowId ]. 
+	
 	"First we sort all events in sequences happening in the same window"
 	enterAndLeaveSequences := OrderedCollection new.
 	currentWindowId := validEvents first windowId.
 	currentSequence := OrderedCollection new.
-	validEvents do: [:e |	
+	validEvents do: [ :e |
+			(e windowId ~= currentWindowId or: [ self class windowLeaveEventTypes includes: e class ])
+				ifTrue: [
+						(self class windowLeaveEventTypes includes: e class) ifTrue: [ currentSequence add: e ].
+						enterAndLeaveSequences add: currentSequence.
+						currentSequence := OrderedCollection new.
+						currentSequence add: e.
+						currentWindowId := e windowId ]
+				ifFalse: [ currentSequence add: e ] ]. 
 			
-		(e windowId ~= currentWindowId or: [(self class windowLeaveEventTypes includes: e class)])
-			ifTrue: [
-				(self class windowLeaveEventTypes includes: e class) ifTrue:[currentSequence add: e].
-				enterAndLeaveSequences add: currentSequence.
-				currentSequence := OrderedCollection new.
-				currentSequence add: e.
-				currentWindowId := e windowId ]
-			ifFalse: [ currentSequence add: e ] ].
-
 	"Then for each sequence, we try to find events without window id happening between the start and the end of that sequence"
 	enterAndLeaveSequences do: [ :sequence |
-		| enter leave |
-		enter := sequence first.
-		leave := sequence last.
-		(windowlessRecords select: [ :e |
-			 e dateTime > enter dateTime and: [ e dateTime < leave dateTime ] ])
-			do: [ :e | e windowId: enter windowId ] ]
+			| enter leave |
+			enter := sequence first.
+			leave := sequence last.
+			(windowlessRecords select: [ :e | e dateTime > enter dateTime and: [ e dateTime < leave dateTime ] ]) do: [ :e |
+				e windowId: enter windowId ] ]
 ]
 
 { #category : 'private - history' }
@@ -499,26 +495,28 @@ DSRecordHistory >> numberOfSteps [
 ]
 
 { #category : 'initialization' }
-DSRecordHistory >> processRecords: array [
+DSRecordHistory >> processRecords: anArrayOfRecords [
+	"Build the history from an array of records"
 
-	self fixWindowIdsOf: array. 
 	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
-	self records: (array reject: [ :e | #( 0 ) includes: e windowId ]). 
+	records := (anArrayOfRecords reject: [ :e | #( 0 ) includes: e windowId ]). 
 	
 	"Transform raw events to model events"
 	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord. 
 	
 	"Detect if we're in a specific task"
-	(self records first isKindOf: DSStartTaskRecord) ifTrue: [ self taskName: self records first taskName ]. 
+	(records first isKindOf: DSStartTaskRecord) ifTrue: [ taskName := records first taskName ]. 
 	
 	"Windows"
 	self buildWindowHistory.
-	self buildWindows. 
+	self buildWindows.
 	self buildWindowJumps.
 	self reconstructWindowsToolInfo. 
 	
 	"Check data consistency (raises a warning that can be proceeded)"
-	self validateWindows
+	self validateWindows.
+
+	^ self
 ]
 
 { #category : 'private - history' }

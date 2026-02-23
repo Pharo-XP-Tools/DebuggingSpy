@@ -18,8 +18,8 @@ DSSpyInstrumenter class >> instrumentSystem [
 
 { #category : 'system instrumentation' }
 DSSpyInstrumenter class >> stopInstrumentation [
-	<example>
 	"Stop the instrumentation of the system"
+	<example>
 
 	"Stop the recording session"
 	DSSpy recordingSession: false.
@@ -30,10 +30,13 @@ DSSpyInstrumenter class >> stopInstrumentation [
 	"Stop listening to events for recording"
 	SystemAnnouncer uniqueInstance unsubscribe: DSSpy.
 	DebugPoint codeSupportAnnouncer unsubscribe: DSSpy.
-	self currentWorld announcer unsubscribe: DSSpy.
+	self currentWorld announcer unsubscribe: DSSpy. 
 	
 	"Uninstall MetaLinks used by the instrumenter"
-	DSMetaLink uninstallAll.
+	DSMetaLink uninstallAll. 
+	
+	"Stop serialization of the registry"
+	DSRecordRegistry autoSerialize: false. 
 	
 	"Change recording file"
 	DSSpy resetSpy
