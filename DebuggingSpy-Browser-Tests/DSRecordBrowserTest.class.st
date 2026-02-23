@@ -20,6 +20,9 @@ DSRecordBrowserTest >> generateRecordFile: aNumberOfRecords [
 
 	| recordFileRef records |
 	recordFileRef := logger ensureCreateLoggingFileReference.
+	Transcript
+		show: recordFileRef;
+		cr.
 	records := OrderedCollection new.
 	1 to: aNumberOfRecords do: [ :i |
 			records add: (DSMouseEnterWindowRecord new
@@ -41,8 +44,8 @@ DSRecordBrowserTest >> setUp [
 
 	super setUp.
 
-	DSSpy recordingSession: false.
 	DSSpy testingSession: true.
+
 	logger := DSSpy logger loggingDirectory: self temporaryDirectory.
 	browser := DSRecordBrowser new
 ]
@@ -51,9 +54,7 @@ DSRecordBrowserTest >> setUp [
 DSRecordBrowserTest >> tearDown [
 
 	DSRecordRegistry current reset.
-	DSSpy resetSpy.
 
-	browser recorderWindow ifNotNil: [ browser recorderWindow owner removeMorph: browser recorderWindow ].
 	super tearDown
 ]
 
@@ -120,7 +121,9 @@ DSRecordBrowserTest >> testStartRecording [
 
 	browser startRecording.
 	self assert: DSSpy recordingSession.
-	self deny: browser recorderWindow isNil
+	self deny: browser recorderWindow isNil.
+
+	browser stopRecording
 ]
 
 { #category : 'helpers' }
