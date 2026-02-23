@@ -19,11 +19,17 @@ Class {
 		'recordsFilter'
 	],
 	#classInstVars : [
-		'presenterWindow'
+		'presenter'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
 }
+
+{ #category : 'accessing' }
+DSRecordBrowser class >> browser [
+
+	^ presenter ifNil: [ presenter := self new ]
+]
 
 { #category : 'color' }
 DSRecordBrowser class >> getColoredRecordsOf: aWindowRecordCollection [
@@ -83,37 +89,22 @@ DSRecordBrowser class >> menuCommandOn: aBuilder [
 		action: [ self toggleBrowser ]
 ]
 
-{ #category : 'accessing' }
-DSRecordBrowser class >> presenterWindow [
-
-	^ presenterWindow
-]
-
-{ #category : 'accessing' }
-DSRecordBrowser class >> presenterWindow: aWindow [
-
-	presenterWindow := aWindow
-]
-
 { #category : 'initialization' }
 DSRecordBrowser class >> resetBrowser [
 
 	<script>
-	presenterWindow := nil
+	presenter := nil
 ]
 
 { #category : 'open/close' }
 DSRecordBrowser class >> toggleBrowser [
 
-	| presenter |
-	presenterWindow ifNotNil: [
-			^ presenterWindow isOpen
-				  ifTrue: [ presenterWindow close ]
-				  ifFalse: [ presenterWindow open ] ].
+	presenter ifNotNil: [
+			^ presenter window isOpen
+				  ifTrue: [ presenter window close ]
+				  ifFalse: [ presenter window open ] ].
 
-	presenter := self new.
-	presenter open.
-	presenterWindow := presenter window
+	self browser open
 ]
 
 { #category : 'adding' }
@@ -341,8 +332,9 @@ DSRecordBrowser >> stopRecording [
 	DSSpyInstrumenter stopInstrumentation.
 	(toolbar leftItems at: 2) enabled: true. "Enable the start recording button."
 	(toolbar leftItems at: 3) enabled: false. "Disable the stop recording button."
-	recorderWindow stopTimer.
-	self currentWorld removeMorph: recorderWindow
+	recorderWindow ifNotNil: [
+			recorderWindow stopTimer.
+			self currentWorld removeMorph: recorderWindow ]
 ]
 
 { #category : 'layout' }

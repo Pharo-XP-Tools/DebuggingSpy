@@ -54,7 +54,7 @@ DSRecordBrowserTest >> setUp [
 DSRecordBrowserTest >> tearDown [
 
 	DSRecordRegistry current reset.
-
+	browser stopRecording.
 	super tearDown
 ]
 
@@ -122,8 +122,6 @@ DSRecordBrowserTest >> testStartRecording [
 	browser startRecording.
 	self assert: DSSpy recordingSession.
 	self deny: browser recorderWindow isNil.
-
-	browser stopRecording
 ]
 
 { #category : 'helpers' }
