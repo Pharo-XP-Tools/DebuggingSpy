@@ -19,7 +19,8 @@ DSRecordBrowserTest >> filesPresenter [
 DSRecordBrowserTest >> generateRecordFile: aNumberOfRecords [
 
 	| recordFileRef records |
-	browser startRecording.
+	DSSpy recordingSession ifFalse: [ browser startRecording ].
+
 	recordFileRef := self updateLoggerFileName.
 	records := OrderedCollection new.
 
@@ -55,7 +56,7 @@ DSRecordBrowserTest >> setUp [
 DSRecordBrowserTest >> tearDown [
 
 	DSRecordRegistry current reset.
-	browser stopRecording.
+	DSSpy recordingSession ifTrue: [ browser stopRecording ].
 
 	super tearDown
 ]
