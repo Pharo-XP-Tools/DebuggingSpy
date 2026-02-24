@@ -111,6 +111,7 @@ DSRecordBrowserTest >> testGetColoredRecordsOf [
 
 { #category : 'tests' }
 DSRecordBrowserTest >> testGetHistoryOf [
+
 	| fileRef |
 	fileRef := self generateRecordFile: 5.
 	self assert: (DSRecordBrowser getHistoryOf: fileRef) records size equals: 5

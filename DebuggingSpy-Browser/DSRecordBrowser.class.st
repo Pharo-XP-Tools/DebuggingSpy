@@ -350,8 +350,9 @@ DSRecordBrowser >> stopRecording [
 	DSSpyInstrumenter stopInstrumentation.
 	(toolbar leftItems at: 2) enabled: true. "Enable the start recording button."
 	(toolbar leftItems at: 3) enabled: false. "Disable the stop recording button."
-	recorderWindow stopTimer.
-	self currentWorld removeMorph: recorderWindow
+	recorderWindow ifNotNil: [
+			recorderWindow stopTimer.
+			self currentWorld removeMorph: recorderWindow ]
 ]
 
 { #category : 'layout' }
