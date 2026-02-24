@@ -19,11 +19,10 @@ DSRecordBrowserTest >> filesPresenter [
 DSRecordBrowserTest >> generateRecordFile: aNumberOfRecords [
 
 	| recordFileRef records |
-	recordFileRef := logger ensureCreateLoggingFileReference.
-	Transcript
-		show: recordFileRef;
-		cr.
+	browser startRecording.
+	recordFileRef := self updateLoggerFileName.
 	records := OrderedCollection new.
+
 	1 to: aNumberOfRecords do: [ :i |
 			records add: (DSMouseEnterWindowRecord new
 					 windowId: 'test' , i asString;
@@ -47,6 +46,8 @@ DSRecordBrowserTest >> setUp [
 	DSSpy testingSession: true.
 
 	logger := DSSpy logger loggingDirectory: self temporaryDirectory.
+	self updateLoggerFileName.
+
 	browser := DSRecordBrowser new
 ]
 
@@ -54,6 +55,7 @@ DSRecordBrowserTest >> setUp [
 DSRecordBrowserTest >> tearDown [
 
 	DSRecordRegistry current reset.
+	browser stopRecording.
 
 	super tearDown
 ]
@@ -114,16 +116,32 @@ DSRecordBrowserTest >> testGetHistoryOf [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserTest >> testRemoveFile [
+
+	| fileRef1 fileRef2 |
+	fileRef1 := self generateRecordFile: 42.
+	fileRef2 := self generateRecordFile: 42.
+
+	browser addFile: fileRef1.
+	browser addFile: fileRef2.
+	browser removeFile: fileRef1.
+
+	self assert: browser files size equals: 1.
+	self assert: self filesPresenter items size equals: 1.
+	self assert: self filesPresenter selectedItem equals: fileRef2
+]
+
+{ #category : 'tests' }
 DSRecordBrowserTest >> testStartRecording [
 
 	self assert: browser recorderWindow isNil.
+	self deny: DSRecordRegistry autoSerialize.
 	self deny: DSSpy recordingSession.
 
 	browser startRecording.
 	self assert: DSSpy recordingSession.
+	self assert: DSRecordRegistry autoSerialize.
 	self deny: browser recorderWindow isNil.
-
-	browser stopRecording
 ]
 
 { #category : 'helpers' }
@@ -136,4 +154,16 @@ DSRecordBrowserTest >> timelinePresenter [
 DSRecordBrowserTest >> toolbarPresenter [
 
 	^ browser presenterAt: #toolbar
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserTest >> updateLoggerFileName [
+	"Changes the logging file name, needs to be called everytime a new file is created for the logger to be updated for future logs.
+Using a UUID ensures that multiple files created at the same date and time dont have the same file name."
+
+	| fr |
+	logger loggingFileName: UUID new asString.
+	fr := logger ensureCreateLoggingFileReference.
+	logger loggingFileReference: fr.
+	^ fr
 ]

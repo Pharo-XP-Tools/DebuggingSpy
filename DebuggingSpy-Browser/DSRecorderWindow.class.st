@@ -35,7 +35,7 @@ DSRecorderWindow >> buildUI [
 
 	stopButton := PluggableButtonMorph new
 		              label: (IconicListItemMorph new icon: (self iconNamed: #stop));
-		              model: DSRecordBrowser presenterWindow presenter;
+		              model: DSRecordBrowser browser;
 		              actionSelector: #stopRecording;
 		              position: 125 @ 4;
 		              yourself.
