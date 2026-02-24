@@ -103,11 +103,10 @@ DSRecordBrowser class >> toggleBrowser [
 			^ presenter window isOpen
 				  ifTrue: [ presenter window close ]
 				  ifFalse: [ presenter window open ] ].
-
 	self browser open
 ]
 
-{ #category : 'adding' }
+{ #category : 'files' }
 DSRecordBrowser >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
 
@@ -135,9 +134,8 @@ DSRecordBrowser >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
 	addedFilesPresenter whenSelectionChangedDo: [ :presenter |
-			presenter selectedItem ifNotNil: [
-					self updateSelectedRecords: presenter.
-					self updateTimelineChart ] ].
+			self updateSelectedRecords: presenter.
+			self updateTimelineChart ].
 
 	recordsFilter whenChangedDo: [
 			addedFilesPresenter selectedItem ifNotNil: [
@@ -206,15 +204,24 @@ DSRecordBrowser >> listAddedFilesActions [
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect';
+					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
 					  action: [ (DSSpy materialize: addedFilesPresenter selectedItem) inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect history';
+					  iconName: #history;
 					  description: 'Inspect the record history';
 					  shortcutKey: $h meta;
 					  action: [ (self class getHistoryOf: addedFilesPresenter selectedItem) inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Remove';
+					  iconName: #remove;
+					  description: 'Remove the record from list';
+					  shortcutKey: $x meta;
+					  action: [ self removeFile: addedFilesPresenter selectedItem ] ];
 		  yourself
 ]
 
@@ -225,6 +232,7 @@ DSRecordBrowser >> listRecordActions [
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect';
+					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
 					  action: [ selectedRecordsPresenter selectedItem record inspect ] ];
@@ -282,6 +290,16 @@ DSRecordBrowser >> recordsTable [
 		  yourself
 ]
 
+{ #category : 'files' }
+DSRecordBrowser >> removeFile: aFileReference [
+
+	files := files reject: [ :fileReference | fileReference = aFileReference ].
+	addedFilesPresenter items: self files.
+	addedFilesPresenter selectItem: (files isEmpty
+			 ifTrue: [ nil ]
+			 ifFalse: [ files last ])
+]
+
 { #category : 'initialization' }
 DSRecordBrowser >> resetBrowser [
 
@@ -310,7 +328,7 @@ DSRecordBrowser >> startRecording [
 	recorderWindow
 		openInWorld;
 		startTimer.
-	DSSpyInstrumenter instrumentSystem.
+	DSSpyInstrumenter instrumentSystem
 ]
 
 { #category : 'layout' }
@@ -347,8 +365,8 @@ DSRecordBrowser >> timelineChart [
 	names := history windows collect: [ :i | i getWindowType ].
 
 	data := self class getTimelinePointsFrom: history.
-	data size < 2 ifTrue: [^ nil].
-	
+	data size < 2 ifTrue: [ ^ nil ].
+
 	chart := RSCompositeChart new.
 	chart addAll: data.
 
@@ -369,8 +387,10 @@ DSRecordBrowser >> updateSelectedRecords: aPresenter [
 	"Updates the selected records and processes it to be used with their respective colors."
 
 	| records |
-	records := self class getColoredRecordsOf: (self class getHistoryOf: aPresenter selectedItem) windows.
-	records := records reject: [ :coloredRecord | self recordsFilter chosenItems includes: coloredRecord record class ].
+	records := OrderedCollection new.
+	aPresenter selectedItem ifNotNil: [
+			records := self class getColoredRecordsOf: (self class getHistoryOf: aPresenter selectedItem) windows.
+			records := records reject: [ :coloredRecord | self recordsFilter chosenItems includes: coloredRecord record class ] ].
 	selectedRecords := records.
 	selectedRecordsPresenter
 		roots: selectedRecords;
@@ -382,7 +402,7 @@ DSRecordBrowser >> updateTimelineChart [
 
 	| chart |
 	chart := self timelineChart.
-	chart ifNotNil: [ timeline script: [ :canvas | chart renderIn: canvas ] ].
+	chart ifNil: [ timeline script: [ :canvas |  ] ] ifNotNil: [ timeline script: [ :canvas | chart renderIn: canvas ] ].
 	timeline refresh
 ]
 

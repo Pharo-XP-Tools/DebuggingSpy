@@ -93,6 +93,12 @@ DSSTONFileLogger >> loggingFileReference [
 		  loggingFileReference := self ensureCreateLoggingFileReference ]
 ]
 
+{ #category : 'accessing' }
+DSSTONFileLogger >> loggingFileReference: aFileReference [
+
+	^ loggingFileReference := aFileReference
+]
+
 { #category : 'initialization' }
 DSSTONFileLogger >> reset [
 
