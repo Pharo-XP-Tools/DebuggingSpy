@@ -76,19 +76,6 @@ DSRecordHistory >> allRecordsOfKind: aClass [
 ]
 
 { #category : 'API-history' }
-DSRecordHistory >> breakpointAnalysisMap [
-
-	| report |
-	report := Dictionary new.
-	(self allRecordsOfKind: DSDebugPointRecord) do: [ :bp |
-		(report at: bp targetClassOrMethod ifAbsentPut: [
-			 DSDebugPointReport new
-				 method: bp targetClassOrMethod;
-				 yourself ]) add: bp ].
-	^ report
-]
-
-{ #category : 'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
 	windowsHistory removeAll.
@@ -146,11 +133,13 @@ DSRecordHistory >> buildWindows [
 { #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 
-	| time currentRecord deltas |
+	| time currentRecord copyOfRecords deltas |
+	
+	copyOfRecords := records deepCopy.
 	time := 0.
 	deltas := OrderedCollection new.
-	currentRecord := records first.
-	records do: [ :r |
+	currentRecord := copyOfRecords first.
+	copyOfRecords do: [ :r |
 		| delta |
 		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
 		time := time
@@ -159,7 +148,7 @@ DSRecordHistory >> collectTimeDiscrepancies [
 			deltas add: {
 					r.
 					currentRecord.
-					records } -> delta asSeconds ].
+					copyOfRecords } -> delta asSeconds ].
 		currentRecord := r ].
 	^ deltas
 ]
@@ -167,7 +156,7 @@ DSRecordHistory >> collectTimeDiscrepancies [
 { #category : 'API-history' }
 DSRecordHistory >> countDebugActions [
 
-	^ self debugPointAdds + self debugPointRemove + self executedCode
+	^ self debugPointAdds + self debugPointRemoved + self executedCode
 	  + self methodsAdded + self methodsModified + self methodsRemoved
 	  + self numberOfSteps
 ]
@@ -188,7 +177,7 @@ DSRecordHistory >> debugPointAnalysisMap [
 
 	| report |
 	report := Dictionary new.
-	(self allRecordsOfKind: DSDebugPointRecord) do: [ :bp |
+	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: [ :bp |
 		(report at: bp targetClassOrMethod ifAbsentPut: [
 			 DSDebugPointReport new
 				 method: bp targetClassOrMethod;
@@ -199,9 +188,7 @@ DSRecordHistory >> debugPointAnalysisMap [
 { #category : 'private - history' }
 DSRecordHistory >> debugPointEvents [
 
-	^ self records select: [ :r |
-		  (r isKindOf: DSAbstractDebugPointEventRecord) or: [
-			  r isKindOf: DSDebugPointRecord ] ]
+	^ self records select: [ :r | (r isKindOf: DSAbstractDebugPointEventRecord)]
 ]
 
 { #category : 'private - history' }
@@ -218,7 +205,7 @@ DSRecordHistory >> debugPointHit [
 ]
 
 { #category : 'API-history' }
-DSRecordHistory >> debugPointRemove [
+DSRecordHistory >> debugPointRemoved [
 
 	^ (self debugPointEvents: DebugPointRemoved name) size
 ]

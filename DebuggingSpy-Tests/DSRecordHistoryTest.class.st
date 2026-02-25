@@ -16,11 +16,11 @@ DSRecordHistoryTest >> getRecordsExample [
 	
 	exampleRecords := OrderedCollection new.
 	
-	exampleRecords add: (DSMouseEnterWindowRecord new windowId:1).
+	exampleRecords add: (DSMouseEnterWindowRecord new windowId:1; dateTime: '2000-05-07T15:02:44' asDateAndTime).
 	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:1).
 	exampleRecords add: (DSMouseEnterWindowRecord new windowId:2).
 	exampleRecords add: (DSDoItRecord new windowId:2).
-	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:2).
+	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:2; dateTime: '2000-05-07T15:03:14' asDateAndTime).
 	
 	^ exampleRecords
 ]
@@ -29,6 +29,13 @@ DSRecordHistoryTest >> getRecordsExample [
 DSRecordHistoryTest >> setUp [
 	super setUp.
 	history := DSRecordHistory new
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testAbsoluteTimeTaken [
+
+	history records: self getRecordsExample.
+	self assert: history absoluteTimeTaken equals: 0.5
 ]
 
 { #category : 'tests' }
@@ -55,6 +62,60 @@ DSRecordHistoryTest >> testAddWindowRecord [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testAllRecordsOfKind [
+
+	| record |
+	history records: self getRecordsExample.
+
+	self assert: (history allRecordsOfKind: DSMouseLeaveWindowRecord) size equals: 2.
+	record := (history allRecordsOfKind: DSMouseLeaveWindowRecord) first.
+	self assert: record class equals: DSMouseLeaveWindowRecord.
+	self assert: record windowId equals: 1.
+
+	self assert: (history allRecordsOfKind: DSDoItRecord) size equals: 1.
+	record := (history allRecordsOfKind: DSDoItRecord) first.
+	self assert: record class equals: DSDoItRecord.
+	self assert: record windowId equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDateTime [
+
+	history records: self getRecordsExample.
+	self assert: history dateTime equals: '2000-05-07T15:02:44' asDateAndTime
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDebugPointAdds [
+
+	history records: {
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name).
+			DSMouseEnterWindowRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
+	self assert: history debugPointAdds equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDebugPointHit [
+
+	history records: {
+			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
+			DSMouseEnterWindowRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name) } asOrderedCollection.
+	self assert: history debugPointHit equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDebugPointRemoved [
+
+	history records: {
+			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name).
+			DSMouseEnterWindowRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name) } asOrderedCollection.
+	self assert: history debugPointRemoved equals: 2
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 
 	| windowKey |
@@ -67,6 +128,20 @@ DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 	self assert: windowKey class equals: DSRecordHistoryWindowKey.
 	self assert: windowKey windowId equals: 2.
 	self assert: history windowsHistory size equals: 0
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testStartTime [
+
+	history records: self getRecordsExample.
+	self assert: history startTime equals: '15:02:44' asTime
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testStopTime [
+
+	history records: self getRecordsExample.
+	self assert: history stopTime equals: '15:03:14' asTime
 ]
 
 { #category : 'tests' }

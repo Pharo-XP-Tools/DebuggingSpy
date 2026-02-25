@@ -41,6 +41,12 @@ DSAbstractDebugPointEventRecord >> eventName [
 	^eventName
 ]
 
+{ #category : 'accessing' }
+DSAbstractDebugPointEventRecord >> eventName: anEventName [
+
+	eventName := anEventName
+]
+
 { #category : 'converting' }
 DSAbstractDebugPointEventRecord >> modelClass [
 
