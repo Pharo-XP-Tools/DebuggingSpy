@@ -17,10 +17,10 @@ DSRecordHistoryTest >> getRecordsExample [
 	exampleRecords := OrderedCollection new.
 	
 	exampleRecords add: (DSMouseEnterWindowRecord new windowId:1; dateTime: '2000-05-07T15:02:44' asDateAndTime).
-	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:1).
-	exampleRecords add: (DSMouseEnterWindowRecord new windowId:2).
-	exampleRecords add: (DSDoItRecord new windowId:2).
-	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:2; dateTime: '2000-05-07T15:03:14' asDateAndTime).
+	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:1; dateTime: '2000-05-07T15:03:56' asDateAndTime).
+	exampleRecords add: (DSMouseEnterWindowRecord new windowId:2; dateTime: '2000-05-07T15:06:05' asDateAndTime).
+	exampleRecords add: (DSDoItRecord new windowId:2; dateTime: '2000-05-07T15:13:47' asDateAndTime).
+	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:2; dateTime: '2000-05-07T15:24:44' asDateAndTime).
 	
 	^ exampleRecords
 ]
@@ -35,7 +35,7 @@ DSRecordHistoryTest >> setUp [
 DSRecordHistoryTest >> testAbsoluteTimeTaken [
 
 	history records: self getRecordsExample.
-	self assert: history absoluteTimeTaken equals: 0.5
+	self assert: history absoluteTimeTaken equals: 22
 ]
 
 { #category : 'tests' }
@@ -101,8 +101,8 @@ DSRecordHistoryTest >> testDebugPointHit [
 	history records: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
 			DSMouseEnterWindowRecord new.
-			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name) } asOrderedCollection.
-	self assert: history debugPointHit equals: 2
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
+	self assert: history debugPointHit equals: 1
 ]
 
 { #category : 'tests' }
@@ -131,6 +131,56 @@ DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testMethodsAdded [
+
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSMethodAddedRecord new.
+			DSReturnValue new } asOrderedCollection.
+	self assert: history methodsAdded equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testMethodsModified [
+
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMethodAddedRecord new.
+			DSMethodModifiedRecord new.
+			DSMethodRemovedRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSReturnValue new } asOrderedCollection.
+	self assert: history methodsModified equals: 1
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testMethodsRemoved [
+
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSStepIntoRecord new.
+			DSReturnValue new } asOrderedCollection.
+	self assert: history methodsRemoved equals: 1
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testNumberOfSteps [
+
+	history records: {
+			DSProceedRecord new.
+			DSMouseEnterWindowRecord new.
+			DSReturnValue new.
+			DSStepOverRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name) } asOrderedCollection.
+	self assert: history numberOfSteps equals: 3
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testStartTime [
 
 	history records: self getRecordsExample.
@@ -141,7 +191,7 @@ DSRecordHistoryTest >> testStartTime [
 DSRecordHistoryTest >> testStopTime [
 
 	history records: self getRecordsExample.
-	self assert: history stopTime equals: '15:03:14' asTime
+	self assert: history stopTime equals: '15:24:44' asTime
 ]
 
 { #category : 'tests' }
