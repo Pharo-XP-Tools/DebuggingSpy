@@ -79,6 +79,26 @@ DSRecordHistoryTest >> testAllRecordsOfKind [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testCountDebugActions [
+
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMouseLeaveWindowRecord new.
+			DSDoItRecord new.
+			DSStepIntoRecord new.
+			DSDoItAndGoRecord new.
+			DSDebugItRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSHaltChangeRecord new.
+			DSPrintItRecord new.
+			DSPrintItRecord new.
+			DSReturnValue new } asOrderedCollection.
+			
+	self assert: history countDebugActions equals: 9
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testDateTime [
 
 	history records: self getRecordsExample.
@@ -93,6 +113,44 @@ DSRecordHistoryTest >> testDebugPointAdds [
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
 	self assert: history debugPointAdds equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDebugPointEvents [
+
+	| debugPointEvents |
+	history records: {
+			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
+			DSMouseEnterWindowRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
+
+	debugPointEvents := history debugPointEvents.
+
+	self assert: debugPointEvents size equals: 2.
+	self assert: debugPointEvents first class equals: DSBreakDebugPointEventRecord.
+	self assert: debugPointEvents first eventName equals: DebugPointHit name.
+	self assert: debugPointEvents second class equals: DSBreakDebugPointEventRecord.
+	self assert: debugPointEvents second eventName equals: DebugPointAdded name
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDebugPointEventsSelection [
+
+	| debugPointEvents |
+	history records: {
+			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
+			DSMouseEnterWindowRecord new.
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name). 
+			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name). 
+			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name). } asOrderedCollection.
+
+	debugPointEvents := history debugPointEvents: DebugPointAdded name.
+
+	self assert: debugPointEvents size equals: 2.
+	self assert: debugPointEvents first class equals: DSBreakDebugPointEventRecord.
+	self assert: debugPointEvents first eventName equals: DebugPointAdded name.
+	self assert: debugPointEvents second class equals: DSBreakDebugPointEventRecord.
+	self assert: debugPointEvents second eventName equals: DebugPointAdded name
 ]
 
 { #category : 'tests' }
@@ -113,6 +171,55 @@ DSRecordHistoryTest >> testDebugPointRemoved [
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name) } asOrderedCollection.
 	self assert: history debugPointRemoved equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testDetectTimeDiscrepancies [
+
+	history records: self getRecordsExample.
+	self assert: history detectTimeDiscrepancies equals: 1320.
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testEventsAfter [
+
+	| listOfEvents |
+	history records: self getRecordsExample.
+	listOfEvents := history eventsAfter: '2000-05-07T15:06:05' asDateAndTime.
+
+	self assert: listOfEvents size equals: 2.
+	self assert: listOfEvents first class equals: DSDoItRecord.
+	self assert: listOfEvents second class equals: DSMouseLeaveWindowRecord
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testEventsBefore [
+
+	| listOfEvents |
+	history records: self getRecordsExample.
+	listOfEvents := history eventsBefore: '2000-05-07T15:13:47' asDateAndTime.
+
+	self assert: listOfEvents size equals: 3.
+	self assert: listOfEvents first class equals: DSMouseEnterWindowRecord.
+	self assert: listOfEvents second class equals: DSMouseLeaveWindowRecord.
+	self assert: listOfEvents third class equals: DSMouseEnterWindowRecord
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testExecutedCode [
+
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSDoItRecord new.
+			DSStepIntoRecord new.
+			DSDoItAndGoRecord new.
+			DSDebugItRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSPrintItRecord new.
+			DSPrintItRecord new.
+			DSReturnValue new } asOrderedCollection.
+	self assert: history executedCode equals: 5
 ]
 
 { #category : 'tests' }

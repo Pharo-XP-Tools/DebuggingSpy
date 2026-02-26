@@ -212,21 +212,18 @@ DSRecordHistory >> debugPointRemoved [
 
 { #category : 'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
-	|time currentRecord totalDelta|
-	time := 0.
+	"Returns the sum of all breaks between two records which lasted more than 1 minute"
+
+	| currentRecord totalDelta |
 	totalDelta := 0.
 	currentRecord := records first.
-	records do:[:r| |delta|
-				((r isKindOf: DSWindowOpenedRecord) and: [
-			                    'Finish task *' match:
-				                    r windowName asString ]) ifTrue:[^totalDelta].
-		delta := (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		(delta) > 60 ifTrue:[totalDelta := totalDelta + delta]. 		
-		currentRecord := r.		
-		].
-	^totalDelta
-	
+	records do: [ :r |
+			| delta |
+			((r isKindOf: DSWindowOpenedRecord) and: [ 'Finish task *' match: r windowName asString ]) ifTrue: [ ^ totalDelta ].
+			delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
+			delta > 60 ifTrue: [ totalDelta := totalDelta + delta ].
+			currentRecord := r ].
+	^ totalDelta
 ]
 
 { #category : 'private - history' }
@@ -265,7 +262,7 @@ DSRecordHistory >> eventsAfter: aDateAndTime [
 
 { #category : 'API-history' }
 DSRecordHistory >> eventsBefore: aDateAndTime [ 
-	self shouldBeImplemented.
+	^records select:[:e| e dateTime < aDateAndTime]
 ]
 
 { #category : 'API-history' }
@@ -513,7 +510,7 @@ DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
 		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
 
-	recordsCopy := records copy asOrderedCollection.
+	recordsCopy := records deepCopy.
 
 	sortedDebuggerWindows do: [ :w |
 		|sourceEvent|
