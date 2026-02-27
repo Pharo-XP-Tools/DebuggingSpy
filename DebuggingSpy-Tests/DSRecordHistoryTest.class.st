@@ -79,6 +79,33 @@ DSRecordHistoryTest >> testAllRecordsOfKind [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testBuildWindowHistory [
+
+	| windowsHistory |
+	history records: self getRecordsExample.
+	history buildWindowHistory.
+	windowsHistory := history windowsHistory.
+
+	self assert: windowsHistory class equals: IdentityDictionary.
+	self assert: windowsHistory size equals: 2.
+	self flag: 'TODO'
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testBuildWindows [
+
+	| windows |
+	history records: self getRecordsExample.
+	history windowsHistory: IdentityDictionary new.
+	history buildWindows.
+	windows := history windows.
+
+	self assert: windows class equals: OrderedCollection.
+	self assert: windows size equals: 0.
+	self flag: 'TODO'
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testCountDebugActions [
 
 	history records: {
@@ -229,12 +256,41 @@ DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 	windowKey := history findWindowRecordKeyForID: 1.
 	self assert: windowKey class equals: DSRecordHistoryWindowKey.
 	self assert: windowKey windowId equals: 1.
-	self assert: history windowsHistory size equals: 0.
+	
+	history windowsHistory: ({ (DSRecordHistoryWindowKey new windowId:2) -> 'cat' } as: IdentityDictionary).
 
 	windowKey := history findWindowRecordKeyForID: 2.
 	self assert: windowKey class equals: DSRecordHistoryWindowKey.
-	self assert: windowKey windowId equals: 2.
-	self assert: history windowsHistory size equals: 0
+	self assert: windowKey windowId equals: 2
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testFixMissingWindowIds [
+
+	history records: {
+			DSDoItRecord new.
+			(DSMouseEnterWindowRecord new windowId: 1).
+			DSMethodAddedRecord new.
+			(DSMethodRemovedRecord new windowId: 1).
+			(DSMouseLeaveWindowRecord new windowId: 1).
+			DSReturnValue new.
+			(DSWindowOpenedRecord new
+				 windowId: 3;
+				 windowName: 'TestWindow').
+			DSStepIntoRecord new.
+			(DSMouseLeaveWindowRecord new windowId: 3).
+			DSPrintItRecord new } asOrderedCollection.
+
+	history fixMissingWindowIds.
+
+	self assert: history records first windowId equals: -1.
+	self assert: history records third windowId equals: 1.
+	self assert: (history records at: 6) windowId equals: -1.
+	self assert: (history records at: 8) windowId equals: 3.
+	self assert: (history records at: 10) windowId equals: -1.
+
+	self assert: history windowNames size equals: 1.
+	self assert: (history windowNames at: 3) equals: 'TestWindow'
 ]
 
 { #category : 'tests' }

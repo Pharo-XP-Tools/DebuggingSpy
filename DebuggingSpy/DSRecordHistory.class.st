@@ -78,9 +78,9 @@ DSRecordHistory >> allRecordsOfKind: aClass [
 { #category : 'API-history' }
 DSRecordHistory >> buildWindowHistory [
 
-	windowsHistory removeAll.
+	self windowsHistory removeAll.
 	self fixMissingWindowIds.
-	records do: [ :r | self addWindowRecord: r].
+	records do: [ :r | self addWindowRecord: r ].
 	self fixWindowRecordKeysNames
 ]
 
@@ -134,22 +134,19 @@ DSRecordHistory >> buildWindows [
 DSRecordHistory >> collectTimeDiscrepancies [
 
 	| time currentRecord copyOfRecords deltas |
-	
 	copyOfRecords := records deepCopy.
 	time := 0.
 	deltas := OrderedCollection new.
 	currentRecord := copyOfRecords first.
 	copyOfRecords do: [ :r |
-		| delta |
-		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
-		time := time
-		        + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		delta > 5 ifTrue: [
-			deltas add: {
-					r.
-					currentRecord.
-					copyOfRecords } -> delta asSeconds ].
-		currentRecord := r ].
+			| delta |
+			delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
+			time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
+			delta > 5 ifTrue: [
+					deltas add: {
+							r.
+							currentRecord } -> delta asSeconds ].
+			currentRecord := r ].
 	^ deltas
 ]
 
@@ -701,9 +698,14 @@ DSRecordHistory >> validateWindows [
 				 DSMouseLeaveWindowRecord } includes: lastEvent class) ifFalse: [
 				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) add: #closing -> lastEvent ].
 
-			w events do: [ :e |
-					(e dateTime between: firstEvent dateTime and: lastEvent dateTime) ifFalse: [
-						(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) add: #timestamp -> e ] ] ]
+			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) addAll:
+				(w events reject: [ :e | e dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ]
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowNames [
+
+	^ windowNames 
 ]
 
 { #category : 'accessing' }
