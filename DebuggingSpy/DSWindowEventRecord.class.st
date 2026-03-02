@@ -18,7 +18,7 @@ Class {
 { #category : 'testing' }
 DSWindowEventRecord class >> isAbstract [
 
-	^ self == DSWindowEventRecord
+	^ self = DSWindowEventRecord
 ]
 
 { #category : 'actions api' }

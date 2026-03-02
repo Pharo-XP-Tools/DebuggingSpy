@@ -19,7 +19,7 @@ Class {
 { #category : 'testing' }
 DSMouseEventRecord class >> isAbstract [
 
-	^ self == DSMouseEventRecord
+	^ self = DSMouseEventRecord
 ]
 
 { #category : 'actions api' }

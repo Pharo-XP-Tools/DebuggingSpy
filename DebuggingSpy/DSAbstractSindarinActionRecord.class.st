@@ -12,5 +12,5 @@ Class {
 { #category : 'testing' }
 DSAbstractSindarinActionRecord class >> isAbstract [
 
-	^ self == DSAbstractSindarinActionRecord
+	^ self = DSAbstractSindarinActionRecord
 ]

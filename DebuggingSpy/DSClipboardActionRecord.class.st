@@ -18,7 +18,7 @@ Class {
 { #category : 'testing' }
 DSClipboardActionRecord class >> isAbstract [
 
-	^ self == DSClipboardActionRecord
+	^ self = DSClipboardActionRecord
 ]
 
 { #category : 'accessing' }

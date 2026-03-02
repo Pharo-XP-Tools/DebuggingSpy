@@ -16,7 +16,7 @@ Class {
 { #category : 'testing' }
 DSCodeActionRecord class >> isAbstract [
 
-	^ self == DSCodeActionRecord
+	^ self = DSCodeActionRecord
 ]
 
 { #category : 'actions api' }

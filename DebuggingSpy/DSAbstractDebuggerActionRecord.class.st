@@ -12,5 +12,5 @@ Class {
 { #category : 'testing' }
 DSAbstractDebuggerActionRecord class >> isAbstract [
 
-	^ self == DSAbstractDebuggerActionRecord
+	^ self = DSAbstractDebuggerActionRecord
 ]

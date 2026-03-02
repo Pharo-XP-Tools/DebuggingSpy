@@ -10,77 +10,25 @@ Class {
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'files',
-		'selectedRecords',
-		'toolbar',
-		'addedFilesPresenter',
-		'selectedRecordsPresenter',
-		'recorderWindow',
-		'timeline',
-		'recordsFilter'
+		'recordsTablePresenter',
+		'timerWindow',
+		'graphicTimeline',
+		'recordsFilter',
+		'toolbarPresenter',
+		'fileListPresenter',
+		'startRecordButtonPresenter',
+		'stopRecordButtonPresenter'
 	],
 	#classInstVars : [
-		'presenter'
+		'uniqueInstance'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
 }
 
-{ #category : 'accessing' }
-DSRecordBrowser class >> browser [
-
-	^ presenter ifNil: [ presenter := self new ]
-]
-
-{ #category : 'color' }
-DSRecordBrowser class >> getColoredRecordsOf: aWindowRecordCollection [
-
-	| coloredRecords |
-	coloredRecords := OrderedCollection new.
-	aWindowRecordCollection do: [ :windowRecord |
-			coloredRecords addAll:
-				(windowRecord events collect: [ :record | DSColoredRecord for: record withColor: (self getWindowColorFor: windowRecord) ]) ].
-	coloredRecords sort: [ :i :j | i record dateTime < j record dateTime ].
-	^ coloredRecords
-]
-
-{ #category : 'operations' }
-DSRecordBrowser class >> getHistoryOf: aFileReference [
-
-	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
-]
-
-{ #category : 'operations' }
-DSRecordBrowser class >> getTimelinePointsFrom: aHistory [
-
-	^ aHistory windows collectWithIndex: [ :w :index |
-			  RSTimeLinePlot new
-				  entries: {
-						  w events first dateTime asNanoSeconds.
-						  w events last dateTime asNanoSeconds }
-				  at: index;
-				  color: (self getWindowColorFor: w) ]
-]
-
-{ #category : 'color' }
-DSRecordBrowser class >> getWindowColorFor: aWindowRecord [
-
-	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
-	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
-	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
-	
-	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
-	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
-	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
-	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
-	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
-	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
-
-	^ Color gray
-]
-
 { #category : 'world menu' }
 DSRecordBrowser class >> menuCommandOn: aBuilder [
-	"Adds the DSSpy button on topside bar, the order is 100 just to make sure the DSSpy button is at the end"
+	"Adds the DSSpy button on topside bar."
 
 	<worldMenu>
 	(aBuilder item: #DSSpy)
@@ -91,19 +39,27 @@ DSRecordBrowser class >> menuCommandOn: aBuilder [
 
 { #category : 'initialization' }
 DSRecordBrowser class >> resetBrowser [
+	"Removes the actual browser then another one will be created the next time it needs to be opened."
 
 	<script>
-	presenter := nil
+	uniqueInstance := nil
 ]
 
 { #category : 'open/close' }
 DSRecordBrowser class >> toggleBrowser [
+	"Opens the browser or closes it depending on its state. If it needs to be created, then creates and opens it. See uniqueInstance method."
 
-	presenter ifNotNil: [
-			^ presenter window isOpen
-				  ifTrue: [ presenter window close ]
-				  ifFalse: [ presenter window open ] ].
-	self browser open
+	uniqueInstance ifNotNil: [
+			^ uniqueInstance window isOpen
+				  ifTrue: [ uniqueInstance window close ]
+				  ifFalse: [ uniqueInstance window open ] ].
+	self uniqueInstance open
+]
+
+{ #category : 'accessing' }
+DSRecordBrowser class >> uniqueInstance [
+
+	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
 { #category : 'files' }
@@ -111,15 +67,16 @@ DSRecordBrowser >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
 
 	(files includes: aFileReference)
-		ifTrue: [ ^ self inform: 'File already added in the browser !' ]
+		ifTrue: [ ^ self inform: 'File already added !' ]
 		ifFalse: [
 				files add: aFileReference.
-				addedFilesPresenter items: files.
-				addedFilesPresenter selectItem: aFileReference ]
+				fileListPresenter items: files.
+				fileListPresenter selectItem: aFileReference ]
 ]
 
 { #category : 'layout' }
 DSRecordBrowser >> addRecordButton [
+	"Layout button that opens a file selecting window."
 
 	^ SpToolbarButtonPresenter new
 		  label: 'Add';
@@ -133,31 +90,40 @@ DSRecordBrowser >> addRecordButton [
 DSRecordBrowser >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
-	addedFilesPresenter whenSelectionChangedDo: [ :presenter |
-			self updateSelectedRecords: presenter.
-			self updateTimelineChart ].
+	fileListPresenter whenSelectionChangedDo: [ :presenter |
+			fileListPresenter selectedItem ifNotNil: [
+					self updateRecordsTable: presenter.
+					self updateTimelineChart ] ].
 
-	recordsFilter whenChangedDo: [
-			addedFilesPresenter selectedItem ifNotNil: [
-					self updateSelectedRecords: addedFilesPresenter.
-					self updateTimelineChart ] ]
+	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
 ]
 
 { #category : 'layout' }
 DSRecordBrowser >> defaultLayout [
 
 	^ SpBoxLayout newVertical
-		  add: toolbar expand: false;
+		  add: toolbarPresenter expand: false;
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
-				   add: addedFilesPresenter;
+				   add: fileListPresenter;
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new
-								     add: selectedRecordsPresenter label: 'Records';
-								     add: timeline label: 'Timeline';
+								     add: recordsTablePresenter label: 'Records';
+								     add: graphicTimeline label: 'Timeline';
 								     yourself);
 						    yourself);
 				   yourself)
+]
+
+{ #category : 'layout' }
+DSRecordBrowser >> fileList [
+	"Instanciates a new presenter for the added files list."
+
+	^ self newList
+		  items: self files;
+		  display: [ :file | file basenameWithoutExtension ];
+		  actions: self listAddedFilesActions;
+		  yourself
 ]
 
 { #category : 'accessing' }
@@ -168,37 +134,81 @@ DSRecordBrowser >> files [
 
 { #category : 'layout' }
 DSRecordBrowser >> filterRecordsButton [
+	"Instanciates a new layout button that opens the records filter window."
 
 	^ SpToolbarButtonPresenter new
 		  label: 'Filter';
 		  icon: (self iconNamed: #diff);
 		  help: 'Filter the records.';
-		  action: [ self recordsFilter open ];
+		  action: [ recordsFilter open ];
 		  yourself
+]
+
+{ #category : 'helpers' }
+DSRecordBrowser >> getHistoryFrom: aFileReference [
+
+	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
+]
+
+{ #category : 'helpers' }
+DSRecordBrowser >> getRecordColorAssociationsFrom: aWindowRecordCollection [
+	"Returns a dictionary associating each reacord with its window corresponding color, sorted by each reacord dateTime."
+
+	| recordColorsDictionary |
+	recordColorsDictionary := Dictionary new.
+
+	aWindowRecordCollection do: [ :windowRecord |
+		windowRecord events do: [ :record | recordColorsDictionary at: record put: (self getWindowColorFrom: windowRecord) ] ].
+
+	^ recordColorsDictionary associations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
+]
+
+{ #category : 'helpers' }
+DSRecordBrowser >> getTimelinePointsFrom: aHistory [
+	"Returns a list of plots for the timeline chart."
+
+	^ aHistory windows collectWithIndex: [ :w :index |
+			  RSTimeLinePlot new
+				  entries: {
+						  w events first dateTime asNanoSeconds.
+						  w events last dateTime asNanoSeconds }
+				  at: index;
+				  color: (self getWindowColorFrom: w) ]
+]
+
+{ #category : 'color' }
+DSRecordBrowser >> getWindowColorFrom: aWindowRecord [
+	"Returns the window associated color, and the default color otherwise."
+
+	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
+	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
+	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
+
+	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
+	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
+	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
+	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
+	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
+	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
+
+	^ Color gray
 ]
 
 { #category : 'initialization' }
 DSRecordBrowser >> initializePresenters [
 
-	toolbar := self newToolbar
-		           addItem: self addRecordButton;
-		           addItem: self startRecordButton;
-		           addItem: self stopRecordButton;
-		           addItem: self filterRecordsButton.
-
-	addedFilesPresenter := self newList
-		                       items: self files;
-		                       display: [ :file | file basenameWithoutExtension ];
-		                       actions: self listAddedFilesActions;
-		                       yourself.
-
-	selectedRecordsPresenter := self recordsTable.
-	timeline := self newRoassal.
+	startRecordButtonPresenter := self startRecordButton.
+	stopRecordButtonPresenter := self stopRecordButton.
+	toolbarPresenter := self toolbar.
+	fileListPresenter := self fileList.
+	recordsTablePresenter := self recordsTable.
+	graphicTimeline := self newRoassal.
 	recordsFilter := self recordsFilter
 ]
 
 { #category : 'operations' }
 DSRecordBrowser >> listAddedFilesActions [
+	"List actions for the added files in browser, such as inspecting raw records, inspecting history, or removing the selected file from the list."
 
 	^ SpActionGroup new
 		  addActionWith: [ :anItem |
@@ -207,35 +217,21 @@ DSRecordBrowser >> listAddedFilesActions [
 					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ (DSSpy materialize: addedFilesPresenter selectedItem) inspect ] ];
+					  action: [ (DSSpy materialize: fileListPresenter selectedItem) inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect history';
 					  iconName: #history;
 					  description: 'Inspect the record history';
 					  shortcutKey: $h meta;
-					  action: [ (self class getHistoryOf: addedFilesPresenter selectedItem) inspect ] ];
+					  action: [ (self getHistoryFrom: fileListPresenter selectedItem) inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Remove';
 					  iconName: #remove;
 					  description: 'Remove the record from list';
 					  shortcutKey: $x meta;
-					  action: [ self removeFile: addedFilesPresenter selectedItem ] ];
-		  yourself
-]
-
-{ #category : 'operations' }
-DSRecordBrowser >> listRecordActions [
-
-	^ SpActionGroup new
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect';
-					  iconName: #inspect;
-					  description: 'Inspect the raw records';
-					  shortcutKey: $i meta;
-					  action: [ selectedRecordsPresenter selectedItem record inspect ] ];
+					  action: [ self removeFile: fileListPresenter selectedItem ] ];
 		  yourself
 ]
 
@@ -254,13 +250,13 @@ DSRecordBrowser >> openAddFileDialog [
 { #category : 'accessing' }
 DSRecordBrowser >> recorderWindow [
 
-	^ recorderWindow
+	^ timerWindow
 ]
 
-{ #category : 'accessing' }
+{ #category : 'layout' }
 DSRecordBrowser >> recordsFilter [
 
-	^ recordsFilter ifNil: [ recordsFilter := SpChooserPresenter new sourceItems: DSAbstractEventRecord getRecordClasses ]
+	^ SpChooserPresenter new sourceItems: DSAbstractEventRecord getNonAbstractSubClasses 
 ]
 
 { #category : 'layout' }
@@ -269,24 +265,39 @@ DSRecordBrowser >> recordsTable [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Event';
-				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				   evaluated: [ :coloredRecord | coloredRecord record eventName asString ];
+				   displayBackgroundColor: [ :association | association value ];
+				   evaluated: [ :association | association key eventName asString ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Event type';
-				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				   evaluated: [ :coloredRecord | coloredRecord record class asString ];
+				   displayBackgroundColor: [ :association | association value ];
+				   evaluated: [ :association | association key class asString ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
-				   displayBackgroundColor: [ :coloredRecord | coloredRecord color ];
-				   evaluated: [ :coloredRecord | coloredRecord record dateTime asTime print24 ];
+				   displayBackgroundColor: [ :association | association value ];
+				   evaluated: [ :association | association key dateTime asTime print24 ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
-		  actions: self listRecordActions;
+		  actions: self recordsTableActions;
+		  yourself
+]
+
+{ #category : 'operations' }
+DSRecordBrowser >> recordsTableActions [
+	"List actions that can be done on a record in the table, such as inspecting it."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the raw records';
+					  shortcutKey: $i meta;
+					  action: [ recordsTablePresenter selectedItem key inspect ] ];
 		  yourself
 ]
 
@@ -294,16 +305,8 @@ DSRecordBrowser >> recordsTable [
 DSRecordBrowser >> removeFile: aFileReference [
 
 	files := files reject: [ :fileReference | fileReference = aFileReference ].
-	addedFilesPresenter items: self files.
-	addedFilesPresenter selectItem: (files isEmpty
-			 ifTrue: [ nil ]
-			 ifFalse: [ files last ])
-]
-
-{ #category : 'initialization' }
-DSRecordBrowser >> resetBrowser [
-
-	<script: 'self resetBrowser'>
+	fileListPresenter items: self files.
+	fileListPresenter selectItem: (files ifNotEmpty: [ files last ])
 ]
 
 { #category : 'layout' }
@@ -322,13 +325,12 @@ DSRecordBrowser >> startRecordButton [
 DSRecordBrowser >> startRecording [
 	"Starts recording events and instianciates a new RecorderWindow that displays a timer and shows that Debugging Spy is recordering."
 
-	(toolbar leftItems at: 2) enabled: false. "Disable the start recording button."
-	(toolbar leftItems at: 3) enabled: true. "Enable the stop recording button."
-	recorderWindow := DSRecorderWindow new.
-	recorderWindow
+	timerWindow := DSTimerWindow new.
+	timerWindow 
 		openInWorld;
 		startTimer.
-	DSSpyInstrumenter instrumentSystem
+	DSSpyInstrumenter instrumentSystem.
+	self updateToolbar
 ]
 
 { #category : 'layout' }
@@ -348,23 +350,21 @@ DSRecordBrowser >> stopRecording [
 	"Stops the recording session and closes the RecorderWindow."
 
 	DSSpyInstrumenter stopInstrumentation.
-	(toolbar leftItems at: 2) enabled: true. "Enable the start recording button."
-	(toolbar leftItems at: 3) enabled: false. "Disable the stop recording button."
-	recorderWindow ifNotNil: [
-			recorderWindow stopTimer.
-			self currentWorld removeMorph: recorderWindow ]
+	timerWindow stopTimer.
+	self currentWorld removeMorph: timerWindow.
+	self updateToolbar
 ]
 
 { #category : 'layout' }
 DSRecordBrowser >> timelineChart [
 
 	| history names chart data |
-	addedFilesPresenter selectedItem ifNil: [ ^ nil ].
+	fileListPresenter selectedItem ifNil: [ ^ nil ].
 
-	history := self class getHistoryOf: addedFilesPresenter selectedItem.
+	history := self getHistoryFrom: fileListPresenter selectedItem.
 	names := history windows collect: [ :i | i getWindowType ].
 
-	data := self class getTimelinePointsFrom: history.
+	data := self getTimelinePointsFrom: history.
 	data size < 2 ifTrue: [ ^ nil ].
 
 	chart := RSCompositeChart new.
@@ -376,34 +376,58 @@ DSRecordBrowser >> timelineChart [
 		useNiceLabel;
 		numberOfTicks: history windows size // 2;
 		useDiagonalLabel;
-		labelConversion: [ :v | (DateAndTime fromSeconds: v // 1000000000) asTime ].
+		labelConversion: [ :v | (DateAndTime fromSeconds: v // 1000000000) asTime ]. 
+		
+		"Plots are instancied using their dateTime as nano seconds to prevent events that last less than a second to be hided, so we convert them into seconds to get the label."
 
 	chart build.
 	^ chart
 ]
 
-{ #category : 'operations' }
-DSRecordBrowser >> updateSelectedRecords: aPresenter [
-	"Updates the selected records and processes it to be used with their respective colors."
+{ #category : 'layout' }
+DSRecordBrowser >> toolbar [
+	"Instanciates a new toolbar to be displayed on layout."
 
-	| records |
-	records := OrderedCollection new.
-	aPresenter selectedItem ifNotNil: [
-			records := self class getColoredRecordsOf: (self class getHistoryOf: aPresenter selectedItem) windows.
-			records := records reject: [ :coloredRecord | self recordsFilter chosenItems includes: coloredRecord record class ] ].
-	selectedRecords := records.
-	selectedRecordsPresenter
-		roots: selectedRecords;
-		children: [ :item | OrderedCollection new ]
+	^ self newToolbar
+		  addItem: self addRecordButton;
+		  addItem: startRecordButtonPresenter;
+		  addItem: stopRecordButtonPresenter;
+		  addItem: self filterRecordsButton
+]
+
+{ #category : 'operations' }
+DSRecordBrowser >> updateRecordsTable: filesPresenter [
+	"Updates the records presenter and add to each record its corresponding color."
+
+	| fileRef recordColorAssociations |
+	recordColorAssociations := Array new.
+	fileRef := filesPresenter selectedItem.
+
+	fileRef ifNotNil: [
+			recordColorAssociations := self getRecordColorAssociationsFrom: (self getHistoryFrom: fileRef) windows.
+			recordColorAssociations := recordColorAssociations reject: [ :association |
+				                           recordsFilter chosenItems includes: association key class ] ].
+
+	recordsTablePresenter roots: recordColorAssociations 
 ]
 
 { #category : 'operations' }
 DSRecordBrowser >> updateTimelineChart [
+	"Regenerates the timeline chart using the selected record's data"
 
 	| chart |
 	chart := self timelineChart.
-	chart ifNil: [ timeline script: [ :canvas |  ] ] ifNotNil: [ timeline script: [ :canvas | chart renderIn: canvas ] ].
-	timeline refresh
+	chart
+		ifNil: [ graphicTimeline script: [ :canvas |  ] ]
+		ifNotNil: [ graphicTimeline script: [ :canvas | chart renderIn: canvas ] ].
+	graphicTimeline refresh
+]
+
+{ #category : 'layout' }
+DSRecordBrowser >> updateToolbar [
+
+	startRecordButtonPresenter enabled: DSSpy recordingSession not.
+	stopRecordButtonPresenter enabled: DSSpy recordingSession
 ]
 
 { #category : 'accessing' }

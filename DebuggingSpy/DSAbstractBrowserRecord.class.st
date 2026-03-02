@@ -12,7 +12,7 @@ Class {
 { #category : 'testing' }
 DSAbstractBrowserRecord class >> isAbstract [
 
-	^ self == DSAbstractBrowserRecord
+	^ self = DSAbstractBrowserRecord
 ]
 
 { #category : 'actions api' }

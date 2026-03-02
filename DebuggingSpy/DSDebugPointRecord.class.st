@@ -27,7 +27,7 @@ DSDebugPointRecord class >> debugpointremoved: event [
 { #category : 'testing' }
 DSDebugPointRecord class >> isAbstract [
 
-	^ self == DSDebugPointRecord
+	^ self = DSDebugPointRecord
 ]
 
 { #category : 'testing' }

@@ -106,7 +106,7 @@ DSWindowRecord >> events: anObject [
 { #category : 'accessing' }
 DSWindowRecord >> getWindowType [
 
-	toolInfos ifNotNil: [ ^ toolInfos first toolClassName ].
+	toolInfos ifNotNil: [ toolInfos ifNotEmpty: [ ^ toolInfos first toolClassName ] ].
 	type isString ifTrue: [ ^ type ].
 	^ 'External Window'
 ]

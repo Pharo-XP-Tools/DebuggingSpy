@@ -21,7 +21,7 @@ Class {
 { #category : 'testing' }
 DSAbstractDebugPointEventRecord class >> isAbstract [
 
-	^ self == DSAbstractDebugPointEventRecord
+	^ self = DSAbstractDebugPointEventRecord
 ]
 
 { #category : 'converting' }

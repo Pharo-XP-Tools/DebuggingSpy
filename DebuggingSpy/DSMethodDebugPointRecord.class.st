@@ -50,7 +50,7 @@ DSMethodDebugPointRecord class >> for: anEvent [
 { #category : 'testing' }
 DSMethodDebugPointRecord class >> isAbstract [
 
-	^ self == DSMethodDebugPointRecord 
+	^ self = DSMethodDebugPointRecord 
 ]
 
 { #category : 'accessing' }

@@ -16,7 +16,7 @@ Class {
 { #category : 'testing' }
 DSAbstractHaltRecord class >> isAbstract [
 
-	^ self == DSAbstractHaltRecord
+	^ self = DSAbstractHaltRecord
 ]
 
 { #category : 'accessing' }

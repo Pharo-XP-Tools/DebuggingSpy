@@ -20,7 +20,7 @@ DSAbstractExtendedRecord class >> for: anObject [
 { #category : 'testing' }
 DSAbstractExtendedRecord class >> isAbstract [
 
-	^ self == DSAbstractExtendedRecord
+	^ self = DSAbstractExtendedRecord
 ]
 
 { #category : 'accessing' }

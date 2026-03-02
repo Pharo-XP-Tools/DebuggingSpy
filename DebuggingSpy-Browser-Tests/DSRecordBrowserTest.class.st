@@ -12,52 +12,75 @@ Class {
 { #category : 'helpers' }
 DSRecordBrowserTest >> filesPresenter [
 
-	^ browser presenterAt: #addedFilesPresenter
+	^ browser presenterAt: #fileListPresenter
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> generateRecordFile: aNumberOfRecords [
+DSRecordBrowserTest >> generateRecordsFile [
+	"Generates a file of random records and returns its file reference."
 
-	| recordFileRef records |
-	DSSpy recordingSession ifFalse: [ browser startRecording ].
+	| recordFileRef writeStream randomNbOfRecords |
+	randomNbOfRecords := Random new nextInteger: 10.
 
-	recordFileRef := self updateLoggerFileName.
-	records := OrderedCollection new.
+	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
+	recordFileRef ensureCreateFile.
+	writeStream := recordFileRef writeStream.
 
-	1 to: aNumberOfRecords do: [ :i |
-			records add: (DSMouseEnterWindowRecord new
-					 windowId: 'test' , i asString;
-					 dateTime: (DateAndTime fromSeconds: 50 * i)) ].
+	writeStream nextPut: $[.
 
-	records do: [ :record | DSRecordRegistry current addRecord: record ].
+	1 to: randomNbOfRecords do: [ :index |
+			writeStream nextPutAll: (STON toString: (self getRecordForIndex: index)).
+
+			index = randomNbOfRecords ifFalse: [
+					writeStream nextPut: $,.
+					writeStream crlf ] ].
+
+	writeStream nextPut: $].
+
+	writeStream close.
+
 	^ recordFileRef
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> selectedRecordsPresenter [
+DSRecordBrowserTest >> getRecordForIndex: aNumber [
+	"Generates a record with specified number as dateTime (in seconds) and as windowId"
 
-	^ browser presenterAt: #selectedRecordsPresenter
+	^ self recordClass new
+		  dateTime: (DateAndTime fromSeconds: aNumber);
+		  windowId: aNumber;
+		  yourself
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserTest >> recordClass [
+
+	^ DSMouseEnterWindowRecord
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserTest >> recordsFilterPresenter [
+
+	^ browser presenterAt: #recordsFilter
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserTest >> recordsTablePresenter [
+
+	^ browser presenterAt: #recordsTablePresenter
 ]
 
 { #category : 'running' }
 DSRecordBrowserTest >> setUp [
 
 	super setUp.
-
-	DSSpy testingSession: true.
-
-	logger := DSSpy logger loggingDirectory: self temporaryDirectory.
-	self updateLoggerFileName.
-
 	browser := DSRecordBrowser new
 ]
 
 { #category : 'running' }
 DSRecordBrowserTest >> tearDown [
 
-	DSRecordRegistry current reset.
-	DSSpy recordingSession ifTrue: [ browser stopRecording ].
-
+	DSRecordBrowser uniqueInstance window isOpen ifTrue: [ DSRecordBrowser uniqueInstance window close ].
 	super tearDown
 ]
 
@@ -65,7 +88,7 @@ DSRecordBrowserTest >> tearDown [
 DSRecordBrowserTest >> testAddFile [
 
 	| fileRef |
-	fileRef := self generateRecordFile: 42.
+	fileRef := self generateRecordsFile.
 
 	browser addFile: fileRef.
 	self assert: browser files size equals: 1.
@@ -78,7 +101,7 @@ DSRecordBrowserTest >> testAddFile [
 DSRecordBrowserTest >> testAddFileWhenAlreadyInList [
 
 	| fileRef |
-	fileRef := self generateRecordFile: 42.
+	fileRef := self generateRecordsFile.
 
 	browser addFile: fileRef.
 	browser addFile: fileRef.
@@ -97,32 +120,80 @@ DSRecordBrowserTest >> testBrowserEmpty [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testGetColoredRecordsOf [
+DSRecordBrowserTest >> testClosingBrowser [
 
-	| fileRef history coloredRecords |
-	fileRef := self generateRecordFile: 10.
-	history := DSRecordBrowser getHistoryOf: fileRef.
-	coloredRecords := DSRecordBrowser getColoredRecordsOf: history windows.
-	coloredRecords do: [ :c |
-			self
-				assert: c color
-				equals: (DSRecordBrowser getWindowColorFor: (history windows select: [ :i | i events includes: c record ]) first) ]
+	DSRecordBrowser toggleBrowser.
+	DSRecordBrowser toggleBrowser.
+	self deny: DSRecordBrowser uniqueInstance window isOpen
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testGetHistoryOf [
+DSRecordBrowserTest >> testCreatingAndOpeningBrowser [
+
+	self deny: DSRecordBrowser uniqueInstance window isOpen.
+	DSRecordBrowser toggleBrowser.
+
+	self assert: DSRecordBrowser uniqueInstance window isOpen
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testFilteringAClassOfRecords [
+
+	| fileRef history |
+	fileRef := self generateRecordsFile.
+	history := browser getHistoryFrom: fileRef.
+
+	browser addFile: fileRef.
+	self assert: self recordsTablePresenter roots size equals: history records size.
+
+	self recordsFilterPresenter sourceList selectItem: self recordClass.
+	self recordsFilterPresenter addSelected.
+	
+	self assert: self recordsTablePresenter roots size equals: 0 "Since there is only one type of records in the generated file"
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testFilteringAllRecords [
+
+	| fileRef history |
+	fileRef := self generateRecordsFile.
+	history := browser getHistoryFrom: fileRef.
+
+	browser addFile: fileRef.
+	self assert: self recordsTablePresenter roots size equals: history records size.
+
+	self recordsFilterPresenter addAll.
+	self assert: self recordsTablePresenter roots size equals: 0
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testGetHistoryFrom [
 
 	| fileRef |
-	fileRef := self generateRecordFile: 5.
-	self assert: (DSRecordBrowser getHistoryOf: fileRef) records size equals: 5
+	fileRef := self generateRecordsFile.
+	self assert: (browser getHistoryFrom: fileRef) class equals: DSRecordHistory
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testGetRecordColorAssociationsFrom [
+
+	| fileRef history colorAssociations |
+	fileRef := self generateRecordsFile.
+	history := browser getHistoryFrom: fileRef.
+	colorAssociations := browser getRecordColorAssociationsFrom: history windows.
+
+	history windows do: [ :window |
+			window events do: [ :record |
+					self assert: (colorAssociations anySatisfy: [ :association |
+							 association key = record and: association value = (browser getWindowColorFrom: window) ]) ] ]
 ]
 
 { #category : 'tests' }
 DSRecordBrowserTest >> testRemoveFile [
 
 	| fileRef1 fileRef2 |
-	fileRef1 := self generateRecordFile: 42.
-	fileRef2 := self generateRecordFile: 42.
+	fileRef1 := self generateRecordsFile.
+	fileRef2 := self generateRecordsFile.
 
 	browser addFile: fileRef1.
 	browser addFile: fileRef2.
@@ -131,6 +202,20 @@ DSRecordBrowserTest >> testRemoveFile [
 	self assert: browser files size equals: 1.
 	self assert: self filesPresenter items size equals: 1.
 	self assert: self filesPresenter selectedItem equals: fileRef2
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testRemoveLastFile [
+
+	| fileRef1 |
+	fileRef1 := self generateRecordsFile.
+
+	browser addFile: fileRef1.
+	browser removeFile: fileRef1.
+
+	self assert: browser files size equals: 0.
+	self assert: self filesPresenter items size equals: 0.
+	self assert: self filesPresenter selectedItem equals: nil
 ]
 
 { #category : 'tests' }
@@ -144,28 +229,37 @@ DSRecordBrowserTest >> testStartRecording [
 	self assert: DSSpy recordingSession.
 	self assert: DSRecordRegistry autoSerialize.
 	self deny: browser recorderWindow isNil.
+
+	browser stopRecording
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testUpdateRecordsTable [
+
+	| fileRef history presenterMock |
+	fileRef := self generateRecordsFile.
+	history := browser getHistoryFrom: fileRef.
+	presenterMock := MockObject new on: #selectedItem respond: fileRef.
+	browser updateRecordsTable: presenterMock.
+
+	self recordsTablePresenter roots do: [ :association |
+		self assert: (history records anySatisfy: [ :record | record uuid = association key uuid ]) ]
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testUpdateRecordsTableWhenAddingFile [
+
+	| fileRef history |
+	fileRef := self generateRecordsFile.
+	history := browser getHistoryFrom: fileRef.
+
+	browser addFile: fileRef.
+
+	self assert: self recordsTablePresenter roots size equals: history records size
 ]
 
 { #category : 'helpers' }
 DSRecordBrowserTest >> timelinePresenter [
 
-	^ browser presenterAt: #timeline
-]
-
-{ #category : 'helpers' }
-DSRecordBrowserTest >> toolbarPresenter [
-
-	^ browser presenterAt: #toolbar
-]
-
-{ #category : 'helpers' }
-DSRecordBrowserTest >> updateLoggerFileName [
-	"Changes the logging file name, needs to be called everytime a new file is created for the logger to be updated for future logs.
-Using a UUID ensures that multiple files created at the same date and time dont have the same file name."
-
-	| fr |
-	logger loggingFileName: UUID new asString.
-	fr := logger ensureCreateLoggingFileReference.
-	logger loggingFileReference: fr.
-	^ fr
+	^ browser presenterAt: #graphicTimeline 
 ]
