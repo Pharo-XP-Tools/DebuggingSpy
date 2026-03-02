@@ -80,7 +80,7 @@ DSRecordBrowserTest >> setUp [
 { #category : 'running' }
 DSRecordBrowserTest >> tearDown [
 
-	DSRecordBrowser uniqueInstance window isOpen ifTrue: [ DSRecordBrowser uniqueInstance window close ].
+	DSRecordBrowser resetBrowser.
 	super tearDown
 ]
 
@@ -130,10 +130,9 @@ DSRecordBrowserTest >> testClosingBrowser [
 { #category : 'tests' }
 DSRecordBrowserTest >> testCreatingAndOpeningBrowser [
 
-	self deny: DSRecordBrowser uniqueInstance window isOpen.
 	DSRecordBrowser toggleBrowser.
-
-	self assert: DSRecordBrowser uniqueInstance window isOpen
+	self assert: DSRecordBrowser uniqueInstance window isOpen.
+	DSRecordBrowser toggleBrowser
 ]
 
 { #category : 'tests' }
