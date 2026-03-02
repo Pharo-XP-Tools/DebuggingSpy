@@ -121,80 +121,70 @@ DSWindowRecord >> idleTime [
 DSWindowRecord >> isBreakpointBrowser [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'DebugPointBrowserPresenter'
+	^ toolInfos toolClassName = 'DebugPointBrowserPresenter'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isBrowser [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'ClyFullBrowserMorph'
+	^ toolInfos toolClassName = 'ClyFullBrowserMorph'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isCritiqueBrowser [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'StCritiquePackageSelectorPresenter' 
+	^ toolInfos toolClassName = 'StCritiquePackageSelectorPresenter' 
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isDebugger [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'StDebugger'
+	^ toolInfos toolClassName = 'StDebugger'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isEpicea [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'EpUnifiedBrowserPresenter'
+	^ toolInfos toolClassName = 'EpUnifiedBrowserPresenter'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isIceberg [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'IceTipRepositoryBrowser'
+	^ toolInfos toolClassName = 'IceTipRepositoryBrowser'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isInspector [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'StInspectorPresenter'
+	^ toolInfos toolClassName = 'StInspectorPresenter'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isPlayground [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'StPlaygroundPresenter'
+	^ toolInfos toolClassName = 'StPlaygroundPresenter'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isQueryTool [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'ClyQueryBrowserMorph'
+	^ toolInfos toolClassName = 'ClyQueryBrowserMorph'
 ]
 
 { #category : 'testing' }
 DSWindowRecord >> isRewriter [
 
 	toolInfos ifNil: [ ^ false ].
-	toolInfos ifEmpty: [ ^ false ].
-	^ toolInfos first toolClassName = 'StRewriterExpressionFinderPresenter' 
+	^ toolInfos toolClassName = 'StRewriterExpressionFinderPresenter' 
 ]
 
 { #category : 'accessing' }

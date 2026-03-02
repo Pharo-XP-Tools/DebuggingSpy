@@ -521,20 +521,22 @@ DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 DSRecordHistory >> reconstructWindowsToolInfo [
 
 	| toolInfos validWindows |
-	toolInfos := (((records select: [ :r |
-			                (r class = DSMouseEnterWindowRecord) ]) collect:
-		               #toolInfo) reject: #isNil) asOrderedCollection
-		             groupedBy: #windowIdentityHash.
+	toolInfos := Dictionary new.
+
+	records do: [ :record |
+			(record class = DSMouseEnterWindowRecord and: [ record toolInfo isNotNil ]) ifTrue: [
+				toolInfos at: record toolInfo windowIdentityHash ifAbsentPut: record toolInfo ] ].
 
 	validWindows := windows groupedBy: #windowId.
 	validWindows
-		removeKey: -1 ifAbsent: [];
-		removeKey: nil ifAbsent: [].
+		removeKey: -1 ifAbsent: [ ];
+		removeKey: nil ifAbsent: [ ].
+	
 	validWindows keysAndValuesDo: [ :id :col |
-		id ifNotNil: [
-			| window |
-			window := col first.
-			window toolInfos: (toolInfos at: id ifAbsent:[nil]) ] ]
+			id ifNotNil: [
+					| window |
+					window := col first.
+					window toolInfos: (toolInfos at: id ifAbsent: [ nil ]) ] ].
 ]
 
 { #category : 'accessing' }
@@ -601,9 +603,9 @@ DSRecordHistory >> timeTaken [
 ]
 
 { #category : 'accessing' }
-DSRecordHistory >> toolInfosFor: anInteger [
+DSRecordHistory >> toolInfosFor: aWindowId [
 
-	^ ((windows groupedBy: #windowId) at: anInteger ifAbsent: [ ^ nil ])
+	^ ((windows groupedBy: #windowId) at: aWindowId ifAbsent: [ ^ nil ])
 		  first toolInfos
 ]
 

@@ -13,15 +13,28 @@ Class {
 DSRecordHistoryTest >> getRecordsExample [
 
 	| exampleRecords |
-	
 	exampleRecords := OrderedCollection new.
-	
-	exampleRecords add: (DSMouseEnterWindowRecord new windowId:1; dateTime: '2000-05-07T15:02:44' asDateAndTime).
-	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:1; dateTime: '2000-05-07T15:03:56' asDateAndTime).
-	exampleRecords add: (DSMouseEnterWindowRecord new windowId:2; dateTime: '2000-05-07T15:06:05' asDateAndTime).
-	exampleRecords add: (DSDoItRecord new windowId:2; dateTime: '2000-05-07T15:13:47' asDateAndTime).
-	exampleRecords add: (DSMouseLeaveWindowRecord new windowId:2; dateTime: '2000-05-07T15:24:44' asDateAndTime).
-	
+
+	exampleRecords add: (DSMouseEnterWindowRecord new
+			 windowId: 1;
+			 dateTime: '2000-05-07T15:02:44' asDateAndTime;
+			 toolInfo: (DSToolInfo new
+					  toolClassName: #Playground;
+					  windowIdentityHash: 1;
+					  toolIdentityHash: 42)).
+	exampleRecords add: (DSMouseLeaveWindowRecord new
+			 windowId: 1;
+			 dateTime: '2000-05-07T15:03:56' asDateAndTime).
+	exampleRecords add: (DSMouseEnterWindowRecord new
+			 windowId: 2;
+			 dateTime: '2000-05-07T15:06:05' asDateAndTime).
+	exampleRecords add: (DSDoItRecord new
+			 windowId: 2;
+			 dateTime: '2000-05-07T15:13:47' asDateAndTime).
+	exampleRecords add: (DSMouseLeaveWindowRecord new
+			 windowId: 2;
+			 dateTime: '2000-05-07T15:24:44' asDateAndTime).
+
 	^ exampleRecords
 ]
 
@@ -341,6 +354,16 @@ DSRecordHistoryTest >> testNumberOfSteps [
 			DSStepOverRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name) } asOrderedCollection.
 	self assert: history numberOfSteps equals: 3
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testReconstructWindowsToolInfo [
+
+	history records: self getRecordsExample.
+	
+	history reconstructWindowsToolInfo.
+	
+	self assert: history windows size equals: 5.
 ]
 
 { #category : 'tests' }

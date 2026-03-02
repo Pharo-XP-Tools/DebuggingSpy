@@ -32,3 +32,9 @@ DSMouseEventRecord >> toolInfo [
 
 	^ toolInfo 
 ]
+
+{ #category : 'accessing' }
+DSMouseEventRecord >> toolInfo: aDSToolInfo [ 
+
+	toolInfo := aDSToolInfo
+]
