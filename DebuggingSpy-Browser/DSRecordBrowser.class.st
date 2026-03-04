@@ -49,9 +49,10 @@ DSRecordBrowser class >> toggleBrowser [
 	"Opens the browser or closes it depending on its state. If it needs to be created, then creates and opens it."
 
 	uniqueInstance ifNotNil: [
-			^ uniqueInstance window isOpen
-				  ifTrue: [ uniqueInstance window close ]
-				  ifFalse: [ uniqueInstance window open ] ].
+			uniqueInstance hasWindow ifTrue: [
+					^ uniqueInstance window isOpen
+						  ifTrue: [ uniqueInstance window close ]
+						  ifFalse: [ uniqueInstance window open ] ] ].
 	self uniqueInstance open
 ]
 
