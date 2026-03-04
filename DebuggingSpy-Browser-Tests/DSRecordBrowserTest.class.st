@@ -54,7 +54,7 @@ DSRecordBrowserTest >> getRecordForIndex: aNumber [
 { #category : 'helpers' }
 DSRecordBrowserTest >> recordClasses [
 
-	^ DSAbstractBrowserRecord getNonAbstractSubClasses
+	^ DSAbstractBrowserRecord getLeafSubClasses
 ]
 
 { #category : 'helpers' }

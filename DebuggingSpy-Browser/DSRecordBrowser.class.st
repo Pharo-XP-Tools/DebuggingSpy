@@ -254,7 +254,7 @@ DSRecordBrowser >> openAddFileDialog [
 DSRecordBrowser >> recordsFilter [
 	"Instanciates a new chooser that displays every record classes that could be used to filter records in table."
 
-	^ SpChooserPresenter new sourceItems: DSAbstractEventRecord getNonAbstractSubClasses
+	^ SpChooserPresenter new sourceItems: DSAbstractEventRecord getLeafSubClasses
 ]
 
 { #category : 'layout' }

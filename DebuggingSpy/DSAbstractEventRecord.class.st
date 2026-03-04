@@ -24,12 +24,17 @@ DSAbstractEventRecord class >> for: anObject [
 ]
 
 { #category : 'accessing' }
-DSAbstractEventRecord class >> getNonAbstractSubClasses [
+DSAbstractEventRecord class >> getLeafSubClasses [
 	"Returns a list of all non-abstract subclasses, representing all record classes."
 
 	| classes |
-	classes := (self subclasses reject: [ :subclass | subclass isAbstract ]) asOrderedCollection.
-	self subclasses do: [ :subclass | classes addAll: subclass getNonAbstractSubClasses ].
+	classes := OrderedCollection new.
+	self subclasses do: [ :subclass |
+			subclass subclasses isEmpty
+				ifTrue: [ classes add: subclass ]
+				ifFalse: [
+						subclass = DSDoItRecord ifTrue: [ classes add: subclass ].
+						classes addAll: subclass getLeafSubClasses ] ].
 
 	^ classes
 ]
