@@ -153,15 +153,16 @@ DSRecordBrowser >> getHistoryFrom: aFileReference [
 
 { #category : 'helpers' }
 DSRecordBrowser >> getRecordColorAssociationsFrom: aWindowRecordCollection [
-	"Returns a dictionary associating each record with its window's corresponding color, sorted by record's dateTime."
+	"Returns a sorted collection associating each record with its window's corresponding color, sorted by record's dateTime."
 
-	| recordColorsDictionary |
-	recordColorsDictionary := Dictionary new.
+	| recordColorsAssociations |
+	recordColorsAssociations := OrderedCollection new.
 
 	aWindowRecordCollection do: [ :windowRecord |
-		windowRecord events do: [ :record | recordColorsDictionary at: record put: (self getWindowColorFrom: windowRecord) ] ].
+			recordColorsAssociations addAll:
+				(windowRecord events collect: [ :record | Association key: record value: (self getWindowColorFrom: windowRecord) ]) ].
 
-	^ recordColorsDictionary associations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
+	^ recordColorsAssociations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
 ]
 
 { #category : 'helpers' }
@@ -325,10 +326,9 @@ DSRecordBrowser >> startRecording [
 	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recordering."
 
 	timerWindow := DSTimerWindow new.
-	timerWindow
-		openInWorld;
-		startTimer.
+	timerWindow openInWorld.
 	DSSpyInstrumenter instrumentSystem.
+	timerWindow startTimer.
 	self updateToolbar
 ]
 

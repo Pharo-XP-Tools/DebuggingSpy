@@ -46,6 +46,7 @@ DSTimerWindow >> currentTimeMorph [
 DSTimerWindow >> elapsedTime [
 	"Returns the elapsed time since the timer's start."
 
+	startTime ifNil: [ ^ 0 ].
 	^ Time current asSeconds - startTime
 ]
 
@@ -55,7 +56,8 @@ DSTimerWindow >> initialize [
 	super initialize.
 	self minimumExtent: self size.
 	self initializeProperties.
-	self buildUI
+	self buildUI.
+	self initializeTimers
 ]
 
 { #category : 'initialization' }
@@ -69,6 +71,17 @@ DSTimerWindow >> initializeProperties [
 		removeLabelArea;
 		removeBoxes;
 		beUnresizeable
+]
+
+{ #category : 'initialization' }
+DSTimerWindow >> initializeTimers [
+	"Creates a new process that displays the current time even if the timer is not started. The timer would be updated whenever the record session starts."
+
+	[
+		[ true ] whileTrue: [
+				DSSpy recordingSession ifTrue: [ timerMorph contents: (Time fromSeconds: self elapsedTime) print24 ].
+				currentTimeMorph contents: Time now print24.
+				(Delay forMilliseconds: 50) wait ] ] fork
 ]
 
 { #category : 'accessing' }
@@ -112,14 +125,8 @@ DSTimerWindow >> size [
 DSTimerWindow >> startTimer [
 	"Starts a new process for the timer."
 
-	DSSpy recordingSession ifTrue: [ ^ self ].
-
-	startTime := Time current asSeconds.
-	[
-		[ DSSpy recordingSession ] whileTrue: [
-				timerMorph contents: (Time fromSeconds: self elapsedTime) print24.
-				currentTimeMorph contents: Time now print24.
-				(Delay forMilliseconds: 50) wait ] ] fork
+	DSSpy recordingSession ifFalse: [ ^ self ].
+	startTime := Time current asSeconds
 ]
 
 { #category : 'layout' }

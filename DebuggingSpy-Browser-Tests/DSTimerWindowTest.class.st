@@ -25,8 +25,8 @@ DSTimerWindowTest >> setUp [
 { #category : 'tests' }
 DSTimerWindowTest >> testElapsedTime [
 
-	timerWindow startTimer.
 	DSSpy recordingSession: true.
+	timerWindow startTimer.
 
 	(Delay forMilliseconds: 1000) wait.
 
