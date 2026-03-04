@@ -2,8 +2,7 @@ Class {
 	#name : 'DSRecordBrowserTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'browser',
-		'logger'
+		'browser'
 	],
 	#category : 'DebuggingSpy-Browser-Tests',
 	#package : 'DebuggingSpy-Browser-Tests'
@@ -46,16 +45,16 @@ DSRecordBrowserTest >> generateRecordsFile [
 DSRecordBrowserTest >> getRecordForIndex: aNumber [
 	"Generates a record with specified number as dateTime (in seconds) and as windowId"
 
-	^ self recordClass new
+	^ (self recordClasses at: (Random new nextInteger: self recordClasses size)) new
 		  dateTime: (DateAndTime fromSeconds: aNumber);
 		  windowId: aNumber;
 		  yourself
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> recordClass [
+DSRecordBrowserTest >> recordClasses [
 
-	^ DSMouseEnterWindowRecord
+	^ DSAbstractBrowserRecord getNonAbstractSubClasses
 ]
 
 { #category : 'helpers' }
@@ -116,7 +115,7 @@ DSRecordBrowserTest >> testBrowserEmpty [
 	self assertEmpty: browser files.
 	self assert: self filesPresenter items size equals: 0.
 	self assert: self filesPresenter selectedItem equals: nil.
-	
+	self assert: self recordsTablePresenter roots size equals: 0
 ]
 
 { #category : 'tests' }
@@ -138,17 +137,18 @@ DSRecordBrowserTest >> testCreatingAndOpeningBrowser [
 { #category : 'tests' }
 DSRecordBrowserTest >> testFilteringAClassOfRecords [
 
-	| fileRef history |
+	| fileRef history filteredClass |
 	fileRef := self generateRecordsFile.
 	history := browser getHistoryFrom: fileRef.
 
 	browser addFile: fileRef.
 	self assert: self recordsTablePresenter roots size equals: history records size.
 
-	self recordsFilterPresenter sourceList selectItem: self recordClass.
+	filteredClass := self recordsFilterPresenter sourceList items first.
+	self recordsFilterPresenter sourceList selectItem: filteredClass.
 	self recordsFilterPresenter addSelected.
-	
-	self assert: self recordsTablePresenter roots size equals: 0 "Since there is only one type of records in the generated file"
+
+	self recordsTablePresenter roots do: [ :association | self deny: association key class equals: filteredClass ]
 ]
 
 { #category : 'tests' }
@@ -184,7 +184,7 @@ DSRecordBrowserTest >> testGetRecordColorAssociationsFrom [
 	history windows do: [ :window |
 			window events do: [ :record |
 					self assert: (colorAssociations anySatisfy: [ :association |
-							 association key = record and: association value = (browser getWindowColorFrom: window) ]) ] ]
+							 association key = record and: [ association value = (browser getWindowColorFrom: window) ] ]) ] ]
 ]
 
 { #category : 'tests' }
@@ -220,16 +220,29 @@ DSRecordBrowserTest >> testRemoveLastFile [
 { #category : 'tests' }
 DSRecordBrowserTest >> testStartRecording [
 
-	self assert: browser recorderWindow isNil.
+	self assert: browser timerWindow isNil.
 	self deny: DSRecordRegistry autoSerialize.
 	self deny: DSSpy recordingSession.
 
 	browser startRecording.
 	self assert: DSSpy recordingSession.
 	self assert: DSRecordRegistry autoSerialize.
-	self deny: browser recorderWindow isNil.
+	self deny: browser timerWindow isNil.
 
-	browser stopRecording
+	browser stopRecording.
+	self deny: (self currentWorld submorphs includes: browser timerWindow)
+]
+
+{ #category : 'tests' }
+DSRecordBrowserTest >> testStopRecording [
+
+	| timerWindow |
+	browser startRecording.
+	timerWindow := browser timerWindow.
+	browser stopRecording.
+
+	self deny: (self currentWorld submorphs includes: timerWindow).
+	self assert: browser timerWindow isNil
 ]
 
 { #category : 'tests' }

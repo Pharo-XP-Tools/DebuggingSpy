@@ -1,15 +1,13 @@
 "
-This class is a window displaying some informations while DebuggingSpy is recording.
+I am a window displaying timer while DebuggingSpy is recording.
 "
 Class {
 	#name : 'DSTimerWindow',
 	#superclass : 'SystemWindow',
 	#instVars : [
 		'timerMorph',
-		'running',
 		'startTime',
-		'timer',
-		'timeNowMorph'
+		'currentTimeMorph'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -17,15 +15,15 @@ Class {
 
 { #category : 'initialization' }
 DSTimerWindow >> buildUI [
-	"Builds the windows UI that contains : an icon that shows that Debugging Spy is recording, a chronometer, a timer that shows actual time and a stop recording button."
+	"Builds the windows UI, it contains : an icon which shows that Debugging Spy is recording, a chronometer, a timer with current time and a stop recording button."
 
 	timerMorph := self timerMorph.
-	timeNowMorph := self timeNowMorph.
+	currentTimeMorph := self currentTimeMorph.
 
 	self
 		addMorph: self recordingIcon;
 		addMorph: timerMorph;
-		addMorph: timeNowMorph;
+		addMorph: currentTimeMorph;
 		addMorph: self stopButton
 ]
 
@@ -33,6 +31,15 @@ DSTimerWindow >> buildUI [
 DSTimerWindow >> collapseOrExpand [
 
 	^ self
+]
+
+{ #category : 'layout' }
+DSTimerWindow >> currentTimeMorph [
+	"Instanciates a new morph that shows the actual time."
+
+	^ StringMorph new
+		  contents: Time now print24;
+		  position: 75 @ 6
 ]
 
 { #category : 'timer' }
@@ -46,7 +53,6 @@ DSTimerWindow >> elapsedTime [
 DSTimerWindow >> initialize [
 
 	super initialize.
-	running := false.
 	self minimumExtent: self size.
 	self initializeProperties.
 	self buildUI
@@ -56,7 +62,7 @@ DSTimerWindow >> initialize [
 DSTimerWindow >> initializeProperties [
 
 	self
-		setLabel: 'DSSpy recorder';
+		setLabel: 'DSSpy timer';
 		extent: self size;
 		beSticky;
 		makeUnclosable;
@@ -104,16 +110,16 @@ DSTimerWindow >> size [
 
 { #category : 'timer' }
 DSTimerWindow >> startTimer [
+	"Starts a new process for the timer."
 
-	running ifTrue: [ ^ self ].
+	DSSpy recordingSession ifTrue: [ ^ self ].
 
 	startTime := Time current asSeconds.
-	running := true.
-	timer := [
-		         [ running ] whileTrue: [
-				         timerMorph contents: (Time fromSeconds: self elapsedTime) print24.
-				         timeNowMorph contents: Time now print24.
-				         (Delay forMilliseconds: 50) wait ] ] fork
+	[
+		[ DSSpy recordingSession ] whileTrue: [
+				timerMorph contents: (Time fromSeconds: self elapsedTime) print24.
+				currentTimeMorph contents: Time now print24.
+				(Delay forMilliseconds: 50) wait ] ] fork
 ]
 
 { #category : 'layout' }
@@ -126,21 +132,6 @@ DSTimerWindow >> stopButton [
 		  actionSelector: #stopRecording;
 		  position: 125 @ 4;
 		  yourself
-]
-
-{ #category : 'timer' }
-DSTimerWindow >> stopTimer [
-
-	running := false
-]
-
-{ #category : 'layout' }
-DSTimerWindow >> timeNowMorph [
-	"Instanciates a new morph that shows the actual time."
-
-	^ StringMorph new
-		  contents: Time now print24;
-		  position: 75 @ 6
 ]
 
 { #category : 'layout' }
