@@ -270,7 +270,7 @@ DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 	self assert: windowKey class equals: DSRecordHistoryWindowKey.
 	self assert: windowKey windowId equals: 1.
 	
-	history windowsHistory: ({ (DSRecordHistoryWindowKey new windowId:2) -> 'cat' } as: IdentityDictionary).
+	history windowsHistory: ({ (DSRecordHistoryWindowKey new windowId:2) -> 'someRecords' } as: IdentityDictionary).
 
 	windowKey := history findWindowRecordKeyForID: 2.
 	self assert: windowKey class equals: DSRecordHistoryWindowKey.
@@ -304,6 +304,27 @@ DSRecordHistoryTest >> testFixMissingWindowIds [
 
 	self assert: history windowNames size equals: 1.
 	self assert: (history windowNames at: 3) equals: 'TestWindow'
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testFixWindowRecordKeysNames [
+
+	| windowsHistory |
+	history windowNames: {
+			(1 -> 'playGroundWindow').
+			(53 -> 'browserWindow') } asDictionary.
+	history windowsHistory: ({
+			 ((DSRecordHistoryWindowKey new windowId: 1) -> 'someRecords').
+			 ((DSRecordHistoryWindowKey new windowId: 2) -> 'someRecords').
+			 ((DSRecordHistoryWindowKey new windowId: 53) -> 'someRecords') } as: IdentityDictionary).
+
+	history fixWindowRecordKeysNames.
+
+	windowsHistory := history windowsHistory.
+	self assert: windowsHistory size equals: 3.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = 1 ]) windowName equals: 'playGroundWindow'.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = 53 ]) windowName equals: 'browserWindow'.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = 2 ]) windowName isNil
 ]
 
 { #category : 'tests' }
@@ -345,6 +366,16 @@ DSRecordHistoryTest >> testMethodsRemoved [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testName [
+
+	history tag: '42'.
+	history user: 'pierre dupont'.
+	history taskName: 'TaskOfDebugging'.
+
+	self assert: history name equals: 'pierre dupont: TaskOfDebugging(42)'
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testNumberOfSteps [
 
 	history records: {
@@ -361,6 +392,7 @@ DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 
 	history records: self getRecordsExample.
 	
+	history buildWindows.
 	history reconstructWindowsToolInfo.
 	
 	self assert: history windows size equals: 5.
@@ -378,6 +410,27 @@ DSRecordHistoryTest >> testStopTime [
 
 	history records: self getRecordsExample.
 	self assert: history stopTime equals: '15:24:44' asTime
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testToolInfosFor [
+
+	| toolInfo |
+	history windows: { (DSWindowRecord new
+			 toolInfos: (DSToolInfo new
+					  toolClassName: #Playground;
+					  windowIdentityHash: 1;
+					  toolIdentityHash: 42);
+			 events: { (DSWindowOpenedRecord new windowId: 1) }) } asOrderedCollection.
+
+	toolInfo := history toolInfosFor: 1.
+	self assert: toolInfo class equals: DSToolInfo.
+	self assert: toolInfo toolClassName equals: #Playground.
+	self assert: toolInfo toolIdentityHash equals: 42.
+	self assert: toolInfo windowIdentityHash equals: 1.
+
+	toolInfo := history toolInfosFor: 98.
+	self assert: toolInfo isNil
 ]
 
 { #category : 'tests' }

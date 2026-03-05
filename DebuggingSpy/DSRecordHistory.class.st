@@ -122,7 +122,7 @@ DSRecordHistory >> buildWindowJumps [
 DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
-	windowsHistory valuesDo: [ :events | windows add: (DSWindowRecord for: events) ].
+	self windowsHistory valuesDo: [ :events | windows add: (DSWindowRecord for: events) ].
 	self reconstructSourcesOfDebuggerOpenings.
 
 	filteredWindows := windows reject: [ :w |
@@ -386,12 +386,6 @@ DSRecordHistory >> haltAnalysisMap [
 				 method: bp method;
 				 yourself ]) add: bp ].
 	^ report
-]
-
-{ #category : 'initialization' }
-DSRecordHistory >> initialize [
-	super initialize.
-	self flag: 'I am not tested! Please do it!' 
 ]
 
 { #category : 'private - history' }
@@ -711,8 +705,20 @@ DSRecordHistory >> windowNames [
 ]
 
 { #category : 'accessing' }
+DSRecordHistory >> windowNames: aDictionary [
+
+	windowNames := aDictionary 
+]
+
+{ #category : 'accessing' }
 DSRecordHistory >> windows [
 	^ windows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windows: aCollectionOfWindows [
+
+	windows := aCollectionOfWindows
 ]
 
 { #category : 'accessing' }

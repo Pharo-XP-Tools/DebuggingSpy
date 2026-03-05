@@ -52,7 +52,7 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 	self computeActivePeriods.
 
 	type := self windowTypeFor: events first.
-	
+
 	name ifNotNil: [ ^ self ].
 	name := self windowNameFor: events first
 ]
@@ -63,32 +63,30 @@ DSWindowRecord >> computeActivePeriods [
 	| activityStartStopEvents start stop previous |
 	activePeriods := OrderedCollection new.
 	activityStartStopEvents := events select: [ :e |
-		                           {
-			                           DSMouseEnterWindowRecord.
-			                           DSMouseLeaveWindowRecord } includes:
-			                           e class ].
-	(activityStartStopEvents notEmpty and: [
-		 activityStartStopEvents first class == DSMouseLeaveWindowRecord ])
-		ifTrue: [ activityStartStopEvents removeFirst ].
+			                           {
+				                           DSMouseEnterWindowRecord.
+				                           DSMouseLeaveWindowRecord } includes: e class ].
+	(activityStartStopEvents notEmpty and: [ activityStartStopEvents first class == DSMouseLeaveWindowRecord ]) ifTrue: [
+		activityStartStopEvents removeFirst ].
 
 	[ activityStartStopEvents isEmpty ] whileFalse: [
-		| next |
-		next := activityStartStopEvents removeFirst.
-		next class = DSMouseEnterWindowRecord ifTrue: [
-			previous class = next class ifFalse: [ start := next ] ].
+			| next |
+			next := activityStartStopEvents removeFirst.
+			next class = DSMouseEnterWindowRecord ifTrue: [
+				(previous isNil or: [ previous class = next class ]) ifFalse: [ start := next ] ].
 
-		next class = DSMouseLeaveWindowRecord ifTrue: [
-			| startIndex stopIndex |
-			stop := next.
-			startIndex := events indexOf: start.
-			stopIndex := events indexOf: stop.
-			startIndex > 0 ifTrue: [
-				activePeriods add: (DSWindowActivityRecord
-						 start: start
-						 stop: stop
-						 events: (events copyFrom: startIndex to: stopIndex)
-						 window: self) ] ].
-		previous := next ]
+			next class = DSMouseLeaveWindowRecord ifTrue: [
+					| startIndex stopIndex |
+					stop := next.
+					startIndex := events indexOf: start.
+					stopIndex := events indexOf: stop.
+					startIndex > 0 ifTrue: [
+							activePeriods add: (DSWindowActivityRecord
+									 start: start
+									 stop: stop
+									 events: (events copyFrom: startIndex to: stopIndex)
+									 window: self) ] ].
+			previous := next ]
 ]
 
 { #category : 'accessing' }
