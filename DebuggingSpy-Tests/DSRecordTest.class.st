@@ -10,6 +10,26 @@ Class {
 }
 
 { #category : 'tests' }
+DSRecordTest >> testGettingLeafSubclasses [
+
+	| subclasses |
+	subclasses := OrderedCollection new
+		              add: DSDebugPointAdd;
+		              add: DSDebugPointChanged;
+		              add: DSDebugPointHit;
+		              add: DSDebugPointRemoved;
+		              yourself.
+
+	self assert: DSAbstractExtendedRecord getLeafSubClasses equals: subclasses
+]
+
+{ #category : 'tests' }
+DSRecordTest >> testGettingLeafSubclassesIncludesDSDoItRecord [
+
+	self assert: (DSAbstractEventRecord getLeafSubClasses includes: DSDoItRecord)
+]
+
+{ #category : 'tests' }
 DSRecordTest >> testRecordPrinting [
 
 	| str |
