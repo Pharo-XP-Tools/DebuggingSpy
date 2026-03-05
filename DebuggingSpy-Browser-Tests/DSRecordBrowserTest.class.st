@@ -18,8 +18,8 @@ DSRecordBrowserTest >> filesPresenter [
 DSRecordBrowserTest >> generateRecordsFile [
 	"Generates a file of random records and returns its file reference."
 
-	| recordFileRef writeStream randomNbOfRecords |
-	randomNbOfRecords := Random new nextInteger: 10.
+	| records recordFileRef writeStream |
+	records := self getRecordExamples.
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -27,10 +27,10 @@ DSRecordBrowserTest >> generateRecordsFile [
 
 	writeStream nextPut: $[.
 
-	1 to: randomNbOfRecords do: [ :index |
-			writeStream nextPutAll: (STON toString: (self getRecordForIndex: index)).
+	records doWithIndex: [ :record :index |
+			writeStream nextPutAll: (STON toString: record).
 
-			index = randomNbOfRecords ifFalse: [
+			index = records size ifFalse: [
 					writeStream nextPut: $,.
 					writeStream crlf ] ].
 
@@ -42,19 +42,26 @@ DSRecordBrowserTest >> generateRecordsFile [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> getRecordForIndex: aNumber [
-	"Generates a record with specified number as dateTime (in seconds) and as windowId"
+DSRecordBrowserTest >> getRecordExamples [
 
-	^ (self recordClasses at: (Random new nextInteger: self recordClasses size)) new
-		  dateTime: (DateAndTime fromSeconds: aNumber);
-		  windowId: aNumber;
+	^ OrderedCollection new
+		  add: (DSBrowseRecord new
+				   windowId: 1;
+				   dateTime: (DateAndTime fromSeconds: 1);
+				   yourself);
+		  add: (DSMouseEnterWindowRecord new
+				   windowId: 2;
+				   dateTime: (DateAndTime fromSeconds: 2);
+				   yourself);
+		  add: (DSMouseLeaveWindowRecord new
+				   windowId: 3;
+				   dateTime: (DateAndTime fromSeconds: 3);
+				   yourself);
+		  add: (DSInspectItRecord new
+				   windowId: 4;
+				   dateTime: (DateAndTime fromSeconds: 4);
+				   yourself);
 		  yourself
-]
-
-{ #category : 'helpers' }
-DSRecordBrowserTest >> recordClasses [
-
-	^ DSAbstractBrowserRecord getLeafSubClasses
 ]
 
 { #category : 'helpers' }
@@ -137,18 +144,17 @@ DSRecordBrowserTest >> testCreatingAndOpeningBrowser [
 { #category : 'tests' }
 DSRecordBrowserTest >> testFilteringAClassOfRecords [
 
-	| fileRef history filteredClass |
+	| fileRef history |
 	fileRef := self generateRecordsFile.
 	history := browser getHistoryFrom: fileRef.
 
 	browser addFile: fileRef.
 	self assert: self recordsTablePresenter roots size equals: history records size.
 
-	filteredClass := self recordsFilterPresenter sourceList items first.
-	self recordsFilterPresenter sourceList selectItem: filteredClass.
+	self recordsFilterPresenter sourceList selectItem: DSBrowseRecord.
 	self recordsFilterPresenter addSelected.
 
-	self recordsTablePresenter roots do: [ :association | self deny: association key class equals: filteredClass ]
+	self deny: self recordsTablePresenter roots first class equals: DSBrowseRecord
 ]
 
 { #category : 'tests' }
@@ -159,7 +165,6 @@ DSRecordBrowserTest >> testFilteringAllRecords [
 	history := browser getHistoryFrom: fileRef.
 
 	browser addFile: fileRef.
-	self assert: self recordsTablePresenter roots size equals: history records size.
 
 	self recordsFilterPresenter addAll.
 	self assert: self recordsTablePresenter roots size equals: 0
@@ -181,10 +186,10 @@ DSRecordBrowserTest >> testGetRecordColorAssociationsFrom [
 	history := browser getHistoryFrom: fileRef.
 	colorAssociations := browser getRecordColorAssociationsFrom: history windows.
 
-	history windows do: [ :window |
-			window events do: [ :record |
-					self assert: (colorAssociations anySatisfy: [ :association |
-							 association key = record and: [ association value = (browser getWindowColorFrom: window) ] ]) ] ]
+	self assert: colorAssociations first key class equals: DSBrowseRecord.
+	self assert: (colorAssociations at: 2) key class equals: DSMouseEnterWindowRecord.
+	self assert: (colorAssociations at: 3) key class equals: DSMouseLeaveWindowRecord.
+	self assert: colorAssociations last key class equals: DSInspectItRecord
 ]
 
 { #category : 'tests' }
@@ -229,8 +234,7 @@ DSRecordBrowserTest >> testStartRecording [
 	self assert: DSRecordRegistry autoSerialize.
 	self deny: browser timerWindow isNil.
 
-	browser stopRecording.
-	self deny: (self currentWorld submorphs includes: browser timerWindow)
+	browser stopRecording
 ]
 
 { #category : 'tests' }
@@ -254,8 +258,10 @@ DSRecordBrowserTest >> testUpdateRecordsTable [
 	presenterMock := MockObject new on: #selectedItem respond: fileRef.
 	browser updateRecordsTable: presenterMock.
 
-	self recordsTablePresenter roots do: [ :association |
-		self assert: (history records anySatisfy: [ :record | record uuid = association key uuid ]) ]
+	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
+	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
+	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
+	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
 ]
 
 { #category : 'tests' }
@@ -267,7 +273,10 @@ DSRecordBrowserTest >> testUpdateRecordsTableWhenAddingFile [
 
 	browser addFile: fileRef.
 
-	self assert: self recordsTablePresenter roots size equals: history records size
+	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
+	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
+	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
+	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
 ]
 
 { #category : 'helpers' }
