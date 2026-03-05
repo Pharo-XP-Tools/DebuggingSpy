@@ -16,12 +16,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'testing' }
-DSMouseEventRecord class >> isAbstract [
-
-	^ self = DSMouseEventRecord
-]
-
 { #category : 'actions api' }
 DSMouseEventRecord >> record: aWindow [
 

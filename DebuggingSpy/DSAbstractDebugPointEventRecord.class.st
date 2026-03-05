@@ -18,12 +18,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'testing' }
-DSAbstractDebugPointEventRecord class >> isAbstract [
-
-	^ self = DSAbstractDebugPointEventRecord
-]
-
 { #category : 'converting' }
 DSAbstractDebugPointEventRecord >> asDebugPointRecord [
 

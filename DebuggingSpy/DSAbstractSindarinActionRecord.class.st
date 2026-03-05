@@ -8,9 +8,3 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
-
-{ #category : 'testing' }
-DSAbstractSindarinActionRecord class >> isAbstract [
-
-	^ self = DSAbstractSindarinActionRecord
-]

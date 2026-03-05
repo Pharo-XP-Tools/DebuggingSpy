@@ -311,7 +311,7 @@ DSRecordBrowser >> removeFile: aFileReference [
 
 { #category : 'layout' }
 DSRecordBrowser >> startRecordButton [
-	"Instanciates a button that starts the DSSpy recording when clicked."
+	"Instanciates a button that starts the DSSpy recording session on click."
 
 	^ SpToolbarButtonPresenter new
 		  label: 'Start';
@@ -335,7 +335,7 @@ DSRecordBrowser >> startRecording [
 
 { #category : 'layout' }
 DSRecordBrowser >> stopRecordButton [
-	"Instanciates a button that stops the DSSpy record when clicked."
+	"Instanciates a button that stops the DSSpy recording session on click."
 
 	^ SpToolbarButtonPresenter new
 		  label: 'Stop';

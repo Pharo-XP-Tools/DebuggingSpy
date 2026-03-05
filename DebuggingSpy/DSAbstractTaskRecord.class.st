@@ -15,12 +15,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'testing' }
-DSAbstractTaskRecord class >> isAbstract [
-
-	^ self = DSAbstractTaskRecord
-]
-
 { #category : 'accessing' }
 DSAbstractTaskRecord >> description [
 

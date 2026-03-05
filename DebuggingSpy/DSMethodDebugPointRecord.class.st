@@ -47,12 +47,6 @@ DSMethodDebugPointRecord class >> for: anEvent [
 	^ anEvent
 ]
 
-{ #category : 'testing' }
-DSMethodDebugPointRecord class >> isAbstract [
-
-	^ self = DSMethodDebugPointRecord 
-]
-
 { #category : 'accessing' }
 DSMethodDebugPointRecord >> eventName [
 

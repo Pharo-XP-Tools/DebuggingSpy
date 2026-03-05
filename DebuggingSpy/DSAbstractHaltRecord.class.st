@@ -13,12 +13,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'testing' }
-DSAbstractHaltRecord class >> isAbstract [
-
-	^ self = DSAbstractHaltRecord
-]
-
 { #category : 'accessing' }
 DSAbstractHaltRecord >> method [
 
