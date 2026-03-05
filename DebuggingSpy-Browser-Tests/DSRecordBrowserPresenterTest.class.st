@@ -1,5 +1,5 @@
 Class {
-	#name : 'DSRecordBrowserTest',
+	#name : 'DSRecordBrowserPresenterTest',
 	#superclass : 'TestCase',
 	#instVars : [
 		'browser'
@@ -9,13 +9,13 @@ Class {
 }
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> filesPresenter [
+DSRecordBrowserPresenterTest >> filesPresenter [
 
 	^ browser presenterAt: #fileListPresenter
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> generateRecordsFile [
+DSRecordBrowserPresenterTest >> generateRecordsFile [
 	"Generates a file of random records and returns its file reference."
 
 	| records recordFileRef writeStream |
@@ -42,7 +42,7 @@ DSRecordBrowserTest >> generateRecordsFile [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> getRecordExamples [
+DSRecordBrowserPresenterTest >> getRecordExamples [
 
 	^ OrderedCollection new
 		  add: (DSBrowseRecord new
@@ -65,33 +65,33 @@ DSRecordBrowserTest >> getRecordExamples [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> recordsFilterPresenter [
+DSRecordBrowserPresenterTest >> recordsFilterPresenter [
 
 	^ browser presenterAt: #recordsFilter
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> recordsTablePresenter [
+DSRecordBrowserPresenterTest >> recordsTablePresenter [
 
 	^ browser presenterAt: #recordsTablePresenter
 ]
 
 { #category : 'running' }
-DSRecordBrowserTest >> setUp [
+DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
-	browser := DSRecordBrowser new
+	browser := DSRecordBrowserPresenter new
 ]
 
 { #category : 'running' }
-DSRecordBrowserTest >> tearDown [
+DSRecordBrowserPresenterTest >> tearDown [
 
-	DSRecordBrowser resetBrowser.
+	DSRecordBrowserPresenter resetBrowser.
 	super tearDown
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testAddFile [
+DSRecordBrowserPresenterTest >> testAddFile [
 
 	| fileRef |
 	fileRef := self generateRecordsFile.
@@ -104,7 +104,7 @@ DSRecordBrowserTest >> testAddFile [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testAddFileWhenAlreadyInList [
+DSRecordBrowserPresenterTest >> testAddFileWhenAlreadyInList [
 
 	| fileRef |
 	fileRef := self generateRecordsFile.
@@ -117,7 +117,21 @@ DSRecordBrowserTest >> testAddFileWhenAlreadyInList [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testBrowserEmpty [
+DSRecordBrowserPresenterTest >> testAddingMultipleFiles [
+
+	| fileRef |
+	browser addFile: self generateRecordsFile.
+	fileRef := self generateRecordsFile.
+
+	browser addFile: fileRef.
+
+	self assert: browser files size equals: 2.
+	self assert: self filesPresenter items size equals: 2.
+	self assert: self filesPresenter selectedItem equals: fileRef
+]
+
+{ #category : 'tests' }
+DSRecordBrowserPresenterTest >> testBrowserEmpty [
 
 	self assertEmpty: browser files.
 	self assert: self filesPresenter items size equals: 0.
@@ -126,23 +140,23 @@ DSRecordBrowserTest >> testBrowserEmpty [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testClosingBrowser [
+DSRecordBrowserPresenterTest >> testClosingBrowser [
 
-	DSRecordBrowser toggleBrowser.
-	DSRecordBrowser toggleBrowser.
-	self deny: DSRecordBrowser uniqueInstance window isOpen
+	DSRecordBrowserPresenter toggleBrowser.
+	DSRecordBrowserPresenter toggleBrowser.
+	self deny: DSRecordBrowserPresenter uniqueInstance window isOpen
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testCreatingAndOpeningBrowser [
+DSRecordBrowserPresenterTest >> testCreatingAndOpeningBrowser [
 
-	DSRecordBrowser toggleBrowser.
-	self assert: DSRecordBrowser uniqueInstance window isOpen.
-	DSRecordBrowser toggleBrowser
+	DSRecordBrowserPresenter toggleBrowser.
+	self assert: DSRecordBrowserPresenter uniqueInstance window isOpen.
+	DSRecordBrowserPresenter toggleBrowser
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testFilteringAClassOfRecords [
+DSRecordBrowserPresenterTest >> testFilteringAClassOfRecords [
 
 	| fileRef history |
 	fileRef := self generateRecordsFile.
@@ -158,7 +172,7 @@ DSRecordBrowserTest >> testFilteringAClassOfRecords [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testFilteringAllRecords [
+DSRecordBrowserPresenterTest >> testFilteringAllRecords [
 
 	| fileRef history |
 	fileRef := self generateRecordsFile.
@@ -171,7 +185,7 @@ DSRecordBrowserTest >> testFilteringAllRecords [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testGetHistoryFrom [
+DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 
 	| fileRef |
 	fileRef := self generateRecordsFile.
@@ -179,21 +193,29 @@ DSRecordBrowserTest >> testGetHistoryFrom [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testGetRecordColorAssociationsFrom [
+DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 
-	| fileRef history colorAssociations |
-	fileRef := self generateRecordsFile.
-	history := browser getHistoryFrom: fileRef.
-	colorAssociations := browser getRecordColorAssociationsFrom: history windows.
+	| windows colorAssociations |
+	windows := { (DSWindowRecord new
+		            toolInfos: { (DSToolInfo new
+				             toolClassName: 'StPlaygroundPresenter';
+				             yourself) } asOrderedCollection;
+		            events: {
+				            DSWindowOpenedRecord new.
+				            DSDoItRecord new.
+				            DSStepThroughRecord new }) } asOrderedCollection.
 
-	self assert: colorAssociations first key class equals: DSBrowseRecord.
-	self assert: (colorAssociations at: 2) key class equals: DSMouseEnterWindowRecord.
-	self assert: (colorAssociations at: 3) key class equals: DSMouseLeaveWindowRecord.
-	self assert: colorAssociations last key class equals: DSInspectItRecord
+	colorAssociations := browser getRecordColorAssociationsFrom: windows.
+
+	self assert: colorAssociations first key class equals: DSWindowOpenedRecord.
+	self assert: (colorAssociations at: 2) key class equals: DSDoItRecord.
+	self assert: colorAssociations last key class equals: DSStepThroughRecord.
+
+	colorAssociations do: [ :association | self assert: association value equals: (Color fromHexString: '#70B77E') ]
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testRemoveFile [
+DSRecordBrowserPresenterTest >> testRemoveFile [
 
 	| fileRef1 fileRef2 |
 	fileRef1 := self generateRecordsFile.
@@ -209,7 +231,7 @@ DSRecordBrowserTest >> testRemoveFile [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testRemoveLastFile [
+DSRecordBrowserPresenterTest >> testRemoveLastFile [
 
 	| fileRef1 |
 	fileRef1 := self generateRecordsFile.
@@ -223,7 +245,7 @@ DSRecordBrowserTest >> testRemoveLastFile [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testStartRecording [
+DSRecordBrowserPresenterTest >> testStartRecording [
 
 	self assert: browser timerWindow isNil.
 	self deny: DSRecordRegistry autoSerialize.
@@ -238,7 +260,7 @@ DSRecordBrowserTest >> testStartRecording [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testStopRecording [
+DSRecordBrowserPresenterTest >> testStopRecording [
 
 	| timerWindow |
 	browser startRecording.
@@ -250,11 +272,10 @@ DSRecordBrowserTest >> testStopRecording [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testUpdateRecordsTable [
+DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
-	| fileRef history presenterMock |
+	| fileRef presenterMock |
 	fileRef := self generateRecordsFile.
-	history := browser getHistoryFrom: fileRef.
 	presenterMock := MockObject new on: #selectedItem respond: fileRef.
 	browser updateRecordsTable: presenterMock.
 
@@ -265,13 +286,9 @@ DSRecordBrowserTest >> testUpdateRecordsTable [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserTest >> testUpdateRecordsTableWhenAddingFile [
+DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 
-	| fileRef history |
-	fileRef := self generateRecordsFile.
-	history := browser getHistoryFrom: fileRef.
-
-	browser addFile: fileRef.
+	browser addFile: self generateRecordsFile.
 
 	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
 	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
@@ -280,7 +297,7 @@ DSRecordBrowserTest >> testUpdateRecordsTableWhenAddingFile [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserTest >> timelinePresenter [
+DSRecordBrowserPresenterTest >> timelinePresenter [
 
 	^ browser presenterAt: #graphicTimeline 
 ]

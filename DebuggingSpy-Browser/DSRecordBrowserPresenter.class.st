@@ -5,7 +5,7 @@ Debugging Spy main interface which includes :
 - a window to visualize data from recording files
 "
 Class {
-	#name : 'DSRecordBrowser',
+	#name : 'DSRecordBrowserPresenter',
 	#superclass : 'SpPresenter',
 	#instVars : [
 		'files',
@@ -26,7 +26,7 @@ Class {
 }
 
 { #category : 'world menu' }
-DSRecordBrowser class >> menuCommandOn: aBuilder [
+DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 	"Adds the DSSpy button on topside bar."
 
 	<worldMenu>
@@ -37,7 +37,7 @@ DSRecordBrowser class >> menuCommandOn: aBuilder [
 ]
 
 { #category : 'initialization' }
-DSRecordBrowser class >> resetBrowser [
+DSRecordBrowserPresenter class >> resetBrowser [
 	"Removes the actual browser then another one will be created the next time it needs to be opened."
 
 	<script>
@@ -45,7 +45,7 @@ DSRecordBrowser class >> resetBrowser [
 ]
 
 { #category : 'open/close' }
-DSRecordBrowser class >> toggleBrowser [
+DSRecordBrowserPresenter class >> toggleBrowser [
 	"Opens the browser or closes it depending on its state. If it needs to be created, then creates and opens it."
 
 	uniqueInstance ifNotNil: [
@@ -57,14 +57,14 @@ DSRecordBrowser class >> toggleBrowser [
 ]
 
 { #category : 'accessing' }
-DSRecordBrowser class >> uniqueInstance [
+DSRecordBrowserPresenter class >> uniqueInstance [
 	"Returns the unique browser instance and instanciates it if needed."
 
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
 { #category : 'files' }
-DSRecordBrowser >> addFile: aFileReference [
+DSRecordBrowserPresenter >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
 
 	(files includes: aFileReference)
@@ -76,7 +76,7 @@ DSRecordBrowser >> addFile: aFileReference [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> addRecordButton [
+DSRecordBrowserPresenter >> addRecordButton [
 	"Layout button which opens a window for selecting files."
 
 	^ SpToolbarButtonPresenter new
@@ -88,7 +88,7 @@ DSRecordBrowser >> addRecordButton [
 ]
 
 { #category : 'initialization' }
-DSRecordBrowser >> connectPresenters [
+DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
@@ -100,7 +100,7 @@ DSRecordBrowser >> connectPresenters [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> defaultLayout [
+DSRecordBrowserPresenter >> defaultLayout [
 
 	^ SpBoxLayout newVertical
 		  add: toolbarPresenter expand: false;
@@ -117,7 +117,7 @@ DSRecordBrowser >> defaultLayout [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> fileList [
+DSRecordBrowserPresenter >> fileList [
 	"Instanciates a new presenter with a list of added files."
 
 	^ self newList
@@ -128,13 +128,13 @@ DSRecordBrowser >> fileList [
 ]
 
 { #category : 'accessing' }
-DSRecordBrowser >> files [
+DSRecordBrowserPresenter >> files [
 
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> filterRecordsButton [
+DSRecordBrowserPresenter >> filterRecordsButton [
 	"Instanciates a new layout button which opens the records' filter window."
 
 	^ SpToolbarButtonPresenter new
@@ -146,28 +146,27 @@ DSRecordBrowser >> filterRecordsButton [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowser >> getHistoryFrom: aFileReference [
+DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
 
 	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
 ]
 
 { #category : 'helpers' }
-DSRecordBrowser >> getRecordColorAssociationsFrom: aWindowRecordCollection [
+DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollection [
 	"Returns a sorted collection associating each record with its window's corresponding color, sorted by record's dateTime."
 
 	| recordColorsAssociations |
 	recordColorsAssociations := OrderedCollection new.
 
 	aWindowRecordCollection do: [ :windowRecord |
-			recordColorsAssociations addAll:
-				(windowRecord events collect: [ :record | Association key: record value: (self getWindowColorFrom: windowRecord) ]) ].
+		recordColorsAssociations addAll: (windowRecord events collect: [ :record | record -> (self getWindowColorFrom: windowRecord) ]) ].
 
 	^ recordColorsAssociations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
 ]
 
 { #category : 'helpers' }
-DSRecordBrowser >> getTimelinePointsFrom: aHistory [
+DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 	"Returns a list of plots for the timeline chart."
 
 	^ aHistory windows collectWithIndex: [ :w :index |
@@ -180,7 +179,7 @@ DSRecordBrowser >> getTimelinePointsFrom: aHistory [
 ]
 
 { #category : 'color' }
-DSRecordBrowser >> getWindowColorFrom: aWindowRecord [
+DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
 	"Returns the window associated color, and the default color otherwise."
 
 	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
@@ -198,7 +197,7 @@ DSRecordBrowser >> getWindowColorFrom: aWindowRecord [
 ]
 
 { #category : 'initialization' }
-DSRecordBrowser >> initializePresenters [
+DSRecordBrowserPresenter >> initializePresenters [
 
 	startRecordButtonPresenter := self startRecordButton.
 	stopRecordButtonPresenter := self stopRecordButton.
@@ -210,7 +209,7 @@ DSRecordBrowser >> initializePresenters [
 ]
 
 { #category : 'operations' }
-DSRecordBrowser >> listAddedFilesActions [
+DSRecordBrowserPresenter >> listAddedFilesActions [
 	"Returns a list of actions for the list of added files. Action are: inspecting raw records, inspecting history, or removing the selected file from the list."
 
 	^ SpActionGroup new
@@ -239,7 +238,7 @@ DSRecordBrowser >> listAddedFilesActions [
 ]
 
 { #category : 'operations' }
-DSRecordBrowser >> openAddFileDialog [
+DSRecordBrowserPresenter >> openAddFileDialog [
 	"Opens a dialog where the user can select a file to add in the browser."
 
 	| newFiles |
@@ -251,14 +250,14 @@ DSRecordBrowser >> openAddFileDialog [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> recordsFilter [
+DSRecordBrowserPresenter >> recordsFilter [
 	"Instanciates a new chooser that displays every record classes that could be used to filter records in table."
 
 	^ SpChooserPresenter new sourceItems: DSAbstractEventRecord getLeafSubClasses
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> recordsTable [
+DSRecordBrowserPresenter >> recordsTable [
 	"Instanciates a new records table that displays data based on the selected file's records."
 
 	^ self newTreeTable
@@ -286,7 +285,7 @@ DSRecordBrowser >> recordsTable [
 ]
 
 { #category : 'operations' }
-DSRecordBrowser >> recordsTableActions [
+DSRecordBrowserPresenter >> recordsTableActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
 	^ SpActionGroup new
@@ -301,7 +300,7 @@ DSRecordBrowser >> recordsTableActions [
 ]
 
 { #category : 'files' }
-DSRecordBrowser >> removeFile: aFileReference [
+DSRecordBrowserPresenter >> removeFile: aFileReference [
 	"Removes the selected file from the list and updates the selected item depending on the list number of elements."
 
 	files := files reject: [ :fileReference | fileReference = aFileReference ].
@@ -310,7 +309,7 @@ DSRecordBrowser >> removeFile: aFileReference [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> startRecordButton [
+DSRecordBrowserPresenter >> startRecordButton [
 	"Instanciates a button that starts the DSSpy recording session on click."
 
 	^ SpToolbarButtonPresenter new
@@ -323,7 +322,7 @@ DSRecordBrowser >> startRecordButton [
 ]
 
 { #category : 'recording' }
-DSRecordBrowser >> startRecording [
+DSRecordBrowserPresenter >> startRecording [
 	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recordering."
 
 	timerWindow := DSTimerWindow new.
@@ -334,7 +333,7 @@ DSRecordBrowser >> startRecording [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> stopRecordButton [
+DSRecordBrowserPresenter >> stopRecordButton [
 	"Instanciates a button that stops the DSSpy recording session on click."
 
 	^ SpToolbarButtonPresenter new
@@ -347,7 +346,7 @@ DSRecordBrowser >> stopRecordButton [
 ]
 
 { #category : 'recording' }
-DSRecordBrowser >> stopRecording [
+DSRecordBrowserPresenter >> stopRecording [
 	"Stops the recording session and closes the timer window."
 
 	DSSpyInstrumenter stopInstrumentation.
@@ -357,7 +356,7 @@ DSRecordBrowser >> stopRecording [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> timelineChart [
+DSRecordBrowserPresenter >> timelineChart [
 	"Returns a chart that represents a timeline using the file list presenter's data for its plots."
 
 	| history names chart data |
@@ -385,13 +384,13 @@ DSRecordBrowser >> timelineChart [
 ]
 
 { #category : 'accessing' }
-DSRecordBrowser >> timerWindow [
+DSRecordBrowserPresenter >> timerWindow [
 
 	^ timerWindow
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> toolbar [
+DSRecordBrowserPresenter >> toolbar [
 	"Instanciates a new toolbar to be displayed on layout."
 
 	^ self newToolbar
@@ -402,7 +401,7 @@ DSRecordBrowser >> toolbar [
 ]
 
 { #category : 'operations' }
-DSRecordBrowser >> updateRecordsTable: filesPresenter [
+DSRecordBrowserPresenter >> updateRecordsTable: filesPresenter [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
 	| fileRef recordColorAssociations |
@@ -418,7 +417,7 @@ DSRecordBrowser >> updateRecordsTable: filesPresenter [
 ]
 
 { #category : 'operations' }
-DSRecordBrowser >> updateTimelineChart [
+DSRecordBrowserPresenter >> updateTimelineChart [
 	"Regenerates the timeline chart using the selected record's data"
 
 	| chart |
@@ -430,20 +429,20 @@ DSRecordBrowser >> updateTimelineChart [
 ]
 
 { #category : 'layout' }
-DSRecordBrowser >> updateToolbar [
+DSRecordBrowserPresenter >> updateToolbar [
 
 	startRecordButtonPresenter enabled: DSSpy recordingSession not.
 	stopRecordButtonPresenter enabled: DSSpy recordingSession
 ]
 
 { #category : 'accessing' }
-DSRecordBrowser >> windowIcon [
+DSRecordBrowserPresenter >> windowIcon [
 
 	^ self iconNamed: #smallObjects 
 ]
 
 { #category : 'accessing' }
-DSRecordBrowser >> windowTitle [
+DSRecordBrowserPresenter >> windowTitle [
 
 	^ 'Debugging record browser'
 ]

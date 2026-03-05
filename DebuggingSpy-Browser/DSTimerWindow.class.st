@@ -135,7 +135,7 @@ DSTimerWindow >> stopButton [
 
 	^ PluggableButtonMorph new
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
-		  model: DSRecordBrowser uniqueInstance;
+		  model: DSRecordBrowserPresenter uniqueInstance;
 		  actionSelector: #stopRecording;
 		  position: 125 @ 4;
 		  yourself
