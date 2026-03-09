@@ -132,6 +132,7 @@ DSRecordHistory >> buildWindows [
 
 { #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
+	"Returns a dictionary which contains all delta between two records above than 5s"
 
 	| time currentRecord copyOfRecords deltas |
 	copyOfRecords := records deepCopy.
@@ -141,12 +142,13 @@ DSRecordHistory >> collectTimeDiscrepancies [
 	copyOfRecords do: [ :r |
 			| delta |
 			delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
-			time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
+			time := time + delta.
 			delta > 5 ifTrue: [
 					deltas add: {
 							r.
 							currentRecord } -> delta asSeconds ].
 			currentRecord := r ].
+	
 	^ deltas
 ]
 
@@ -695,7 +697,9 @@ DSRecordHistory >> validateWindows [
 				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) add: #closing -> lastEvent ].
 
 			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) addAll:
-				(w events reject: [ :e | e dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ]
+				(w events reject: [ :e | e dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ].
+
+	^ erroneousWindows
 ]
 
 { #category : 'accessing' }

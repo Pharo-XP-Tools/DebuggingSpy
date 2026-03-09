@@ -119,6 +119,27 @@ DSRecordHistoryTest >> testBuildWindows [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testCollectTimeDiscrepancies [
+
+	| deltaDict |
+	history records: {
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
+			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
+			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
+			(DSDebugItRecord new dateTime: '2024-09-23T15:02:56' asDateAndTime).
+			(DSMouseLeaveWindowRecord new dateTime: '2024-09-23T15:03:00' asDateAndTime).
+			(DSWindowClosedRecord new dateTime: '2024-09-23T15:03:03' asDateAndTime).
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:06:07' asDateAndTime).
+			(DSPrintItRecord new dateTime: '2024-09-23T15:06:10' asDateAndTime).
+			(DSClipboardCopyRecord new dateTime: '2024-09-23T15:06:26' asDateAndTime).
+			(DSMethodRemovedRecord new dateTime: '2024-09-23T15:06:30' asDateAndTime) }.
+
+	deltaDict := history collectTimeDiscrepancies.
+	
+	self assert: deltaDict first value equals: 7
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testCountDebugActions [
 
 	history records: {
@@ -351,6 +372,28 @@ DSRecordHistoryTest >> testMethodsModified [
 			DSMethodRemovedRecord new.
 			DSReturnValue new } asOrderedCollection.
 	self assert: history methodsModified equals: 1
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testMethodsModifiedEvents [
+
+	| methodModifiedEvents |
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMethodAddedRecord new.
+			(DSMethodModifiedRecord new windowId: 23).
+			DSMethodRemovedRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSReturnValue new.
+			(DSMethodModifiedRecord new windowId: 54) } asOrderedCollection.
+
+	methodModifiedEvents := history methodsModifiedEvents.
+	self assert: methodModifiedEvents size equals: 2.
+	self assert: methodModifiedEvents first class equals: DSMethodModifiedRecord.
+	self assert: methodModifiedEvents first windowId equals: 23.
+	self assert: methodModifiedEvents second class equals: DSMethodModifiedRecord.
+	self assert: methodModifiedEvents second windowId equals: 54
 ]
 
 { #category : 'tests' }
