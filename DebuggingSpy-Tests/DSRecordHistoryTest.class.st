@@ -247,6 +247,62 @@ DSRecordHistoryTest >> testDetectTimeDiscrepancies [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testEstimateSourceEventOfFrom [
+
+	| exampleRecord recordList result |
+	exampleRecord := DSWindowOpenedRecord new.
+	recordList := {
+		              exampleRecord.
+		              DSDoItRecord new.
+		              DSWindowActivatedRecord new }.
+
+	result := history estimateSourceEventOf: exampleRecord from: recordList.
+	self assert: result isNil.
+
+	recordList := {
+		              DSBreakDebugPointEventRecord new.
+		              DSDebugItRecord new.
+		              (DSHaltHitRecord new windowId: 36).
+		              DSClipboardPasteRecord new.
+		              DSMouseEnterWindowRecord new.
+		              DSPrintItRecord new.
+		              exampleRecord.
+		              DSDoItRecord new.
+		              DSWindowActivatedRecord new }.
+
+	result := history estimateSourceEventOf: exampleRecord from: recordList.
+	self assert: result class equals: DSHaltHitRecord.
+	self assert: result windowId equals: 36.
+
+	recordList := {
+		              DSPrintItRecord new.
+		              DSStepIntoRecord new.
+		              (DSDoItRecord new windowId: 67).
+		              DSClipboardPasteRecord new.
+		              DSMouseEnterWindowRecord new.
+		              exampleRecord.
+		              DSDoItRecord new.
+		              DSWindowActivatedRecord new }.
+
+	result := history estimateSourceEventOf: exampleRecord from: recordList.
+	self assert: result class equals: DSDoItRecord.
+	self assert: result windowId equals: 67.
+
+	recordList := {
+		              DSMouseEnterWindowRecord new.
+		              DSMouseLeaveWindowRecord new.
+		              DSSendersRecord new.
+		              (DSBrowseRecord new windowId: 26).
+		              exampleRecord.
+		              DSDoItRecord new.
+		              DSWindowActivatedRecord new }.
+
+	result := history estimateSourceEventOf: exampleRecord from: recordList.
+	self assert: result class equals: DSBrowseRecord.
+	self assert: result windowId equals: 26
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testEventsAfter [
 
 	| listOfEvents |
