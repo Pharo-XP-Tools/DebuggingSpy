@@ -17,11 +17,7 @@ DSRecordHistoryTest >> getRecordsExample [
 
 	exampleRecords add: (DSMouseEnterWindowRecord new
 			 windowId: 1;
-			 dateTime: '2000-05-07T15:02:44' asDateAndTime;
-			 toolInfo: (DSToolInfo new
-					  toolClassName: #Playground;
-					  windowIdentityHash: 1;
-					  toolIdentityHash: 42)).
+			 dateTime: '2000-05-07T15:02:44' asDateAndTime).
 	exampleRecords add: (DSMouseLeaveWindowRecord new
 			 windowId: 1;
 			 dateTime: '2000-05-07T15:03:56' asDateAndTime).
@@ -490,12 +486,28 @@ DSRecordHistoryTest >> testNumberOfSteps [
 { #category : 'tests' }
 DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 
-	history records: self getRecordsExample.
-	
-	history buildWindows.
+	| toolInfoExample |
+	toolInfoExample := DSToolInfo new
+		                   toolClassName: #Playground;
+		                   windowIdentityHash: 1;
+		                   toolIdentityHash: 42.
+
+	history records: {
+			(DSMouseEnterWindowRecord new toolInfo: toolInfoExample).
+			DSDebugItRecord new.
+			(DSMouseEnterWindowRecord new toolInfo: nil) }.
+
+	history windows: {
+			(DSWindowRecord new events: { (DSMouseEnterWindowRecord new windowId: 1) }).
+			(DSWindowRecord new events: { (DSPrintItRecord new windowId: -1) }).
+			(DSWindowRecord new events: { (DSStepIntoRecord new windowId: 2) }) }.
+
 	history reconstructWindowsToolInfo.
-	
-	self assert: history windows size equals: 5.
+
+	self assert: history windows size equals: 3.
+	self assert: history windows first toolInfos equals: toolInfoExample.
+	self assert: history windows second toolInfos isNil.
+	self assert: history windows third toolInfos isNil
 ]
 
 { #category : 'tests' }
