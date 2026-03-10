@@ -28,7 +28,7 @@ DSAbstractDebugPointEventRecord >> asDebugPointRecord [
 
 { #category : 'testing' }
 DSAbstractDebugPointEventRecord >> canOpenDebuggers [
-	^eventName = 'BreakpointHit'
+	^eventName = 'DebugPointHit'
 ]
 
 { #category : 'accessing' }

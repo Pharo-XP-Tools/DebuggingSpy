@@ -135,8 +135,17 @@ DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 			(DSMethodRemovedRecord new dateTime: '2024-09-23T15:06:30' asDateAndTime) }.
 
 	deltaDict := history collectTimeDiscrepancies.
-	
-	self assert: deltaDict first value equals: 7
+
+	self assert: deltaDict size equals: 3.
+	self assert: deltaDict first value equals: 7 asDuration.
+	self assert: deltaDict first key first class equals: DSDoItRecord.
+	self assert: deltaDict first key second class equals: DSStepIntoRecord.
+	self assert: deltaDict second value equals: 184 asDuration.
+	self assert: deltaDict second key first class equals: DSWindowClosedRecord.
+	self assert: deltaDict second key second class equals: DSMouseEnterWindowRecord.
+	self assert: deltaDict third value equals: 16 asDuration.
+	self assert: deltaDict third key first class equals: DSPrintItRecord.
+	self assert: deltaDict third key second class equals: DSClipboardCopyRecord
 ]
 
 { #category : 'tests' }
@@ -281,6 +290,54 @@ DSRecordHistoryTest >> testExecutedCode [
 			DSPrintItRecord new.
 			DSReturnValue new } asOrderedCollection.
 	self assert: history executedCode equals: 5
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testFindSourceEventLikeForRecordIn [
+
+	| exampleRecord recordList possibleSourceEvents result |
+	possibleSourceEvents := {
+		                        DSDebugItRecord.
+		                        DSBreakDebugPointEventRecord }.
+	exampleRecord := DSWindowOpenedRecord new.
+	recordList := {
+		              DSWindowOpenedRecord new.
+		              DSDoItRecord new.
+		              exampleRecord.
+		              DSWindowActivatedRecord new }.
+
+	result := history findSourceEventLike: possibleSourceEvents forRecord: exampleRecord in: recordList.
+	self assert: result isNil.
+
+	recordList := {
+		              DSDebugItRecord new.
+		              DSClipboardCopyRecord new.
+		              DSDoItRecord new.
+		              exampleRecord.
+		              DSWindowActivatedRecord new }.
+
+	result := history findSourceEventLike: possibleSourceEvents forRecord: exampleRecord in: recordList.
+	self assert: result class equals: DSDebugItRecord.
+
+	recordList := {
+		              DSStepIntoRecord new.
+		              DSMouseEnterWindowRecord new.
+		              (DSBreakDebugPointEventRecord new eventName: 'DebugPointAdded').
+		              exampleRecord.
+		              DSClipboardPasteRecord new }.
+
+	result := history findSourceEventLike: possibleSourceEvents forRecord: exampleRecord in: recordList.
+	self assert: result isNil.
+
+	recordList := {
+		              DSDoItRecord new.
+		              DSMouseEnterWindowRecord new.
+		              exampleRecord.
+		              DSClipboardPasteRecord new.
+		              DSMouseLeaveWindowRecord new }.
+
+	result := history findSourceEventLike: possibleSourceEvents forRecord: exampleRecord in: recordList.
+	self assert: result isNil
 ]
 
 { #category : 'tests' }
@@ -474,6 +531,69 @@ DSRecordHistoryTest >> testToolInfosFor [
 
 	toolInfo := history toolInfosFor: 98.
 	self assert: toolInfo isNil
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testValidateWindows [
+
+	| erroneousWindows currentWindow |
+	history windows: {
+			(DSWindowRecord new events: {
+					 (DSWindowOpenedRecord new dateTime: '2015-11-04T09:45:09' asDateAndTime).
+					 (DSDoItRecord new dateTime: '2015-11-04T14:28:15' asDateAndTime).
+					 (DSClipboardPasteRecord new dateTime: '2015-11-04T09:45:28' asDateAndTime).
+					 (DSMethodAddedRecord new dateTime: '2015-11-04T09:56:43' asDateAndTime).
+					 (DSMouseLeaveWindowRecord new dateTime: '2015-11-04T09:45:56' asDateAndTime) }).
+			(DSWindowRecord new events: {
+					 (DSClipboardCopyRecord new dateTime: '2015-11-04T09:45:15' asDateAndTime).
+					 (DSDoItAndGoRecord new dateTime: '2015-11-04T09:51:28' asDateAndTime).
+					 (DSStepIntoRecord new dateTime: '2015-11-04T09:45:43' asDateAndTime).
+					 (DSWindowClosedRecord new dateTime: '2015-11-04T09:45:56' asDateAndTime) }).
+			(DSWindowRecord new events: {
+					 (DSMouseEnterWindowRecord new dateTime: '2015-11-04T09:45:09' asDateAndTime).
+					 (DSInspectItRecord new dateTime: '2015-11-04T09:45:15' asDateAndTime).
+					 (DSDoItRecord new dateTime: '2015-11-04T09:45:28' asDateAndTime).
+					 (DSHaltHitRecord new dateTime: '2015-11-04T09:45:43' asDateAndTime) }).
+			(DSWindowRecord new events: { (DSStepThroughRecord new dateTime: '2015-11-04T09:45:15' asDateAndTime) }).
+			(DSWindowRecord new events: {
+					 (DSMouseEnterWindowRecord new dateTime: '2015-11-04T09:45:09' asDateAndTime).
+					 (DSBrowseRecord new dateTime: '2015-11-04T09:45:15' asDateAndTime).
+					 (DSMouseLeaveWindowRecord new dateTime: '2015-11-04T09:45:43' asDateAndTime) }) }.
+
+
+	erroneousWindows := history validateWindows.
+
+	self assert: erroneousWindows size equals: 5.
+
+	currentWindow := erroneousWindows at: history windows first.
+	self assert: currentWindow size equals: 2.
+	self assert: currentWindow first class equals: DSDoItRecord.
+	self assert: currentWindow second class equals: DSMethodAddedRecord.
+
+	currentWindow := erroneousWindows at: history windows second.
+	self assert: currentWindow size equals: 2.
+	self assert: currentWindow first class equals: Association.
+	self assert: currentWindow first key equals: #opening.
+	self assert: currentWindow first value class equals: DSClipboardCopyRecord.
+	self assert: currentWindow second class equals: DSDoItAndGoRecord.
+
+	currentWindow := erroneousWindows at: history windows third.
+	self assert: currentWindow size equals: 1.
+	self assert: currentWindow first class equals: Association.
+	self assert: currentWindow first key equals: #closing.
+	self assert: currentWindow first value class equals: DSHaltHitRecord.
+
+	currentWindow := erroneousWindows at: (history windows at: 4).
+	self assert: currentWindow size equals: 2.
+	self assert: currentWindow first class equals: Association.
+	self assert: currentWindow first key equals: #opening.
+	self assert: currentWindow first value class equals: DSStepThroughRecord.
+	self assert: currentWindow second class equals: Association.
+	self assert: currentWindow second key equals: #closing.
+	self assert: currentWindow second value class equals: DSStepThroughRecord.
+
+	currentWindow := erroneousWindows at: (history windows at: 5).
+	self assert: currentWindow isEmpty
 ]
 
 { #category : 'tests' }

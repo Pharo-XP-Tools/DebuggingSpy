@@ -134,20 +134,20 @@ DSRecordHistory >> buildWindows [
 DSRecordHistory >> collectTimeDiscrepancies [
 	"Returns a dictionary which contains all delta between two records above than 5s"
 
-	| time currentRecord copyOfRecords deltas |
+	| time previousRecord copyOfRecords deltas |
 	copyOfRecords := records deepCopy.
 	time := 0.
 	deltas := OrderedCollection new.
-	currentRecord := copyOfRecords first.
-	copyOfRecords do: [ :r |
+	previousRecord := copyOfRecords first.
+	copyOfRecords do: [ :record |
 			| delta |
-			delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
+			delta := record dateTime asSeconds - previousRecord dateTime asSeconds.
 			time := time + delta.
 			delta > 5 ifTrue: [
 					deltas add: {
-							r.
-							currentRecord } -> delta asSeconds ].
-			currentRecord := r ].
+							previousRecord .
+							record } -> delta asSeconds ].
+			previousRecord := record ].
 	
 	^ deltas
 ]
@@ -176,11 +176,11 @@ DSRecordHistory >> debugPointAnalysisMap [
 
 	| report |
 	report := Dictionary new.
-	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: [ :bp |
-		(report at: bp targetClassOrMethod ifAbsentPut: [
-			 DSDebugPointReport new
-				 method: bp targetClassOrMethod;
-				 yourself ]) add: bp ].
+	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: [ :debugPoint |
+			(report at: debugPoint target ifAbsentPut: [
+					 DSDebugPointReport new
+						 method: debugPoint target;
+						 yourself ]) add: debugPoint ].
 	^ report
 ]
 
@@ -233,24 +233,16 @@ DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecord
 
 	eventIndex = 1 ifTrue: [ ^ nil ].
 
-
 	(self
-		 findSourceEventLike: aDSDebuggerOpeningRecord primarySourcesOfWindowOpenings
+		 findSourceEventLike: self primarySourcesOfDebuggerOpenings
 		 forRecord: aDSDebuggerOpeningRecord
 		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
 
-
 	(self
-		 findSourceEventLike: aDSDebuggerOpeningRecord secondarySourcesOfWindowOpenings
+		 findSourceEventLike: self secondarySourcesOfDebuggerOpenings
 		 forRecord: aDSDebuggerOpeningRecord
 		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
 
-
-	aDSDebuggerOpeningRecord contextName = 'CompiledMethod>>#DoIt' ifTrue: [
-			^ DSDebugItRecord new
-				  selectedString: aDSDebuggerOpeningRecord sourceNodeCode;
-				  windowId: (aRecordList at: eventIndex - 1) windowId;
-				  yourself ]. "self halt: 'If we get there we forgot a case...'."
 	^ aRecordList at: eventIndex - 1
 ]
 
@@ -382,11 +374,11 @@ DSRecordHistory >> haltAnalysisMap [
 
 	| report |
 	report := Dictionary new.
-	(self allRecordsOfKind: DSAbstractHaltRecord) do: [ :bp |
-		(report at: bp method ifAbsentPut: [
+	(self allRecordsOfKind: DSAbstractHaltRecord) do: [ :haltRecord |
+		(report at: haltRecord method ifAbsentPut: [
 			 DSHaltReport new
-				 method: bp method;
-				 yourself ]) add: bp ].
+				 method: haltRecord method;
+				 yourself ]) add: haltRecord ].
 	^ report
 ]
 
@@ -471,6 +463,16 @@ DSRecordHistory >> numberOfSteps [
 	^ (self allRecordsOfKind: DSAbstractDebuggerActionRecord) size
 ]
 
+{ #category : 'private - history' }
+DSRecordHistory >> primarySourcesOfDebuggerOpenings [
+
+	^ ({
+		   DSAbstractDebugPointEventRecord.
+			DSDebugItRecord.
+		   DSHaltHitRecord.
+		   DSUnhandledExceptionRecord } collect: [ :element | element withAllSubclasses ]) flattened
+]
+
 { #category : 'initialization' }
 DSRecordHistory >> processRecords: anArrayOfRecords [
 	"Build the history from an array of records"
@@ -503,7 +505,7 @@ DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
 		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
 
-	recordsCopy := records deepCopy.
+	recordsCopy := records copy asOrderedCollection.
 
 	sortedDebuggerWindows do: [ :w |
 		|sourceEvent|
@@ -550,6 +552,14 @@ DSRecordHistory >> records: anObject [
 { #category : 'initialization' }
 DSRecordHistory >> reprocessRecords [
 	self processRecords: records asOrderedCollection 
+]
+
+{ #category : 'private - history' }
+DSRecordHistory >> secondarySourcesOfDebuggerOpenings [
+
+	^ ({
+		   DSCodeActionRecord.
+		   DSAbstractDebuggerActionRecord } collect: [ :c | c withAllSubclasses ]) flattened
 ]
 
 { #category : 'accessing' }
@@ -674,7 +684,7 @@ DSRecordHistory >> validateWindows [
 	| erroneousWindows |
 	erroneousWindows := Dictionary new.
 
-	windows do: [ :w | "erroneousWindows ifNotEmpty: [
+	windows do: [ :window | "erroneousWindows ifNotEmpty: [
 		Warning signal: (String streamContents: [ :str |
 				 str << erroneousWindows size printString.
 				 str space.
@@ -682,22 +692,22 @@ DSRecordHistory >> validateWindows [
 				 <<
 				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]"
 			| firstEvent lastEvent |
-			firstEvent := w events first.
-			lastEvent := w events last.
+			firstEvent := window events first.
+			lastEvent := window events last.
 
 			({
 				 DSWindowOpenedRecord.
 				 DSWindowActivatedRecord.
 				 DSMouseEnterWindowRecord } includes: firstEvent class) ifFalse: [
-				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) add: #opening -> firstEvent ].
+				(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) add: #opening -> firstEvent ].
 
 			({
 				 DSWindowClosedRecord.
 				 DSMouseLeaveWindowRecord } includes: lastEvent class) ifFalse: [
-				(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) add: #closing -> lastEvent ].
+				(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) add: #closing -> lastEvent ].
 
-			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ]) addAll:
-				(w events reject: [ :e | e dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ].
+			(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) addAll:
+				(window events reject: [ :event | event dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ].
 
 	^ erroneousWindows
 ]
