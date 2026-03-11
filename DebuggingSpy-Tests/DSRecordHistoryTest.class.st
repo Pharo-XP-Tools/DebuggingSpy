@@ -90,14 +90,49 @@ DSRecordHistoryTest >> testAllRecordsOfKind [
 { #category : 'tests' }
 DSRecordHistoryTest >> testBuildWindowHistory [
 
-	| windowsHistory |
-	history records: self getRecordsExample.
+	| windowsHistory listOfRecords |
+	history records: {
+			DSDoItRecord new.
+			(DSWindowOpenedRecord new
+				 windowId: 1;
+				 windowName: 'playgroundWindow').
+			(DSMouseEnterWindowRecord new windowId: 1).
+			DSMethodAddedRecord new.
+			(DSMethodRemovedRecord new windowId: 1).
+			(DSMouseLeaveWindowRecord new windowId: 1).
+			DSReturnValue new.
+			(DSWindowOpenedRecord new
+				 windowId: 3;
+				 windowName: 'browserWindow').
+			DSStepIntoRecord new.
+			(DSMouseLeaveWindowRecord new windowId: 3).
+			DSPrintItRecord new.
+			(DSStepThroughRecord new windowId: 3) } asOrderedCollection.
+
 	history buildWindowHistory.
 	windowsHistory := history windowsHistory.
 
 	self assert: windowsHistory class equals: IdentityDictionary.
-	self assert: windowsHistory size equals: 2.
-	self flag: 'TODO'
+	self assert: windowsHistory size equals: 3.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = 1 ]) windowName equals: 'playgroundWindow'.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = 3 ]) windowName equals: 'browserWindow'.
+	self assert: (windowsHistory keys detect: [ :k | k windowId = -1 ]) windowName isNil.
+
+	listOfRecords := windowsHistory at: (windowsHistory keys detect: [ :k | k windowId = 1 ]).
+	self assert: listOfRecords size equals: 5.
+	self assert: listOfRecords first class equals: DSWindowOpenedRecord.
+	self assert: listOfRecords last class equals: DSMouseLeaveWindowRecord.
+
+	listOfRecords := windowsHistory at: (windowsHistory keys detect: [ :k | k windowId = 3 ]).
+	self assert: listOfRecords size equals: 4.
+	self assert: listOfRecords first class equals: DSWindowOpenedRecord.
+	self assert: listOfRecords last class equals: DSStepThroughRecord.
+
+	listOfRecords := windowsHistory at: (windowsHistory keys detect: [ :k | k windowId = -1 ]).
+	self assert: listOfRecords size equals: 3.
+	self assert: listOfRecords first class equals: DSDoItRecord.
+	self assert: listOfRecords second class equals: DSReturnValue.
+	self assert: listOfRecords third class equals: DSPrintItRecord
 ]
 
 { #category : 'tests' }

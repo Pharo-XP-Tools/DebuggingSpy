@@ -1,3 +1,6 @@
+"
+I am representing windows on which a user did actions. I am built from a list of records. 
+"
 Class {
 	#name : 'DSWindowRecord',
 	#superclass : 'Object',
@@ -239,9 +242,7 @@ DSWindowRecord >> toolInfos: anObject [
 { #category : 'accessing' }
 DSWindowRecord >> totalTime [
 
-	^ (activePeriods
-		   inject: 0
-		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
+	^ activePeriods sum: [ :element | element duration asSeconds ] seconds
 ]
 
 { #category : 'accessing' }
