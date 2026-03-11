@@ -56,6 +56,13 @@ DSWindowEventRecord >> toolInfo [
 ]
 
 { #category : 'accessing' }
+DSWindowEventRecord >> toolInfo: aToolInfo [
+
+	self flag: 'Refactoring: pull up toolInfo?'.
+	toolInfo := aToolInfo
+]
+
+{ #category : 'accessing' }
 DSWindowEventRecord >> windowName [
 
 	^ windowName

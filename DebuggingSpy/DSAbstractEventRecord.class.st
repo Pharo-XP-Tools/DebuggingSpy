@@ -53,6 +53,12 @@ DSAbstractEventRecord >> >= aDSAbstractRecord [
 	^self dateTime >= aDSAbstractRecord dateTime
 ]
 
+{ #category : 'processing' }
+DSAbstractEventRecord >> anonymize [
+
+	self class allSlots do: [ :s | s write: nil to: self ]
+]
+
 { #category : 'testing' }
 DSAbstractEventRecord >> canOpenDebuggers [
 
