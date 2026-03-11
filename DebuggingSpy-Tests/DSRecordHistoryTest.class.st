@@ -138,15 +138,73 @@ DSRecordHistoryTest >> testBuildWindowHistory [
 { #category : 'tests' }
 DSRecordHistoryTest >> testBuildWindows [
 
-	| windows |
-	history records: self getRecordsExample.
-	history windowsHistory: IdentityDictionary new.
-	history buildWindows.
-	windows := history windows.
+	| windows filteredWindows debuggerOpening sourceDebugger |
+	debuggerOpening := DSWindowOpenedRecord new
+		                   windowId: 8;
+		                   windowName: 'StDebugger';
+		                   toolInfo: (DSToolInfo new
+				                    toolClassName: #StDebugger;
+				                    windowIdentityHash: 1;
+				                    toolIdentityHash: 42).
+	sourceDebugger := DSHaltHitRecord new windowId: 5.
+	history windowsHistory: ({
+			 ((DSRecordHistoryWindowKey new
+				   windowId: 1;
+				   windowName: 'playground') -> {
+				  (DSWindowOpenedRecord new
+					   dateTime: '2022-12-21T09:23:00' asDateAndTime;
+					   windowId: 1;
+					   windowName: 'StPlayground';
+					   toolInfo: (DSToolInfo new
+							    toolClassName: #Playground;
+							    windowIdentityHash: 1;
+							    toolIdentityHash: 42)).
+				  DSDoItRecord new.
+				  (DSMouseLeaveWindowRecord new dateTime: '2022-12-21T09:23:04' asDateAndTime) } asOrderedCollection).
+			 ((DSRecordHistoryWindowKey new
+				   windowId: 5;
+				   windowName: 'playground') -> {
+				  (DSMouseEnterWindowRecord new
+					   windowId: 5;
+					   dateTime: '2022-12-21T09:25:20' asDateAndTime).
+				  DSPrintItRecord new.
+				  DSClipboardPasteRecord new.
+				  sourceDebugger.
+				  (DSMouseLeaveWindowRecord new dateTime: '2022-12-21T09:27:03' asDateAndTime) } asOrderedCollection).
+			 ((DSRecordHistoryWindowKey new
+				   windowId: 8;
+				   windowName: 'stDebugger') -> {
+				  debuggerOpening.
+				  (DSMouseEnterWindowRecord new dateTime: '2022-12-21T09:29:22' asDateAndTime).
+				  DSStepIntoRecord new.
+				  (DSMouseLeaveWindowRecord new dateTime: '2022-12-21T10:17:04' asDateAndTime) } asOrderedCollection).
+			 ((DSRecordHistoryWindowKey new windowId: -1) -> {
+				  (DSMouseEnterWindowRecord new windowId: -1).
+				  DSClipboardCopyRecord new.
+				  DSMouseLeaveWindowRecord new } asOrderedCollection) } as: IdentityDictionary).
+	history records: {
+			DSDoItRecord new.
+			sourceDebugger.
+			DSClipboardCopyRecord new.
+			debuggerOpening } asOrderedCollection.
 
-	self assert: windows class equals: OrderedCollection.
-	self assert: windows size equals: 0.
-	self flag: 'TODO'
+	history buildWindows.
+	windows := history windows groupedBy: #windowId.
+	filteredWindows := history filteredWindows groupedBy: #windowId.
+
+	self assert: windows size equals: 4.
+	self assert: (windows at: 1) first name equals: 'StPlayground'.
+	self assert: (windows at: 1) first events size equals: 3.
+	self assert: (windows at: 5) first name equals: 5.
+	self assert: (windows at: 5) first events size equals: 5.
+	self assert: (windows at: 8) first name equals: 'StDebugger'.
+	self assert: (windows at: 8) first events size equals: 4.
+	self assert: (windows at: -1) first name equals: -1.
+	self assert: (windows at: -1) first events size equals: 3.
+
+	self assert: filteredWindows size equals: 2.
+	self assert: (windows at: 1) first name equals: 'StPlayground'.
+	self assert: (windows at: 8) first name equals: 'StDebugger'.
 ]
 
 { #category : 'tests' }

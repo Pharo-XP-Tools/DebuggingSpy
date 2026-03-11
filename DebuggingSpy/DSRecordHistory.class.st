@@ -17,9 +17,9 @@ Class {
 		'filteredWindows',
 		'mergedWindowJumps'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'instance creation' }
@@ -123,6 +123,7 @@ DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
 	self windowsHistory valuesDo: [ :events | windows add: (DSWindowRecord for: events) ].
+	self reconstructWindowsToolInfo. 
 	self reconstructSourcesOfDebuggerOpenings.
 
 	filteredWindows := windows reject: [ :w |
@@ -490,7 +491,6 @@ DSRecordHistory >> processRecords: anArrayOfRecords [
 	self buildWindowHistory.
 	self buildWindows.
 	self buildWindowJumps.
-	self reconstructWindowsToolInfo. 
 	
 	"Check data consistency (raises a warning that can be proceeded)"
 	self validateWindows.

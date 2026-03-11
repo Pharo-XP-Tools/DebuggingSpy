@@ -56,6 +56,12 @@ DSWindowEventRecord >> toolInfo [
 ]
 
 { #category : 'accessing' }
+DSWindowEventRecord >> toolInfo: aToolInfo [
+
+	toolInfo := aToolInfo
+]
+
+{ #category : 'accessing' }
 DSWindowEventRecord >> windowName [
 
 	^ windowName

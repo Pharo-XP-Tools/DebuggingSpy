@@ -75,8 +75,7 @@ DSWindowRecord >> computeActivePeriods [
 	[ activityStartStopEvents isEmpty ] whileFalse: [
 			| next |
 			next := activityStartStopEvents removeFirst.
-			next class = DSMouseEnterWindowRecord ifTrue: [
-				(previous isNil or: [ previous class = next class ]) ifFalse: [ start := next ] ].
+			next class = DSMouseEnterWindowRecord ifTrue: [ previous class = next class ifFalse: [ start := next ] ].
 
 			next class = DSMouseLeaveWindowRecord ifTrue: [
 					| startIndex stopIndex |
@@ -242,7 +241,9 @@ DSWindowRecord >> toolInfos: anObject [
 { #category : 'accessing' }
 DSWindowRecord >> totalTime [
 
-	^ activePeriods sum: [ :element | element duration asSeconds ] seconds
+	^ (activePeriods
+		   inject: 0
+		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
 ]
 
 { #category : 'accessing' }
