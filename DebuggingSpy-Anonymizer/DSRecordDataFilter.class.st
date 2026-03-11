@@ -37,6 +37,12 @@ DSRecordDataFilter >> initialize [
 	operations := SmallDictionary new
 ]
 
+{ #category : 'accessing' }
+DSRecordDataFilter >> operations [
+
+	^ operations
+]
+
 { #category : 'filtering' }
 DSRecordDataFilter >> transform: aSlotSymbol with: aBlock [
 	"Adds the specified slot to transformations. Raises an error if the slot has already been added."

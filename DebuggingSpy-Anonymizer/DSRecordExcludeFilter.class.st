@@ -17,9 +17,7 @@ DSRecordExcludeFilter >> applyOn: aRecord [
 	newRecord := self getRecordCopyOf: aRecord.
 
 	newRecord class allSlots do: [ :slot |
-			operations
-				at: slot name
-				ifPresent: [ :association | slot write: (association value: (newRecord readSlotNamed: slot name)) to: newRecord ] ].
+		operations at: slot name ifPresent: [ :block | slot write: (block value: (newRecord readSlotNamed: slot name)) to: newRecord ] ].
 
 	^ newRecord
 ]

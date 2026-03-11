@@ -19,7 +19,7 @@ DSRecordIncludeFilter >> applyOn: aRecord [
 	newRecord class allSlots do: [ :slot |
 			operations
 				at: slot name
-				ifPresent: [ :association | slot write: (association value: (newRecord readSlotNamed: slot name)) to: newRecord ]
+				ifPresent: [ :block | slot write: (block value: (newRecord readSlotNamed: slot name)) to: newRecord ]
 				ifAbsent: [ slot write: nil to: newRecord ] ].
 
 	^ newRecord
