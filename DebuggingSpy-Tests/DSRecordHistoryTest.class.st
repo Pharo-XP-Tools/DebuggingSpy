@@ -540,6 +540,53 @@ DSRecordHistoryTest >> testNumberOfSteps [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testReconstructSourcesOfDebuggerOpenings [
+
+	| openWindow1 openWindow2 openWindow3 sourceEvent1 sourceEvent2 |
+	openWindow1 := DSMouseEnterWindowRecord new dateTime: '2015-11-04T08:57:14' asDateAndTime.
+	openWindow2 := DSWindowOpenedRecord new dateTime: '2015-11-04T10:23:38' asDateAndTime.
+	openWindow3 := DSWindowOpenedRecord new dateTime: '2015-11-04T09:45:09' asDateAndTime.
+
+	history windows: {
+			(DSWindowRecord new
+				 events: { openWindow1 };
+				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')).
+			(DSWindowRecord new
+				 events: { (DSWindowOpenedRecord new dateTime: '2015-11-04T09:12:09' asDateAndTime) };
+				 toolInfos: (DSToolInfo new toolClassName: 'IceTipRepositoryBrowser')).
+			(DSWindowRecord new
+				 events: { openWindow3 };
+				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')).
+			(DSWindowRecord new
+				 events: { openWindow2 };
+				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')) }.
+
+	sourceEvent1 := DSDebugItRecord new windowId: 1.
+	sourceEvent2 := DSPrintItRecord new windowId: 3.
+
+	history records: {
+			DSDoItRecord new.
+			sourceEvent1.
+			DSStepIntoRecord new.
+			openWindow1.
+			openWindow3.
+			DSMouseLeaveWindowRecord new.
+			DSMouseEnterWindowRecord new.
+			sourceEvent2.
+			DSBrowseRecord new.
+			DSMethodAddedRecord new.
+			openWindow2 }.
+
+	history reconstructSourcesOfDebuggerOpenings.
+
+	self assert: history windows size equals: 4.
+	self assert: history windows first sourceEvent equals: sourceEvent1.
+	self assert: history windows second sourceEvent isNil.
+	self assert: history windows third sourceEvent isNil.
+	self assert: (history windows at: 4) sourceEvent equals: sourceEvent2
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 
 	| toolInfoExample |

@@ -502,17 +502,16 @@ DSRecordHistory >> processRecords: anArrayOfRecords [
 DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 
 	| sortedDebuggerWindows recordsCopy |
-	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
-		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
+	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ]) sort: [ :d1 :d2 |
+		                         d1 events first dateTime < d2 events first dateTime ].
 
 	recordsCopy := records copy asOrderedCollection.
 
 	sortedDebuggerWindows do: [ :w |
-		|sourceEvent|
-		sourceEvent := (self estimateSourceEventOf: w events first from: recordsCopy).
-		recordsCopy remove: w events first.
-		recordsCopy remove: sourceEvent realRecord ifAbsent:[]. 			
-		w sourceEvent: sourceEvent ]
+			| sourceEvent |
+			sourceEvent := self estimateSourceEventOf: w events first from: recordsCopy.
+			recordsCopy removeFirst: (recordsCopy indexOf: w events first).
+			w sourceEvent: sourceEvent ]
 ]
 
 { #category : 'API-history' }
