@@ -14,17 +14,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'accessing' }
-DSAbstractEventRecord class >> anonymousFilter [
-	"Returns the data filter that anonymizes the record for this class"
-
-	^ DSRecordIncludeFilter new
-		  with: #dateTime;
-		  with: #uuid;
-		  with: #windowId;
-		  yourself
-]
-
 { #category : 'instance creation' }
 DSAbstractEventRecord class >> for: anObject [
 

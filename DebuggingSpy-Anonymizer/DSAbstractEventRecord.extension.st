@@ -2,6 +2,18 @@ Extension { #name : 'DSAbstractEventRecord' }
 
 { #category : '*DebuggingSpy-Anonymizer' }
 DSAbstractEventRecord >> anonymize [
+	"Self applies the anonymous filter and returns the anonymous record."
 
-	self class allSlots do: [ :s | s write: nil to: self ]
+	^ self class anonymousFilter applyOn: self
+]
+
+{ #category : '*DebuggingSpy-Anonymizer' }
+DSAbstractEventRecord class >> anonymousFilter [
+	"Returns the data filter that anonymizes the record for this class"
+
+	^ DSRecordIncludeFilter new
+		  with: #dateTime;
+		  with: #uuid;
+		  with: #windowId;
+		  yourself
 ]
