@@ -13,6 +13,22 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSWatchDebugPointEventRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	| target debugPoint event |
+	target := DSTestClassWithInstanceVariables new.
+
+	debugPoint := DebugPointManager installNew: WatchDebugPoint forObject: target onVariableAccessNamed: #text.
+	event := DebugPointAdded on: debugPoint nodes: debugPoint link nodes.
+	
+	^ self new
+		  record: event;
+		  windowId: MorphicNativeWindow basicNew identityHash;
+		  yourself
+]
+
 { #category : 'accessing' }
 DSWatchDebugPointEventRecord >> history [
 

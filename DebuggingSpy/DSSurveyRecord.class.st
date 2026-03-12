@@ -13,6 +13,16 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSSurveyRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  windowId: MorphicNativeWindow basicNew hash;
+		  record: DSTestSurvey new;
+		  yourself
+]
+
 { #category : 'accessing' }
 DSSurveyRecord >> answer [
 	^survey answer

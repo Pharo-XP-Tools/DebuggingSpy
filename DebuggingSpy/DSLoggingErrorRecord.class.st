@@ -12,6 +12,16 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSLoggingErrorRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  record: #ERROR;
+		  windowId: MorphicNativeWindow basicNew hash;
+		  yourself
+]
+
 { #category : 'accessing' }
 DSLoggingErrorRecord >> event [
 

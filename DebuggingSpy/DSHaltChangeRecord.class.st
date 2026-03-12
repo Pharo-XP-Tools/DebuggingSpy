@@ -18,6 +18,20 @@ DSHaltChangeRecord class >> add [
 	^#HALT_ADD
 ]
 
+{ #category : 'examples' }
+DSHaltChangeRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	| method |
+	method := self >> #eventName.
+
+	^ (self for: self add)
+		  windowId: MorphicNativeWindow basicNew hash;
+		  haltData: (DSSpy indexesOfHaltNodesIn: method);
+		  method: method name;
+		  yourself
+]
+
 { #category : 'adding' }
 DSHaltChangeRecord class >> modify [
 	^#HALT_MODIFY

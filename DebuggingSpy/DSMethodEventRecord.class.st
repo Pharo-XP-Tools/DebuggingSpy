@@ -21,6 +21,19 @@ DSMethodEventRecord class >> added: aMethod [
 		  yourself
 ]
 
+{ #category : 'examples' }
+DSMethodEventRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	| method |
+	method := self >> #eventName.
+
+	^ self new
+		  record: method;
+		  windowId: MorphicNativeWindow basicNew hash;
+		  yourself
+]
+
 { #category : 'instance creation' }
 DSMethodEventRecord class >> modified: aMethod [
 

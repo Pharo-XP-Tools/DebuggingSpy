@@ -15,6 +15,16 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSAbstractTaskRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  windowId: MorphicNativeWindow basicNew hash;
+		  record: DSTestTask new;
+		  yourself
+]
+
 { #category : 'accessing' }
 DSAbstractTaskRecord >> description [
 

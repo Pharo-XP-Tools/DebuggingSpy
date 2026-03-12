@@ -16,6 +16,15 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSMouseEventRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  record: StPulse new;
+		  yourself
+]
+
 { #category : 'actions api' }
 DSMouseEventRecord >> record: aWindow [
 

@@ -16,6 +16,22 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSSourceCodeChangeEventRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	| method |
+	method := self >> #eventName.
+
+	^ self new
+		  record: {
+				  method.
+				  'old source code'.
+				  'new source code' };
+		  windowId: MorphicNativeWindow basicNew hash;
+		  yourself
+]
+
 { #category : 'accessing' }
 DSSourceCodeChangeEventRecord >> eventName [
 	^'Source code modification'

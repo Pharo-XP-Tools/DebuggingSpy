@@ -15,6 +15,18 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSTaskSuccessRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  windowId: MorphicNativeWindow basicNew hash;
+		  record: {
+				  DSTestTask new.
+				  true };
+		  yourself
+]
+
 { #category : 'accessing' }
 DSTaskSuccessRecord >> eventName [
 	^'Task success ', self success asString

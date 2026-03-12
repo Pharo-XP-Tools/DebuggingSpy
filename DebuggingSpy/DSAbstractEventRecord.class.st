@@ -14,6 +14,15 @@ Class {
 	#tag : 'Records'
 }
 
+{ #category : 'examples' }
+DSAbstractEventRecord class >> example [
+	"Returns an exemple of object for this class."
+
+	^ self new
+		  windowId: MorphicNativeWindow basicNew hash;
+		  yourself
+]
+
 { #category : 'instance creation' }
 DSAbstractEventRecord class >> for: anObject [
 
