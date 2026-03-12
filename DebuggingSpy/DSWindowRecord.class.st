@@ -118,13 +118,6 @@ DSWindowRecord >> idleTime [
 ]
 
 { #category : 'testing' }
-DSWindowRecord >> isBreakpointBrowser [
-
-	toolInfos ifNil: [ ^ false ].
-	^ toolInfos toolClassName = 'DebugPointBrowserPresenter'
-]
-
-{ #category : 'testing' }
 DSWindowRecord >> isBrowser [
 
 	toolInfos ifNil: [ ^ false ].
@@ -136,6 +129,13 @@ DSWindowRecord >> isCritiqueBrowser [
 
 	toolInfos ifNil: [ ^ false ].
 	^ toolInfos toolClassName = 'StCritiquePackageSelectorPresenter' 
+]
+
+{ #category : 'testing' }
+DSWindowRecord >> isDebugPointBrowser [
+
+	toolInfos ifNil: [ ^ false ].
+	^ toolInfos toolClassName = 'DebugPointBrowserPresenter'
 ]
 
 { #category : 'testing' }
@@ -278,11 +278,9 @@ DSWindowRecord >> windowId [
 ]
 
 { #category : 'accessing' }
-DSWindowRecord >> windowNameFor: aDSDebuggerOpeningRecord [
+DSWindowRecord >> windowNameFor: aDSWindowOpeningRecord [
 
-	^ [ aDSDebuggerOpeningRecord windowName ]
-		  on: Error
-		  do: [ aDSDebuggerOpeningRecord windowId ]
+	^ aDSWindowOpeningRecord windowName ifNil: [ aDSWindowOpeningRecord windowId ]
 ]
 
 { #category : 'accessing' }
