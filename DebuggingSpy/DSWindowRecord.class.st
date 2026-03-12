@@ -36,18 +36,6 @@ DSWindowRecord >> activePeriods: anObject [
 	activePeriods := anObject
 ]
 
-{ #category : 'adding' }
-DSWindowRecord >> addIdleTime: aDuration [
-	idleTime ifNil: [
-		idleTime := aDuration.
-		idleTime asSeconds = 40562 ifTrue: [ self halt ].	
-	idleTime asSeconds = 3800 ifTrue: [ self halt ].
-		^ self ].	
-	idleTime := idleTime + aDuration.
-	idleTime asSeconds = 40562 ifTrue: [ self halt ].	
-	idleTime asSeconds = 3800 ifTrue: [ self halt ].
-]
-
 { #category : 'building' }
 DSWindowRecord >> buildEvents: aCollectionOfEvents [
 
@@ -201,11 +189,12 @@ DSWindowRecord >> name: anObject [
 
 { #category : 'printing' }
 DSWindowRecord >> printOn: ws [
+
 	ws << '['.
 	self printTypeOn: ws.
 	ws << ']'.
 	ws space.
-	ws << (name isString ifTrue:[name] ifFalse:[name printString]) 
+	ws << name asString
 ]
 
 { #category : 'printing' }
@@ -241,23 +230,7 @@ DSWindowRecord >> toolInfos: anObject [
 { #category : 'accessing' }
 DSWindowRecord >> totalTime [
 
-	^ (activePeriods
-		   inject: 0
-		   into: [ :sum :next | sum + next duration asSeconds ]) seconds
-]
-
-{ #category : 'accessing' }
-DSWindowRecord >> trueIdleTime [
-
-	^ trueIdleTime
-		  ifNil: [ trueIdleTime := 0 asSeconds ]
-		  ifNotNil: [ trueIdleTime ]
-]
-
-{ #category : 'accessing' }
-DSWindowRecord >> trueIdleTime: anObject [
-
-	trueIdleTime := anObject
+	^ (activePeriods sum: [ :period | period duration asSeconds ] ifEmpty: 0) seconds
 ]
 
 { #category : 'accessing' }

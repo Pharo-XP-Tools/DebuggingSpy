@@ -58,7 +58,8 @@ DSWindowActivityRecord >> debuggingActionsClasses [
 
 { #category : 'accessing' }
 DSWindowActivityRecord >> duration [
-	^ events last dateTime - events first dateTime
+
+	^ stop dateTime - start dateTime
 ]
 
 { #category : 'accessing' }

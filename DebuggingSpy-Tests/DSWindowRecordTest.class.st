@@ -7,27 +7,87 @@ Class {
 }
 
 { #category : 'tests' }
-DSWindowRecordTest >> testAddIdleTime [
+DSWindowRecordTest >> testBuildEvents [
 
-	| windowRecord |
+	| windowRecord eventsCollection |
 	windowRecord := DSWindowRecord new.
 
-	windowRecord addIdleTime: 18 asSeconds.
-	self assert: windowRecord idleTime equals: 18 asSeconds.
+	eventsCollection := {
+		                    (DSWindowOpenedRecord new
+			                     windowName: 'Unknown window';
+			                     windowId: 42;
+			                     dateTime: '2008-01-22T16:00:25' asDateAndTime).
+		                    (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:00:31' asDateAndTime).
+		                    DSDoItAndGoRecord new.
+		                    DSClipboardCopyRecord new.
+		                    (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:01:10' asDateAndTime).
+		                    (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:04:31' asDateAndTime).
+		                    DSBrowseRecord new.
+		                    (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:04:45' asDateAndTime).
+		                    DSPrintItRecord new } asOrderedCollection.
 
-	windowRecord addIdleTime: 46 asSeconds.
-	self assert: windowRecord idleTime equals: 64 asSeconds
+	windowRecord buildEvents: eventsCollection.
+
+	self assert: windowRecord events size equals: 9.
+	self assert: windowRecord name equals: 'Unknown window'.
+	self assert: windowRecord type equals: 'Application'.
+	self assert: windowRecord activePeriods size equals: 2.
+
+	windowRecord := DSWindowRecord new.
+
+	eventsCollection := {
+		                    (DSWindowOpenedRecord new
+			                     windowName: 'Debugger';
+			                     windowId: 42;
+			                     dateTime: '2008-01-22T16:00:25' asDateAndTime).
+		                    (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:00:31' asDateAndTime).
+		                    DSDoItAndGoRecord new.
+		                    DSClipboardCopyRecord new.
+		                    (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:01:10' asDateAndTime) } asOrderedCollection.
+
+	windowRecord buildEvents: eventsCollection.
+
+	self assert: windowRecord events size equals: 5.
+	self assert: windowRecord name equals: 'Debugger'.
+	self assert: windowRecord type equals: 'Debugger'.
+	self assert: windowRecord activePeriods size equals: 1
 ]
 
 { #category : 'tests' }
-DSWindowRecordTest >> testIdleTime [
+DSWindowRecordTest >> testComputeActivePeriods [
 
-	| windowRecord |
-	windowRecord := DSWindowRecord new.
-	self assert: windowRecord idleTime equals: 0 asSeconds.
+	| windowRecord activePeriods |
+	windowRecord := DSWindowRecord new events: {
+			                (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T15:57:14' asDateAndTime).
+			                DSStepIntoRecord new.
+			                (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:00:25' asDateAndTime).
+			                DSDoItAndGoRecord new.
+			                DSClipboardCopyRecord new.
+			                (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:01:10' asDateAndTime).
+			                (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:04:31' asDateAndTime).
+			                DSBrowseRecord new.
+			                (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:04:45' asDateAndTime).
+			                DSPrintItRecord new.
+			                (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:04:57' asDateAndTime).
+			                (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:05:08' asDateAndTime).
+			                (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:05:29' asDateAndTime) } asOrderedCollection.
 
-	windowRecord := DSWindowRecord new addIdleTime: 36 asSeconds.
-	self assert: windowRecord idleTime equals: 36 asSeconds
+	windowRecord computeActivePeriods.
+	activePeriods := windowRecord activePeriods.
+
+	self assert: activePeriods size equals: 3.
+	self assert: activePeriods first start dateTime equals: '2008-01-22T16:00:25' asDateAndTime.
+	self assert: activePeriods first stop dateTime equals: '2008-01-22T16:01:10' asDateAndTime.
+	self assert: activePeriods first events size equals: 4.
+	self assert: activePeriods first window equals: windowRecord.
+	self assert: activePeriods second start dateTime equals: '2008-01-22T16:04:31' asDateAndTime.
+	self assert: activePeriods second stop dateTime equals: '2008-01-22T16:04:45' asDateAndTime.
+	self assert: activePeriods second events size equals: 3.
+	self assert: activePeriods second window equals: windowRecord.
+	self assert: activePeriods third start dateTime equals: '2008-01-22T16:04:57' asDateAndTime.
+	self assert: activePeriods third stop dateTime equals: '2008-01-22T16:05:08' asDateAndTime.
+	self assert: activePeriods third events size equals: 2.
+	self assert: activePeriods third window equals: windowRecord
 ]
 
 { #category : 'tests' }
@@ -141,14 +201,68 @@ DSWindowRecordTest >> testIsRewriter [
 ]
 
 { #category : 'tests' }
-DSWindowRecordTest >> testTrueIdleTime [
+DSWindowRecordTest >> testPrintOn [
+
+	| windowRecord printed |
+	windowRecord := DSWindowRecord new
+		                name: 'aBeautifulPlayground';
+		                toolInfos: (DSToolInfo new toolClassName: 'Playground');
+		                type: 'MyType'.
+	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
+	self assert: printed equals: '[Playground] aBeautifulPlayground'.
+
+	windowRecord := DSWindowRecord new
+		                name: 'SomeName';
+		                type: 'MyType'.
+	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
+	self assert: printed equals: '[MyType] SomeName'.
+
+	windowRecord := DSWindowRecord new name: 'RandomName'.
+	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
+	self assert: printed equals: '[External Window] RandomName'.
+
+	windowRecord := DSWindowRecord new name: DSWindowOpenedRecord.
+	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
+	self assert: printed equals: '[External Window] DSWindowOpenedRecord'
+]
+
+{ #category : 'tests' }
+DSWindowRecordTest >> testPrintTypeOn [
+
+	| windowRecord printed |
+	windowRecord := DSWindowRecord new
+		                toolInfos: (DSToolInfo new toolClassName: 'StDebugger');
+		                type: 'Debugger'.
+	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
+	self assert: printed equals: 'StDebugger'.
+
+	windowRecord := DSWindowRecord new type: 'Senders'.
+	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
+	self assert: printed equals: 'Senders'.
+
+	windowRecord := DSWindowRecord new.
+	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
+	self assert: printed equals: 'External Window'
+]
+
+{ #category : 'tests' }
+DSWindowRecordTest >> testTotalTime [
 
 	| windowRecord |
-	windowRecord := DSWindowRecord new.
-	self assert: windowRecord trueIdleTime equals: 0 asSeconds.
+	windowRecord := DSWindowRecord new activePeriods: {  }.
+	self assert: windowRecord totalTime equals: 0 asSeconds.
 
-	windowRecord := DSWindowRecord new trueIdleTime: 36 asSeconds.
-	self assert: windowRecord trueIdleTime equals: 36 asSeconds
+	windowRecord := DSWindowRecord new activePeriods: {
+			                (DSWindowActivityRecord new
+				                 start: (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:00:10' asDateAndTime);
+				                 stop: (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:00:46' asDateAndTime)).
+			                (DSWindowActivityRecord new
+				                 start: (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:04:21' asDateAndTime);
+				                 stop: (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:15:38' asDateAndTime)).
+			                (DSWindowActivityRecord new
+				                 start: (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:22:07' asDateAndTime);
+				                 stop: (DSMouseLeaveWindowRecord new dateTime: '2008-01-22T16:45:58' asDateAndTime)) }.
+	self assert: windowRecord totalTime equals: 2144 asSeconds
 ]
 
 { #category : 'tests' }
