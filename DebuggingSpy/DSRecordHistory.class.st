@@ -87,35 +87,22 @@ DSRecordHistory >> buildWindowHistory [
 { #category : 'private - history' }
 DSRecordHistory >> buildWindowJumps [
 
-	| jumps previousWindowActivity nextWindowActivity |
+	| previousWindowActivity nextWindowActivity |
 	windowJumps := OrderedCollection new.
-	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
 
-	jumps do: [ :jumpEvent |
-		(filteredWindows
-			 detect: [ :w | w windowId = jumpEvent windowId ]
-			 ifNone: [ nil ]) ifNotNil: [ :w |
-			(w activePeriods
-				 detect: [ :period | period start == jumpEvent ]
-				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ].
+	filteredWindows do: [ :window | windowJumps addAll: window activePeriods ].
 
-	filteredWindowJumps := windowJumps "reject: [ :e |
-		                       e events size <= 3 or: [
-			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds" "or: [ ""self halt."" ""e type = 'Finish'"" true] "" ] ]".
+	filteredWindowJumps := windowJumps reject: [ :e | e events size <= 3 or: [ e stop dateTime - e start dateTime < 0.5 seconds ] ].
 
 	previousWindowActivity := nil.
 	filteredWindowJumps do: [ :period |
-		period previous: previousWindowActivity.
-		previousWindowActivity := period ].
+			period previous: previousWindowActivity.
+			previousWindowActivity := period ].
 
 	nextWindowActivity := nil.
 	filteredWindowJumps reverseDo: [ :period |
-		period next: nextWindowActivity.
-		nextWindowActivity := period ].
-	
-	self mergeFilteredWindowJumps
-	
+			period next: nextWindowActivity.
+			nextWindowActivity := period ]
 ]
 
 { #category : 'private - history' }
@@ -273,6 +260,12 @@ DSRecordHistory >> filteredWindowJumps [
 DSRecordHistory >> filteredWindows [
 
 	^ filteredWindows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> filteredWindows: aCollectionOfWindows [
+
+	filteredWindows := aCollectionOfWindows
 ]
 
 { #category : 'private - history' }
@@ -490,7 +483,8 @@ DSRecordHistory >> processRecords: anArrayOfRecords [
 	"Windows"
 	self buildWindowHistory.
 	self buildWindows.
-	self buildWindowJumps.
+	self buildWindowJumps.	
+	self mergeFilteredWindowJumps.
 	
 	"Check data consistency (raises a warning that can be proceeded)"
 	self validateWindows.
@@ -709,6 +703,18 @@ DSRecordHistory >> validateWindows [
 				(window events reject: [ :event | event dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ].
 
 	^ erroneousWindows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowJumps [
+
+	^ windowJumps
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowJumps: aCollectionOfPeriods [
+
+	windowJumps := aCollectionOfPeriods
 ]
 
 { #category : 'accessing' }
