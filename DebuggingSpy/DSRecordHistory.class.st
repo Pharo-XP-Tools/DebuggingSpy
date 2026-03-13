@@ -92,6 +92,7 @@ DSRecordHistory >> buildWindowJumps [
 
 	filteredWindows do: [ :window | windowJumps addAll: window activePeriods ].
 
+
 	filteredWindowJumps := windowJumps reject: [ :e | e events size <= 3 or: [ e stop dateTime - e start dateTime < 0.5 seconds ] ].
 
 	previousWindowActivity := nil.

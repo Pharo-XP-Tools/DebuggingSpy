@@ -141,36 +141,36 @@ DSRecordHistoryTest >> testBuildWindowJumps [
 	history filteredWindows: {
 			(DSWindowRecord new activePeriods: {
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T05:30:00');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T06:15:03');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T05:30:00' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T06:15:03' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSDoItRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T09:26:00');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T09:26:00');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSClipboardCopyRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T014:47:00');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T14:48:24');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T014:47:00' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T14:48:24' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSStepIntoRecord new.
 								  DSPrintItRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T19:30:00');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T19:34:57');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T19:30:00' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T19:34:57' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSMouseLeaveWindowRecord new }) } asOrderedCollection).
 			(DSWindowRecord new activePeriods: { (DSWindowActivityRecord new
-					  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T08:35:00');
-					  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T08:47:00');
+					  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T08:35:00' asDateAndTime);
+					  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T08:47:00' asDateAndTime);
 					  events: {
 							  DSMouseEnterWindowRecord new.
 							  DSDoItRecord new.
@@ -179,22 +179,22 @@ DSRecordHistoryTest >> testBuildWindowJumps [
 							  DSMouseLeaveWindowRecord new }) } asOrderedCollection).
 			(DSWindowRecord new activePeriods: {
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T11:32:00');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T11:56:34');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T11:32:00' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T11:56:34' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSDoItRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
-						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T22:01:56');
-						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T22:09:15');
+						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T22:01:56' asDateAndTime);
+						  stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T22:09:15' asDateAndTime);
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSMouseLeaveWindowRecord new }) } asOrderedCollection) } asOrderedCollection.
 
 	history buildWindowJumps.
 
-	self assert: history windowJumps size equals: 6
+	self assert: history windowJumps size equals: 7
 ]
 
 { #category : 'tests' }
