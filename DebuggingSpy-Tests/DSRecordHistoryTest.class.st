@@ -657,6 +657,79 @@ DSRecordHistoryTest >> testMergeContinuousEvents [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testMergeFilteredWindowJumps [
+
+	history filteredWindowJumps: {
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T05:30:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T06:15:03' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSDoItRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSClipboardCopyRecord new.
+						 DSStepIntoRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T014:47:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T14:48:24' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSStepIntoRecord new.
+						 DSPrintItRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T19:30:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T19:34:57' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T08:35:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T08:47:00' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSDoItRecord new.
+						 DSPrintItRecord new.
+						 DSClipboardCopyRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T11:32:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T11:56:34' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSDoItRecord new.
+						 DSInspectItRecord new.
+						 DSMouseLeaveWindowRecord new }).
+			(DSWindowActivityRecord new
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T22:01:56' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T22:09:15' asDateAndTime);
+				 events: {
+						 DSMouseEnterWindowRecord new.
+						 DSMouseLeaveWindowRecord new }) } asOrderedCollection.
+
+	history mergeFilteredWindowJumps.
+
+	self assert: history windowJumps size equals: 7.
+	self assert: history windowJumps first class equals: DSWindowActivityRecord.
+	self assert: history windowJumps first start dateTime equals: '2025-09-01T05:30:00' asDateAndTime.
+	self assert: history windowJumps first stop dateTime equals: '2025-09-01T06:15:03' asDateAndTime.
+
+	self assert: history filteredWindowJumps size equals: 3.
+	self assert: history filteredWindowJumps first class equals: DSWindowActivityRecord.
+	self assert: history filteredWindowJumps first start dateTime equals: '2025-09-01T014:47:00' asDateAndTime.
+	self assert: history filteredWindowJumps first stop dateTime equals: '2025-09-01T14:48:24' asDateAndTime.
+	self assert: history filteredWindowJumps first previous isNil.
+	self assert: history filteredWindowJumps first next start dateTime equals: '2025-09-01T08:35:00' asDateAndTime.
+	self assert: history filteredWindowJumps third next isNil
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testMethodsAdded [
 
 	history records: {

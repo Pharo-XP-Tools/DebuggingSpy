@@ -92,13 +92,14 @@ DSWindowActivityRecord >> inspectionAnnotation [
 ]
 
 { #category : 'merging' }
-DSWindowActivityRecord >> merge: aDSWindowActivityRecord [
-	|merge become|
-	merge := DSMergedWindowActivityRecord new.
-	become := self.
-	merge become: self.
-	become mergeWith: merge.
-	become mergeWith: aDSWindowActivityRecord
+DSWindowActivityRecord >> mergeWith: aDSWindowActivityRecord [
+
+	^ self class new
+		  start: start;
+		  stop: aDSWindowActivityRecord stop;
+		  events: events , aDSWindowActivityRecord events;
+		  window: window;
+		  yourself
 ]
 
 { #category : 'accessing' }
@@ -159,12 +160,4 @@ DSWindowActivityRecord >> window [
 DSWindowActivityRecord >> window: anObject [
 
 	window := anObject
-]
-
-{ #category : 'accessing' }
-DSWindowActivityRecord >> windowId [
-
-	^ windowId
-		  ifNil: [ windowId := window windowId ]
-		  ifNotNil: [ windowId ]
 ]
