@@ -153,6 +153,7 @@ DSRecordHistoryTest >> testBuildWindowJumps [
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSClipboardCopyRecord new.
+								  DSStepIntoRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
 						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T014:47:00' asDateAndTime);
@@ -184,6 +185,7 @@ DSRecordHistoryTest >> testBuildWindowJumps [
 						  events: {
 								  DSMouseEnterWindowRecord new.
 								  DSDoItRecord new.
+								  DSInspectItRecord new.
 								  DSMouseLeaveWindowRecord new }).
 					 (DSWindowActivityRecord new
 						  start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T22:01:56' asDateAndTime);
@@ -194,7 +196,18 @@ DSRecordHistoryTest >> testBuildWindowJumps [
 
 	history buildWindowJumps.
 
-	self assert: history windowJumps size equals: 7
+	self assert: history windowJumps size equals: 7.
+	self assert: history windowJumps first class equals: DSWindowActivityRecord.
+	self assert: history windowJumps first start dateTime equals: '2025-09-01T05:30:00' asDateAndTime.
+	self assert: history windowJumps first stop dateTime equals: '2025-09-01T06:15:03' asDateAndTime.
+
+	self assert: history filteredWindowJumps size equals: 3.
+	self assert: history filteredWindowJumps first class equals: DSWindowActivityRecord.
+	self assert: history filteredWindowJumps first start dateTime equals: '2025-09-01T014:47:00' asDateAndTime.
+	self assert: history filteredWindowJumps first stop dateTime equals: '2025-09-01T14:48:24' asDateAndTime.
+	self assert: history filteredWindowJumps first previous isNil.
+	self assert: history filteredWindowJumps first next start dateTime equals: '2025-09-01T08:35:00' asDateAndTime.
+	self assert: history filteredWindowJumps third next isNil
 ]
 
 { #category : 'tests' }
@@ -610,6 +623,37 @@ DSRecordHistoryTest >> testFixWindowRecordKeysNames [
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 1 ]) windowName equals: 'playGroundWindow'.
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 53 ]) windowName equals: 'browserWindow'.
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 2 ]) windowName isNil
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testMergeContinuousEvents [
+
+	| newRecordList |
+	history records: {
+			DSMouseEnterWindowRecord new.
+			DSMouseEnterWindowRecord new.
+			DSMethodAddedRecord new.
+			DSMethodRemovedRecord new.
+			DSMethodAddedRecord new.
+			DSReturnValue new.
+			DSReturnValue new.
+			DSReturnValue new.
+			DSMouseLeaveWindowRecord new.
+			DSWindowClosedRecord new } asOrderedCollection.
+
+
+	newRecordList := history mergeContinuousEvents.
+
+	self assert: newRecordList size equals: 7.
+	self assert: newRecordList first size equals: 2.
+	self assert: newRecordList first first class equals: DSMouseEnterWindowRecord.
+	self assert: newRecordList second first class equals: DSMethodAddedRecord.
+	self assert: newRecordList third first class equals: DSMethodRemovedRecord.
+	self assert: (newRecordList at: 4) first class equals: DSMethodAddedRecord.
+	self assert: (newRecordList at: 5) size equals: 3.
+	self assert: (newRecordList at: 5) first class equals: DSReturnValue.
+	self assert: (newRecordList at: 6) first class equals: DSMouseLeaveWindowRecord.
+	self assert: (newRecordList at: 7) first class equals: DSWindowClosedRecord
 ]
 
 { #category : 'tests' }

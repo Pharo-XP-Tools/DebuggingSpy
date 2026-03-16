@@ -385,12 +385,15 @@ DSRecordHistory >> mergeContinuousEvents [
 	merge := OrderedCollection new.
 	record := records first.
 	merge add: record.
-	(records copy asOrderedCollection removeFirst; yourself) do: [ :next |
-		record class = next class ifFalse: [
-			newRecords add: merge.
-			merge := OrderedCollection new ].
-		merge add: next.
-		record := next ].
+	(records copy asOrderedCollection
+		 removeFirst;
+		 yourself) do: [ :next |
+			record class = next class ifFalse: [
+					newRecords add: merge.
+					merge := OrderedCollection new ].
+			merge add: next.
+			record := next ].
+	newRecords add: merge.
 	^ newRecords
 ]
 
@@ -402,18 +405,15 @@ DSRecordHistory >> mergeFilteredWindowJumps [
 	currentJump := filteredWindowJumps first.
 
 	[ currentJump notNil ] whileTrue: [
-		currentJump next ifNil: [
-			mergedWindowJumps add: currentJump.
-			^ self ].
-		currentJump windowId = currentJump next windowId
-			ifTrue: [ currentJump merge: currentJump next ]
-			ifFalse: [
-				mergedWindowJumps ifNotEmpty: [
-					currentJump previous: mergedWindowJumps last ].
-				mergedWindowJumps add: currentJump.
-				currentJump := currentJump next ] ].
-
-	self validateMergedJumps
+			currentJump next ifNil: [
+					mergedWindowJumps add: currentJump.
+					^ self ].
+			currentJump windowId = currentJump next windowId
+				ifTrue: [ currentJump merge: currentJump next ]
+				ifFalse: [
+						mergedWindowJumps ifNotEmpty: [ currentJump previous: mergedWindowJumps last ].
+						mergedWindowJumps add: currentJump.
+						currentJump := currentJump next ] ]
 ]
 
 { #category : 'accessing' }
@@ -488,6 +488,7 @@ DSRecordHistory >> processRecords: anArrayOfRecords [
 	self mergeFilteredWindowJumps.
 	
 	"Check data consistency (raises a warning that can be proceeded)"
+	self validateMergedJumps.
 	self validateWindows.
 
 	^ self
