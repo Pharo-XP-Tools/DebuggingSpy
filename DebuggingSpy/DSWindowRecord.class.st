@@ -253,7 +253,9 @@ DSWindowRecord >> windowId [
 { #category : 'accessing' }
 DSWindowRecord >> windowNameFor: aDSWindowOpeningRecord [
 
-	^ aDSWindowOpeningRecord windowName ifNil: [ aDSWindowOpeningRecord windowId ]
+	^ [ aDSWindowOpeningRecord windowName ]
+		  on: Error
+		  do: [ aDSWindowOpeningRecord windowId ]
 ]
 
 { #category : 'accessing' }

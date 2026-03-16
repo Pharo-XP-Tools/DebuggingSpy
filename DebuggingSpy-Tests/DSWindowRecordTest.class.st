@@ -289,7 +289,10 @@ DSWindowRecordTest >> testWindowNameFor [
 	windowOpeningRecord := DSWindowOpenedRecord new
 		                       windowId: 42;
 		                       windowName: 'randomWindow'.
-	self assert: (windowRecord windowNameFor: windowOpeningRecord) equals: 'randomWindow'
+	self assert: (windowRecord windowNameFor: windowOpeningRecord) equals: 'randomWindow'.
+
+	windowOpeningRecord := DSMouseEnterWindowRecord new windowId: 36.
+	self assert: (windowRecord windowNameFor: windowOpeningRecord) equals: 36
 ]
 
 { #category : 'tests' }

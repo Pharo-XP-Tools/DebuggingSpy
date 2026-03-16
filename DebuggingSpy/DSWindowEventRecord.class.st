@@ -64,7 +64,7 @@ DSWindowEventRecord >> toolInfo: aToolInfo [
 { #category : 'accessing' }
 DSWindowEventRecord >> windowName [
 
-	^ windowName
+	^ windowName ifNil: [ ^ windowId ]
 ]
 
 { #category : 'accessing' }
