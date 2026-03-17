@@ -11,7 +11,7 @@ DSAbstractEventRecord >> anonymize [
 DSAbstractEventRecord class >> anonymousFilter [
 	"Returns the data filter that anonymizes the record for this class"
 
-	^ DSRecordIncludeFilter new
+	^ DSRecordDataFilter new
 		  with: #dateTime;
 		  with: #uuid;
 		  with: #windowId;

@@ -8,6 +8,10 @@ Class {
 	#package : 'DebuggingSpy-Anonymizer-Tests'
 }
 
+{ #category : 'tests' }
+DSRecordDataFilterTest >> DSRecordDataFilter [
+]
+
 { #category : 'accessing' }
 DSRecordDataFilterTest >> filterClass [
 
@@ -35,6 +39,34 @@ DSRecordDataFilterTest >> testEmptyFilter [
 
 	self assert: filter class equals: DSRecordDataFilter.
 	self assert: filter operations isEmpty
+]
+
+{ #category : 'tests' }
+DSRecordDataFilterTest >> testFilteringASlot [
+
+	| filteredRecord |
+	filter with: #uuid.
+	filteredRecord := filter applyOn: DSWindowOpenedRecord example.
+
+	self deny: filteredRecord uuid isNil.
+	self assert:
+		((filteredRecord class allSlots reject: [ :slot | slot name = 'uuid' ] thenCollect: [ :s | s read: filteredRecord ])
+			 allSatisfy: #isNil)
+]
+
+{ #category : 'tests' }
+DSRecordDataFilterTest >> testFilteringAllSlots [
+
+	| filteredRecord |
+	filteredRecord := filter applyOn: DSWindowOpenedRecord example.
+	self assert: ((filteredRecord class allSlots collect: [ :s | s read: filteredRecord ]) allSatisfy: #isNil)
+]
+
+{ #category : 'tests' }
+DSRecordDataFilterTest >> testIncludingSymbol [
+
+	filter with: #test.
+	self assert: ((filter operations at: 'test') value: 5) equals: 5
 ]
 
 { #category : 'tests' }

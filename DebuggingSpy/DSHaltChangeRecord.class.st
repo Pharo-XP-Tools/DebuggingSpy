@@ -25,7 +25,8 @@ DSHaltChangeRecord class >> example [
 	| method |
 	method := self >> #eventName.
 
-	^ (self for: self add)
+	^ self new
+		  record: self add;
 		  windowId: MorphicNativeWindow basicNew hash;
 		  haltData: (DSSpy indexesOfHaltNodesIn: method);
 		  method: method name;
