@@ -91,7 +91,7 @@ DSRecordHistory >> buildWindowJumps [
 	windowJumps := OrderedCollection new.
 
 	filteredWindows do: [ :window | windowJumps addAll: window activePeriods ].
-
+	windowJumps sort: [ :period1 :period2 | period1 start < period2 start ].
 
 	filteredWindowJumps := windowJumps reject: [ :e | e events size <= 3 or: [ e stop dateTime - e start dateTime < 0.5 seconds ] ].
 
