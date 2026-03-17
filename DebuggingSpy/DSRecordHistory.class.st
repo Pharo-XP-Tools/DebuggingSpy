@@ -333,37 +333,6 @@ DSRecordHistory >> fixMissingWindowIds [
 ]
 
 { #category : 'private - history' }
-DSRecordHistory >> fixWindowIdsOf: aCollection [
-
-	| windowlessRecords validEvents enterAndLeaveSequences currentWindowId currentSequence |
-	
-	windowlessRecords := aCollection select: [ :e | e windowId isNil ].
-	validEvents := aCollection reject: [ :e | #( nil 0 ) includes: e windowId ]. 
-	
-	"First we sort all events in sequences happening in the same window"
-	enterAndLeaveSequences := OrderedCollection new.
-	currentWindowId := validEvents first windowId.
-	currentSequence := OrderedCollection new.
-	validEvents do: [ :e |
-			(e windowId ~= currentWindowId or: [ self class windowLeaveEventTypes includes: e class ])
-				ifTrue: [
-						(self class windowLeaveEventTypes includes: e class) ifTrue: [ currentSequence add: e ].
-						enterAndLeaveSequences add: currentSequence.
-						currentSequence := OrderedCollection new.
-						currentSequence add: e.
-						currentWindowId := e windowId ]
-				ifFalse: [ currentSequence add: e ] ]. 
-			
-	"Then for each sequence, we try to find events without window id happening between the start and the end of that sequence"
-	enterAndLeaveSequences do: [ :sequence |
-			| enter leave |
-			enter := sequence first.
-			leave := sequence last.
-			(windowlessRecords select: [ :e | e dateTime > enter dateTime and: [ e dateTime < leave dateTime ] ]) do: [ :e |
-				e windowId: enter windowId ] ]
-]
-
-{ #category : 'private - history' }
 DSRecordHistory >> fixWindowRecordKeysNames [
 
 	windowNames keysAndValuesDo: [ :id :name | 
