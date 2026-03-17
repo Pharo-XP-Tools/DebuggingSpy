@@ -1,3 +1,6 @@
+"
+I am representing a period of activity in a window.
+"
 Class {
 	#name : 'DSWindowActivityRecord',
 	#superclass : 'DSAbstractEventRecord',
@@ -93,12 +96,14 @@ DSWindowActivityRecord >> inspectionAnnotation [
 
 { #category : 'merging' }
 DSWindowActivityRecord >> mergeWith: aDSWindowActivityRecord [
+	"Merge the windowActivity with another one. Be careful, aDSWindowActivityRecord must happen after self otherwise the result will be false"
 
 	^ self class new
 		  start: start;
 		  stop: aDSWindowActivityRecord stop;
 		  events: events , aDSWindowActivityRecord events;
 		  window: window;
+		  next: aDSWindowActivityRecord next;
 		  yourself
 ]
 

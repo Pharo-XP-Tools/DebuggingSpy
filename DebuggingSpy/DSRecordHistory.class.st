@@ -411,12 +411,12 @@ DSRecordHistory >> mergeFilteredWindowJumps [
 	currentJump := filteredWindowJumps first.
 
 	[ currentJump notNil ] whileTrue: [
-			currentJump next ifNotNil: [
-					currentJump window = currentJump next window
-						ifTrue: [ currentJump mergeWith: currentJump next ]
-						ifFalse: [ mergedWindowJumps ifNotEmpty: [ currentJump previous: mergedWindowJumps last ] ] ].
-			mergedWindowJumps add: currentJump.
-			currentJump := currentJump next ]
+			(currentJump next isNotNil and: [ currentJump window = currentJump next window ])
+				ifTrue: [ currentJump := currentJump mergeWith: currentJump next ]
+				ifFalse: [
+						mergedWindowJumps ifNotEmpty: [ currentJump previous: mergedWindowJumps last ].
+						mergedWindowJumps add: currentJump.
+						currentJump := currentJump next ] ]
 ]
 
 { #category : 'accessing' }

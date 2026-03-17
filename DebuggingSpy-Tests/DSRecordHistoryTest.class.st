@@ -672,7 +672,10 @@ DSRecordHistoryTest >> testMergeContinuousEvents [
 { #category : 'tests' }
 DSRecordHistoryTest >> testMergeFilteredWindowJumps [
 
-
+	| window1 window2 window3 previousWindowActivity nextWindowActivity |
+	window1 := DSWindowRecord new.
+	window2 := DSWindowRecord new.
+	window3 := DSWindowRecord new.
 
 	history filteredWindowJumps: {
 			(DSWindowActivityRecord new
@@ -681,7 +684,8 @@ DSRecordHistoryTest >> testMergeFilteredWindowJumps [
 				 events: {
 						 DSMouseEnterWindowRecord new.
 						 DSDoItRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window2).
 			(DSWindowActivityRecord new
 				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
 				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T09:26:00' asDateAndTime);
@@ -689,7 +693,8 @@ DSRecordHistoryTest >> testMergeFilteredWindowJumps [
 						 DSMouseEnterWindowRecord new.
 						 DSClipboardCopyRecord new.
 						 DSStepIntoRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window1).
 			(DSWindowActivityRecord new
 				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T014:47:00' asDateAndTime);
 				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T14:48:24' asDateAndTime);
@@ -697,46 +702,76 @@ DSRecordHistoryTest >> testMergeFilteredWindowJumps [
 						 DSMouseEnterWindowRecord new.
 						 DSStepIntoRecord new.
 						 DSPrintItRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window1).
 			(DSWindowActivityRecord new
 				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T19:30:00' asDateAndTime);
 				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T19:34:57' asDateAndTime);
 				 events: {
 						 DSMouseEnterWindowRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window3).
 			(DSWindowActivityRecord new
-				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T08:35:00' asDateAndTime);
-				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T08:47:00' asDateAndTime);
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T20:35:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T20:47:00' asDateAndTime);
 				 events: {
 						 DSMouseEnterWindowRecord new.
 						 DSDoItRecord new.
 						 DSPrintItRecord new.
 						 DSClipboardCopyRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window3).
 			(DSWindowActivityRecord new
-				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T11:32:00' asDateAndTime);
-				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T11:56:34' asDateAndTime);
+				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T21:32:00' asDateAndTime);
+				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T21:56:34' asDateAndTime);
 				 events: {
 						 DSMouseEnterWindowRecord new.
 						 DSDoItRecord new.
 						 DSInspectItRecord new.
-						 DSMouseLeaveWindowRecord new }).
+						 DSMouseLeaveWindowRecord new };
+				 window: window3).
 			(DSWindowActivityRecord new
 				 start: (DSMouseEnterWindowRecord new dateTime: '2025-09-01T22:01:56' asDateAndTime);
 				 stop: (DSMouseLeaveWindowRecord new dateTime: '2025-09-01T22:09:15' asDateAndTime);
 				 events: {
 						 DSMouseEnterWindowRecord new.
-						 DSMouseLeaveWindowRecord new }) } asOrderedCollection.
+						 DSMouseLeaveWindowRecord new };
+				 window: window2) } asOrderedCollection.
+
+	previousWindowActivity := nil.
+	history filteredWindowJumps do: [ :period |
+			period previous: previousWindowActivity.
+			previousWindowActivity := period ].
+
+	nextWindowActivity := nil.
+	history filteredWindowJumps reverseDo: [ :period |
+			period next: nextWindowActivity.
+			nextWindowActivity := period ].
 
 	history mergeFilteredWindowJumps.
 
-	self assert: history filteredWindowJumps size equals: 3.
-	self assert: history filteredWindowJumps first class equals: DSWindowActivityRecord.
-	self assert: history filteredWindowJumps first start dateTime equals: '2025-09-01T014:47:00' asDateAndTime.
-	self assert: history filteredWindowJumps first stop dateTime equals: '2025-09-01T14:48:24' asDateAndTime.
-	self assert: history filteredWindowJumps first previous isNil.
-	self assert: history filteredWindowJumps first next start dateTime equals: '2025-09-01T08:35:00' asDateAndTime.
-	self assert: history filteredWindowJumps third next isNil
+	self assert: history mergedWindowJumps size equals: 4.
+	self assert: history mergedWindowJumps first class equals: DSWindowActivityRecord.
+	self assert: history mergedWindowJumps first start dateTime equals: '2025-09-01T05:30:00' asDateAndTime.
+	self assert: history mergedWindowJumps first stop dateTime equals: '2025-09-01T06:15:03' asDateAndTime.
+	self assert: history mergedWindowJumps first previous isNil.
+	self assert: history mergedWindowJumps first next start dateTime equals: '2025-09-01T09:26:00' asDateAndTime.
+	self assert: history mergedWindowJumps first events size equals: 3.
+	self assert: history mergedWindowJumps second start dateTime equals: '2025-09-01T09:26:00' asDateAndTime.
+	self assert: history mergedWindowJumps second stop dateTime equals: '2025-09-01T14:48:24' asDateAndTime.
+	self assert: history mergedWindowJumps second previous start dateTime equals: '2025-09-01T05:30:00' asDateAndTime.
+	self assert: history mergedWindowJumps second next start dateTime equals: '2025-09-01T19:30:00' asDateAndTime.
+	self assert: history mergedWindowJumps second events size equals: 8.
+	self assert: history mergedWindowJumps third start dateTime equals: '2025-09-01T19:30:00' asDateAndTime.
+	self assert: history mergedWindowJumps third stop dateTime equals: '2025-09-01T21:56:34' asDateAndTime.
+	self assert: history mergedWindowJumps third previous start dateTime equals: '2025-09-01T09:26:00' asDateAndTime.
+	self assert: history mergedWindowJumps third next start dateTime equals: '2025-09-01T22:01:56' asDateAndTime.
+	self assert: history mergedWindowJumps third events size equals: 11.
+	self assert: history mergedWindowJumps last start dateTime equals: '2025-09-01T22:01:56' asDateAndTime.
+	self assert: history mergedWindowJumps last stop dateTime equals: '2025-09-01T22:09:15' asDateAndTime.
+	self assert: history mergedWindowJumps last previous start dateTime equals: '2025-09-01T19:30:00' asDateAndTime.
+	self assert: history mergedWindowJumps last next isNil.
+	self assert: history mergedWindowJumps last events size equals: 2
 ]
 
 { #category : 'tests' }
