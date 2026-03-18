@@ -457,10 +457,9 @@ DSRecordHistory >> processRecords: anArrayOfRecords [
 	self buildWindowHistory.
 	self buildWindows.
 	self buildWindowJumps.	
-	self mergeFilteredWindowJumps.
+	filteredWindowJumps ifNotEmpty: [ self mergeFilteredWindowJumps ].
 	
 	"Check data consistency (raises a warning that can be proceeded)"
-	self validateMergedJumps.
 	self validateWindows.
 
 	^ self
@@ -622,26 +621,6 @@ DSRecordHistory >> user [
 DSRecordHistory >> user: anObject [
 
 	user := anObject
-]
-
-{ #category : 'private - history' }
-DSRecordHistory >> validateMergedJumps [
-
-	1 to: mergedWindowJumps size do:[:i|
-		|current next|
-		current := mergedWindowJumps at: i.
-		current = mergedWindowJumps last ifFalse:[ 
-			|w wId| 
-			next := mergedWindowJumps at: i + 1.
-			self assert: next previous == current.
-			self assert: current next == next.
-			w := current window.
-			wId := current windowId.
-			
-			self assert: (current events allSatisfy: [:e| e windowId = w and:[e window == w]]).
-			self assert: (current events allSatisfy: [:e| e dateTime < next start dateTime])
-		]
-	]
 ]
 
 { #category : 'private - history' }

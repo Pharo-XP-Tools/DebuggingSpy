@@ -857,6 +857,89 @@ DSRecordHistoryTest >> testNumberOfSteps [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testProcessRecords [
+
+	| recordList |
+	recordList := {
+		              (DSMouseEnterWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T09:00:00' asDateAndTime).
+		              (DSMouseLeaveWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T09:03:04' asDateAndTime).
+		              (DSWindowOpenedRecord new
+			               windowId: 2;
+			               windowName: 'Inspector';
+			               dateTime: '2024-07-04T09:08:32' asDateAndTime).
+		              (DSMouseEnterWindowRecord new
+			               windowId: 2;
+			               dateTime: '2024-07-04T09:11:06' asDateAndTime).
+		              (DSDoItRecord new
+			               windowId: 2;
+			               dateTime: '2024-07-04T09:15:56' asDateAndTime).
+		              (DSMouseLeaveWindowRecord new
+			               windowId: 2;
+			               dateTime: '2024-07-04T09:19:14' asDateAndTime).
+		              (DSMouseEnterWindowRecord new
+			               windowId: 3;
+			               dateTime: '2024-07-04T09:23:30' asDateAndTime).
+		              (DSStepIntoRecord new
+			               windowId: 3;
+			               dateTime: '2024-07-04T09:32:43' asDateAndTime).
+		              (DSMouseLeaveWindowRecord new
+			               windowId: 3;
+			               dateTime: '2024-07-04T09:35:28' asDateAndTime).
+		              (DSMouseEnterWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T10:02:44' asDateAndTime).
+		              (DSClipboardCopyRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T10:17:08' asDateAndTime).
+		              (DSMouseLeaveWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T10:26:12' asDateAndTime) } asOrderedCollection.
+
+
+	history processRecords: recordList.
+
+	self assert: history records size equals: 12.
+	self assert: history windows size equals: 3.
+	self assert: history windowsHistory size equals: 3.
+	self assert: history filteredWindows size equals: 3.
+	self assert: history windowJumps size equals: 4.
+	self assert: history filteredWindowJumps isEmpty 
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testProcessRecordsOneWindow [
+
+	| recordList |
+	recordList := {
+		              (DSMouseEnterWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T09:00:00' asDateAndTime).
+		              (DSDoItAndGoRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T09:03:04' asDateAndTime).
+		              (DSClipboardCopyRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T10:17:08' asDateAndTime).
+		              (DSMouseLeaveWindowRecord new
+			               windowId: 1;
+			               dateTime: '2024-07-04T10:26:12' asDateAndTime) } asOrderedCollection.
+
+
+	history processRecords: recordList.
+
+	self assert: history records size equals: 4.
+	self assert: history windows size equals: 1.
+	self assert: history windowsHistory size equals: 1.
+	self assert: history filteredWindows size equals: 1.
+	self assert: history windowJumps size equals: 1.
+	self assert: history filteredWindowJumps size equals: 1
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testReconstructSourcesOfDebuggerOpenings [
 
 	| openWindow1 openWindow2 openWindow3 sourceEvent1 sourceEvent2 |
