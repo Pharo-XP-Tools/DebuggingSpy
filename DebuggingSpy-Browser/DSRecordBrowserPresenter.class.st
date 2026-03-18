@@ -187,7 +187,7 @@ DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
 	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
 
 	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
-	aWindowRecord isBreakpointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
+	aWindowRecord isDebugPointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
 	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
 	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
 	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].

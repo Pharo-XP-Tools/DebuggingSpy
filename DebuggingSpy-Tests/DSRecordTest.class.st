@@ -13,14 +13,12 @@ Class {
 DSRecordTest >> testGettingLeafSubclasses [
 
 	| subclasses |
-	subclasses := OrderedCollection new
-		              add: DSDebugPointAdd;
-		              add: DSDebugPointChanged;
-		              add: DSDebugPointHit;
-		              add: DSDebugPointRemoved;
-		              yourself.
+	subclasses := {
+		              DSBrowseRecord.
+		              DSImplementorsRecord.
+		              DSSendersRecord } asOrderedCollection.
 
-	self assert: DSAbstractExtendedRecord getLeafSubClasses equals: subclasses
+	self assert: DSAbstractBrowserRecord getLeafSubClasses equals: subclasses
 ]
 
 { #category : 'tests' }

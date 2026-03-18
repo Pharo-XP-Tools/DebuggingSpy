@@ -197,9 +197,9 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 
 	| windows colorAssociations |
 	windows := { (DSWindowRecord new
-		            toolInfos: { (DSToolInfo new
+		            toolInfos: (DSToolInfo new
 				             toolClassName: 'StPlaygroundPresenter';
-				             yourself) } asOrderedCollection;
+				             yourself);
 		            events: {
 				            DSWindowOpenedRecord new.
 				            DSDoItRecord new.
