@@ -99,12 +99,6 @@ DSWindowRecord >> getWindowType [
 	^ 'External Window'
 ]
 
-{ #category : 'accessing' }
-DSWindowRecord >> idleTime [
-
-	^ idleTime ifNil: [ idleTime := 0 seconds ] ifNotNil: [ idleTime ]
-]
-
 { #category : 'testing' }
 DSWindowRecord >> isBrowser [
 
