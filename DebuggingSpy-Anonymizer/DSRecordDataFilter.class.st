@@ -2,8 +2,22 @@
 I am a class that represents a data filter for the Debugging Spy records.
 My api provides : 
 - #with that ensures that the specified slot will be deepcopied into the new record.
-- #without that ensures that the specified slot will be nil.
 - #transform that permits to define a specific transformation for a slot.
+- #hash that uses the identityHash of a specified slot's value.
+
+Examples: 
+filter := DSRecordDataFilter new with: #aSlot; transform: #aSlot with: [ :aValue | aValue ... ]; hash: #aSlot; yourself
+
+I store all operations in the dedicated slot which is a SmallDictionary that associates a slot (as string) to its operation, examples : 
+	'aSlot' -> [ :aValue | aValue ] // with
+	'aSlot' -> [ :aValue | aValue ... ] // transform
+	'aSlot' -> [ :aValue | aValue identityHash ] // hash
+	
+When the filter is configured with all its operations, it can be applied on records as follows : 
+	filteredRecord := aFilter applyOn: aRecord
+	filteredRecords := DSRecordDataFilter processRecords: someRecords with: #getFilterMethod // we assume that every record in the list defines the getFilterMethod that returns a DSRecordDataFilter instance.
+
+
 "
 Class {
 	#name : 'DSRecordDataFilter',
