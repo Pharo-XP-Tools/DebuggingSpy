@@ -8,21 +8,21 @@ Class {
 	#package : 'DebuggingSpy-Anonymizer-Tests'
 }
 
-{ #category : 'tests' }
-DSRecordDataFilterTest >> DSRecordDataFilter [
-]
+{ #category : 'helpers' }
+DSRecordDataFilterTest >> recordExample [
+	"Returns an exemple of record used to test filtering features."
 
-{ #category : 'accessing' }
-DSRecordDataFilterTest >> filterClass [
-
-	^ DSRecordDataFilter
+	^ DSTestRecord new
+		  first: 'first value';
+		  second: 'second value';
+		  yourself
 ]
 
 { #category : 'running' }
 DSRecordDataFilterTest >> setUp [
 
 	super setUp.
-	filter := self filterClass new
+	filter := DSRecordDataFilter new
 ]
 
 { #category : 'tests' }
@@ -45,13 +45,11 @@ DSRecordDataFilterTest >> testEmptyFilter [
 DSRecordDataFilterTest >> testFilteringASlot [
 
 	| filteredRecord |
-	filter with: #uuid.
-	filteredRecord := filter applyOn: DSWindowOpenedRecord example.
+	filter with: #first.
+	filteredRecord := filter applyOn: self recordExample.
 
-	self deny: filteredRecord uuid isNil.
-	self assert:
-		((filteredRecord class allSlots reject: [ :slot | slot name = 'uuid' ] thenCollect: [ :s | s read: filteredRecord ])
-			 allSatisfy: #isNil)
+	self assert: filteredRecord first equals: 'first value'.
+	self assert: filteredRecord second isNil
 ]
 
 { #category : 'tests' }
@@ -63,10 +61,30 @@ DSRecordDataFilterTest >> testFilteringAllSlots [
 ]
 
 { #category : 'tests' }
+DSRecordDataFilterTest >> testHashTransformation [
+
+	| filteredRecord |
+	filter hash: #first.
+	filteredRecord := filter applyOn: self recordExample.
+
+	self assert: filteredRecord first class equals: SmallInteger
+]
+
+{ #category : 'tests' }
 DSRecordDataFilterTest >> testIncludingSymbol [
 
 	filter with: #test.
 	self assert: ((filter operations at: 'test') value: 5) equals: 5
+]
+
+{ #category : 'tests' }
+DSRecordDataFilterTest >> testTransformation [
+
+	| filteredRecord |
+	filter transform: #first with: [ :aValue | 42 ].
+	filteredRecord := filter applyOn: self recordExample.
+
+	self assert: filteredRecord first equals: 42
 ]
 
 { #category : 'tests' }
