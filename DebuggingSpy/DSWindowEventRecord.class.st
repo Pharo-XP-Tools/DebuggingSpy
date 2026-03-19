@@ -24,7 +24,7 @@ DSWindowEventRecord class >> example [
 	record recordWindowIdFromEvent: event.
 	record recordWindowNameFromEvent: event.
 
-	toolInfo := DSToolInfo toolNamed: 'DSWindowEventRecord example' id: 0 windowId: record windowId.
+	toolInfo := DSToolInfo toolNamed: #StPlayground id: 0 windowId: record windowId.
 	record toolInfo: toolInfo.
 	^ record
 ]

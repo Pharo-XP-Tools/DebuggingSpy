@@ -52,7 +52,7 @@ DSRecordDataFilter >> getRecordCopyOf: aRecord [
 DSRecordDataFilter >> hash: aSlotSymbol [
 	"Transforms the specified slot's value in its hash."
 
-	self transform: aSlotSymbol with: [ :anObject | anObject hash ]
+	self transform: aSlotSymbol with: [ :anObject | anObject identityHash ]
 ]
 
 { #category : 'initialization' }
