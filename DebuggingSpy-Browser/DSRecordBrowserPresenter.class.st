@@ -241,11 +241,15 @@ DSRecordBrowserPresenter >> listAddedFilesActions [
 DSRecordBrowserPresenter >> openAddFileDialog [
 	"Opens a dialog where the user can select a file to add in the browser."
 
-	| newFiles |
+	| filesDirectory newFiles |
+	filesDirectory := DSSpy logger loggingDirectory.
+	filesDirectory ensureCreateDirectory.
+
 	newFiles := StOpenFilePresenter new
 		            beMultipleSelection;
-		            defaultFolder: DSSpy logger loggingDirectory;
+		            defaultFolder: filesDirectory;
 		            openModal.
+
 	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
 ]
 
