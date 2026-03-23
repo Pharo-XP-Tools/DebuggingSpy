@@ -23,6 +23,12 @@ DSTimerWindowTest >> setUp [
 ]
 
 { #category : 'tests' }
+DSTimerWindowTest >> testCurrentTimeMorph [
+
+	self assert: (Time readFrom: self currentTimeMorph contents readStream) asSeconds equals: Time now asSeconds
+]
+
+{ #category : 'tests' }
 DSTimerWindowTest >> testElapsedTime [
 
 	DSSpy recordingSession: true.
@@ -38,12 +44,6 @@ DSTimerWindowTest >> testElapsedTime [
 DSTimerWindowTest >> testEmptyTimerMorph [
 
 	self assert: (Time readFrom: self timerMorph contents readStream) seconds equals: 0
-]
-
-{ #category : 'tests' }
-DSTimerWindowTest >> testTimeNowMorph [
-
-	self assert: (Time readFrom: self currentTimeMorph contents readStream) asSeconds equals: Time now asSeconds
 ]
 
 { #category : 'layout' }

@@ -7,7 +7,8 @@ Class {
 	#instVars : [
 		'timerMorph',
 		'startTime',
-		'currentTimeMorph'
+		'currentTimeMorph',
+		'lastEventMorph'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -19,8 +20,10 @@ DSTimerWindow >> buildUI [
 
 	timerMorph := self timerMorph.
 	currentTimeMorph := self currentTimeMorph.
+	lastEventMorph := self lastEventMorph.
 
 	self
+		addMorph: lastEventMorph;
 		addMorph: self recordingIcon;
 		addMorph: timerMorph;
 		addMorph: currentTimeMorph;
@@ -39,7 +42,7 @@ DSTimerWindow >> currentTimeMorph [
 
 	^ StringMorph new
 		  contents: Time now print24;
-		  position: 75 @ 6
+		  position: 175 @ 6
 ]
 
 { #category : 'timer' }
@@ -84,6 +87,22 @@ DSTimerWindow >> initializeTimers [
 				(Delay forMilliseconds: 50) wait ] ] fork
 ]
 
+{ #category : 'layout' }
+DSTimerWindow >> lastEventMorph [
+	"Instanciates a new morph that shows the last event."
+
+	^ StringMorph new
+		  contents: 'No last record';
+		  position: 5 @ 6
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> lastRecord: aRecord [
+	"Updates the last record text on the window."
+
+	lastEventMorph contents: aRecord eventName
+]
+
 { #category : 'accessing' }
 DSTimerWindow >> margin [
 	"Space around the window"
@@ -111,14 +130,14 @@ DSTimerWindow >> recordingIcon [
 
 	^ ImageMorph new
 		  image: (self iconNamed: #glamorousRedCircle);
-		  position: 0 @ 7;
+		  position: 100 @ 7;
 		  yourself
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> size [
 
-	^ 150 @ 30
+	^ 250 @ 30
 ]
 
 { #category : 'timer' }
@@ -137,7 +156,7 @@ DSTimerWindow >> stopButton [
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
 		  model: DSRecordBrowserPresenter uniqueInstance;
 		  actionSelector: #stopRecording;
-		  position: 125 @ 4;
+		  position: 225 @ 4;
 		  yourself
 ]
 
@@ -147,5 +166,5 @@ DSTimerWindow >> timerMorph [
 
 	^ StringMorph new
 		  contents: '00:00:00';
-		  position: 15 @ 6
+		  position: 115 @ 6
 ]

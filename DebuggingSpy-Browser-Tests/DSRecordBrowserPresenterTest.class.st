@@ -272,6 +272,22 @@ DSRecordBrowserPresenterTest >> testStopRecording [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateLastRecord [
+
+	| record timerWindow |
+	record := DSDoItRecord new.
+	timerWindow := DSTimerWindow new.
+
+	self assert: browser timerWindow isNil.
+	self assert: (browser updateLastRecord: record) equals: browser.
+
+	browser writeSlotNamed: 'timerWindow' value: timerWindow.
+	browser updateLastRecord: record.
+
+	self assert: (timerWindow readSlotNamed: 'lastEventMorph') contents equals: record eventName
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
 	| fileRef presenterMock |

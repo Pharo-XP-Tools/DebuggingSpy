@@ -406,6 +406,14 @@ DSRecordBrowserPresenter >> toolbar [
 ]
 
 { #category : 'operations' }
+DSRecordBrowserPresenter >> updateLastRecord: aRecord [
+	"Updates the last record for the recording window."
+
+	timerWindow ifNil: [ ^ self ].
+	timerWindow lastRecord: aRecord
+]
+
+{ #category : 'operations' }
 DSRecordBrowserPresenter >> updateRecordsTable: filesPresenter [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
