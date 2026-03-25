@@ -29,7 +29,8 @@ DSAbstractHaltRecord >> method: aMethod [
 DSAbstractHaltRecord >> record: anRBProgramNode [
 
 	method := anRBProgramNode methodNode compiledMethod name.
-	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop
+	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop.
+	super record: anRBProgramNode
 ]
 
 { #category : 'accessing' }

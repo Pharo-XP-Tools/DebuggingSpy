@@ -30,10 +30,11 @@ DSMorphTabRecord >> eventName [
 { #category : 'actions api' }
 DSMorphTabRecord >> record: aTabGroupMorph [
 
-	| tabTool|
-	
+	| tabTool |
 	tabTool := aTabGroupMorph submorphs first submorphs.
 	tabTool isEmpty ifTrue: [ ^ nil ].
 
-	tabName := tabTool first asString
+	tabName := tabTool first asString.
+
+	super record: aTabGroupMorph
 ]

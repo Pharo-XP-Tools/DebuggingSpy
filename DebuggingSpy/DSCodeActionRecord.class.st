@@ -18,8 +18,9 @@ DSCodeActionRecord >> record: anEditor [
 
 	selectedString := DSSpy recordSourceCode
 		                  ifTrue: [ anEditor recordSelectedString ]
-		                  ifFalse: [ 
-		                  DSSpy recordSourceCodeDisabledErrorMessage ]
+		                  ifFalse: [ DSSpy recordSourceCodeDisabledErrorMessage ].
+
+	super record: anEditor
 ]
 
 { #category : 'accessing' }

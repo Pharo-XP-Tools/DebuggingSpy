@@ -154,9 +154,8 @@ DSSpyInstrumenter >> instrumentScrolling [
 	"Instruments the scrolling in different components"
 
 	Morph link: DSScrollingRecord link toAST: (Morph >> #mouseWheel:) ast.
-	Morph link: DSScrollingRecord link toAST: (Morph >> #dragging:) ast.
+	SliderMorph link: DSScrollingRecord link toAST: (SliderMorph >> #dragging:) ast.
 	GeneralScrollPaneMorph link: DSScrollingRecord link toAST: (GeneralScrollPaneMorph >> #mouseWheel:) ast
-	
 ]
 
 { #category : 'system' }
@@ -286,7 +285,8 @@ DSSpyInstrumenter >> logMouseEvents [
 	"Instrument mouse events"
 
 	self instrumentMouseEnterWindow.
-	self instrumentMouseLeaveWindow
+	self instrumentMouseLeaveWindow.
+	self instrumentScrolling
 ]
 
 { #category : 'system-instrumentation' }

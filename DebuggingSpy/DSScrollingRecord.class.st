@@ -20,5 +20,6 @@ DSScrollingRecord >> eventName [
 { #category : 'actions api' }
 DSScrollingRecord >> record: aMorph [
 
-	toolName := aMorph asString
+	toolName := aMorph asString.
+	super record: aMorph window
 ]
