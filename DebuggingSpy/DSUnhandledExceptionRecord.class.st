@@ -16,24 +16,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'examples' }
-DSUnhandledExceptionRecord class >> example [
-	"Returns an exemple of object for this class."
-
-	| capturedException |
-	[ Exception new signal ]
-		on: Exception
-		do: [ :e |
-				capturedException := e copy.
-				[ e raiseUnhandledError ]
-					on: UnhandledError
-					do: [ :error |
-							^ self new
-								  windowId: MorphicNativeWindow basicNew hash;
-								  record: error;
-								  yourself ] ]
-]
-
 { #category : 'accessing' }
 DSUnhandledExceptionRecord >> errorString [
 	^ errorString

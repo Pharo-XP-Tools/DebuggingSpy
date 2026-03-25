@@ -14,22 +14,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'examples' }
-DSHaltHitRecord class >> example [
-	"Returns an exemple of object for this class."
-
-	| sender record |
-	sender := thisContext sender sender sender sender sender.
-	record := self new
-		          record: {
-				          sender sourceNodeExecuted.
-				          #halt };
-		          windowId: MorphicNativeWindow basicNew hash;
-		          yourself.
-
-	^ record
-]
-
 { #category : 'accessing' }
 DSHaltHitRecord >> conditional [
 

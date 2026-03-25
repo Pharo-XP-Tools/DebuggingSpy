@@ -16,7 +16,9 @@ BaselineOfDebuggingSpy >> baseline: spec [
 			spec package: 'DebuggingSpy'.
 			spec package: 'DebuggingSpy-Tests'.
 			spec package: 'DebuggingSpy-Browser'.
-			spec package: 'DebuggingSpy-Browser-Tests' ]
+			spec package: 'DebuggingSpy-Browser-Tests'.
+			spec package: 'DebuggingSpy-Anonymizer'.
+			spec package: 'DebuggingSpy-Anonymizer-Tests' ]
 ]
 
 { #category : 'baselines' }

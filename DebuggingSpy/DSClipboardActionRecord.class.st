@@ -15,18 +15,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'examples' }
-DSClipboardActionRecord class >> example [
-	"Returns an exemple of object for this class."
-
-	^ self new
-		  record: (RubSmalltalkEditor new
-				   textArea: RubEditingArea new;
-				   yourself);
-		  windowId: MorphicNativeWindow basicNew hash;
-		  yourself
-]
-
 { #category : 'accessing' }
 DSClipboardActionRecord >> clipboardText [
 

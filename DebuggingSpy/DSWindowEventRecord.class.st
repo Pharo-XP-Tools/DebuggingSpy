@@ -15,20 +15,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'examples' }
-DSWindowEventRecord class >> example [
-
-	| event record toolInfo |
-	event := WindowOpened new window: MorphicNativeWindow basicNew.
-	record := self new.
-	record recordWindowIdFromEvent: event.
-	record recordWindowNameFromEvent: event.
-
-	toolInfo := DSToolInfo toolNamed: #StPlayground id: 0 windowId: record windowId.
-	record toolInfo: toolInfo.
-	^ record
-]
-
 { #category : 'actions api' }
 DSWindowEventRecord >> record: aWindowEvent [
 

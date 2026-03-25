@@ -13,18 +13,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'examples' }
-DSCodeActionRecord class >> example [
-	"Returns an exemple of object for this class."
-
-	^ self new
-		  record: (RubSmalltalkEditor new
-				   textArea: RubEditingArea new;
-				   yourself);
-		  windowId: MorphicNativeWindow basicNew hash;
-		  yourself
-]
-
 { #category : 'actions api' }
 DSCodeActionRecord >> record: anEditor [
 

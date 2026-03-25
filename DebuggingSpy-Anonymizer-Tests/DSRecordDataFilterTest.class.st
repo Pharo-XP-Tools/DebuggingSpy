@@ -12,8 +12,8 @@ Class {
 DSRecordDataFilterTest >> recordExample [
 	"Returns an exemple of record used to test filtering features."
 
-	^ DSTestRecord new
-		  first: 'first value';
+	^ DSTestFilterRecord new
+		  first: 1;
 		  second: 'second value';
 		  yourself
 ]
@@ -35,10 +35,11 @@ DSRecordDataFilterTest >> testAddTransformation [
 ]
 
 { #category : 'tests' }
-DSRecordDataFilterTest >> testEmptyFilter [
+DSRecordDataFilterTest >> testApplyOn [
 
-	self assert: filter class equals: DSRecordDataFilter.
-	self assert: filter operations isEmpty
+	| record |
+	record := self recordExample.
+	self deny: (filter applyOn: record) identityHash equals: record identityHash
 ]
 
 { #category : 'tests' }
@@ -48,7 +49,7 @@ DSRecordDataFilterTest >> testFilteringASlot [
 	filter with: #first.
 	filteredRecord := filter applyOn: self recordExample.
 
-	self assert: filteredRecord first equals: 'first value'.
+	self assert: filteredRecord first equals: 1.
 	self assert: filteredRecord second isNil
 ]
 
@@ -56,12 +57,12 @@ DSRecordDataFilterTest >> testFilteringASlot [
 DSRecordDataFilterTest >> testFilteringAllSlots [
 
 	| filteredRecord |
-	filteredRecord := filter applyOn: DSWindowOpenedRecord example.
+	filteredRecord := filter applyOn: self recordExample.
 	self assert: ((filteredRecord class allSlots collect: [ :s | s read: filteredRecord ]) allSatisfy: #isNil)
 ]
 
 { #category : 'tests' }
-DSRecordDataFilterTest >> testHashTransformation [
+DSRecordDataFilterTest >> testHash [
 
 	| filteredRecord |
 	filter hash: #first.
@@ -71,27 +72,44 @@ DSRecordDataFilterTest >> testHashTransformation [
 ]
 
 { #category : 'tests' }
-DSRecordDataFilterTest >> testIncludingSymbol [
+DSRecordDataFilterTest >> testProcessRecordsWith [
 
-	filter with: #test.
-	self assert: ((filter operations at: 'test') value: 5) equals: 5
+	| records |
+	records := Set new
+		           add: self recordExample;
+		           add: self recordExample;
+		           add: self recordExample;
+		           yourself.
+		
+	self assert: ((DSRecordDataFilter processRecords: records with: #filterFirstValue) allSatisfy: [ :aRecord |
+			 aRecord first isNil and: aRecord second = 'second value' ])
 ]
 
 { #category : 'tests' }
-DSRecordDataFilterTest >> testTransformation [
+DSRecordDataFilterTest >> testTransformWith [
 
 	| filteredRecord |
-	filter transform: #first with: [ :aValue | 42 ].
+	filter transform: #first with: [ :aNumber | aNumber * 2 ].
+	filter transform: #second with: [ :aString | aString asUppercase ].
 	filteredRecord := filter applyOn: self recordExample.
 
-	self assert: filteredRecord first equals: 42
+	self assert: filteredRecord first equals: 2.
+	self assert: filteredRecord second equals: 'SECOND VALUE'
 ]
 
 { #category : 'tests' }
-DSRecordDataFilterTest >> testVerifySlotDuplication [
+DSRecordDataFilterTest >> testVerifySlotDuplicationFor [
 
 	| block |
 	block := [ :a | nil ].
 	filter transform: #test with: block.
 	self should: [ filter transform: #test with: block ] raise: Exception description: 'A slot cannot be transformed twice.'
+]
+
+{ #category : 'tests' }
+DSRecordDataFilterTest >> testWith [
+
+	filter with: #first.
+	self assert: ((filter operations at: 'first') value: 5) equals: 5.
+	self assert: (filter applyOn: self recordExample) first equals: 1
 ]

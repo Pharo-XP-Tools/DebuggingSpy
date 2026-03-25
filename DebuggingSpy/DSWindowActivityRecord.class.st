@@ -18,28 +18,6 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'examples' }
-DSWindowActivityRecord class >> example [
-	"Returns an exemple of object for this class."
-
-	| events window record |
-	events := OrderedCollection new
-		          add: DSMouseEnterWindowRecord example;
-		          add: DSBrowseRecord example;
-		          add: DSDoItAndGoRecord example;
-		          add: DSMouseLeaveWindowRecord example;
-		          yourself.
-	window := DSWindowRecord new events: events.
-
-	record := self
-		          start: events first
-		          stop: events last
-		          events: events
-		          window: window.
-	record windowId. "to initialize its id using its window"
-	^ record
-]
-
 { #category : 'instance creation' }
 DSWindowActivityRecord class >> start: aDSMouseEnterWindowRecord stop: aDSMouseLeaveWindowRecord events: aCollection [
 

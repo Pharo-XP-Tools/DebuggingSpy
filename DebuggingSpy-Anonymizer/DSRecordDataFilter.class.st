@@ -1,23 +1,19 @@
 "
-I am a class that represents a data filter for the Debugging Spy records.
+I am a class representing a data filter for Debugging Spy's records.
 My api provides : 
-- #with that ensures that the specified slot will be deepcopied into the new record.
-- #transform that permits to define a specific transformation for a slot.
-- #hash that uses the identityHash of a specified slot's value.
-
+- #with which ensures that the specified slot will be deepcopied into the new record.
+- #transform which permits to define a specific transformation for the specified slot.
+- #hash which uses the identityHash of the specified slot value.
 Examples: 
 filter := DSRecordDataFilter new with: #aSlot; transform: #aSlot with: [ :aValue | aValue ... ]; hash: #aSlot; yourself
-
-I store all operations in the dedicated slot which is a SmallDictionary that associates a slot (as string) to its operation, examples : 
+I store all operations in a dedicated slot which is a SmallDictionary associating a slot (as string) to its operation, examples : 
 	'aSlot' -> [ :aValue | aValue ] // with
 	'aSlot' -> [ :aValue | aValue ... ] // transform
-	'aSlot' -> [ :aValue | aValue identityHash ] // hash
+	'aSlot' -> [ :aValue | aValue identityHash ] // hash
 	
 When the filter is configured with all its operations, it can be applied on records as follows : 
 	filteredRecord := aFilter applyOn: aRecord
-	filteredRecords := DSRecordDataFilter processRecords: someRecords with: #getFilterMethod // we assume that every record in the list defines the getFilterMethod that returns a DSRecordDataFilter instance.
-
-
+	filteredRecords := DSRecordDataFilter processRecords: someRecords with: #aSelector // we assume that the selector applies a filter on a record and returns a record
 "
 Class {
 	#name : 'DSRecordDataFilter',
@@ -44,7 +40,7 @@ DSRecordDataFilter >> applyOn: aRecord [
 	"Applies the filter on a deep copy of the specified record."
 
 	| newRecord |
-	newRecord := self getRecordCopyOf: aRecord.
+	newRecord := aRecord deepCopy.
 
 	newRecord class allSlots do: [ :slot |
 			operations
@@ -53,13 +49,6 @@ DSRecordDataFilter >> applyOn: aRecord [
 				ifAbsent: [ slot write: nil to: newRecord ] ].
 
 	^ newRecord
-]
-
-{ #category : 'accessing' }
-DSRecordDataFilter >> getRecordCopyOf: aRecord [
-	"Returns a deep copy of the specified record."
-
-	^ aRecord deepCopy
 ]
 
 { #category : 'filtering' }
@@ -84,7 +73,7 @@ DSRecordDataFilter >> operations [
 
 { #category : 'filtering' }
 DSRecordDataFilter >> transform: aSlotSymbol with: aBlock [
-	"Adds the specified slot to transformations. Raises an error if the slot has already been added."
+	"Adds the specified slot and its associated transformation in the operations. Raises an error if the slot has already been added."
 
 	self verifySlotDuplicationFor: aSlotSymbol.
 	operations at: aSlotSymbol asString put: aBlock
@@ -99,7 +88,7 @@ DSRecordDataFilter >> verifySlotDuplicationFor: aSlotSymbol [
 
 { #category : 'filtering' }
 DSRecordDataFilter >> with: aSlotSymbol [
-	"Add the specified slot to the accepted slots. Raises an error if the specified slot has already been added."
+	"Add the specified slot as an accepted slot, with no transformation, in the operations. Raises an error if the specified slot has already been added."
 
 	self verifySlotDuplicationFor: aSlotSymbol.
 	operations at: aSlotSymbol asString put: [ :s | s ]
