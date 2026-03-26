@@ -49,16 +49,14 @@ DSUnhandledExceptionRecord >> receiver [
 { #category : 'actions api' }
 DSUnhandledExceptionRecord >> record: anException [
 
-	|signalerContext context|
+	| signalerContext |
 	signalerContext := anException signalerContext.
+	[ signalerContext method pragmas anySatisfy: [ :p | p selector = #debuggerCompleteToSender ] ] whileTrue: [
+		signalerContext := signalerContext sender ].
+
 	receiver := signalerContext receiver class name.
-		
-	context := signalerContext.
-	[ context method pragmas anySatisfy: [ :p| p selector = #debuggerCompleteToSender ] ] 
-		whileTrue:[context := signalerContext sender.].	
-	node := (context method sourceNodeForPC: context pc) sourceCode.
-	method := context method selector.
-	
+	node := (signalerContext method sourceNodeForPC: signalerContext pc) sourceCode.
+	method := signalerContext method selector.
 	exceptionClass := anException class name.
 	errorString := anException description
 ]
