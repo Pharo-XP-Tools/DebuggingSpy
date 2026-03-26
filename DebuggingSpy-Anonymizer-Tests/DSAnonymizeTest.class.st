@@ -172,6 +172,33 @@ DSAnonymizeTest >> testTaskSuccessRecord [
 ]
 
 { #category : 'tests' }
+DSAnonymizeTest >> testUnhandledExceptionRecord [
+
+	| capturedException record anonymousRecord |
+	record := DSAbstractEventRecord new.
+
+	[ Exception new signal ]
+		on: Exception
+		do: [ :e |
+				capturedException := e copy.
+				[ e raiseUnhandledError ]
+					on: UnhandledError
+					do: [ :error |
+							record := DSUnhandledExceptionRecord new
+								          windowId: MorphicNativeWindow basicNew hash;
+								          record: error;
+								          yourself ] ].
+
+	anonymousRecord := record anonymize.
+
+	self assert: anonymousRecord exceptionClass class equals: SmallInteger.
+	self assert: anonymousRecord method class equals: SmallInteger.
+	self assert: anonymousRecord errorString class equals: SmallInteger.
+	self assert: anonymousRecord node class equals: SmallInteger.
+	self assert: anonymousRecord receiver class equals: SmallInteger
+]
+
+{ #category : 'tests' }
 DSAnonymizeTest >> testWindowEventRecord [
 
 	| event toolInfo record anonymousRecord |
