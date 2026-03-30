@@ -31,3 +31,9 @@ DSTaskSuccessRecord >> success [
 
 	^ success ifNil: [ success := false ]
 ]
+
+{ #category : 'accessing' }
+DSTaskSuccessRecord >> success: aBoolean [
+
+	success := aBoolean
+]

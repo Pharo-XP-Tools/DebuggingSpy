@@ -27,6 +27,18 @@ DSAbstractTaskRecord >> record: aTask [
 ]
 
 { #category : 'accessing' }
+DSAbstractTaskRecord >> task [
+
+	^ task
+]
+
+{ #category : 'accessing' }
+DSAbstractTaskRecord >> task: aTask [
+
+	task := aTask
+]
+
+{ #category : 'accessing' }
 DSAbstractTaskRecord >> taskName [
 
 	^ task title

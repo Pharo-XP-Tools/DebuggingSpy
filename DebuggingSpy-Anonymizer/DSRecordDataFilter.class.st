@@ -30,14 +30,16 @@ Class {
 DSRecordDataFilter class >> processRecords: someRecords with: aSelector [
 	"Uses the method selector to apply a filter on every record."
 
-	^ OrderedCollection new
-		  addAll: (someRecords collect: [ :record | (record class lookupSelector: aSelector) valueWithReceiver: record ]);
-		  yourself
+	| newRecords |
+	newRecords := OrderedCollection new.
+	newRecords addAll: (someRecords collect: [ :record | (record class lookupSelector: aSelector) valueWithReceiver: record ]).
+
+	^ newRecords
 ]
 
 { #category : 'filtering' }
 DSRecordDataFilter >> applyOn: aRecord [
-	"Applies the filter on a deep copy of the specified record."
+	"Applies the filter on the specified record and returns the resulting filtered record"
 
 	| newRecord |
 	newRecord := aRecord deepCopy.
@@ -53,7 +55,7 @@ DSRecordDataFilter >> applyOn: aRecord [
 
 { #category : 'filtering' }
 DSRecordDataFilter >> hash: aSlotSymbol [
-	"Transforms the specified slot's value in its hash."
+	"Transforms the specified slot's value into its identityHash."
 
 	self transform: aSlotSymbol with: [ :anObject | anObject identityHash ]
 ]
@@ -75,21 +77,12 @@ DSRecordDataFilter >> operations [
 DSRecordDataFilter >> transform: aSlotSymbol with: aBlock [
 	"Adds the specified slot and its associated transformation in the operations. Raises an error if the slot has already been added."
 
-	self verifySlotDuplicationFor: aSlotSymbol.
 	operations at: aSlotSymbol asString put: aBlock
-]
-
-{ #category : 'error' }
-DSRecordDataFilter >> verifySlotDuplicationFor: aSlotSymbol [
-	"Verifies that the specified slot symbol is not already added to prevent conflicts."
-
-	(operations includesKey: aSlotSymbol asString) ifTrue: [ self error: 'A slot cannot be transformed twice.' ]
 ]
 
 { #category : 'filtering' }
 DSRecordDataFilter >> with: aSlotSymbol [
 	"Add the specified slot as an accepted slot, with no transformation, in the operations. Raises an error if the specified slot has already been added."
 
-	self verifySlotDuplicationFor: aSlotSymbol.
 	operations at: aSlotSymbol asString put: [ :s | s ]
 ]

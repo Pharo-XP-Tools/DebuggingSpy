@@ -19,6 +19,12 @@ DSLoggingErrorRecord >> event [
 ]
 
 { #category : 'accessing' }
+DSLoggingErrorRecord >> event: anEvent [
+
+	event := anEvent
+]
+
+{ #category : 'accessing' }
 DSLoggingErrorRecord >> eventName [
 	^'Error'
 ]

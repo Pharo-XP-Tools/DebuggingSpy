@@ -25,11 +25,11 @@ DSAnonymizeTest >> testAbstractTaskRecord [
 	| record anonymousRecord |
 	record := DSAbstractTaskRecord new
 		          windowId: 1;
-		          record: MockObject new;
+		          task: MockObject new;
 		          yourself.
 	anonymousRecord := record anonymize.
 
-	self assert: (anonymousRecord readSlotNamed: 'task') class equals: SmallInteger
+	self assert: anonymousRecord task class equals: MockObject
 ]
 
 { #category : 'tests' }
@@ -38,9 +38,8 @@ DSAnonymizeTest >> testClipboardActionRecord [
 	| record anonymousRecord |
 	record := DSClipboardActionRecord new
 		          windowId: 1;
-		          record: (RubSmalltalkEditor new
-				           textArea: RubEditingArea new;
-				           yourself);
+		          clipboardText: 'someText';
+		          editorClassName: 'someClass';
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -54,9 +53,7 @@ DSAnonymizeTest >> testCodeActionRecord [
 	| record anonymousRecord |
 	record := DSCodeActionRecord new
 		          windowId: 1;
-		          record: (RubSmalltalkEditor new
-				           textArea: RubEditingArea new;
-				           yourself);
+		          selectedString: 'someString';
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -66,19 +63,19 @@ DSAnonymizeTest >> testCodeActionRecord [
 { #category : 'tests' }
 DSAnonymizeTest >> testHaltChangeRecord [
 
-	| method record anonymousRecord |
-	method := DSHaltChangeRecord >> #eventName.
+	| record anonymousRecord |
 	record := DSHaltChangeRecord new
-		          windowId: 1;
-		          record: DSHaltChangeRecord add;
-		          haltData: (DSSpy indexesOfHaltNodesIn: method);
-		          method: method name;
+		          haltChange: 'haltChangeValue';
+		          haltData: 'haltDataValue';
+		          sourceCodeInterval: 'sourceCodeIntervalValue';
+		          method: 'aMethod';
 		          yourself.
 	anonymousRecord := record anonymize.
 
-	self assert: (anonymousRecord readSlotNamed: 'method') class equals: SmallInteger.
+	self assert: anonymousRecord method class equals: SmallInteger.
+	self assert: anonymousRecord sourceCodeInterval isNil.
 	self assert: anonymousRecord haltData isNil.
-	self deny: anonymousRecord haltChange isNil
+	self assert: anonymousRecord haltChange equals: 'haltChangeValue'
 ]
 
 { #category : 'tests' }
@@ -107,7 +104,7 @@ DSAnonymizeTest >> testLoggingErrorRecord [
 	sender := thisContext sender sender sender sender sender.
 	record := DSLoggingErrorRecord new
 		          windowId: 1;
-		          record: #ERROR;
+		          event: #ERROR;
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -117,11 +114,11 @@ DSAnonymizeTest >> testLoggingErrorRecord [
 { #category : 'tests' }
 DSAnonymizeTest >> testMethodEventRecord [
 
-	| method record anonymousRecord |
-	method := DSMethodEventRecord >> #record:.
+	| record anonymousRecord |
 	record := DSMethodEventRecord new
 		          windowId: 1;
-		          record: method;
+		          methodName: 'methodName';
+		          methodSource: 'methodSource';
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -148,7 +145,7 @@ DSAnonymizeTest >> testSurveyRecord [
 	| record anonymousRecord |
 	record := DSSurveyRecord new
 		          windowId: 1;
-		          record: 'aSurvey';
+		          survey: 'aSurvey';
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -161,33 +158,24 @@ DSAnonymizeTest >> testTaskSuccessRecord [
 	| record anonymousRecord |
 	record := DSTaskSuccessRecord new
 		          windowId: 1;
-		          record: {
-				          MockObject new.
-				          true };
+		          success: true;
 		          yourself.
 	anonymousRecord := record anonymize.
 
-	self assert: (anonymousRecord readSlotNamed: 'task') class equals: SmallInteger.
 	self assert: anonymousRecord success
 ]
 
 { #category : 'tests' }
 DSAnonymizeTest >> testUnhandledExceptionRecord [
 
-	| capturedException record anonymousRecord |
-	record := DSAbstractEventRecord new.
-
-	[ Exception new signal ]
-		on: Exception
-		do: [ :e |
-				capturedException := e copy.
-				[ e raiseUnhandledError ]
-					on: UnhandledError
-					do: [ :error |
-							record := DSUnhandledExceptionRecord new
-								          windowId: MorphicNativeWindow basicNew hash;
-								          record: error;
-								          yourself ] ].
+	| record anonymousRecord |
+	record := DSUnhandledExceptionRecord new
+		          exceptionClass: 'anExceptionClass';
+		          errorString: 'anErrorString';
+		          receiver: 'aReceiver';
+		          node: 'aNode';
+		          method: 'aMethod';
+		          yourself.
 
 	anonymousRecord := record anonymize.
 
