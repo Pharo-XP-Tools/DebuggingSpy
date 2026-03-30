@@ -146,6 +146,6 @@ DSTimerWindow >> timerMorph [
 	"Insanciates a new morph that contains the seconds timer on the window."
 
 	^ StringMorph new
-		  contents: '00:00:000';
+		  contents: '00:00:00';
 		  position: 15 @ 6
 ]
