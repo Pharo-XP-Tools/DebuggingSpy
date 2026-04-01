@@ -6,7 +6,7 @@ My api provides :
 - #hash which uses the identityHash of the specified slot value.
 Examples: 
 filter := DSRecordDataFilter new with: #aSlot; transform: #aSlot with: [ :aValue | aValue ... ]; hash: #aSlot; yourself
-I store all operations in a dedicated slot which is a SmallDictionary associating a slot (as string) to its operation, examples : 
+I store all operations in a dedicated slot which is a SmallDictionary associating a slot to its operation, examples : 
 	'aSlot' -> [ :aValue | aValue ] // with
 	'aSlot' -> [ :aValue | aValue ... ] // transform
 	'aSlot' -> [ :aValue | aValue identityHash ] // hash
@@ -46,7 +46,7 @@ DSRecordDataFilter >> applyOn: aRecord [
 
 	newRecord class allSlots do: [ :slot |
 			operations
-				at: slot name
+				at: slot name asSymbol
 				ifPresent: [ :block | slot write: (block value: (newRecord readSlotNamed: slot name)) to: newRecord ]
 				ifAbsent: [ slot write: nil to: newRecord ] ].
 
@@ -75,14 +75,14 @@ DSRecordDataFilter >> operations [
 
 { #category : 'filtering' }
 DSRecordDataFilter >> transform: aSlotSymbol with: aBlock [
-	"Adds the specified slot and its associated transformation in the operations. Raises an error if the slot has already been added."
+	"Adds the specified slot and its associated transformation in the operations."
 
-	operations at: aSlotSymbol asString put: aBlock
+	operations at: aSlotSymbol put: aBlock
 ]
 
 { #category : 'filtering' }
 DSRecordDataFilter >> with: aSlotSymbol [
-	"Add the specified slot as an accepted slot, with no transformation, in the operations. Raises an error if the specified slot has already been added."
+	"Add the specified slot as an accepted slot (with no transformation) in the operations."
 
-	operations at: aSlotSymbol asString put: [ :s | s ]
+	operations at: aSlotSymbol put: [ :s | s ]
 ]

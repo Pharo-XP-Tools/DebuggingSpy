@@ -81,17 +81,16 @@ DSAnonymizeTest >> testHaltChangeRecord [
 { #category : 'tests' }
 DSAnonymizeTest >> testHaltHitRecord [
 
-	| sender record anonymousRecord |
-	sender := thisContext sender sender sender sender sender.
+	| record anonymousRecord |
 	record := DSHaltHitRecord new
 		          windowId: 1;
-		          record: {
-				          sender sourceNodeExecuted.
-				          #halt };
+		          once: true;
+		          conditional: false;
+		          selector: #halt;
 		          yourself.
 	anonymousRecord := record anonymize.
 
-	self assert: (anonymousRecord readSlotNamed: 'method') class equals: SmallInteger.
+	self assert: anonymousRecord method class equals: SmallInteger.
 	self deny: anonymousRecord once isNil.
 	self deny: anonymousRecord conditional isNil.
 	self deny: anonymousRecord selector isNil
@@ -100,8 +99,7 @@ DSAnonymizeTest >> testHaltHitRecord [
 { #category : 'tests' }
 DSAnonymizeTest >> testLoggingErrorRecord [
 
-	| sender record anonymousRecord |
-	sender := thisContext sender sender sender sender sender.
+	| record anonymousRecord |
 	record := DSLoggingErrorRecord new
 		          windowId: 1;
 		          event: #ERROR;
@@ -132,7 +130,7 @@ DSAnonymizeTest >> testMouseEventRecord [
 	| record anonymousRecord |
 	record := DSMouseEventRecord new
 		          windowId: 1;
-		          record: StPulse new;
+		          toolInfo: (DSToolInfo toolNamed: #StPlayground id: 0 windowId: 1);
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -189,16 +187,13 @@ DSAnonymizeTest >> testUnhandledExceptionRecord [
 { #category : 'tests' }
 DSAnonymizeTest >> testWindowEventRecord [
 
-	| event toolInfo record anonymousRecord |
-	event := WindowOpened new window: MorphicNativeWindow basicNew.
-	
-	record := DSWindowEventRecord new.
-	record recordWindowIdFromEvent: event.
-	record recordWindowNameFromEvent: event.
-	
-	toolInfo := DSToolInfo toolNamed: #StPlayground id: 0 windowId: record windowId.
-	record toolInfo: toolInfo.
-	
+	| record anonymousRecord |
+
+	record := DSWindowEventRecord new
+		          windowName: 'aWindow';
+		          toolInfo: (DSToolInfo toolNamed: #StPlayground id: 0 windowId: 1);
+		          yourself.
+
 	anonymousRecord := record anonymize.
 
 	self deny: anonymousRecord toolInfo isNil

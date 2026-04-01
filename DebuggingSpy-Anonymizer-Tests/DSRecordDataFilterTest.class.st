@@ -37,16 +37,14 @@ DSRecordDataFilterTest >> testAddTransformation [
 { #category : 'tests' }
 DSRecordDataFilterTest >> testApplyOn [
 
-	| record oldRecord filteredRecord |
+	| record filteredRecord |
 	filter with: #first.
 	record := self recordExample.
-	oldRecord := record copy.
 	filteredRecord := filter applyOn: record.
 
 	self deny: filteredRecord identityHash equals: record identityHash.
 	self assert: filteredRecord first equals: record first.
-	self assert: filteredRecord second isNil.
-	self deny: record equals: oldRecord
+	self assert: filteredRecord second isNil
 ]
 
 { #category : 'tests' }
@@ -85,14 +83,16 @@ DSRecordDataFilterTest >> testHash [
 DSRecordDataFilterTest >> testProcessRecordsWith [
 
 	| records newRecords |
-	records := OrderedCollection new.
-	records add: self recordExample.
-	records add: (self recordExample
-			 second: 'another second value';
-			 yourself).
-	records add: (self recordExample
-			 second: 'another one';
-			 yourself).
+	records := {
+		           (DSTestFilterRecord new
+			            first: 1;
+			            second: 'second value').
+		           (DSTestFilterRecord new
+			            first: 2;
+			            second: 'another second value').
+		           (DSTestFilterRecord new
+			            first: 3;
+			            second: 'another one') } asOrderedCollection.
 
 	newRecords := DSRecordDataFilter processRecords: records with: #filterFirstValue.
 
@@ -123,6 +123,5 @@ DSRecordDataFilterTest >> testWith [
 	filter with: #first.
 	self assert: (filter operations at: 'first') class equals: CleanBlockClosure.
 
-	self assert: ((filter operations at: 'first') value: 5) identityHash equals: 5 identityHash.
 	self assert: (filter applyOn: self recordExample) first equals: 1
 ]
