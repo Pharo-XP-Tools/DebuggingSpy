@@ -36,5 +36,5 @@ DSMorphTabRecord >> record: aTabGroupMorph [
 
 	tabName := tabTool first asString.
 
-	super record: aTabGroupMorph
+	super record: aTabGroupMorph window
 ]
