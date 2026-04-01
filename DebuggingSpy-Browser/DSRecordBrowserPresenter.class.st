@@ -329,11 +329,11 @@ DSRecordBrowserPresenter >> startRecordButton [
 DSRecordBrowserPresenter >> startRecording [
 	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recordering."
 
-	timerWindow := DSTimerWindow new.
 	DSSpyInstrumenter instrumentSystem.
-	timerWindow
-		openInWorld;
-		startTimer.
+	timerWindow := DSTimerWindow new
+		               openInWorld;
+		               startTimer;
+		               yourself.
 	self updateToolbar
 ]
 
