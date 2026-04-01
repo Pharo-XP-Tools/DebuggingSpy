@@ -37,14 +37,18 @@ DSRecordDataFilterTest >> testAddTransformation [
 { #category : 'tests' }
 DSRecordDataFilterTest >> testApplyOn [
 
-	| record filteredRecord |
+	| oldRecord record filteredRecord |
 	filter with: #first.
 	record := self recordExample.
+	oldRecord := record copy.
 	filteredRecord := filter applyOn: record.
 
 	self deny: filteredRecord identityHash equals: record identityHash.
 	self assert: filteredRecord first equals: record first.
-	self assert: filteredRecord second isNil
+	self assert: filteredRecord second isNil.
+
+	self assert:
+		(oldRecord class allSlots allSatisfy: [ :slot | (record readSlotNamed: slot name) = (oldRecord readSlotNamed: slot name) ])
 ]
 
 { #category : 'tests' }
