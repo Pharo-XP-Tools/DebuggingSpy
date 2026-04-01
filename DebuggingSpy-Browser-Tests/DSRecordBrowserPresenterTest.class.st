@@ -281,10 +281,10 @@ DSRecordBrowserPresenterTest >> testUpdateLastRecord [
 	self assert: browser timerWindow isNil.
 	self assert: (browser updateLastRecord: record) equals: browser.
 
-	browser writeSlotNamed: 'timerWindow' value: timerWindow.
+	browser timerWindow: timerWindow.
 	browser updateLastRecord: record.
 
-	self assert: (timerWindow readSlotNamed: 'lastEventMorph') contents equals: record eventName
+	self assert: timerWindow lastEventMorph contents equals: record eventName
 ]
 
 { #category : 'tests' }

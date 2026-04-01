@@ -91,9 +91,10 @@ DSTimerWindow >> initializeTimers [
 DSTimerWindow >> lastEventMorph [
 	"Instanciates a new morph that shows the last event."
 
-	^ StringMorph new
-		  contents: 'No last record';
-		  position: 5 @ 6
+	^ lastEventMorph ifNil: [
+			  lastEventMorph := StringMorph new
+				                    contents: 'No last record';
+				                    position: 5 @ 6 ]
 ]
 
 { #category : 'accessing' }

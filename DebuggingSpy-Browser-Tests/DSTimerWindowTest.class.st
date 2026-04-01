@@ -46,6 +46,23 @@ DSTimerWindowTest >> testEmptyTimerMorph [
 	self assert: (Time readFrom: self timerMorph contents readStream) seconds equals: 0
 ]
 
+{ #category : 'tests' }
+DSTimerWindowTest >> testLastEventMorph [
+
+	| eventMorph |
+	eventMorph := timerWindow lastEventMorph.
+	self assert: eventMorph contents equals: 'No last record'
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testLastRecord [
+
+	| record |
+	record := DSBrowseRecord new.
+	timerWindow lastRecord: record.
+	self assert: timerWindow lastEventMorph contents equals: 'Browse'
+]
+
 { #category : 'layout' }
 DSTimerWindowTest >> timerMorph [
 	"Returns the window's timerMorph."
