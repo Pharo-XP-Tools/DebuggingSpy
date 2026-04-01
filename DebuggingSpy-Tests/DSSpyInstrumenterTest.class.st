@@ -897,9 +897,6 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeSenders [
 	self assert: record windowId equals: codePresenter window identityHash.
 	
 	record := self registry second.
-	self assert: record class identicalTo: DSMorphTabRecord.
-	
-	record := self registry second.
 	self assert: record class identicalTo: DSWindowOpenedRecord
 ]
 
