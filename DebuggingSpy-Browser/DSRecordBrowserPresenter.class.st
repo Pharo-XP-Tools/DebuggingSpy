@@ -394,6 +394,12 @@ DSRecordBrowserPresenter >> timerWindow [
 	^ timerWindow
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> timerWindow: aTimerWindow [
+
+	timerWindow := aTimerWindow
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> toolbar [
 	"Instanciates a new toolbar to be displayed on layout."
