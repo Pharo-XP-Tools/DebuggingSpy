@@ -60,7 +60,8 @@ DSTimerWindow >> initialize [
 	self minimumExtent: self size.
 	self initializeProperties.
 	self buildUI.
-	self initializeTimers
+	self initializeTimers.
+	self listenToWindowEvents
 ]
 
 { #category : 'initialization' }
@@ -104,11 +105,20 @@ DSTimerWindow >> lastRecord: aRecord [
 	lastEventMorph contents: aRecord eventName
 ]
 
+{ #category : 'windows' }
+DSTimerWindow >> listenToWindowEvents [
+	"Listens to window events announcer to update the timer window position when needed."
+
+	self currentWorld announcer when: WindowOpened send: #updatePosition to: self.
+	self currentWorld announcer when: WindowClosed send: #updatePosition to: self.
+	self currentWorld announcer when: WindowActivated send: #updatePosition to: self
+]
+
 { #category : 'accessing' }
 DSTimerWindow >> margin [
 	"Space around the window"
 
-	^ 5 @ 32
+	^ 5 @ 5
 ]
 
 { #category : 'wiw support' }
@@ -116,13 +126,6 @@ DSTimerWindow >> morphicLayerNumber [
 	"To ensure the recorder window is always displayed at screen and cannot be covered"
 
 	^ 12
-]
-
-{ #category : 'opening' }
-DSTimerWindow >> openInWorld [
-
-	super openInWorld.
-	self position: self currentWorld extent - self extent - self margin
 ]
 
 { #category : 'layout' }
@@ -168,4 +171,11 @@ DSTimerWindow >> timerMorph [
 	^ StringMorph new
 		  contents: '00:00:00';
 		  position: 115 @ 6
+]
+
+{ #category : 'private - layout' }
+DSTimerWindow >> updatePosition [
+	"Sets the timer window position above the taskbar."
+
+	self position: self currentWorld extent - self extent - self margin - (0 @ self currentWorld taskbars first extent y)
 ]
