@@ -378,7 +378,7 @@ DSSpy class >> taskStarted [
 DSSpy class >> testingSession [
 	"Indicates if we are in a testing session"
 
-	^ testingSession ifNil: [ recordingSession := false ]
+	^ testingSession ifNil: [ testingSession := false ]
 ]
 
 { #category : 'accessing' }
