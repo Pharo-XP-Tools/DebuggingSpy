@@ -61,6 +61,12 @@ DSSurveyRecord >> survey [
 ]
 
 { #category : 'accessing' }
+DSSurveyRecord >> survey: aSurvey [
+
+	survey := aSurvey
+]
+
+{ #category : 'accessing' }
 DSSurveyRecord >> windowName [
 	^survey title
 ]

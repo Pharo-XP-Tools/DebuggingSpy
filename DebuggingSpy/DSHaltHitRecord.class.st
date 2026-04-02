@@ -21,6 +21,12 @@ DSHaltHitRecord >> conditional [
 ]
 
 { #category : 'accessing' }
+DSHaltHitRecord >> conditional: aBoolean [
+
+	conditional := aBoolean
+]
+
+{ #category : 'accessing' }
 DSHaltHitRecord >> eventName [
 	^'HALT_HIT (', method, ')'
 ]
@@ -29,6 +35,12 @@ DSHaltHitRecord >> eventName [
 DSHaltHitRecord >> once [
 
 	^ once
+]
+
+{ #category : 'accessing' }
+DSHaltHitRecord >> once: aBoolean [
+
+	once := aBoolean
 ]
 
 { #category : 'actions api' }
@@ -46,4 +58,10 @@ DSHaltHitRecord >> record: anRBProgramNodeAndASelector [
 DSHaltHitRecord >> selector [
 
 	^ selector
+]
+
+{ #category : 'accessing' }
+DSHaltHitRecord >> selector: aSymbol [
+
+	selector := aSymbol
 ]

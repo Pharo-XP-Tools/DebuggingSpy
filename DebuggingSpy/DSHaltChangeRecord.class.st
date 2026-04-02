@@ -40,6 +40,12 @@ DSHaltChangeRecord >> haltChange [
 ]
 
 { #category : 'accessing' }
+DSHaltChangeRecord >> haltChange: newValue [
+
+	haltChange := newValue
+]
+
+{ #category : 'accessing' }
 DSHaltChangeRecord >> haltData [
 
 	^ haltData
