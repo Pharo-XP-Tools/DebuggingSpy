@@ -76,14 +76,6 @@ DSTimerWindowTest >> testStartTimer [
 	DSSpy recordingSession: false
 ]
 
-{ #category : 'tests' }
-DSTimerWindowTest >> testStopTimer [
-
-	timerWindow startTime: 42.
-	timerWindow stopTimer.
-	self assert: timerWindow startTime equals: 0
-]
-
 { #category : 'layout' }
 DSTimerWindowTest >> timerMorph [
 	"Returns the window's timerMorph."

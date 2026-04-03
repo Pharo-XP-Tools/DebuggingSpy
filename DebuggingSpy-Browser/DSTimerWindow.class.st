@@ -178,10 +178,9 @@ DSTimerWindow >> stopButton [
 
 { #category : 'recording' }
 DSTimerWindow >> stopTimer [
-	"Stops recording and resets the timer."
+	"Stops the recording."
 
-	startTime := 0.
-	DSSpy recordingSession ifTrue: [ DSRecordBrowserPresenter uniqueInstance stopRecording ]
+	DSRecordBrowserPresenter uniqueInstance stopRecording
 ]
 
 { #category : 'layout' }
