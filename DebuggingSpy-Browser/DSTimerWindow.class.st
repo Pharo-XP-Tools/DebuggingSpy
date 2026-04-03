@@ -15,8 +15,8 @@ Class {
 }
 
 { #category : 'initialization' }
-DSTimerWindow >> buildUI [
-	"Builds the windows UI, it contains : an icon which shows that Debugging Spy is recording, a chronometer, a timer with current time and a stop recording button."
+DSTimerWindow >> buildLayout [
+	"Builds the windows layout, it contains : an icon which shows that Debugging Spy is recording, a chronometer, a timer with current time and a stop recording button."
 
 	timerMorph := self timerMorph.
 	currentTimeMorph := self currentTimeMorph.
@@ -59,7 +59,7 @@ DSTimerWindow >> initialize [
 	super initialize.
 	self minimumExtent: self size.
 	self initializeProperties.
-	self buildUI.
+	self buildLayout.
 	self initializeTimers.
 	self listenToWindowEvents
 ]
@@ -144,6 +144,18 @@ DSTimerWindow >> size [
 	^ 250 @ 30
 ]
 
+{ #category : 'accessing' }
+DSTimerWindow >> startTime [
+
+	^ startTime
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> startTime: aNumberOfSeconds [
+
+	startTime := aNumberOfSeconds
+]
+
 { #category : 'timer' }
 DSTimerWindow >> startTimer [
 	"Starts a new process for the timer."
@@ -158,10 +170,18 @@ DSTimerWindow >> stopButton [
 
 	^ PluggableButtonMorph new
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
-		  model: DSRecordBrowserPresenter uniqueInstance;
-		  actionSelector: #stopRecording;
+		  model: self;
+		  actionSelector: #stopTimer;
 		  position: 225 @ 4;
 		  yourself
+]
+
+{ #category : 'recording' }
+DSTimerWindow >> stopTimer [
+	"Stops recording and resets the timer."
+
+	startTime := 0.
+	DSSpy recordingSession ifTrue: [ DSRecordBrowserPresenter uniqueInstance stopRecording ]
 ]
 
 { #category : 'layout' }

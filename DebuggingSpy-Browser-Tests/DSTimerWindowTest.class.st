@@ -63,6 +63,27 @@ DSTimerWindowTest >> testLastRecord [
 	self assert: timerWindow lastEventMorph contents equals: 'Browse'
 ]
 
+{ #category : 'tests' }
+DSTimerWindowTest >> testStartTimer [
+
+	self assert: timerWindow startTimer equals: timerWindow.
+
+	DSSpy recordingSession: true.
+
+	timerWindow startTimer.
+	self deny: timerWindow startTime isNil.
+
+	DSSpy recordingSession: false
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testStopTimer [
+
+	timerWindow startTime: 42.
+	timerWindow stopTimer.
+	self assert: timerWindow startTime equals: 0
+]
+
 { #category : 'layout' }
 DSTimerWindowTest >> timerMorph [
 	"Returns the window's timerMorph."
