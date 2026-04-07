@@ -296,6 +296,55 @@ DSRecordHistoryTest >> testBuildWindows [
 ]
 
 { #category : 'tests' }
+DSRecordHistoryTest >> testCollectScrollingPeriods [
+
+	| scrollList |
+	history records: {
+			(DSMouseEnterWindowRecord new
+				 dateTime: '2026-03-25T10:01:17' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:02:44' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:06:08' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:09:23' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:13:41' asDateAndTime;
+				 windowId: 1).
+			(DSMouseLeaveWindowRecord new
+				 dateTime: '2026-03-25T10:20:16' asDateAndTime;
+				 windowId: 1).
+			(DSMouseEnterWindowRecord new
+				 dateTime: '2026-03-25T10:21:41' asDateAndTime;
+				 windowId: 2).
+			(DSDoItRecord new
+				 dateTime: '2026-03-25T10:26:09' asDateAndTime;
+				 windowId: 2).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:13:41' asDateAndTime;
+				 windowId: 2).
+			(DSStepIntoRecord new
+				 dateTime: '2026-03-25T10:14:01' asDateAndTime;
+				 windowId: 2) }.
+
+	scrollList := history collectScrollingPeriods.
+
+	self assert: scrollList size equals: 2.
+	self assert: scrollList first key equals: {
+			'2026-03-25T10:02:44' asDateAndTime.
+			'2026-03-25T10:13:41' asDateAndTime }.
+	self assert: scrollList first value equals: 1.
+	self assert: scrollList second key equals: {
+			'2026-03-25T10:13:41' asDateAndTime.
+			'2026-03-25T10:13:41' asDateAndTime }.
+	self assert: scrollList second value equals: 2
+]
+
+{ #category : 'tests' }
 DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 
 	| deltaDict |
@@ -636,6 +685,56 @@ DSRecordHistoryTest >> testFixWindowRecordKeysNames [
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 1 ]) windowName equals: 'playGroundWindow'.
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 53 ]) windowName equals: 'browserWindow'.
 	self assert: (windowsHistory keys detect: [ :k | k windowId = 2 ]) windowName isNil
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testGetSumOfScrollingPeriods [
+
+	| scrollList |
+	history records: {
+			(DSMouseEnterWindowRecord new
+				 dateTime: '2026-03-25T10:01:17' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:02:44' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:06:08' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:09:23' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:13:41' asDateAndTime;
+				 windowId: 1).
+			(DSMouseLeaveWindowRecord new
+				 dateTime: '2026-03-25T10:20:16' asDateAndTime;
+				 windowId: 1).
+			(DSMouseEnterWindowRecord new
+				 dateTime: '2026-03-25T10:21:41' asDateAndTime;
+				 windowId: 2).
+			(DSDoItRecord new
+				 dateTime: '2026-03-25T10:26:09' asDateAndTime;
+				 windowId: 2).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:13:41' asDateAndTime;
+				 windowId: 2).
+			(DSStepIntoRecord new
+				 dateTime: '2026-03-25T10:14:01' asDateAndTime;
+				 windowId: 2).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:26:35' asDateAndTime;
+				 windowId: 1).
+			(DSScrollingRecord new
+				 dateTime: '2026-03-25T10:27:39' asDateAndTime;
+				 windowId: 1) }.
+
+
+	scrollList := history getSumOfScrollingPeriods.
+
+	self assert: scrollList size equals: 2.
+	self assert: (scrollList at: 1) equals: (Duration seconds: 721).
+	self assert: (scrollList at: 2) equals: (Duration seconds: 0)
 ]
 
 { #category : 'tests' }

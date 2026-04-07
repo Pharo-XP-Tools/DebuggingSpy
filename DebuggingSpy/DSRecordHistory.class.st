@@ -119,6 +119,30 @@ DSRecordHistory >> buildWindows [
 				                   ((w respondsTo: #type) and: [ #( 'Finish' 'Post-task' 'Survey' ) includes: w type ]) or: [ w windowId = -1 ] ] ]
 ]
 
+{ #category : 'API-history' }
+DSRecordHistory >> collectScrollingPeriods [
+
+	| i scrollingPeriods |
+	i := 1.
+	scrollingPeriods := OrderedCollection new.
+
+	[ i <= records size ] whileTrue: [
+			(records at: i) class = DSScrollingRecord ifTrue: [
+					| start stop |
+					start := (records at: i) dateTime.
+					stop := (records at: i) dateTime.
+					i := i + 1.
+					[ i <= records size and: [ (records at: i) class = DSScrollingRecord ] ] whileTrue: [
+							stop := (records at: i) dateTime.
+							i := i + 1 ].
+					scrollingPeriods add: {
+							start.
+							stop } -> (records at: i - 1) windowId ].
+			i := i + 1 ].
+
+	^ scrollingPeriods
+]
+
 { #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
 	"Returns a dictionary which contains all delta between two records above than 5s"
@@ -337,6 +361,21 @@ DSRecordHistory >> fixWindowRecordKeysNames [
 
 	windowNames keysAndValuesDo: [ :id :name | 
 		(self findWindowRecordKeyForID: id) windowName: name ]
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> getSumOfScrollingPeriods [
+
+	| scrollingPeriods |
+	scrollingPeriods := self collectScrollingPeriods.
+	scrollingPeriods := scrollingPeriods collect: [ :association |
+		                    association key second - association key first -> association value ].
+
+	scrollingPeriods := scrollingPeriods groupedBy: [ :association | association value ].
+
+	scrollingPeriods := scrollingPeriods collect: [ :array | array collect: [ :association | association key ] ].
+
+	^ scrollingPeriods collect: [ :value | value sum ]
 ]
 
 { #category : 'API-history' }
