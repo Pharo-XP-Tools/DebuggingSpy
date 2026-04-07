@@ -92,9 +92,8 @@ DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
-			fileListPresenter selectedItem ifNotNil: [
-					self updateRecordsTable: presenter.
-					self updateTimelineChart ] ].
+			self updateRecordsTable: presenter.
+			self updateTimelineChart ].
 
 	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
 ]
