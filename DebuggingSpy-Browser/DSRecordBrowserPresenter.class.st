@@ -93,6 +93,22 @@ DSRecordBrowserPresenter >> addRecordButton [
 		  yourself
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> colorAssociations [
+	"Associates each selector with the corresponding name of window and its color."
+
+	^ {
+		  (DSWindowRecord>>#isBrowser -> ('Browser' -> '#2A2AB7')).
+		  (DSWindowRecord>>#isInspector -> ('Inspector' -> '#FFC300')).
+		  (DSWindowRecord>>#isDebugger -> ('Debugger' -> '#C41E3D')).
+		  (DSWindowRecord>>#isPlayground -> ('Playground' -> '#70B77E')).
+		  (DSWindowRecord>>#isDebugPointBrowser -> ('Debug point browser' -> '#7C238C')).
+		  (DSWindowRecord>>#isCritiqueBrowser -> ('Critique browser' -> '#A45C15')).
+		  (DSWindowRecord>>#isEpicea -> ('Epicea' -> '#345e54')).
+		  (DSWindowRecord>>#isIceberg -> ('Iceberg' -> '#2B5BA9')).
+		  (DSWindowRecord>>#isRewriter -> ('Rewriter' -> '#292929')) }
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
@@ -188,18 +204,10 @@ DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
 	"Returns the window associated color, and the default color otherwise."
 
-	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
-	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
-	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
-
-	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
-	aWindowRecord isDebugPointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
-	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
-	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
-	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
-	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
-
-	^ Color gray
+	| associations |
+	associations := self colorAssociations select: [ :association | association key valueWithReceiver: aWindowRecord ].
+	associations ifEmpty: [ ^ Color gray ].
+	^ Color fromHexString: associations first value value
 ]
 
 { #category : 'initialization' }
