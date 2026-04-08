@@ -102,13 +102,7 @@ DSTimerWindow >> lastEventMorph [
 DSTimerWindow >> lastRecord: aRecord [
 	"Updates the last record text on the window."
 
-	| displayedText |
-
-	displayedText := aRecord eventName.
-	(aRecord hasSlotNamed: 'toolInfo') ifTrue: [
-		displayedText := displayedText , ' (' , aRecord toolInfo toolClassName asString , ')' ].
-
-	lastEventMorph contents: displayedText
+	lastEventMorph contents: aRecord formattedEventName
 ]
 
 { #category : 'windows' }
