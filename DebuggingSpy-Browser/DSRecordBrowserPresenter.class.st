@@ -36,6 +36,12 @@ DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 		action: [ self toggleBrowser ]
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> preferredExtent [
+
+	^ 1000 @ 600
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter class >> resetBrowser [
 	"Removes the actual browser then another one will be created the next time it needs to be opened."
