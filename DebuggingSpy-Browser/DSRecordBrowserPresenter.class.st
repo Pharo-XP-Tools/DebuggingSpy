@@ -16,7 +16,8 @@ Class {
 		'toolbarPresenter',
 		'fileListPresenter',
 		'startRecordButtonPresenter',
-		'stopRecordButtonPresenter'
+		'stopRecordButtonPresenter',
+		'showColorReferential'
 	],
 	#classInstVars : [
 		'uniqueInstance'
