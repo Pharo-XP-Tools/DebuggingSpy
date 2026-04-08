@@ -42,7 +42,7 @@ DSTimerWindow >> currentTimeMorph [
 
 	^ StringMorph new
 		  contents: Time now print24;
-		  position: 175 @ 6
+		  position: 325 @ 6
 ]
 
 { #category : 'timer' }
@@ -102,7 +102,13 @@ DSTimerWindow >> lastEventMorph [
 DSTimerWindow >> lastRecord: aRecord [
 	"Updates the last record text on the window."
 
-	lastEventMorph contents: aRecord eventName
+	| displayedText |
+
+	displayedText := aRecord eventName.
+	(aRecord hasSlotNamed: 'toolInfo') ifTrue: [
+		displayedText := displayedText , ' (' , aRecord toolInfo toolClassName asString , ')' ].
+
+	lastEventMorph contents: displayedText
 ]
 
 { #category : 'windows' }
@@ -134,14 +140,14 @@ DSTimerWindow >> recordingIcon [
 
 	^ ImageMorph new
 		  image: (self iconNamed: #glamorousRedCircle);
-		  position: 100 @ 7;
+		  position: 250 @ 7;
 		  yourself
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> size [
 
-	^ 250 @ 30
+	^ 400 @ 30
 ]
 
 { #category : 'accessing' }
@@ -172,7 +178,7 @@ DSTimerWindow >> stopButton [
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
 		  model: self;
 		  actionSelector: #stopTimer;
-		  position: 225 @ 4;
+		  position: 375 @ 4;
 		  yourself
 ]
 
@@ -189,7 +195,7 @@ DSTimerWindow >> timerMorph [
 
 	^ StringMorph new
 		  contents: '00:00:00';
-		  position: 115 @ 6
+		  position: 265 @ 6
 ]
 
 { #category : 'private - layout' }
