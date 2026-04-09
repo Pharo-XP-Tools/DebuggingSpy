@@ -26,6 +26,23 @@ Class {
 }
 
 { #category : 'accessing' }
+DSRecordBrowserPresenter class >> colorAssociations [
+	"Return all associations between the color and the corresponding window type."
+
+	| method methodClass |
+	^ (Pragma allNamed: #DSWindowColor) collect: [ :pragma |
+			  method := pragma method.
+			  methodClass := method methodClass.
+			  (method valueWithReceiver: methodClass) -> (methodClass >> #windowType valueWithReceiver: methodClass) ]
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> defaultExtent [
+
+	^ 1000 @ 600
+]
+
+{ #category : 'accessing' }
 DSRecordBrowserPresenter class >> defaultWindowColor [
 	"Returns the default color for windows."
 
@@ -41,12 +58,6 @@ DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 		order: 100;
 		help: 'Open the Debugging Spy browser.';
 		action: [ self toggleBrowser ]
-]
-
-{ #category : 'accessing' }
-DSRecordBrowserPresenter class >> preferredExtent [
-
-	^ 1000 @ 600
 ]
 
 { #category : 'initialization' }
@@ -100,22 +111,6 @@ DSRecordBrowserPresenter >> addRecordButton [
 		  yourself
 ]
 
-{ #category : 'accessing' }
-DSRecordBrowserPresenter >> colorAssociations [
-	"Associates each selector with the corresponding name of window and its color."
-
-	^ {
-		  (DSWindowRecord >> #isBrowser -> ('Browser' -> DSWindowRecord browserColor)).
-		  (DSWindowRecord >> #isInspector -> ('Inspector' -> DSWindowRecord inspectorColor)).
-		  (DSWindowRecord >> #isDebugger -> ('Debugger' -> DSWindowRecord debuggerColor)).
-		  (DSWindowRecord >> #isPlayground -> ('Playground' -> DSWindowRecord playgroundColor)).
-		  (DSWindowRecord >> #isDebugPointBrowser -> ('Debug point browser' -> DSWindowRecord debugPointBrowserColor)).
-		  (DSWindowRecord >> #isCritiqueBrowser -> ('Critique browser' -> DSWindowRecord critiqueBrowserColor)).
-		  (DSWindowRecord >> #isEpicea -> ('Epicea' -> DSWindowRecord epiceaColor)).
-		  (DSWindowRecord >> #isIceberg -> ('Iceberg' -> DSWindowRecord icebergColor)).
-		  (DSWindowRecord >> #isRewriter -> ('Rewriter' -> DSWindowRecord rewriterColor)) }
-]
-
 { #category : 'layout' }
 DSRecordBrowserPresenter >> colorReferential [
 	"Instanciates a new table that displays the color referential."
@@ -124,14 +119,14 @@ DSRecordBrowserPresenter >> colorReferential [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
 				   evaluated: [ ];
-				   displayBackgroundColor: [ :association | association value value ];
+				   displayBackgroundColor: [ :association | association key ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window type';
-				   evaluated: [ :association | association value key ];
+				   evaluated: [ :association | association value ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
-		  roots: self colorAssociations;
+		  roots: self class colorAssociations;
 		  beResizable;
 		  yourself
 ]
@@ -156,7 +151,8 @@ DSRecordBrowserPresenter >> defaultLayout [
 				   positionOfSlider: 30 percent;
 				   add: (SpPanedLayout newTopToBottom
 						    add: fileListPresenter;
-						    positionOfSlider: 61 percent;
+						    add: self colorReferential;
+						    positionOfSlider: 57 percent;
 						    yourself);
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new

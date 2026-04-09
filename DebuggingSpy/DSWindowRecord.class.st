@@ -19,79 +19,9 @@ Class {
 	#tag : 'Records-Extensions'
 }
 
-{ #category : 'color' }
-DSWindowRecord class >> browserColor [
-	"Returns the color associated for a record that happened in a browser."
-
-	^ Color fromHexString: '#2A2AB7'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> critiqueBrowserColor [
-	"Returns the color associated for a record that happened in a critique browser."
-
-	^ Color fromHexString: '#A45C15'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> debugPointBrowserColor [
-	"Returns the color associated for a record that happened in a debug point browser."
-
-	^ Color fromHexString: '#7C238C'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> debuggerColor [
-	"Returns the color associated for a record that happened in a debugger."
-
-	^ Color fromHexString: '#C41E3D'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> defaultColor [
-	"Returns the color associated for a record that happened in an unknown window."
-
-	^ Color gray
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> epiceaColor [
-	"Returns the color associated for a record that happened in an Epicea window."
-
-	^ Color fromHexString: '#345e54'
-]
-
 { #category : 'instance creation' }
 DSWindowRecord class >> for: events [ 
 	^self new buildEvents: events
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> icebergColor [
-	"Returns the color associated for a record that happened in a Iceberg window."
-
-	^ Color fromHexString: '#2B5BA9'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> inspectorColor [
-	"Returns the color associated for a record that happened in an inspector."
-
-	^ Color fromHexString: '#FFC300'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> playgroundColor [
-	"Returns the color associated for a record that happened in a playground."
-
-	^ Color fromHexString: '#70B77E'
-]
-
-{ #category : 'color' }
-DSWindowRecord class >> rewriterColor [
-	"Returns the color associated for a record that happened in a rewriter."
-
-	^ Color fromHexString: '#292929'
 ]
 
 { #category : 'accessing' }
