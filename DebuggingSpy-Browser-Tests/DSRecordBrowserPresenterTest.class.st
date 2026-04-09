@@ -215,6 +215,17 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testGetWindowColorFrom [
+
+	| record |
+	record := DSWindowRecord new toolInfos: (DSToolInfo new toolClassName: 'StDebugger').
+	self assert: (browser getWindowColorFrom: record) equals: (Color fromHexString: '#C41E3D').
+
+	record toolInfos toolClassName: 'DSRecordBrowserTest'.
+	self assert: (browser getWindowColorFrom: record) equals: Color gray
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testRemoveFile [
 
 	| fileRef1 fileRef2 |
