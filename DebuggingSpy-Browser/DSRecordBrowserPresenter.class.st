@@ -365,7 +365,7 @@ DSRecordBrowserPresenter >> startRecordButton [
 
 { #category : 'recording' }
 DSRecordBrowserPresenter >> startRecording [
-	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recordering."
+	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recording."
 
 	timerWindow := DSTimerWindow new
 		               openInWorld;
