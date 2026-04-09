@@ -47,6 +47,34 @@ DSTimerWindowTest >> testEmptyTimerMorph [
 ]
 
 { #category : 'tests' }
+DSTimerWindowTest >> testGetFormattedNameFrom [
+
+	| toolInfo |
+	toolInfo := DSToolInfo new toolClassName: 'DSTimerWindowTest'.
+
+	self assert: (timerWindow getFormattedNameFrom: DSBrowseRecord new) equals: 'Browse'.
+	self
+		assert: (timerWindow getFormattedNameFrom: (DSMouseEnterWindowRecord new toolInfo: toolInfo))
+		equals: 'Enter window (DSTimerWindowTest)'.
+	self assert: (timerWindow getFormattedNameFrom: DSBrowseRecord new) equals: 'Browse (DSTimerWindowTest)'
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testGetToolInfoFor [
+
+	| toolInfo record |
+	self assert: (timerWindow getToolInfoFor: DSAbstractEventRecord new) isNil.
+
+	toolInfo := DSToolInfo new toolClassName: 'DSTimerWindowTest'.
+	record := DSMouseEnterWindowRecord new
+		          toolInfo: toolInfo;
+		          yourself.
+
+	self assert: (timerWindow getToolInfoFor: record) equals: toolInfo.
+	self assert: timerWindow lastToolInfo equals: toolInfo
+]
+
+{ #category : 'tests' }
 DSTimerWindowTest >> testLastEventMorph [
 
 	| eventMorph |

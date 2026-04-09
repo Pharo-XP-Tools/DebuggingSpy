@@ -8,7 +8,8 @@ Class {
 		'timerMorph',
 		'startTime',
 		'currentTimeMorph',
-		'lastEventMorph'
+		'lastEventMorph',
+		'lastToolInfo'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -42,7 +43,7 @@ DSTimerWindow >> currentTimeMorph [
 
 	^ StringMorph new
 		  contents: Time now print24;
-		  position: 175 @ 6
+		  position: 325 @ 6
 ]
 
 { #category : 'timer' }
@@ -51,6 +52,31 @@ DSTimerWindow >> elapsedTime [
 
 	startTime ifNil: [ ^ 0 ].
 	^ Time current asSeconds - startTime
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> getFormattedNameFrom: aRecord [
+	"Returns the event name followed by the tool class (or the last one), if applicable."
+
+	| toolInfo formattedEventName |
+	formattedEventName := aRecord eventName.
+
+	toolInfo := self getToolInfoFor: aRecord.
+	toolInfo ifNotNil: [ formattedEventName := formattedEventName , ' (' , toolInfo toolClassName asString , ')' ].
+
+	^ formattedEventName
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> getToolInfoFor: aRecord [
+	"Returns the record's toolInfo if possible, else returns the last used toolInfo (which can be nil)."
+
+	| toolInfo |
+	(aRecord class hasSlotNamed: 'toolInfo') ifFalse: [ ^ lastToolInfo ].
+
+	toolInfo := aRecord readSlotNamed: 'toolInfo'.
+	toolInfo ifNotNil: [ lastToolInfo := toolInfo ].
+	^ lastToolInfo
 ]
 
 { #category : 'initialization' }
@@ -102,7 +128,19 @@ DSTimerWindow >> lastEventMorph [
 DSTimerWindow >> lastRecord: aRecord [
 	"Updates the last record text on the window."
 
-	lastEventMorph contents: aRecord eventName
+	lastEventMorph contents: (self getFormattedNameFrom: aRecord)
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> lastToolInfo [
+
+	^ lastToolInfo
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> lastToolInfo: aToolInfo [
+
+	lastToolInfo := aToolInfo
 ]
 
 { #category : 'windows' }
@@ -134,14 +172,14 @@ DSTimerWindow >> recordingIcon [
 
 	^ ImageMorph new
 		  image: (self iconNamed: #glamorousRedCircle);
-		  position: 100 @ 7;
+		  position: 250 @ 7;
 		  yourself
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> size [
 
-	^ 250 @ 30
+	^ 400 @ 30
 ]
 
 { #category : 'accessing' }
@@ -172,7 +210,7 @@ DSTimerWindow >> stopButton [
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
 		  model: self;
 		  actionSelector: #stopTimer;
-		  position: 225 @ 4;
+		  position: 375 @ 4;
 		  yourself
 ]
 
@@ -189,7 +227,7 @@ DSTimerWindow >> timerMorph [
 
 	^ StringMorph new
 		  contents: '00:00:00';
-		  position: 115 @ 6
+		  position: 265 @ 6
 ]
 
 { #category : 'private - layout' }
