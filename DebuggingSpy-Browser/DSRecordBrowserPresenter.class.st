@@ -16,8 +16,7 @@ Class {
 		'toolbarPresenter',
 		'fileListPresenter',
 		'startRecordButtonPresenter',
-		'stopRecordButtonPresenter',
-		'showColorReferential'
+		'stopRecordButtonPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -114,8 +113,6 @@ DSRecordBrowserPresenter >> colorAssociations [
 DSRecordBrowserPresenter >> colorReferential [
 	"Instanciates a new table that displays the color referential."
 
-	showColorReferential ifFalse: [ ^ nil ].
-
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
@@ -150,9 +147,10 @@ DSRecordBrowserPresenter >> defaultLayout [
 		  add: toolbarPresenter expand: false;
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
-				   add: (SpBoxLayout newTopToBottom
+				   add: (SpPanedLayout newTopToBottom
 						    add: fileListPresenter;
 						    add: self colorReferential;
+						    positionOfSlider: 61 percent;
 						    yourself);
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new
