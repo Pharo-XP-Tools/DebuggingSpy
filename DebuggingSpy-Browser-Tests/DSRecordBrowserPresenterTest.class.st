@@ -197,8 +197,8 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 
 	| windows colorAssociations |
 	windows := { (DSWindowRecord new
-		            toolInfos: (DSToolInfo new
-				             toolClassName: 'StPlaygroundPresenter';
+		            toolInfo: (DSToolInfo new
+				             toolClass: StPlaygroundPresenter;
 				             yourself);
 		            events: {
 				            DSWindowOpenedRecord new.
@@ -218,10 +218,10 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 DSRecordBrowserPresenterTest >> testGetWindowColorFrom [
 
 	| record |
-	record := DSWindowRecord new toolInfos: (DSToolInfo new toolClassName: 'StDebugger').
+	record := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
 	self assert: (browser getWindowColorFrom: record) equals: DSWindowRecord debuggerColor.
 
-	record toolInfos toolClassName: 'DSRecordBrowserTest'.
+	record toolInfo toolClass: DSRecordBrowserPresenter.
 	self assert: (browser getWindowColorFrom: record) equals: DSWindowRecord defaultColor
 ]
 
