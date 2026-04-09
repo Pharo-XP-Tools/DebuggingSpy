@@ -98,15 +98,15 @@ DSRecordBrowserPresenter >> colorAssociations [
 	"Associates each selector with the corresponding name of window and its color."
 
 	^ {
-		  (DSWindowRecord>>#isBrowser -> ('Browser' -> '#2A2AB7')).
-		  (DSWindowRecord>>#isInspector -> ('Inspector' -> '#FFC300')).
-		  (DSWindowRecord>>#isDebugger -> ('Debugger' -> '#C41E3D')).
-		  (DSWindowRecord>>#isPlayground -> ('Playground' -> '#70B77E')).
-		  (DSWindowRecord>>#isDebugPointBrowser -> ('Debug point browser' -> '#7C238C')).
-		  (DSWindowRecord>>#isCritiqueBrowser -> ('Critique browser' -> '#A45C15')).
-		  (DSWindowRecord>>#isEpicea -> ('Epicea' -> '#345e54')).
-		  (DSWindowRecord>>#isIceberg -> ('Iceberg' -> '#2B5BA9')).
-		  (DSWindowRecord>>#isRewriter -> ('Rewriter' -> '#292929')) }
+		  (DSWindowRecord >> #isBrowser -> ('Browser' -> DSWindowRecord browserColor)).
+		  (DSWindowRecord >> #isInspector -> ('Inspector' -> DSWindowRecord inspectorColor)).
+		  (DSWindowRecord >> #isDebugger -> ('Debugger' -> DSWindowRecord debuggerColor)).
+		  (DSWindowRecord >> #isPlayground -> ('Playground' -> DSWindowRecord playgroundColor)).
+		  (DSWindowRecord >> #isDebugPointBrowser -> ('Debug point browser' -> DSWindowRecord debugPointBrowserColor)).
+		  (DSWindowRecord >> #isCritiqueBrowser -> ('Critique browser' -> DSWindowRecord critiqueBrowserColor)).
+		  (DSWindowRecord >> #isEpicea -> ('Epicea' -> DSWindowRecord epiceaColor)).
+		  (DSWindowRecord >> #isIceberg -> ('Iceberg' -> DSWindowRecord icebergColor)).
+		  (DSWindowRecord >> #isRewriter -> ('Rewriter' -> DSWindowRecord rewriterColor)) }
 ]
 
 { #category : 'layout' }
@@ -117,7 +117,7 @@ DSRecordBrowserPresenter >> colorReferential [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
 				   evaluated: [ ];
-				   displayBackgroundColor: [ :association | Color fromHexString: association value value ];
+				   displayBackgroundColor: [ :association | association value value ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window type';
@@ -230,8 +230,8 @@ DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
 
 	| associations |
 	associations := self colorAssociations select: [ :association | association key valueWithReceiver: aWindowRecord ].
-	associations ifEmpty: [ ^ Color gray ].
-	^ Color fromHexString: associations first value value
+	associations ifEmpty: [ ^ DSWindowRecord defaultColor ].
+	^ associations first value value
 ]
 
 { #category : 'initialization' }
