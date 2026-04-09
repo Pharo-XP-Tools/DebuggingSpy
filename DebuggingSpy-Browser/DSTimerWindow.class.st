@@ -62,7 +62,7 @@ DSTimerWindow >> getFormattedNameFrom: aRecord [
 	formattedEventName := aRecord eventName.
 
 	toolInfo := self getToolInfoFor: aRecord.
-	toolInfo ifNotNil: [ formattedEventName := formattedEventName , ' (' , toolInfo toolClassName asString , ')' ].
+	toolInfo ifNotNil: [ formattedEventName := formattedEventName , ' (' , toolInfo toolClass asString , ')' ].
 
 	^ formattedEventName
 ]

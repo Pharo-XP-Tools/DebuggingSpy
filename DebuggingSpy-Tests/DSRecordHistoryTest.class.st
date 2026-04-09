@@ -231,7 +231,7 @@ DSRecordHistoryTest >> testBuildWindows [
 		                   windowId: 8;
 		                   windowName: 'StDebugger';
 		                   toolInfo: (DSToolInfo new
-				                    toolClassName: #StDebugger;
+				                    toolClass: StDebugger;
 				                    windowIdentityHash: 1;
 				                    toolIdentityHash: 42).
 	sourceDebugger := DSHaltHitRecord new windowId: 5.
@@ -244,7 +244,7 @@ DSRecordHistoryTest >> testBuildWindows [
 					   windowId: 1;
 					   windowName: 'StPlayground';
 					   toolInfo: (DSToolInfo new
-							    toolClassName: #Playground;
+							    toolClass: StPlayground;
 							    windowIdentityHash: 1;
 							    toolIdentityHash: 42)).
 				  DSDoItRecord new.
@@ -363,13 +363,13 @@ DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 	deltaDict := history collectTimeDiscrepancies.
 
 	self assert: deltaDict size equals: 3.
-	self assert: deltaDict first value equals: 7 asDuration.
+	self assert: deltaDict first value equals: (Duration seconds: 7).
 	self assert: deltaDict first key first class equals: DSDoItRecord.
 	self assert: deltaDict first key second class equals: DSStepIntoRecord.
-	self assert: deltaDict second value equals: 184 asDuration.
+	self assert: deltaDict second value equals: (Duration seconds: 184).
 	self assert: deltaDict second key first class equals: DSWindowClosedRecord.
 	self assert: deltaDict second key second class equals: DSMouseEnterWindowRecord.
-	self assert: deltaDict third value equals: 16 asDuration.
+	self assert: deltaDict third value equals: (Duration seconds: 16).
 	self assert: deltaDict third key first class equals: DSPrintItRecord.
 	self assert: deltaDict third key second class equals: DSClipboardCopyRecord
 ]
@@ -1049,16 +1049,16 @@ DSRecordHistoryTest >> testReconstructSourcesOfDebuggerOpenings [
 	history windows: {
 			(DSWindowRecord new
 				 events: { openWindow1 };
-				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')).
+				 toolInfo: (DSToolInfo new toolClass: StDebugger)).
 			(DSWindowRecord new
 				 events: { (DSWindowOpenedRecord new dateTime: '2015-11-04T09:12:09' asDateAndTime) };
-				 toolInfos: (DSToolInfo new toolClassName: 'IceTipRepositoryBrowser')).
+				 toolInfo: (DSToolInfo new toolClass: IceTipRepositoryBrowser)).
 			(DSWindowRecord new
 				 events: { openWindow3 };
-				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')).
+				 toolInfo: (DSToolInfo new toolClass: StDebugger)).
 			(DSWindowRecord new
 				 events: { openWindow2 };
-				 toolInfos: (DSToolInfo new toolClassName: 'StDebugger')) }.
+				 toolInfo: (DSToolInfo new toolClass: StDebugger)) }.
 
 	sourceEvent1 := DSDebugItRecord new windowId: 1.
 	sourceEvent2 := DSPrintItRecord new windowId: 3.
@@ -1090,7 +1090,7 @@ DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 
 	| toolInfoExample |
 	toolInfoExample := DSToolInfo new
-		                   toolClassName: #Playground;
+		                   toolClass: StPlayground;
 		                   windowIdentityHash: 1;
 		                   toolIdentityHash: 42.
 
@@ -1107,9 +1107,9 @@ DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 	history reconstructWindowsToolInfo.
 
 	self assert: history windows size equals: 3.
-	self assert: history windows first toolInfos equals: toolInfoExample.
-	self assert: history windows second toolInfos isNil.
-	self assert: history windows third toolInfos isNil
+	self assert: history windows first toolInfo equals: toolInfoExample.
+	self assert: history windows second toolInfo isNil.
+	self assert: history windows third toolInfo isNil
 ]
 
 { #category : 'tests' }
@@ -1131,15 +1131,15 @@ DSRecordHistoryTest >> testToolInfosFor [
 
 	| toolInfo |
 	history windows: { (DSWindowRecord new
-			 toolInfos: (DSToolInfo new
-					  toolClassName: #Playground;
+			 toolInfo: (DSToolInfo new
+					  toolClass: StPlayground;
 					  windowIdentityHash: 1;
 					  toolIdentityHash: 42);
 			 events: { (DSWindowOpenedRecord new windowId: 1) }) } asOrderedCollection.
 
 	toolInfo := history toolInfosFor: 1.
 	self assert: toolInfo class equals: DSToolInfo.
-	self assert: toolInfo toolClassName equals: #Playground.
+	self assert: toolInfo toolClass equals: StPlayground.
 	self assert: toolInfo toolIdentityHash equals: 42.
 	self assert: toolInfo windowIdentityHash equals: 1.
 

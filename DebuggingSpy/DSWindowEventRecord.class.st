@@ -23,7 +23,7 @@ DSWindowEventRecord >> record: aWindowEvent [
 	self recordWindowNameFromEvent: aWindowEvent.
 	tool := DSSpy toolInWindow: aWindowEvent window.
 	tool ifNil: [ ^ self ].
-	toolInfo := DSToolInfo toolNamed: tool class name id: tool identityHash windowId: windowId
+	toolInfo := DSToolInfo toolClass: tool class id: tool identityHash windowId: windowId
 ]
 
 { #category : 'recording' }

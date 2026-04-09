@@ -25,6 +25,13 @@ Class {
 	#package : 'DebuggingSpy-Browser'
 }
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> defaultWindowColor [
+	"Returns the default color for windows."
+
+	^ Color gray
+]
+
 { #category : 'world menu' }
 DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 	"Adds the DSSpy button on topside bar."
@@ -149,7 +156,6 @@ DSRecordBrowserPresenter >> defaultLayout [
 				   positionOfSlider: 30 percent;
 				   add: (SpPanedLayout newTopToBottom
 						    add: fileListPresenter;
-						    add: self colorReferential;
 						    positionOfSlider: 61 percent;
 						    yourself);
 				   add: (SpBoxLayout newTopToBottom
@@ -226,11 +232,10 @@ DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 { #category : 'helpers' }
 DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
 	"Returns the window associated color, and the default color otherwise."
-
-	| associations |
-	associations := self colorAssociations select: [ :association | association key valueWithReceiver: aWindowRecord ].
-	associations ifEmpty: [ ^ DSWindowRecord defaultColor ].
-	^ associations first value value
+	| toolInfo |
+	toolInfo := aWindowRecord toolInfo.
+	toolInfo ifNil: [ ^ self class defaultWindowColor ].
+	^ aWindowRecord toolInfo toolClass windowColor
 ]
 
 { #category : 'initialization' }

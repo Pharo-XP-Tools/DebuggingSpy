@@ -42,12 +42,12 @@ DSRecordDataFilter >> applyOn: aRecord [
 	"Applies the filter on the specified record and returns the resulting filtered record"
 
 	| newRecord |
-	newRecord := aRecord deepCopy.
+	newRecord := aRecord class new.
 
-	newRecord class allSlots do: [ :slot |
+	aRecord class allSlots do: [ :slot |
 			operations
 				at: slot name asSymbol
-				ifPresent: [ :block | slot write: (block value: (newRecord readSlotNamed: slot name)) to: newRecord ]
+				ifPresent: [ :block | slot write: (block value: (aRecord readSlotNamed: slot name)) to: newRecord ]
 				ifAbsent: [ slot write: nil to: newRecord ] ].
 
 	^ newRecord
