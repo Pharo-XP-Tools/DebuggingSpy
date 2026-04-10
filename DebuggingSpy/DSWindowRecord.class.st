@@ -91,14 +91,6 @@ DSWindowRecord >> events: anObject [
 	events := anObject
 ]
 
-{ #category : 'accessing' }
-DSWindowRecord >> getWindowType [
-
-	toolInfos ifNotNil: [ ^ toolInfos toolClass ].
-	type isString ifTrue: [ ^ type ].
-	^ 'External Window'
-]
-
 { #category : 'testing' }
 DSWindowRecord >> isDebugger [
 
@@ -131,7 +123,7 @@ DSWindowRecord >> printOn: ws [
 { #category : 'printing' }
 DSWindowRecord >> printTypeOn: aStream [
 
-	aStream << self getWindowType
+	aStream << self class windowType
 ]
 
 { #category : 'accessing' }

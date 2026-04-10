@@ -406,7 +406,7 @@ DSRecordBrowserPresenter >> timelineChart [
 	fileListPresenter selectedItem ifNil: [ ^ nil ].
 
 	history := self getHistoryFrom: fileListPresenter selectedItem.
-	names := history windows collect: [ :i | i getWindowType ].
+	names := history windows collect: [ :i | i class windowType ].
 
 	data := self getTimelinePointsFrom: history.
 	data size < 2 ifTrue: [ ^ nil ].
