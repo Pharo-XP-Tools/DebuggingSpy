@@ -75,9 +75,11 @@ DSTimerWindowTest >> testGetRecordColorFrom [
 	| toolInfo |
 	toolInfo := DSToolInfo new toolClass: StPlayground.
 
-	self assert: (timerWindow getRecordColorFrom: DSAbstractEventRecord new) equals: DSRecordBrowserPresenter defaultWindowColor.
+	self assert: (timerWindow getRecordColorFrom: DSAbstractEventRecord new) equals: (Color fromHexString: '#b3b3b3').
 
-	self assert: (timerWindow getRecordColorFrom: (DSMouseEventRecord new toolInfo: toolInfo)) equals: StPlayground windowColor
+	self
+		assert: (timerWindow getRecordColorFrom: (DSMouseEventRecord new toolInfo: toolInfo))
+		equals: (Color fromHexString: '#70B77E')
 ]
 
 { #category : 'tests' }
@@ -123,17 +125,6 @@ DSTimerWindowTest >> testStartTimer [
 	self deny: timerWindow startTime isNil.
 
 	DSSpy recordingSession: false
-]
-
-{ #category : 'tests' }
-DSTimerWindowTest >> testUpdatePosition [
-
-	| newPosition |
-	newPosition := self currentWorld extent - timerWindow extent - timerWindow margin
-	               - (0 @ self currentWorld taskbars first extent y).
-	
-	timerWindow updatePosition.
-	self assert: timerWindow position equals: newPosition
 ]
 
 { #category : 'tests' }

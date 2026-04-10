@@ -20,10 +20,11 @@ DSToolInfoTest >> testAnonymizeWithCorrectTool [
 { #category : 'tests' }
 DSToolInfoTest >> testAnonymizeWithIncorrectTool [
 
-	| tool temp |
-	temp := DSRecordDataFilter.
-	tool := DSToolInfo new toolClass: temp.
+	| tool |
+	tool := DSToolInfo toolClass: DSRecordDataFilter id: 0 windowId: 1.
 	tool := tool anonymize.
 
-	self assert: tool toolClass equals: temp identityHash
+	self assert: tool toolClass equals: DSRecordDataFilter identityHash.
+	self assert: tool toolIdentityHash equals: 0.
+	self assert: tool windowIdentityHash equals: 1
 ]

@@ -219,10 +219,10 @@ DSRecordBrowserPresenterTest >> testGetWindowColorFrom [
 
 	| record |
 	record := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
-	self assert: (browser getWindowColorFrom: record) equals: StDebugger windowColor.
+	self assert: (browser getWindowColorFrom: record) equals: (Color fromHexString: '#ff2200').
 
 	record toolInfo toolClass: DSRecordBrowserPresenter.
-	self assert: (browser getWindowColorFrom: record) equals: DSRecordBrowserPresenter defaultWindowColor
+	self assert: (browser getWindowColorFrom: record) equals: (Color fromHexString: '#b3b3b3')
 ]
 
 { #category : 'tests' }

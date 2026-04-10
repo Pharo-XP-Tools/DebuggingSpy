@@ -4,7 +4,7 @@ Extension { #name : 'DSToolInfo' }
 DSToolInfo >> anonymize [
 	"Self applies the anonymous filter and returns the anonymous record."
 
-	^ self class anonymousFilter applyOn: self copy
+	^ self class anonymousFilter applyOn: self
 ]
 
 { #category : '*DebuggingSpy-Anonymizer' }
