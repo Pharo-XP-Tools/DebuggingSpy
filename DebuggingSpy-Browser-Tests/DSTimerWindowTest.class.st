@@ -23,6 +23,16 @@ DSTimerWindowTest >> setUp [
 ]
 
 { #category : 'tests' }
+DSTimerWindowTest >> testBuildLayout [
+	"buildLayout has been already called from initialize"
+
+	self assert: ({ 'timerMorph'. 'currentTimeMorph'. 'lastEventMorph'. 'windowColorIndicator' } allSatisfy: [ :slotName |
+			 (timerWindow readSlotNamed: slotName) isNotNil ]).
+
+	self assert: timerWindow submorphs size equals: 6
+]
+
+{ #category : 'tests' }
 DSTimerWindowTest >> testCurrentTimeMorph [
 
 	self assert: (Time readFrom: self currentTimeMorph contents readStream) asSeconds equals: Time now asSeconds
@@ -57,6 +67,17 @@ DSTimerWindowTest >> testGetFormattedNameFrom [
 		assert: (timerWindow getFormattedNameFrom: (DSMouseEnterWindowRecord new toolInfo: toolInfo))
 		equals: 'Enter window (DSTimerWindowTest)'.
 	self assert: (timerWindow getFormattedNameFrom: DSBrowseRecord new) equals: 'Browse (DSTimerWindowTest)'
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testGetRecordColorFrom [
+
+	| toolInfo |
+	toolInfo := DSToolInfo new toolClass: StPlayground.
+
+	self assert: (timerWindow getRecordColorFrom: DSAbstractEventRecord new) equals: DSRecordBrowserPresenter defaultWindowColor.
+
+	self assert: (timerWindow getRecordColorFrom: (DSMouseEventRecord new toolInfo: toolInfo)) equals: StPlayground windowColor
 ]
 
 { #category : 'tests' }
@@ -102,6 +123,25 @@ DSTimerWindowTest >> testStartTimer [
 	self deny: timerWindow startTime isNil.
 
 	DSSpy recordingSession: false
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testUpdatePosition [
+
+	| newPosition |
+	newPosition := self currentWorld extent - timerWindow extent - timerWindow margin
+	               - (0 @ self currentWorld taskbars first extent y).
+	
+	timerWindow updatePosition.
+	self assert: timerWindow position equals: newPosition
+]
+
+{ #category : 'tests' }
+DSTimerWindowTest >> testWindowColorIndicator [
+
+	timerWindow writeSlotNamed: 'windowColorIndicator' value: nil.
+	self assert: timerWindow windowColorIndicator isNotNil.
+	self assert: (timerWindow readSlotNamed: 'windowColorIndicator') isNotNil
 ]
 
 { #category : 'layout' }
