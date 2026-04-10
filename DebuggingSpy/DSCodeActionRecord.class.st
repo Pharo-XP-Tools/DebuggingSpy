@@ -16,11 +16,16 @@ Class {
 { #category : 'actions api' }
 DSCodeActionRecord >> record: anEditor [
 
-	selectedString := DSSpy recordSourceCode
-		                  ifTrue: [ anEditor recordSelectedString ]
-		                  ifFalse: [ DSSpy recordSourceCodeDisabledErrorMessage ].
+	self recordSelectedString: anEditor recordSelectedString.
+	self windowId: anEditor recordWindow identityHash
+]
 
-	super record: anEditor
+{ #category : 'accessing' }
+DSCodeActionRecord >> recordSelectedString: aString [
+
+	selectedString := DSSpy recordSourceCode
+		                  ifTrue: [ aString ]
+		                  ifFalse: [ DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
 
 { #category : 'accessing' }
