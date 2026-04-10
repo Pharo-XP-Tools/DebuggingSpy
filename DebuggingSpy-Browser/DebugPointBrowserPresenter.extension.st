@@ -4,7 +4,7 @@ Extension { #name : 'DebugPointBrowserPresenter' }
 DebugPointBrowserPresenter class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#7C238C'
+	^ Color fromHexString: '#ff0fef'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

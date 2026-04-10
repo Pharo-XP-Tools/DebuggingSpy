@@ -46,7 +46,7 @@ DSRecordBrowserPresenter class >> defaultExtent [
 DSRecordBrowserPresenter class >> defaultWindowColor [
 	"Returns the default color for windows."
 
-	^ Color gray
+	^ Color fromHexString: '#b3b3b3'
 ]
 
 { #category : 'world menu' }

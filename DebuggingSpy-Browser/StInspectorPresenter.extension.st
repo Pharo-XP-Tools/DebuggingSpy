@@ -4,7 +4,7 @@ Extension { #name : 'StInspectorPresenter' }
 StInspectorPresenter class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#FFC300'
+	^ Color fromHexString: '#fad314'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

@@ -4,7 +4,7 @@ Extension { #name : 'IceTipRepositoryBrowser' }
 IceTipRepositoryBrowser class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#2B5BA9'
+	^ Color fromHexString: '#00e5ff'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

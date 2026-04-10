@@ -4,7 +4,7 @@ Extension { #name : 'StDebugger' }
 StDebugger class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#C41E3D'
+	^ Color fromHexString: '#ff2200'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

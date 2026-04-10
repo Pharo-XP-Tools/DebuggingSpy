@@ -4,7 +4,7 @@ Extension { #name : 'ClyFullBrowserMorph' }
 ClyFullBrowserMorph class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#2A2AB7'
+	^ Color fromHexString: '#1f48ff'
 ]
 
 { #category : '*DebuggingSpy-Browser' }
