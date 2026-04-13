@@ -74,11 +74,7 @@ DSTimerWindow >> getFormattedNameFrom: aRecord [
 DSTimerWindow >> getRecordColorFrom: aRecord [
 	"Returns the toolInfo's window corresponding color, or default color otherwise."
 
-	| toolInfo |
-	toolInfo := self getToolInfoFor: aRecord.
-	toolInfo ifNil: [ ^ DSRecordBrowserPresenter defaultWindowColor ].
-
-	^ toolInfo toolClass windowColor
+	^ DSRecordBrowserPresenter windowColorFrom: (self getToolInfoFor: aRecord)
 ]
 
 { #category : 'accessing' }

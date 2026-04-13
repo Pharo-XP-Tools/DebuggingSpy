@@ -87,6 +87,14 @@ DSRecordBrowserPresenter class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> windowColorFrom: anObject [
+	"If the specified object is nil, returns the default windowColor, else return its window color."
+
+	anObject ifNil: [ ^ self defaultWindowColor ].
+	^ anObject windowColor
+]
+
 { #category : 'files' }
 DSRecordBrowserPresenter >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
@@ -207,7 +215,8 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 	recordColorsAssociations := OrderedCollection new.
 
 	aWindowRecordCollection do: [ :windowRecord |
-		recordColorsAssociations addAll: (windowRecord events collect: [ :record | record -> (self getWindowColorFrom: windowRecord) ]) ].
+		recordColorsAssociations addAll:
+			(windowRecord events collect: [ :record | record -> windowRecord windowColor ]) ].
 
 	^ recordColorsAssociations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
 ]
@@ -216,22 +225,13 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 	"Returns a list of plots for the timeline chart."
 
-	^ aHistory windows collectWithIndex: [ :w :index |
+	^ aHistory windows collectWithIndex: [ :windowRecord :index |
 			  RSTimeLinePlot new
 				  entries: {
-						  w events first dateTime asNanoSeconds.
-						  w events last dateTime asNanoSeconds }
+						  windowRecord events first dateTime asNanoSeconds.
+						  windowRecord events last dateTime asNanoSeconds }
 				  at: index;
-				  color: (self getWindowColorFrom: w) ]
-]
-
-{ #category : 'helpers' }
-DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
-	"Returns the window associated color, and the default color otherwise."
-	| toolInfo |
-	toolInfo := aWindowRecord toolInfo.
-	toolInfo ifNil: [ ^ self class defaultWindowColor ].
-	^ aWindowRecord toolInfo toolClass windowColor
+				  color: windowRecord windowColor ]
 ]
 
 { #category : 'initialization' }
