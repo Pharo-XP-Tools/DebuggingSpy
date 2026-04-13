@@ -188,6 +188,14 @@ DSRecordBrowserPresenter >> files [
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> filterRecordClass: aClass [
+	"Add the specified class to the records filter."
+
+	recordsFilter sourceList selectItems: { aClass }.
+	recordsFilter addSelected
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> filterRecordsButton [
 	"Instanciates a new layout button which opens the records' filter window."
@@ -338,6 +346,13 @@ DSRecordBrowserPresenter >> recordsTableActions [
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
 					  action: [ recordsTablePresenter selectedItem key inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Filter this type of records';
+					  iconName: #packageAdd;
+					  description: 'Filter this type of records';
+					  shortcutKey: $f meta;
+					  action: [ self filterRecordClass: recordsTablePresenter selectedItem key class ] ];
 		  yourself
 ]
 

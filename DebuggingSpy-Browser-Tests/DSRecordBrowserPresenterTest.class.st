@@ -174,6 +174,14 @@ DSRecordBrowserPresenterTest >> testCreatingAndOpeningBrowser [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testFilterRecordClass [
+
+	browser filterRecordClass: DSBrowseRecord.
+	self deny: ((browser presenterAt: #recordsFilter) sourceList items includes: DSBrowseRecord).
+	self assert: ((browser presenterAt: #recordsFilter) targetList items includes: DSBrowseRecord)
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testFilteringAClassOfRecords [
 
 	| fileRef history |
