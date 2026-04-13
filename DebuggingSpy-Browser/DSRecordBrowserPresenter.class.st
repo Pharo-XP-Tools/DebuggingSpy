@@ -242,6 +242,15 @@ DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 				  color: windowRecord windowColor ]
 ]
 
+{ #category : 'helpers' }
+DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
+	"Returns the record's corresponding window record in the history."
+
+	| rawRecords |
+	rawRecords := DSSpy materialize: fileListPresenter selectedItem.
+	^ ((DSRecordHistory on: rawRecords) windows select: [ :window | window name = aRecord windowId ]) first
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> initializePresenters [
 
@@ -346,6 +355,13 @@ DSRecordBrowserPresenter >> recordsTableActions [
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
 					  action: [ recordsTablePresenter selectedItem key inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect the window';
+					  iconName: #window;
+					  description: 'Inspect the record window';
+					  shortcutKey: $w meta;
+					  action: [ (self getWindowFromRecord: recordsTablePresenter selectedItem key) inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Filter this type of records';

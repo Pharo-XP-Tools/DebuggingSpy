@@ -2,7 +2,8 @@ Class {
 	#name : 'DSRecordBrowserPresenterTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'browser'
+		'browser',
+		'records'
 	],
 	#category : 'DebuggingSpy-Browser-Tests',
 	#package : 'DebuggingSpy-Browser-Tests'
@@ -16,10 +17,9 @@ DSRecordBrowserPresenterTest >> filesPresenter [
 
 { #category : 'helpers' }
 DSRecordBrowserPresenterTest >> generateRecordsFile [
-	"Generates a file of random records and returns its file reference."
+	"Generates a file of records and returns its file reference."
 
-	| records recordFileRef writeStream |
-	records := self getRecordExamples.
+	| recordFileRef writeStream |
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -80,13 +80,15 @@ DSRecordBrowserPresenterTest >> recordsTablePresenter [
 DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
-	browser := DSRecordBrowserPresenter new
+	browser := DSRecordBrowserPresenter new.
+	records := self getRecordExamples
 ]
 
 { #category : 'running' }
 DSRecordBrowserPresenterTest >> tearDown [
 
 	DSRecordBrowserPresenter resetBrowser.
+	records := nil.
 	super tearDown
 ]
 
@@ -238,6 +240,22 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 	self assert: colorAssociations last key class equals: DSStepThroughRecord.
 
 	colorAssociations do: [ :association | self assert: association value equals: (Color fromHexString: '#70B77E') ]
+]
+
+{ #category : 'tests' }
+DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
+
+	| record fileRef window |
+	record := records first.
+	fileRef := self generateRecordsFile.
+
+	self filesPresenter items: { fileRef }.
+	self filesPresenter selectItem: fileRef.
+
+	window := browser getWindowFromRecord: record.
+
+	self assert: window events first uuid equals: record uuid.
+	self assert: window name equals: record windowId
 ]
 
 { #category : 'tests' }
