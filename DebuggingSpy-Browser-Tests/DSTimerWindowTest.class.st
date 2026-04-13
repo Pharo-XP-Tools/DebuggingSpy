@@ -26,10 +26,19 @@ DSTimerWindowTest >> setUp [
 DSTimerWindowTest >> testBuildLayout [
 	"buildLayout has been already called from initialize"
 
+	| submorphs |
+	submorphs := timerWindow submorphs.
+
 	self assert: ({ 'timerMorph'. 'currentTimeMorph'. 'lastEventMorph'. 'windowColorIndicator' } allSatisfy: [ :slotName |
 			 (timerWindow readSlotNamed: slotName) isNotNil ]).
 
-	self assert: timerWindow submorphs size equals: 6
+	self assert: submorphs size equals: 6.
+	self assert: (submorphs last class = StringMorph and: submorphs last contents = '  ').
+	self assert: ((submorphs at: 5) class = StringMorph and: (submorphs at: 5) contents = 'No last record').
+	self assert: ((submorphs at: 4) class = ImageMorph and: (submorphs at: 4) form = (self iconNamed: #glamorousRedCircle)).
+	self assert: ((submorphs at: 3) class = StringMorph and: (submorphs at: 3) contents = '00:00:00').
+	self assert: (submorphs second class = StringMorph and: submorphs second contents = Time current print24).
+	self assert: (submorphs first class = PluggableButtonMorph and: submorphs first label class = IconicListItemMorph)
 ]
 
 { #category : 'tests' }
