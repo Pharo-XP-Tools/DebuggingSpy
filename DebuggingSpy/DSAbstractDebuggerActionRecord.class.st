@@ -8,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'actions api' }
+DSAbstractDebuggerActionRecord >> record: aWindow [
+
+	self windowId: aWindow context window window identityHash
+]

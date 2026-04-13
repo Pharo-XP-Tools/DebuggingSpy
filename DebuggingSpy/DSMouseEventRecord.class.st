@@ -24,7 +24,7 @@ DSMouseEventRecord >> record: aWindow [
 
 	tool := DSSpy toolInWindow: aWindow.
 	tool ifNil: [ ^ self ].
-	toolInfo := DSToolInfo toolNamed: tool class name id: tool identityHash windowId: windowId
+	toolInfo := DSToolInfo toolClass: tool class id: tool identityHash windowId: windowId
 ]
 
 { #category : 'accessing' }

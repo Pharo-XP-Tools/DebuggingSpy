@@ -130,7 +130,7 @@ DSAnonymizeTest >> testMouseEventRecord [
 	| record anonymousRecord |
 	record := DSMouseEventRecord new
 		          windowId: 1;
-		          toolInfo: (DSToolInfo toolNamed: #StPlayground id: 0 windowId: 1);
+		          toolInfo: (DSToolInfo toolClass: StPlayground id: 0 windowId: 1);
 		          yourself.
 	anonymousRecord := record anonymize.
 
@@ -191,7 +191,7 @@ DSAnonymizeTest >> testWindowEventRecord [
 
 	record := DSWindowEventRecord new
 		          windowName: 'aWindow';
-		          toolInfo: (DSToolInfo toolNamed: #StPlayground id: 0 windowId: 1);
+		          toolInfo: (DSToolInfo toolClass: StPlayground id: 0 windowId: 1);
 		          yourself.
 
 	anonymousRecord := record anonymize.

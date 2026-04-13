@@ -25,6 +25,30 @@ Class {
 	#package : 'DebuggingSpy-Browser'
 }
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> colorAssociations [
+	"Return all associations between the color and the corresponding window type."
+
+	| method methodClass |
+	^ (Pragma allNamed: #DSWindowColor) collect: [ :pragma |
+			  method := pragma method.
+			  methodClass := method methodClass.
+			  (method valueWithReceiver: methodClass) -> (methodClass >> #windowType valueWithReceiver: methodClass) ]
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> defaultExtent [
+
+	^ 1000 @ 600
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> defaultWindowColor [
+	"Returns the default color for windows."
+
+	^ Color fromHexString: '#b3b3b3'
+]
+
 { #category : 'world menu' }
 DSRecordBrowserPresenter class >> menuCommandOn: aBuilder [
 	"Adds the DSSpy button on topside bar."
@@ -63,6 +87,14 @@ DSRecordBrowserPresenter class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> windowColorFrom: anObject [
+	"If the specified object is nil, returns the default windowColor, else return its window color."
+
+	anObject ifNil: [ ^ self defaultWindowColor ].
+	^ anObject windowColor
+]
+
 { #category : 'files' }
 DSRecordBrowserPresenter >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
@@ -87,6 +119,26 @@ DSRecordBrowserPresenter >> addRecordButton [
 		  yourself
 ]
 
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> colorReferential [
+	"Instanciates a new table that displays the color referential."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   title: 'Color';
+				   evaluated: [ ];
+				   displayBackgroundColor: [ :association | association key ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Window type';
+				   evaluated: [ :association | association value ];
+				   displayColor: [ :aRecord | Color white ];
+				   yourself);
+		  roots: self class colorAssociations;
+		  beResizable;
+		  yourself
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
@@ -105,7 +157,11 @@ DSRecordBrowserPresenter >> defaultLayout [
 		  add: toolbarPresenter expand: false;
 		  add: (SpPanedLayout newHorizontal
 				   positionOfSlider: 30 percent;
-				   add: fileListPresenter;
+				   add: (SpPanedLayout newTopToBottom
+						    add: fileListPresenter;
+						    add: self colorReferential;
+						    positionOfSlider: 57 percent;
+						    yourself);
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new
 								     add: recordsTablePresenter label: 'Records';
@@ -159,7 +215,8 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 	recordColorsAssociations := OrderedCollection new.
 
 	aWindowRecordCollection do: [ :windowRecord |
-		recordColorsAssociations addAll: (windowRecord events collect: [ :record | record -> (self getWindowColorFrom: windowRecord) ]) ].
+		recordColorsAssociations addAll:
+			(windowRecord events collect: [ :record | record -> windowRecord windowColor ]) ].
 
 	^ recordColorsAssociations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
 ]
@@ -168,31 +225,13 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 	"Returns a list of plots for the timeline chart."
 
-	^ aHistory windows collectWithIndex: [ :w :index |
+	^ aHistory windows collectWithIndex: [ :windowRecord :index |
 			  RSTimeLinePlot new
 				  entries: {
-						  w events first dateTime asNanoSeconds.
-						  w events last dateTime asNanoSeconds }
+						  windowRecord events first dateTime asNanoSeconds.
+						  windowRecord events last dateTime asNanoSeconds }
 				  at: index;
-				  color: (self getWindowColorFrom: w) ]
-]
-
-{ #category : 'color' }
-DSRecordBrowserPresenter >> getWindowColorFrom: aWindowRecord [
-	"Returns the window associated color, and the default color otherwise."
-
-	aWindowRecord isBrowser ifTrue: [ ^ Color fromHexString: '#2A2AB7' ].
-	aWindowRecord isInspector ifTrue: [ ^ Color fromHexString: '#FFC300' ].
-	aWindowRecord isDebugger ifTrue: [ ^ Color fromHexString: '#C41E3D' ].
-
-	aWindowRecord isPlayground ifTrue: [ ^ Color fromHexString: '#70B77E' ].
-	aWindowRecord isDebugPointBrowser ifTrue: [ ^ Color fromHexString: '#7C238C' ].
-	aWindowRecord isCritiqueBrowser ifTrue: [ ^ Color fromHexString: '#A45C15' ].
-	aWindowRecord isEpicea ifTrue: [ ^ Color fromHexString: '#345e54' ].
-	aWindowRecord isIceberg ifTrue: [ ^ Color fromHexString: '#2B5BA9' ].
-	aWindowRecord isRewriter ifTrue: [ ^ Color fromHexString: '#292929' ].
-
-	^ Color gray
+				  color: windowRecord windowColor ]
 ]
 
 { #category : 'initialization' }
@@ -326,13 +365,13 @@ DSRecordBrowserPresenter >> startRecordButton [
 
 { #category : 'recording' }
 DSRecordBrowserPresenter >> startRecording [
-	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recordering."
+	"Starts recording events and instianciates a timerWindow which displays a timer and shows that Debugging Spy is recording."
 
-	DSSpyInstrumenter instrumentSystem.
 	timerWindow := DSTimerWindow new
 		               openInWorld;
-		               startTimer;
 		               yourself.
+	DSSpyInstrumenter instrumentSystem.
+	timerWindow startTimer.
 	self updateToolbar
 ]
 
@@ -367,7 +406,7 @@ DSRecordBrowserPresenter >> timelineChart [
 	fileListPresenter selectedItem ifNil: [ ^ nil ].
 
 	history := self getHistoryFrom: fileListPresenter selectedItem.
-	names := history windows collect: [ :i | i getWindowType ].
+	names := history windows collect: [ :i | i windowType ].
 
 	data := self getTimelinePointsFrom: history.
 	data size < 2 ifTrue: [ ^ nil ].

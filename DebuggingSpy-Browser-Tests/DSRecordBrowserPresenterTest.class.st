@@ -148,6 +148,24 @@ DSRecordBrowserPresenterTest >> testClosingBrowser [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testColorAssociations [
+
+	| associations |
+	associations := {
+		                ((Color fromHexString: '#1f48ff') -> 'Browser').
+		                ((Color fromHexString: '#ff0fef') -> 'Debug point browser').
+		                ((Color fromHexString: '#345e54') -> 'Epicea').
+		                ((Color fromHexString: '#00e5ff') -> 'Iceberg').
+		                ((Color fromHexString: '#ff8f1f') -> 'Critique browser').
+		                ((Color fromHexString: '#ff2200') -> 'Debugger').
+		                ((Color fromHexString: '#fad314') -> 'Inspector').
+		                ((Color fromHexString: '#70B77E') -> 'Playground').
+		                ((Color fromHexString: '#292929') -> 'Rewriter') }.
+
+	self assert: (associations allSatisfy: [ :asso | DSRecordBrowserPresenter colorAssociations includes: asso ])
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testCreatingAndOpeningBrowser [
 
 	DSRecordBrowserPresenter toggleBrowser.
@@ -197,8 +215,8 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 
 	| windows colorAssociations |
 	windows := { (DSWindowRecord new
-		            toolInfos: (DSToolInfo new
-				             toolClassName: 'StPlaygroundPresenter';
+		            toolInfo: (DSToolInfo new
+				             toolClass: StPlaygroundPresenter;
 				             yourself);
 		            events: {
 				            DSWindowOpenedRecord new.
@@ -310,6 +328,15 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
 	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
 	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
+]
+
+{ #category : 'tests' }
+DSRecordBrowserPresenterTest >> testWindowColorFrom [
+
+	| record |
+	record := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
+	self assert: (DSRecordBrowserPresenter windowColorFrom: record) equals: (Color fromHexString: '#ff2200').
+	self assert: (DSRecordBrowserPresenter windowColorFrom: nil) equals: (Color fromHexString: '#b3b3b3')
 ]
 
 { #category : 'helpers' }

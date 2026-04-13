@@ -539,7 +539,7 @@ DSRecordHistory >> reconstructWindowsToolInfo [
 			id ifNotNil: [
 					| window |
 					window := col first.
-					window toolInfos: (toolInfos at: id ifAbsent: [ nil ]) ] ].
+					window toolInfo: (toolInfos at: id ifAbsent: [ nil ]) ] ].
 ]
 
 { #category : 'accessing' }
@@ -617,7 +617,7 @@ DSRecordHistory >> timeTaken [
 DSRecordHistory >> toolInfosFor: aWindowId [
 
 	^ ((windows groupedBy: #windowId) at: aWindowId ifAbsent: [ ^ nil ])
-		  first toolInfos
+		  first toolInfo
 ]
 
 { #category : 'accessing' }
@@ -625,8 +625,8 @@ DSRecordHistory >> usedTools [
 
 	| allTools filteredTools |
 	allTools := ((windows reject: [ :w |
-		              w toolInfos isNil or: [ w toolInfos isEmpty ] ])
-		             collect: [ :w | w toolInfos first toolClassName ])
+		              w toolInfo isNil or: [ w toolInfo isEmpty ] ])
+		             collect: [ :w | w toolInfo first toolClass ])
 		            asSet.
 	filteredTools := OrderedCollection new.
 	allTools do: [ :tName |

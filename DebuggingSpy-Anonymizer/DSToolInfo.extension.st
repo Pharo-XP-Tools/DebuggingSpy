@@ -14,9 +14,9 @@ DSToolInfo class >> anonymousFilter [
 	^ DSRecordDataFilter new
 		  with: #toolIdentityHash;
 		  with: #windowIdentityHash;
-		  transform: #toolClassName with: [ :tool |
-				  (SystemBuildInfo current systemPackages includes: (self class environment at: tool) package)
-					  ifTrue: [ tool ]
-					  ifFalse: [ tool identityHash ] ];
+		  transform: #toolClass with: [ :toolClass |
+				  (SystemBuildInfo current systemPackages includes: toolClass package)
+					  ifTrue: [ toolClass ]
+					  ifFalse: [ toolClass identityHash ] ];
 		  yourself
 ]

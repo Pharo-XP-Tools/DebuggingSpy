@@ -564,12 +564,13 @@ DSSpyInstrumenterTest >> testInstrumentProceed [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StProceedCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSProceedRecord
 ]
 
@@ -578,12 +579,13 @@ DSSpyInstrumenterTest >> testInstrumentRestart [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StRestartCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSRestartRecord
 ]
 
@@ -592,12 +594,13 @@ DSSpyInstrumenterTest >> testInstrumentReturn [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StReturnValueCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSReturnValue
 ]
 
@@ -705,12 +708,13 @@ DSSpyInstrumenterTest >> testInstrumentRunTo [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StRunToSelectionCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSRunToSelectionRecord
 ]
 
@@ -724,7 +728,7 @@ DSSpyInstrumenterTest >> testInstrumentSendersAction [
 	self assert: self registry size equals: 2.
 
 	record := self registry first.
-	self assert: record class identicalTo: DSImplementorsRecord.
+	self assert: record class identicalTo: DSSendersRecord.
 	self assert: record windowId equals: nil
 ]
 
@@ -743,7 +747,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeBrowse [
 	record := self registry first.
 
 	self assert: record class identicalTo: DSBrowseRecord.
-	self assert: record windowId equals: codePresenter window identityHash
+	self assert: record windowId equals: codePresenter window window identityHash
 ]
 
 { #category : 'tests - interactions' }
@@ -785,19 +789,27 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoIt [
 { #category : 'tests - interactions' }
 DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForInspector [
 
-	| presenter record |
+	| presenter record model context |
 	presenter := StObjectContextPresenter basicNew.
-	presenter setModelBeforeInitialization: self stObjectContextModelMock.
-	[ presenter intializePresentersWithEvaluator ]
-		on: Error
-		do: [ "we just pass layout initialization errors as we do not care" ].
+
+	model := StInspectorModel on: StInspectorMockObject new.
+	context := StInspectionContext fromPragma: (StInspectorMockObject >> #inspectionMock1:) pragmas first.
+	context inspectedObject: model inspectedObject.
+	presenter setModelBeforeInitialization: (StObjectContextModel new
+			 inspection: model;
+			 inspectedObject: model inspectedObject;
+			 context: context;
+			 yourself).
+	presenter application: StPharoApplication new.
+	presenter initialize.
+	presenter open.
+
 	presenter evaluator text: '4+2'.
 	presenter evaluator selectionInterval: (1 to: 3).
-
 	presenter doEvaluateAndGo.
 
-	self assert: self registry size equals: 1.
-	record := self registry first.
+	self assert: self registry size equals: 2.
+	record := self registry second.
 
 	self assert: record class identicalTo: DSDoItAndGoRecord.
 	self assert: record selectedString equals: '4+2'
@@ -808,17 +820,21 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeDoItAndGoForPlayground [
 
 	| presenter record |
 	presenter := StPlaygroundPagePresenter basicNew.
-	presenter forceDisableLoading.
+	presenter setModelBeforeInitialization: (StPlaygroundPage new
+			 timeToWait: 5 milliSeconds;
+			 baseDirectory: FileSystem memory;
+			 yourself).
 	presenter application: StPharoApplication new.
-	presenter initializePresenters.
-	presenter setModelBeforeInitialization: DSFakeTextEditor new.
+	presenter forceDisableLoading.
+	presenter initialize.
+	presenter open.
+
 	presenter text text: '4+2'.
 	presenter text selectionInterval: (1 to: 3).
-
 	presenter doEvaluateAndGo.
 
-	self assert: self registry size equals: 1.
-	record := self registry first.
+	self assert: self registry size equals: 2.
+	record := self registry second.
 
 	self assert: record class identicalTo: DSDoItAndGoRecord.
 	self assert: record selectedString equals: '4+2'
@@ -839,7 +855,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeImplementors [
 
 	record := self registry first.
 	self assert: record class identicalTo: DSImplementorsRecord.
-	self assert: record windowId equals: codePresenter window identityHash.
+	self assert: record windowId equals: codePresenter window window identityHash.
 	
 	record := self registry second.
 	self assert: record class identicalTo: DSWindowOpenedRecord
@@ -894,7 +910,7 @@ DSSpyInstrumenterTest >> testInstrumentSpCodeSenders [
 
 	record := self registry first.
 	self assert: record class identicalTo: DSSendersRecord.
-	self assert: record windowId equals: codePresenter window identityHash.
+	self assert: record windowId equals: codePresenter window window identityHash.
 	
 	record := self registry second.
 	self assert: record class identicalTo: DSWindowOpenedRecord
@@ -905,12 +921,13 @@ DSSpyInstrumenterTest >> testInstrumentStepInto [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StStepIntoCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSStepIntoRecord 
 ]
 
@@ -919,12 +936,13 @@ DSSpyInstrumenterTest >> testInstrumentStepOver [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StStepOverCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSStepOverRecord
 ]
 
@@ -933,12 +951,13 @@ DSSpyInstrumenterTest >> testInstrumentStepThrough [
 
 	| debugger command record |
 	debugger := StDummyDebuggerPresenter new.
+	debugger open.
 	command := StStepThroughCommand forContext: debugger.
 	command execute.
 
-	self assert: self registry size equals: 1.
+	self assert: self registry size equals: 2.
 
-	record := self registry first.
+	record := self registry second.
 	self assert: record class identicalTo: DSStepThroughRecord
 ]
 
@@ -1021,7 +1040,7 @@ DSSpyInstrumenterTest >> testLoggingInteractionsWithNoSourceCode [
 		DSDoItRecord.
 		DSPrintItRecord } do: [ :recordClass |
 			| record |
-			record := recordClass new record: 'test'.
+			record := recordClass new recordSelectedString: 'test'.
 			self assert: record selectedString equals: DSSpy recordSourceCodeDisabledErrorMessage ]
 ]
 

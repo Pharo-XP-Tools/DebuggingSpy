@@ -107,9 +107,10 @@ DSSpyInstrumenter >> instrumentImplementorsActions [
 	"Instruments actions to show implementors of a method"
 
 	ClyShowMessageImplementorCommand link: DSImplementorsRecord link toAST: (ClyShowMessageImplementorCommand >> #execute) ast.
-	ClyTextEditor link: DSImplementorsRecord link toAST: (ClyTextEditor>>#implementorsOf:) ast.
+	ClyTextEditor link: DSImplementorsRecord link toAST: (ClyTextEditor >> #implementorsOf:) ast.
 	RubSmalltalkEditor link: DSImplementorsRecord link toAST: (RubSmalltalkEditor >> #implementorsOf:) ast.
-	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast
+	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast.
+	StImplementorsCommand link: DSImplementorsRecord link toAST: (StImplementorsCommand >> #execute) ast
 ]
 
 { #category : 'interactions' }
@@ -164,8 +165,9 @@ DSSpyInstrumenter >> instrumentSendersActions [
 
 	ClyShowMessageSenderCommand link: DSSendersRecord link toAST: (ClyShowMessageSenderCommand >> #execute) ast.
 	ClyTextEditor link: DSSendersRecord link toAST: (ClyTextEditor>>#sendersOf:) ast.
-	RubSmalltalkEditor link: DSImplementorsRecord link toAST: (RubSmalltalkEditor >> #sendersOf:) ast.
-	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast
+	RubSmalltalkEditor link: DSSendersRecord link toAST: (RubSmalltalkEditor >> #sendersOf:) ast.
+	SpBrowseSendersCommand link: DSSendersRecord link toAST: (SpBrowseSendersCommand >> #execute) ast.
+	StMessageSendersCommand link: DSSendersRecord link toAST: (StMessageSendersCommand >> #execute) ast
 ]
 
 { #category : 'debugger' }

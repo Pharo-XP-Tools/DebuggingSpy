@@ -6,7 +6,7 @@ Class {
 	#name : 'DSToolInfo',
 	#superclass : 'Object',
 	#instVars : [
-		'toolClassName',
+		'toolClass',
 		'toolIdentityHash',
 		'windowIdentityHash'
 	],
@@ -16,10 +16,10 @@ Class {
 }
 
 { #category : 'instance creation' }
-DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId [
+DSToolInfo class >> toolClass: aToolName id: aToolId windowId: aWindowId [
 
 	^ self new
-		  toolClassName: aToolName;
+		  toolClass: aToolName;
 		  toolIdentityHash: aToolId;
 		  windowIdentityHash: aWindowId;
 		  yourself
@@ -28,20 +28,20 @@ DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId [
 { #category : 'printing' }
 DSToolInfo >> printOn: str [
 
-	str << (toolClassName ifNil: [ 'missing tool name' ]).
+	str << (toolClass ifNil: [ 'missing tool name' ]).
 	str space.
 ]
 
 { #category : 'accessing' }
-DSToolInfo >> toolClassName [
+DSToolInfo >> toolClass [
 
-	^ toolClassName
+	^ toolClass
 ]
 
 { #category : 'accessing' }
-DSToolInfo >> toolClassName: anObject [
+DSToolInfo >> toolClass: anObject [
 
-	toolClassName := anObject
+	toolClass := anObject
 ]
 
 { #category : 'accessing' }
@@ -66,4 +66,12 @@ DSToolInfo >> windowIdentityHash [
 DSToolInfo >> windowIdentityHash: anObject [
 
 	windowIdentityHash := anObject
+]
+
+{ #category : 'accessing' }
+DSToolInfo >> windowType [
+	"Returns the window type if the tool is known, and external window otherwise."
+
+	toolClass ifNotNil: [ ^ toolClass windowType ].
+	^ 'External Window'
 ]

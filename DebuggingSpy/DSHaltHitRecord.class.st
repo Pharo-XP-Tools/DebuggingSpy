@@ -45,13 +45,13 @@ DSHaltHitRecord >> once: aBoolean [
 
 { #category : 'actions api' }
 DSHaltHitRecord >> record: anRBProgramNodeAndASelector [
+
 	once := false.
 	conditional := false.
 	super record: anRBProgramNodeAndASelector first.
 	selector := anRBProgramNodeAndASelector second.
-	selector = #once: ifTrue:[once := true].
-	selector = #haltIf: ifTrue:[conditional := true]
-	
+	selector = #once: ifTrue: [ once := true ].
+	selector = #haltIf: ifTrue: [ conditional := true ]
 ]
 
 { #category : 'accessing' }

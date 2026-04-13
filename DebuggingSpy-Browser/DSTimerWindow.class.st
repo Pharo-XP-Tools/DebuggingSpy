@@ -9,7 +9,8 @@ Class {
 		'startTime',
 		'currentTimeMorph',
 		'lastEventMorph',
-		'lastToolInfo'
+		'lastToolInfo',
+		'windowColorIndicator'
 	],
 	#category : 'DebuggingSpy-Browser',
 	#package : 'DebuggingSpy-Browser'
@@ -22,8 +23,10 @@ DSTimerWindow >> buildLayout [
 	timerMorph := self timerMorph.
 	currentTimeMorph := self currentTimeMorph.
 	lastEventMorph := self lastEventMorph.
+	windowColorIndicator := self windowColorIndicator.
 
 	self
+		addMorph: windowColorIndicator;
 		addMorph: lastEventMorph;
 		addMorph: self recordingIcon;
 		addMorph: timerMorph;
@@ -43,7 +46,7 @@ DSTimerWindow >> currentTimeMorph [
 
 	^ StringMorph new
 		  contents: Time now print24;
-		  position: 325 @ 6
+		  position: 335 @ 6
 ]
 
 { #category : 'timer' }
@@ -62,9 +65,16 @@ DSTimerWindow >> getFormattedNameFrom: aRecord [
 	formattedEventName := aRecord eventName.
 
 	toolInfo := self getToolInfoFor: aRecord.
-	toolInfo ifNotNil: [ formattedEventName := formattedEventName , ' (' , toolInfo toolClassName asString , ')' ].
+	toolInfo ifNotNil: [ formattedEventName := formattedEventName , ' (' , toolInfo toolClass asString , ')' ].
 
 	^ formattedEventName
+]
+
+{ #category : 'accessing' }
+DSTimerWindow >> getRecordColorFrom: aRecord [
+	"Returns the toolInfo's window corresponding color, or default color otherwise."
+
+	^ DSRecordBrowserPresenter windowColorFrom: (self getToolInfoFor: aRecord)
 ]
 
 { #category : 'accessing' }
@@ -121,14 +131,18 @@ DSTimerWindow >> lastEventMorph [
 	^ lastEventMorph ifNil: [
 			  lastEventMorph := StringMorph new
 				                    contents: 'No last record';
-				                    position: 5 @ 6 ]
+				                    height: 15;
+				                    position: 15 @ 6 ]
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> lastRecord: aRecord [
 	"Updates the last record text on the window."
 
-	lastEventMorph contents: (self getFormattedNameFrom: aRecord)
+	lastEventMorph contents: (self getFormattedNameFrom: aRecord).
+	windowColorIndicator
+		backgroundColor: (self getRecordColorFrom: aRecord);
+		contents: '  ' "so we force the redraw"
 ]
 
 { #category : 'accessing' }
@@ -172,14 +186,14 @@ DSTimerWindow >> recordingIcon [
 
 	^ ImageMorph new
 		  image: (self iconNamed: #glamorousRedCircle);
-		  position: 250 @ 7;
+		  position: 260 @ 7;
 		  yourself
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> size [
 
-	^ 400 @ 30
+	^ 410 @ 30
 ]
 
 { #category : 'accessing' }
@@ -210,7 +224,7 @@ DSTimerWindow >> stopButton [
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
 		  model: self;
 		  actionSelector: #stopTimer;
-		  position: 375 @ 4;
+		  position: 385 @ 4;
 		  yourself
 ]
 
@@ -227,7 +241,7 @@ DSTimerWindow >> timerMorph [
 
 	^ StringMorph new
 		  contents: '00:00:00';
-		  position: 265 @ 6
+		  position: 275 @ 6
 ]
 
 { #category : 'private - layout' }
@@ -235,4 +249,14 @@ DSTimerWindow >> updatePosition [
 	"Sets the timer window position above the taskbar."
 
 	self position: self currentWorld extent - self extent - self margin - (0 @ self currentWorld taskbars first extent y)
+]
+
+{ #category : 'layout' }
+DSTimerWindow >> windowColorIndicator [
+
+	^ windowColorIndicator ifNil: [
+			  windowColorIndicator := StringMorph new
+				                          contents: '  ';
+				                          height: 15;
+				                          position: 5 @ 6 ]
 ]
