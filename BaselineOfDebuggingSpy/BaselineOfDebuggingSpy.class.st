@@ -23,5 +23,7 @@ BaselineOfDebuggingSpy >> baseline: spec [
 
 { #category : 'baselines' }
 BaselineOfDebuggingSpy >> postloadAction [
-	DSSpy handlingError: false
+
+	DSSpy handlingError: false.
+	KMRepository reset
 ]
