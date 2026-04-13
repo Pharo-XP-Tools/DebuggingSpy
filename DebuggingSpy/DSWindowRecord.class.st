@@ -5,7 +5,6 @@ Class {
 	#name : 'DSWindowRecord',
 	#superclass : 'Object',
 	#instVars : [
-		'type',
 		'name',
 		'events',
 		'activePeriods',
@@ -41,8 +40,6 @@ DSWindowRecord >> buildEvents: aCollectionOfEvents [
 
 	events := aCollectionOfEvents.
 	self computeActivePeriods.
-
-	type := self windowTypeFor: events first.
 
 	name ifNotNil: [ ^ self ].
 	name := self windowNameFor: events first
@@ -123,7 +120,7 @@ DSWindowRecord >> printOn: ws [
 { #category : 'printing' }
 DSWindowRecord >> printTypeOn: aStream [
 
-	aStream << self class windowType
+	aStream << self windowType
 ]
 
 { #category : 'accessing' }
@@ -157,18 +154,6 @@ DSWindowRecord >> totalTime [
 ]
 
 { #category : 'accessing' }
-DSWindowRecord >> type [
-
-	^ type
-]
-
-{ #category : 'accessing' }
-DSWindowRecord >> type: anObject [
-
-	type := anObject
-]
-
-{ #category : 'accessing' }
 DSWindowRecord >> windowId [ 
 	^events first windowId
 ]
@@ -182,7 +167,8 @@ DSWindowRecord >> windowNameFor: aDSWindowOpeningRecord [
 ]
 
 { #category : 'accessing' }
-DSWindowRecord >> windowTypeFor: aDSDebuggerOpeningRecord [ 
-	
-	^aDSDebuggerOpeningRecord windowType
+DSWindowRecord >> windowType [
+
+	toolInfos ifNotNil: [ ^ toolInfos windowType ].
+	^ 'External Window'
 ]

@@ -30,10 +30,10 @@ DSWindowRecordTest >> testBuildEvents [
 
 	self assert: windowRecord events size equals: 9.
 	self assert: windowRecord name equals: 'Unknown window'.
-	self assert: windowRecord type equals: 'Application'.
+	self assert: windowRecord windowType equals: 'External Window'.
 	self assert: windowRecord activePeriods size equals: 2.
 
-	windowRecord := DSWindowRecord new.
+	windowRecord := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
 
 	eventsCollection := {
 		                    (DSWindowOpenedRecord new
@@ -49,7 +49,7 @@ DSWindowRecordTest >> testBuildEvents [
 
 	self assert: windowRecord events size equals: 5.
 	self assert: windowRecord name equals: 'Debugger'.
-	self assert: windowRecord type equals: 'Debugger'.
+	self assert: windowRecord windowType equals: 'Debugger'.
 	self assert: windowRecord activePeriods size equals: 1
 ]
 
@@ -107,16 +107,9 @@ DSWindowRecordTest >> testPrintOn [
 	| windowRecord printed |
 	windowRecord := DSWindowRecord new
 		                name: 'aBeautifulPlayground';
-		                toolInfo: (DSToolInfo new toolClass: 'Playground');
-		                type: 'MyType'.
+		                toolInfo: (DSToolInfo new toolClass: StPlaygroundPresenter).
 	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
 	self assert: printed equals: '[Playground] aBeautifulPlayground'.
-
-	windowRecord := DSWindowRecord new
-		                name: 'SomeName';
-		                type: 'MyType'.
-	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
-	self assert: printed equals: '[MyType] SomeName'.
 
 	windowRecord := DSWindowRecord new name: 'RandomName'.
 	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
@@ -132,14 +125,9 @@ DSWindowRecordTest >> testPrintTypeOn [
 
 	| windowRecord printed |
 	windowRecord := DSWindowRecord new
-		                toolInfo: (DSToolInfo new toolClass: 'StDebugger');
-		                type: 'Debugger'.
+		                toolInfo: (DSToolInfo new toolClass: StDebugger).
 	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
-	self assert: printed equals: 'StDebugger'.
-
-	windowRecord := DSWindowRecord new type: 'Senders'.
-	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
-	self assert: printed equals: 'Senders'.
+	self assert: printed equals: 'Debugger'.
 
 	windowRecord := DSWindowRecord new.
 	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
@@ -197,11 +185,12 @@ DSWindowRecordTest >> testWindowNameFor [
 ]
 
 { #category : 'tests' }
-DSWindowRecordTest >> testWindowTypeFor [
+DSWindowRecordTest >> testWindowType [
 
-	| windowRecord windowOpeningRecord |
-	windowRecord := DSWindowRecord new.
-	windowOpeningRecord := DSWindowOpenedRecord new windowName: 'senders'.
+	| windowRecord |
+	windowRecord := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
+	self assert: windowRecord windowType equals: 'Debugger'.
 
-	self assert: (windowRecord windowTypeFor: windowOpeningRecord) equals: 'Senders'
+	windowRecord toolInfo: DSToolInfo new.
+	self assert: windowRecord windowType equals: 'External Window'
 ]

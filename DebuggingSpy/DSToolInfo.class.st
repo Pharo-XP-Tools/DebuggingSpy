@@ -67,3 +67,11 @@ DSToolInfo >> windowIdentityHash: anObject [
 
 	windowIdentityHash := anObject
 ]
+
+{ #category : 'accessing' }
+DSToolInfo >> windowType [
+	"Returns the window type if the tool is known, and external window otherwise."
+
+	toolClass ifNotNil: [ ^ toolClass windowType ].
+	^ 'External Window'
+]
