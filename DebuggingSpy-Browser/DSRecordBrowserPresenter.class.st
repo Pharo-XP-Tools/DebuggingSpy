@@ -230,6 +230,15 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 ]
 
 { #category : 'helpers' }
+DSRecordBrowserPresenter >> getTableRowColorFor: anAssociation [
+	"Returns the row's corresponding color depending of the table selected row."
+
+	anAssociation = recordsTablePresenter selectedItem
+		ifTrue: [ ^ anAssociation value darker ]
+		ifFalse: [ ^ anAssociation value ]
+]
+
+{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
 	"Returns a list of plots for the timeline chart."
 
@@ -322,19 +331,19 @@ DSRecordBrowserPresenter >> recordsTable [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Event';
-				   displayBackgroundColor: [ :association | association value ];
+				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key eventName asString ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Event type';
-				   displayBackgroundColor: [ :association | association value ];
+				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key class asString ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
-				   displayBackgroundColor: [ :association | association value ];
+				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key dateTime asTime print24 ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
