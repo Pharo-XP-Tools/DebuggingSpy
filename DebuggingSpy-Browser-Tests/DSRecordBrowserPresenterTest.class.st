@@ -262,6 +262,21 @@ DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testGetTableRowColorFor [
+
+	| association |
+	self recordsTablePresenter roots: {
+			(DSAbstractEventRecord new -> Color red).
+			(DSAbstractEventRecord new -> Color blue).
+			(DSAbstractEventRecord new -> Color green) }.
+	association := self recordsTablePresenter roots first.
+
+	self assert: (browser getTableRowColorFor: association) equals: association value.
+	self recordsTablePresenter selectItem: association.
+	self assert: (browser getTableRowColorFor: association) equals: association value darker
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testRemoveFile [
 
 	| fileRef1 fileRef2 |
