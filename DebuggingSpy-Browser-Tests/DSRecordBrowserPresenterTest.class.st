@@ -22,8 +22,9 @@ DSRecordBrowserPresenterTest >> generateRecordsFile [
 
 { #category : 'helpers' }
 DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
-	"Generates a file of random records and returns its file reference."
+	"Generates a file of records and returns its file reference."
 
+	| recordFileRef writeStream |
 	| recordFileRef writeStream |
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
@@ -33,8 +34,10 @@ DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
 	writeStream nextPut: $[.
 
 	someRecords doWithIndex: [ :record :index |
+	someRecords doWithIndex: [ :record :index |
 			writeStream nextPutAll: (STON toString: record).
 
+			index = someRecords size ifFalse: [
 			index = someRecords size ifFalse: [
 					writeStream nextPut: $,.
 					writeStream crlf ] ].
@@ -389,6 +392,20 @@ DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
+
+	| records fileRef presenterMock windows |
+	records := self getRecordExamples.
+	fileRef := self generateRecordsFileFor: records.
+	presenterMock := MockObject new on: #selectedItem respond: fileRef.
+	browser updateWindowsPresenter: presenterMock.
+
+	windows := self windowsPresenter roots.
+	self assert: windows size equals: 4.
+	self assert: (windows allSatisfy: [ :window | window class = DSWindowRecord ])
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testWindowColorFrom [
 
 	| record |
@@ -401,6 +418,12 @@ DSRecordBrowserPresenterTest >> testWindowColorFrom [
 DSRecordBrowserPresenterTest >> timelinePresenter [
 
 	^ browser presenterAt: #graphicTimeline 
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> windowsPresenter [
+
+	^ browser presenterAt: #windowsPresenter
 ]
 
 { #category : 'helpers' }
