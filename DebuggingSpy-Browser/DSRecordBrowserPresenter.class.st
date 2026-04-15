@@ -11,7 +11,6 @@ Class {
 		'files',
 		'recordsTablePresenter',
 		'timerWindow',
-		'graphicTimeline',
 		'recordsFilter',
 		'toolbarPresenter',
 		'fileListPresenter',
@@ -146,7 +145,6 @@ DSRecordBrowserPresenter >> connectPresenters [
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
 			self updateRecordsTable: presenter.
-			self updateTimelineChart.
 			self updateWindowsPresenter: presenter ].
 
 	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
@@ -167,7 +165,6 @@ DSRecordBrowserPresenter >> defaultLayout [
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new
 								     add: recordsTablePresenter label: 'Records';
-								     add: graphicTimeline label: 'Timeline';
 								     add: windowsPresenter label: 'Windows';
 								     yourself);
 						    yourself);
@@ -242,19 +239,6 @@ DSRecordBrowserPresenter >> getTableRowColorFor: anAssociation [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
-	"Returns a list of plots for the timeline chart."
-
-	^ aHistory windows collectWithIndex: [ :windowRecord :index |
-			  RSTimeLinePlot new
-				  entries: {
-						  windowRecord events first dateTime asNanoSeconds.
-						  windowRecord events last dateTime asNanoSeconds }
-				  at: index;
-				  color: windowRecord windowColor ]
-]
-
-{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	"Returns the record's corresponding window record in the history."
 
@@ -271,7 +255,6 @@ DSRecordBrowserPresenter >> initializePresenters [
 	toolbarPresenter := self toolbar.
 	fileListPresenter := self fileList.
 	recordsTablePresenter := self recordsTable.
-	graphicTimeline := self newRoassal.
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter
 ]
@@ -352,7 +335,7 @@ DSRecordBrowserPresenter >> recordsTable [
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
-		 " actions: self recordsTableActions;"
+		  actions: self recordsTableActions;
 		  yourself
 ]
 
@@ -442,34 +425,6 @@ DSRecordBrowserPresenter >> stopRecording [
 	timerWindow := nil
 ]
 
-{ #category : 'layout' }
-DSRecordBrowserPresenter >> timelineChart [
-	"Returns a chart that represents a timeline using the file list presenter's data for its plots."
-
-	| history names chart data |
-	fileListPresenter selectedItem ifNil: [ ^ nil ].
-
-	history := self getHistoryFrom: fileListPresenter selectedItem.
-	names := history windows collect: [ :i | i windowType ].
-
-	data := self getTimelinePointsFrom: history.
-	data size < 2 ifTrue: [ ^ nil ].
-
-	chart := RSCompositeChart new.
-	chart addAll: data.
-
-	chart verticalTick fromNames: names.
-
-	chart horizontalTick
-		useNiceLabel;
-		numberOfTicks: history windows size // 2;
-		useDiagonalLabel;
-		labelConversion: [ :v | (DateAndTime fromSeconds: v // 1000000000) asTime ]. "Plots are instancied using their dateTime as nano seconds to prevent events which last less than a second to be hided, so we convert them into seconds to get the label."
-
-	chart build.
-	^ chart
-]
-
 { #category : 'accessing' }
 DSRecordBrowserPresenter >> timerWindow [
 
@@ -515,18 +470,6 @@ DSRecordBrowserPresenter >> updateRecordsTable: filesPresenter [
 				                           recordsFilter chosenItems includes: association key class ] ].
 
 	recordsTablePresenter roots: recordColorAssociations 
-]
-
-{ #category : 'operations' }
-DSRecordBrowserPresenter >> updateTimelineChart [
-	"Regenerates the timeline chart using the selected record's data"
-
-	| chart |
-	chart := self timelineChart.
-	chart
-		ifNil: [ graphicTimeline script: [ :canvas |  ] ]
-		ifNotNil: [ graphicTimeline script: [ :canvas | chart renderIn: canvas ] ].
-	graphicTimeline refresh
 ]
 
 { #category : 'layout' }
