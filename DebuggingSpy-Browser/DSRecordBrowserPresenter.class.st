@@ -248,7 +248,7 @@ DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 
 	| rawRecords |
 	rawRecords := DSSpy materialize: fileListPresenter selectedItem.
-	^ ((DSRecordHistory on: rawRecords) windows select: [ :window | window name = aRecord windowId ]) first
+	^ ((DSRecordHistory on: rawRecords) windows select: [ :window | window windowId = aRecord windowId ]) first
 ]
 
 { #category : 'initialization' }

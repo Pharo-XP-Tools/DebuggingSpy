@@ -2,8 +2,7 @@ Class {
 	#name : 'DSRecordBrowserPresenterTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'browser',
-		'records'
+		'browser'
 	],
 	#category : 'DebuggingSpy-Browser-Tests',
 	#package : 'DebuggingSpy-Browser-Tests'
@@ -19,7 +18,8 @@ DSRecordBrowserPresenterTest >> filesPresenter [
 DSRecordBrowserPresenterTest >> generateRecordsFile [
 	"Generates a file of records and returns its file reference."
 
-	| recordFileRef writeStream |
+	| records recordFileRef writeStream |
+	records := self getRecordExamples.
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -80,15 +80,13 @@ DSRecordBrowserPresenterTest >> recordsTablePresenter [
 DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
-	browser := DSRecordBrowserPresenter new.
-	records := self getRecordExamples
+	browser := DSRecordBrowserPresenter new
 ]
 
 { #category : 'running' }
 DSRecordBrowserPresenterTest >> tearDown [
 
 	DSRecordBrowserPresenter resetBrowser.
-	records := nil.
 	super tearDown
 ]
 
@@ -246,8 +244,8 @@ DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 
 	| record fileRef window |
-	record := records first.
 	fileRef := self generateRecordsFile.
+	record := (DSSpy materialize: fileRef) first.
 
 	self filesPresenter items: { fileRef }.
 	self filesPresenter selectItem: fileRef.
