@@ -16,10 +16,15 @@ DSRecordBrowserPresenterTest >> filesPresenter [
 
 { #category : 'helpers' }
 DSRecordBrowserPresenterTest >> generateRecordsFile [
-	"Generates a file of records and returns its file reference."
 
-	| records recordFileRef writeStream |
-	records := self getRecordExamples.
+	^ self generateRecordsFileFor: self getRecordExamples
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
+	"Generates a file of random records and returns its file reference."
+
+	| recordFileRef writeStream |
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -27,10 +32,10 @@ DSRecordBrowserPresenterTest >> generateRecordsFile [
 
 	writeStream nextPut: $[.
 
-	records doWithIndex: [ :record :index |
+	someRecords doWithIndex: [ :record :index |
 			writeStream nextPutAll: (STON toString: record).
 
-			index = records size ifFalse: [
+			index = someRecords size ifFalse: [
 					writeStream nextPut: $,.
 					writeStream crlf ] ].
 
@@ -355,6 +360,20 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
+
+	| records fileRef presenterMock windows |
+	records := self getRecordExamples.
+	fileRef := self generateRecordsFileFor: records.
+	presenterMock := MockObject new on: #selectedItem respond: fileRef.
+	browser updateWindowsPresenter: presenterMock.
+
+	windows := self windowsPresenter roots.
+	self assert: windows size equals: 4.
+	self assert: (windows allSatisfy: [ :window | window class = DSWindowRecord ])
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testWindowColorFrom [
 
 	| record |
@@ -367,4 +386,10 @@ DSRecordBrowserPresenterTest >> testWindowColorFrom [
 DSRecordBrowserPresenterTest >> timelinePresenter [
 
 	^ browser presenterAt: #graphicTimeline 
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> windowsPresenter [
+
+	^ browser presenterAt: #windowsPresenter
 ]

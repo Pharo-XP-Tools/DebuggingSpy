@@ -16,7 +16,8 @@ Class {
 		'toolbarPresenter',
 		'fileListPresenter',
 		'startRecordButtonPresenter',
-		'stopRecordButtonPresenter'
+		'stopRecordButtonPresenter',
+		'windowsPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -145,7 +146,8 @@ DSRecordBrowserPresenter >> connectPresenters [
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
 			self updateRecordsTable: presenter.
-			self updateTimelineChart ].
+			self updateTimelineChart.
+			self updateWindowsPresenter: presenter ].
 
 	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
 ]
@@ -166,6 +168,7 @@ DSRecordBrowserPresenter >> defaultLayout [
 						    add: (SpTabLayout new
 								     add: recordsTablePresenter label: 'Records';
 								     add: graphicTimeline label: 'Timeline';
+								     add: windowsPresenter label: 'Windows';
 								     yourself);
 						    yourself);
 				   yourself)
@@ -269,7 +272,8 @@ DSRecordBrowserPresenter >> initializePresenters [
 	fileListPresenter := self fileList.
 	recordsTablePresenter := self recordsTable.
 	graphicTimeline := self newRoassal.
-	recordsFilter := self recordsFilter
+	recordsFilter := self recordsFilter.
+	windowsPresenter := self windowsPresenter
 ]
 
 { #category : 'operations' }
@@ -336,7 +340,7 @@ DSRecordBrowserPresenter >> recordsTable [
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Event type';
+				   title: 'Type';
 				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key class asString ];
 				   displayColor: [ :aRecord | Color white ];
@@ -348,7 +352,7 @@ DSRecordBrowserPresenter >> recordsTable [
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
-		  actions: self recordsTableActions;
+		 " actions: self recordsTableActions;"
 		  yourself
 ]
 
@@ -532,6 +536,15 @@ DSRecordBrowserPresenter >> updateToolbar [
 	stopRecordButtonPresenter enabled: DSSpy recordingSession
 ]
 
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateWindowsPresenter: aFileListPresenter [
+
+	| fileRef |
+	fileRef := aFileListPresenter selectedItem.
+
+	fileRef ifNotNil: [ windowsPresenter roots: (self getHistoryFrom: fileRef) windows ]
+]
+
 { #category : 'accessing' }
 DSRecordBrowserPresenter >> windowIcon [
 
@@ -542,4 +555,35 @@ DSRecordBrowserPresenter >> windowIcon [
 DSRecordBrowserPresenter >> windowTitle [
 
 	^ 'Debugging record browser'
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> windowsPresenter [
+	"Instanciates a new records table that displays data based on the selected file's records."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   title: 'Window / Event';
+				   evaluated: [ :anItem | anItem asString ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
+				   evaluated: [ :anItem |
+						   anItem class = DSWindowRecord
+							   ifTrue: [ anItem windowType ]
+							   ifFalse: [ anItem class name ] ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Nb of events / Time';
+				   evaluated: [ :anItem |
+						   anItem class = DSWindowRecord
+							   ifTrue: [ anItem events size asString , ' events' ]
+							   ifFalse: [ anItem dateTime asTime print24 ] ];
+				   yourself);
+		  beResizable;
+		  "actions: self recordsTableActions;"children: [ :item |
+			  item class = DSWindowRecord
+				  ifTrue: [ item events ]
+				  ifFalse: [ {  } ] ];
+		  yourself
 ]
