@@ -265,18 +265,12 @@ DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testGetTableRowColorFor [
-
-	| association |
-	self recordsTablePresenter roots: {
-			(DSAbstractEventRecord new -> Color red).
-			(DSAbstractEventRecord new -> Color blue).
-			(DSAbstractEventRecord new -> Color green) }.
-	association := self recordsTablePresenter roots first.
-
-	self assert: (browser getTableRowColorFor: association) equals: association value.
-	self recordsTablePresenter selectItem: association.
-	self assert: (browser getTableRowColorFor: association) equals: association value darker
+DSRecordBrowserPresenterTest >> testPrintAsFormattedTime [
+	self assert: (browser printAsFormattedTime: (Time
+		 hour: 1
+		 minute: 2
+		 second: 3
+		 nanoSecond: 123456789) asDateAndTime) equals: '01:02:03.123456789'
 ]
 
 { #category : 'tests' }

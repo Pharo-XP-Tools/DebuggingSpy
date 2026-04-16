@@ -304,6 +304,13 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
 ]
 
+{ #category : 'printing' }
+DSRecordBrowserPresenter >> printAsFormattedTime: aDateAndTime [
+	"Returns the specified date and time as a string of format hh:mm:ss.nnnnnnnnn"
+
+	^ String new: 18 streamContents: [ :aStream | aDateAndTime asTime print24: true showSeconds: true on: aStream ]
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> recordsFilter [
 	"Instanciates a new chooser that displays every record classes that could be used to filter records in table."
@@ -331,7 +338,7 @@ DSRecordBrowserPresenter >> recordsTable [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
 				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
-				   evaluated: [ :association | association key dateTime asTime print24 ];
+				   evaluated: [ :association | self printAsFormattedTime: association key dateTime ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
@@ -481,6 +488,7 @@ DSRecordBrowserPresenter >> updateToolbar [
 
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateWindowsPresenter: aFileListPresenter [
+	"Updates the windows presenter by setting its roots by using the files presenter selected item."
 
 	| fileRef |
 	fileRef := aFileListPresenter selectedItem.
@@ -521,12 +529,28 @@ DSRecordBrowserPresenter >> windowsPresenter [
 				   evaluated: [ :anItem |
 						   anItem class = DSWindowRecord
 							   ifTrue: [ anItem events size asString , ' events' ]
-							   ifFalse: [ anItem dateTime asTime print24 ] ];
+							   ifFalse: [ self printAsFormattedTime: anItem dateTime ] ];
 				   yourself);
 		  beResizable;
-		  "actions: self recordsTableActions;"children: [ :item |
-			  item class = DSWindowRecord
-				  ifTrue: [ item events ]
-				  ifFalse: [ {  } ] ];
+		  actions: self windowsPresenterActions;
+		  children: [ :item |
+				  item class = DSWindowRecord
+					  ifTrue: [ item events ]
+					  ifFalse: [ {  } ] ];
+		  yourself
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> windowsPresenterActions [
+	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the selected element.';
+					  shortcutKey: $i meta;
+					  action: [ windowsPresenter selectedItem key inspect ] ];
 		  yourself
 ]
