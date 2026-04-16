@@ -148,7 +148,8 @@ DSRecordBrowserPresenter >> connectPresenters [
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
 			selectedHistory := self getHistoryFrom: presenter selectedItem.
 			self updateRecordsTable.
-			self updateWindowsPresenter ].
+			self updateWindowsPresenter.
+			self updateStatisticsPresenter ].
 
 	recordsFilter whenChangedDo: [ self updateRecordsTable ]
 ]
@@ -239,7 +240,7 @@ DSRecordBrowserPresenter >> getTableRowColorFor: anAssociation [
 	"Returns the row's corresponding color depending of the table selected row."
 
 	anAssociation = recordsTablePresenter selectedItem
-		ifTrue: [ ^ anAssociation value darker ]
+		ifTrue: [ ^ anAssociation value muchDarker ]
 		ifFalse: [ ^ anAssociation value ]
 ]
 
@@ -247,9 +248,7 @@ DSRecordBrowserPresenter >> getTableRowColorFor: anAssociation [
 DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	"Returns the record's corresponding window record in the history."
 
-	| rawRecords |
-	rawRecords := DSSpy materialize: fileListPresenter selectedItem.
-	^ ((DSRecordHistory on: rawRecords) windows select: [ :window | window windowId = aRecord windowId ]) first
+	^ (selectedHistory windows select: [ :window | window windowId = aRecord windowId ]) first
 ]
 
 { #category : 'initialization' }
@@ -283,7 +282,7 @@ DSRecordBrowserPresenter >> listAddedFilesActions [
 					  iconName: #history;
 					  description: 'Inspect the record history';
 					  shortcutKey: $h meta;
-					  action: [ (self getHistoryFrom: fileListPresenter selectedItem) inspect ] ];
+					  action: [ selectedHistory inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Remove';
@@ -432,12 +431,6 @@ DSRecordBrowserPresenter >> statisticsPresenter [
 	"Instanciates a new records table that displays data based on the selected file's records."
 
 	^ SpGridLayout new
-		  add: 'Amount of events:' atPoint: 1 @ 1;
-		  add: (self newText appendText: 'test') atPoint: 2 @ 1;
-		  add: 'Amount of windows:' atPoint: 1 @ 2;
-		  add: (self newText appendText: 'test') atPoint: 2 @ 2;
-		  add: 'Record duration:' atPoint: 1 @ 3;
-		  add: (self newText appendText: 'test') atPoint: 2 @ 3;
 		  beColumnNotHomogeneous;
 		  yourself
 ]
@@ -511,6 +504,20 @@ DSRecordBrowserPresenter >> updateRecordsTable [
 	recordsTablePresenter roots: recordColorAssociations
 ]
 
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateStatisticsPresenter [
+	"Updates the different fields in the statistics presenter depending on the selected history."
+
+	| stats |
+	selectedHistory ifNil: [ ^ self ].
+	stats := {
+		         ('Amount of events: ' , selectedHistory records size asString).
+		         ('Amount of windows: ' , selectedHistory windows size asString).
+		         ('Time taken: ' , (Time fromSeconds: selectedHistory stopTime asSeconds - selectedHistory startTime asSeconds) print24) }.
+
+	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> updateToolbar [
 
@@ -539,33 +546,42 @@ DSRecordBrowserPresenter >> windowTitle [
 
 { #category : 'layout' }
 DSRecordBrowserPresenter >> windowsPresenter [
-	"Instanciates a new records table that displays data based on the selected file's records."
+	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
 
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
+				   width: 4;
+				   beNotExpandable;
+				   evaluated: [ nil ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   width: 16;
+				   beNotExpandable;
+				   displayBackgroundColor: [ :anItem |
+					   anItem ifWindow: anItem windowColor ifRecord: (self getWindowFromRecord: anItem) windowColor ];
+				   evaluated: [ nil ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
 				   title: 'Window / Event';
-				   evaluated: [ :anItem | anItem asString ];
+				   evaluated: [ :anItem |
+						   anItem
+							   ifWindow: (anItem asString asText
+									    addAttribute: TextBackgroundColor red;
+									    yourself)
+							   ifRecord: anItem asString ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Type';
-				   evaluated: [ :anItem |
-						   anItem class = DSWindowRecord
-							   ifTrue: [ anItem windowType ]
-							   ifFalse: [ anItem class name ] ];
+				   evaluated: [ :anItem | anItem ifWindow: anItem windowType ifRecord: anItem class name ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Nb of events / Time';
 				   evaluated: [ :anItem |
-						   anItem class = DSWindowRecord
-							   ifTrue: [ anItem events size asString , ' events' ]
-							   ifFalse: [ self printAsFormattedTime: anItem dateTime ] ];
+					   anItem ifWindow: anItem events size asString , ' events' ifRecord: (self printAsFormattedTime: anItem dateTime) ];
 				   yourself);
 		  beResizable;
 		  actions: self windowsPresenterActions;
-		  children: [ :item |
-				  item class = DSWindowRecord
-					  ifTrue: [ item events ]
-					  ifFalse: [ {  } ] ];
+		  children: [ :item | item ifWindow: item events ifRecord: {  } ];
 		  yourself
 ]
 

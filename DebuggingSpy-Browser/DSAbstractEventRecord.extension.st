@@ -15,3 +15,10 @@ DSAbstractEventRecord class >> getLeafSubClasses [
 
 	^ classes
 ]
+
+{ #category : '*DebuggingSpy-Browser' }
+DSAbstractEventRecord >> ifWindow: aValue ifRecord: anotherValue [
+	"If the object is a DSWindowRecord, returns aValue, and returns the other value otherwise."
+
+	^ anotherValue
+]
