@@ -223,7 +223,8 @@ DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 
 	| fileRef |
 	fileRef := self generateRecordsFile.
-	self assert: (browser getHistoryFrom: fileRef) class equals: DSRecordHistory
+	self assert: (browser getHistoryFrom: fileRef) class equals: DSRecordHistory.
+	self assert: (browser getHistoryFrom: nil) isNil
 ]
 
 { #category : 'tests' }
@@ -349,10 +350,10 @@ DSRecordBrowserPresenterTest >> testUpdateLastRecord [
 { #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
-	| fileRef presenterMock |
+	| fileRef |
 	fileRef := self generateRecordsFile.
-	presenterMock := MockObject new on: #selectedItem respond: fileRef.
-	browser updateRecordsTable: presenterMock.
+	browser selectedHistory: (browser getHistoryFrom: fileRef).
+	browser updateRecordsTable.
 
 	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
 	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
@@ -374,11 +375,11 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 { #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
 
-	| records fileRef presenterMock windows |
+	| records fileRef windows |
 	records := self getRecordExamples.
 	fileRef := self generateRecordsFileFor: records.
-	presenterMock := MockObject new on: #selectedItem respond: fileRef.
-	browser updateWindowsPresenter: presenterMock.
+	browser selectedHistory: (browser getHistoryFrom: fileRef).
+	browser updateWindowsPresenter.
 
 	windows := self windowsPresenter roots.
 	self assert: windows size equals: 4.

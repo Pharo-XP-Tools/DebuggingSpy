@@ -17,7 +17,8 @@ Class {
 		'startRecordButtonPresenter',
 		'stopRecordButtonPresenter',
 		'windowsPresenter',
-		'statisticsPresenter'
+		'statisticsPresenter',
+		'selectedHistory'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -145,10 +146,11 @@ DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
-			self updateRecordsTable: presenter.
-			self updateWindowsPresenter: presenter ].
+			selectedHistory := self getHistoryFrom: presenter selectedItem.
+			self updateRecordsTable.
+			self updateWindowsPresenter ].
 
-	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
+	recordsFilter whenChangedDo: [ self updateRecordsTable ]
 ]
 
 { #category : 'layout' }
@@ -214,6 +216,7 @@ DSRecordBrowserPresenter >> filterRecordsButton [
 DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
 
+	aFileReference ifNil: [ ^ nil ].
 	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
 ]
 
@@ -387,6 +390,18 @@ DSRecordBrowserPresenter >> removeFile: aFileReference [
 	fileListPresenter selectItem: (files ifNotEmpty: [ files last ])
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> selectedHistory [
+
+	^ selectedHistory
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> selectedHistory: anHistory [
+
+	selectedHistory := anHistory
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> startRecordButton [
 	"Instanciates a button that starts the DSSpy recording session on click."
@@ -482,19 +497,18 @@ DSRecordBrowserPresenter >> updateLastRecord: aRecord [
 ]
 
 { #category : 'operations' }
-DSRecordBrowserPresenter >> updateRecordsTable: filesPresenter [
+DSRecordBrowserPresenter >> updateRecordsTable [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
-	| fileRef recordColorAssociations |
+	| recordColorAssociations |
 	recordColorAssociations := Array new.
-	fileRef := filesPresenter selectedItem.
 
-	fileRef ifNotNil: [
-			recordColorAssociations := self getRecordColorAssociationsFrom: (self getHistoryFrom: fileRef) windows.
+	selectedHistory ifNotNil: [
+			recordColorAssociations := self getRecordColorAssociationsFrom: selectedHistory windows.
 			recordColorAssociations := recordColorAssociations reject: [ :association |
 				                           recordsFilter chosenItems includes: association key class ] ].
 
-	recordsTablePresenter roots: recordColorAssociations 
+	recordsTablePresenter roots: recordColorAssociations
 ]
 
 { #category : 'layout' }
@@ -505,13 +519,10 @@ DSRecordBrowserPresenter >> updateToolbar [
 ]
 
 { #category : 'operations' }
-DSRecordBrowserPresenter >> updateWindowsPresenter: aFileListPresenter [
+DSRecordBrowserPresenter >> updateWindowsPresenter [
 	"Updates the windows presenter by setting its roots by using the files presenter selected item."
 
-	| fileRef |
-	fileRef := aFileListPresenter selectedItem.
-
-	fileRef ifNotNil: [ windowsPresenter roots: (self getHistoryFrom: fileRef) windows ]
+	selectedHistory ifNil: [ windowsPresenter roots: {  } ] ifNotNil: [ windowsPresenter roots: selectedHistory windows ]
 ]
 
 { #category : 'accessing' }
