@@ -16,7 +16,8 @@ Class {
 		'fileListPresenter',
 		'startRecordButtonPresenter',
 		'stopRecordButtonPresenter',
-		'windowsPresenter'
+		'windowsPresenter',
+		'statisticsPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -166,6 +167,7 @@ DSRecordBrowserPresenter >> defaultLayout [
 						    add: (SpTabLayout new
 								     add: recordsTablePresenter label: 'Records';
 								     add: windowsPresenter label: 'Windows';
+								     add: statisticsPresenter label: 'Statistics';
 								     yourself);
 						    yourself);
 				   yourself)
@@ -256,7 +258,8 @@ DSRecordBrowserPresenter >> initializePresenters [
 	fileListPresenter := self fileList.
 	recordsTablePresenter := self recordsTable.
 	recordsFilter := self recordsFilter.
-	windowsPresenter := self windowsPresenter
+	windowsPresenter := self windowsPresenter.
+	statisticsPresenter := self statisticsPresenter
 ]
 
 { #category : 'operations' }
@@ -407,6 +410,21 @@ DSRecordBrowserPresenter >> startRecording [
 	DSSpyInstrumenter instrumentSystem.
 	timerWindow startTimer.
 	self updateToolbar
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> statisticsPresenter [
+	"Instanciates a new records table that displays data based on the selected file's records."
+
+	^ SpGridLayout new
+		  add: 'Amount of events:' atPoint: 1 @ 1;
+		  add: (self newText appendText: 'test') atPoint: 2 @ 1;
+		  add: 'Amount of windows:' atPoint: 1 @ 2;
+		  add: (self newText appendText: 'test') atPoint: 2 @ 2;
+		  add: 'Record duration:' atPoint: 1 @ 3;
+		  add: (self newText appendText: 'test') atPoint: 2 @ 3;
+		  beColumnNotHomogeneous;
+		  yourself
 ]
 
 { #category : 'layout' }
