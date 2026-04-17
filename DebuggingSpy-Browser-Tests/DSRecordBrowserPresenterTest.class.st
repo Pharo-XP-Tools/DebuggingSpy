@@ -91,6 +91,12 @@ DSRecordBrowserPresenterTest >> setUp [
 	browser := DSRecordBrowserPresenter new
 ]
 
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> statisticsPresenter [
+
+	^ browser presenterAt: #statisticsPresenter
+]
+
 { #category : 'running' }
 DSRecordBrowserPresenterTest >> tearDown [
 
@@ -370,6 +376,25 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
 	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
 	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
+]
+
+{ #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
+
+	| children |
+	self assert: browser updateStatisticsPresenter equals: browser.
+
+	browser selectedHistory: (browser getHistoryFrom: self generateRecordsFile).
+	browser updateStatisticsPresenter.
+
+	children := self statisticsPresenter children.
+	self assert: children size equals: 5.
+
+	self assert: children keys first label equals: 'Amount of events: 4'.
+	self assert: children keys second label equals: 'Amount of windows: 4'.
+	self assert: children keys third label equals: 'Time taken: 00:00:03'.
+	self assert: children keys fourth label equals: 'Idle time: 00:00:00'.
+	self assert: children keys last label equals: 'Absolute time taken: 00:00:03'
 ]
 
 { #category : 'tests' }
