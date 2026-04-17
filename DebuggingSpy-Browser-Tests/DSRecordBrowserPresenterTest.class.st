@@ -25,7 +25,6 @@ DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
 	"Generates a file of records and returns its file reference."
 
 	| recordFileRef writeStream |
-	| recordFileRef writeStream |
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -34,10 +33,8 @@ DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
 	writeStream nextPut: $[.
 
 	someRecords doWithIndex: [ :record :index |
-	someRecords doWithIndex: [ :record :index |
 			writeStream nextPutAll: (STON toString: record).
 
-			index = someRecords size ifFalse: [
 			index = someRecords size ifFalse: [
 					writeStream nextPut: $,.
 					writeStream crlf ] ].
