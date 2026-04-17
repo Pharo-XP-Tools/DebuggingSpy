@@ -107,7 +107,7 @@ DSRecordBrowserPresenter class >> windowColorFrom: anObject [
 { #category : 'accessing' }
 DSRecordBrowserPresenter class >> windowType [
 
-	^ 'Debugging Spy browser'
+	^ 'Debugging Spy'
 ]
 
 { #category : 'files' }
