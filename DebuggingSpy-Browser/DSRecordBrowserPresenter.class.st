@@ -309,13 +309,6 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
 ]
 
-{ #category : 'printing' }
-DSRecordBrowserPresenter >> printAsFormattedTime: aDateAndTime [
-	"Returns the specified date and time as a string of format hh:mm:ss.nnnnnnnnn"
-
-	^ String new: 18 streamContents: [ :aStream | aDateAndTime asTime print24: true showSeconds: true on: aStream ]
-]
-
 { #category : 'layout' }
 DSRecordBrowserPresenter >> recordsFilter [
 	"Instanciates a new chooser that displays every record classes that could be used to filter records in table."
@@ -343,7 +336,7 @@ DSRecordBrowserPresenter >> recordsTable [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
 				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
-				   evaluated: [ :association | self printAsFormattedTime: association key dateTime ];
+				   evaluated: [ :association | association key printAsFormattedTime ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
@@ -557,31 +550,27 @@ DSRecordBrowserPresenter >> windowsPresenter [
 		  addColumn: (SpStringTableColumn new
 				   width: 16;
 				   beNotExpandable;
-				   displayBackgroundColor: [ :anItem |
-					   anItem ifWindow: anItem windowColor ifRecord: (self getWindowFromRecord: anItem) windowColor ];
+				   displayBackgroundColor: [ :anItem | anItem windowColor ];
 				   evaluated: [ nil ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window / Event';
-				   evaluated: [ :anItem |
-						   anItem
-							   ifWindow: (anItem asString asText
-									    addAttribute: TextBackgroundColor red;
-									    yourself)
-							   ifRecord: anItem asString ];
+				   evaluated: [ :anItem | anItem asString ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Type';
-				   evaluated: [ :anItem | anItem ifWindow: anItem windowType ifRecord: anItem class name ];
+				   evaluated: [ :anItem | anItem type ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Nb of events / Time';
-				   evaluated: [ :anItem |
-					   anItem ifWindow: anItem events size asString , ' events' ifRecord: (self printAsFormattedTime: anItem dateTime) ];
+				   title: 'Time';
+				   evaluated: [ :anItem | anItem printAsFormattedTime ];
 				   yourself);
 		  beResizable;
 		  actions: self windowsPresenterActions;
-		  children: [ :item | item ifWindow: item events ifRecord: {  } ];
+		  children: [ :item |
+				  item class = DSWindowRecord
+					  ifTrue: [ item events ]
+					  ifFalse: [ {  } ] ];
 		  yourself
 ]
 

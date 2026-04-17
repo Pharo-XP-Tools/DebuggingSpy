@@ -1,10 +1,23 @@
 Extension { #name : 'DSWindowRecord' }
 
 { #category : '*DebuggingSpy-Browser' }
-DSWindowRecord >> ifWindow: aValue ifRecord: anotherValue [
-	"If the object is a DSWindowRecord, returns aValue, and returns the other value otherwise."
+DSWindowRecord >> printAsFormattedTime [
+	"Returns the formatted time to be displayed in the windows presenter."
 
-	^ aValue
+	^ nil
+]
+
+{ #category : '*DebuggingSpy-Browser' }
+DSWindowRecord >> type [
+	"Returns the window's type to be displayed in the windows presenter."
+
+	^ self windowType , ' (' , events size asString , ' events)'
+]
+
+{ #category : '*DebuggingSpy-Browser' }
+DSWindowRecord >> window [
+
+	^ self
 ]
 
 { #category : '*DebuggingSpy-Browser' }
