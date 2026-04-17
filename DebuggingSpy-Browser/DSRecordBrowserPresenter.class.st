@@ -249,15 +249,6 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserPresenter >> getTableRowColorFor: anAssociation [
-	"Returns the row's corresponding color depending of the table selected row."
-
-	anAssociation = recordsTablePresenter selectedItem
-		ifTrue: [ ^ anAssociation value muchDarker ]
-		ifFalse: [ ^ anAssociation value ]
-]
-
-{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	"Returns the record's corresponding window record in the history."
 

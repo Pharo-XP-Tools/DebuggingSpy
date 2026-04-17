@@ -167,15 +167,18 @@ DSRecordBrowserPresenterTest >> testColorAssociations [
 	| associations |
 	associations := {
 		                ((Color fromHexString: '#1f48ff') -> 'Browser').
-		                ((Color fromHexString: '#ff0fef') -> 'Debug point browser').
+		                ((Color fromHexString: '#772980') -> 'Debug point browser').
 		                ((Color fromHexString: '#345e54') -> 'Epicea').
 		                ((Color fromHexString: '#00e5ff') -> 'Iceberg').
-		                ((Color fromHexString: '#ff8f1f') -> 'Critique browser').
+		                ((Color fromHexString: '#ff9100') -> 'Critique browser').
 		                ((Color fromHexString: '#ff2200') -> 'Debugger').
 		                ((Color fromHexString: '#fad314') -> 'Inspector').
 		                ((Color fromHexString: '#70B77E') -> 'Playground').
-		                ((Color fromHexString: '#292929') -> 'Rewriter') }.
+		                ((Color fromHexString: '#ffffff') -> 'Rewriter').
+		                ((Color fromHexString: '#ec45ff') -> 'Debugging Spy').
+		                ((Color fromHexString: '#b3b3b3') -> 'Unknown window') }.
 
+	self assert: associations size equals: DSRecordBrowserPresenter colorAssociations size.
 	self assert: (associations allSatisfy: [ :asso | DSRecordBrowserPresenter colorAssociations includes: asso ])
 ]
 
@@ -269,15 +272,6 @@ DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 
 	self assert: window events first uuid equals: record uuid.
 	self assert: window name equals: record windowId
-]
-
-{ #category : 'tests' }
-DSRecordBrowserPresenterTest >> testPrintAsFormattedTime [
-	self assert: (browser printAsFormattedTime: (Time
-		 hour: 1
-		 minute: 2
-		 second: 3
-		 nanoSecond: 123456789) asDateAndTime) equals: '01:02:03.123456789'
 ]
 
 { #category : 'tests' }
