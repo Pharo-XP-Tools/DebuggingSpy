@@ -170,6 +170,7 @@ DSRecordHistory >> computeIdleTime [
 
 	| associations |
 	associations := self collectTimeDiscrepancies collect: [ :association | association value asSeconds ].
+	associations ifEmpty: [ ^ 0 ].
 	^ associations sum
 ]
 

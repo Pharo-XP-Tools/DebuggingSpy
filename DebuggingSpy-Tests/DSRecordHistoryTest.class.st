@@ -377,7 +377,12 @@ DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 { #category : 'tests' }
 DSRecordHistoryTest >> testComputeIdleTime [
 
-	| idleTime |
+	history records: {
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
+			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime) }.
+
+	self assert: history computeIdleTime equals: 0.
+
 	history records: {
 			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
 			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
@@ -390,8 +395,7 @@ DSRecordHistoryTest >> testComputeIdleTime [
 			(DSClipboardCopyRecord new dateTime: '2024-09-23T15:06:26' asDateAndTime).
 			(DSMethodRemovedRecord new dateTime: '2024-09-23T15:06:30' asDateAndTime) }.
 
-	idleTime := history computeIdleTime.
-	self assert: idleTime equals: 7 + 184 + 16
+	self assert: history computeIdleTime equals: 7 + 184 + 16
 ]
 
 { #category : 'tests' }

@@ -89,12 +89,25 @@ DSRecordBrowserPresenter class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
+{ #category : 'windows' }
+DSRecordBrowserPresenter class >> windowColor [
+
+	<DSWindowColor>
+	^ Color fromHexString: '#ec45ff'
+]
+
 { #category : 'accessing' }
 DSRecordBrowserPresenter class >> windowColorFrom: anObject [
 	"If the specified object is nil, returns the default windowColor, else return its window color."
 
 	anObject ifNil: [ ^ self defaultWindowColor ].
 	^ anObject windowColor
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> windowType [
+
+	^ 'Debugging Spy browser'
 ]
 
 { #category : 'files' }
@@ -136,7 +149,7 @@ DSRecordBrowserPresenter >> colorReferential [
 				   evaluated: [ :association | association value ];
 				   displayColor: [ :aRecord | Color white ];
 				   yourself);
-		  roots: self class colorAssociations;
+		  roots: (self class colorAssociations sort: [ :a :b | a key hue <= b key hue ]);
 		  beResizable;
 		  yourself
 ]
@@ -506,7 +519,9 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 	stats := {
 		         ('Amount of events: ' , selectedHistory records size asString).
 		         ('Amount of windows: ' , selectedHistory windows size asString).
-		         ('Time taken: ' , (Time fromSeconds: selectedHistory stopTime asSeconds - selectedHistory startTime asSeconds) print24) }.
+		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
+		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
+		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
@@ -585,6 +600,6 @@ DSRecordBrowserPresenter >> windowsPresenterActions [
 					  iconName: #inspect;
 					  description: 'Inspect the selected element.';
 					  shortcutKey: $i meta;
-					  action: [ windowsPresenter selectedItem key inspect ] ];
+					  action: [ windowsPresenter selectedItem inspect ] ];
 		  yourself
 ]
