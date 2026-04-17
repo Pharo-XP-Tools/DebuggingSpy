@@ -39,7 +39,7 @@ DSRecordBrowserPresenter class >> colorAssociations [
 ]
 
 { #category : 'accessing' }
-DSRecordBrowserPresenter class >> defaultExtent [
+DSRecordBrowserPresenter class >> defaultPreferredExtent [
 
 	^ 1000 @ 600
 ]
@@ -74,6 +74,7 @@ DSRecordBrowserPresenter class >> resetBrowser [
 DSRecordBrowserPresenter class >> toggleBrowser [
 	"Opens the browser or closes it depending on its state. If it needs to be created, then creates and opens it."
 
+	<script>
 	uniqueInstance ifNotNil: [
 			uniqueInstance hasWindow ifTrue: [
 					^ uniqueInstance window isOpen
@@ -141,15 +142,14 @@ DSRecordBrowserPresenter >> colorReferential [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
-				   evaluated: [ ];
+				   evaluated: [ :association | '' ];
 				   displayBackgroundColor: [ :association | association key ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window type';
 				   evaluated: [ :association | association value ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
-		  roots: (self class colorAssociations sort: [ :a :b | a key hue <= b key hue ]);
+		  roots: self class colorAssociations;
 		  beResizable;
 		  yourself
 ]
@@ -329,7 +329,7 @@ DSRecordBrowserPresenter >> recordsTable [
 				   displayBackgroundColor: [ :association | association key windowColor ];
 				   width: 4;
 				   beNotExpandable;
-				   evaluated: [ nil ];
+				   evaluated: [ :association | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Event';
@@ -551,13 +551,13 @@ DSRecordBrowserPresenter >> windowsPresenter [
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotExpandable;
-				   evaluated: [ nil ];
+				   evaluated: [ :item | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   width: 16;
 				   beNotExpandable;
 				   displayBackgroundColor: [ :anItem | anItem windowColor ];
-				   evaluated: [ nil ];
+				   evaluated: [ :item | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window / Event';
