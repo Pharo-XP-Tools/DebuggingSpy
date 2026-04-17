@@ -4,7 +4,7 @@ Extension { #name : 'StRewriterExpressionFinderPresenter' }
 StRewriterExpressionFinderPresenter class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#292929'
+	^ Color fromHexString: '#ffffff'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

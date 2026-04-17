@@ -322,22 +322,22 @@ DSRecordBrowserPresenter >> recordsTable [
 
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
+				   displayBackgroundColor: [ :association | association key windowColor ];
+				   width: 4;
+				   beNotExpandable;
+				   evaluated: [ nil ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
 				   title: 'Event';
-				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key eventName asString ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Type';
-				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key class asString ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
-				   displayBackgroundColor: [ :association | self getTableRowColorFor: association ];
 				   evaluated: [ :association | association key printAsFormattedTime ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  beResizable;
 		  actions: self recordsTableActions;
