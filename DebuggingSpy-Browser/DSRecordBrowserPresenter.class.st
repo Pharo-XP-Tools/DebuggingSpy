@@ -149,7 +149,7 @@ DSRecordBrowserPresenter >> colorReferential [
 				   title: 'Window type';
 				   evaluated: [ :association | association value ];
 				   yourself);
-		  roots: self class colorAssociations;
+		  roots: (self class colorAssociations sort: [ :a :b | a key hue <= b key hue ]);
 		  beResizable;
 		  yourself
 ]
@@ -328,7 +328,6 @@ DSRecordBrowserPresenter >> recordsTable [
 		  addColumn: (SpStringTableColumn new
 				   displayBackgroundColor: [ :association | association key windowColor ];
 				   width: 4;
-				   beNotExpandable;
 				   evaluated: [ :association | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
@@ -550,11 +549,10 @@ DSRecordBrowserPresenter >> windowsPresenter [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
-				   beNotExpandable;
 				   evaluated: [ :item | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
-				   width: 16;
+				   width: 20;
 				   beNotExpandable;
 				   displayBackgroundColor: [ :anItem | anItem windowColor ];
 				   evaluated: [ :item | '' ];
