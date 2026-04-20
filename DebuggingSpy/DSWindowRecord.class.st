@@ -24,6 +24,12 @@ DSWindowRecord class >> for: events [
 ]
 
 { #category : 'accessing' }
+DSWindowRecord class >> unknownWindow [
+
+	^ 'Unknown Window'
+]
+
+{ #category : 'accessing' }
 DSWindowRecord >> activePeriods [
 
 	^ activePeriods
@@ -170,5 +176,5 @@ DSWindowRecord >> windowNameFor: aDSWindowOpeningRecord [
 DSWindowRecord >> windowType [
 
 	toolInfos ifNotNil: [ ^ toolInfos windowType ].
-	^ 'External Window'
+	^ self class unknownWindow
 ]
