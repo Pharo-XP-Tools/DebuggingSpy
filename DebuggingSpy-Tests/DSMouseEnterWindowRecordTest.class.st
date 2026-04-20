@@ -1,8 +1,9 @@
 Class {
 	#name : 'DSMouseEnterWindowRecordTest',
 	#superclass : 'TestCase',
-	#category : 'DebuggingSpy-Tests',
-	#package : 'DebuggingSpy-Tests'
+	#category : 'DebuggingSpy-Tests-Tests - model',
+	#package : 'DebuggingSpy-Tests',
+	#tag : 'Tests - model'
 }
 
 { #category : 'tests' }
