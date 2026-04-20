@@ -12,5 +12,5 @@ Object class >> windowColor [
 Object class >> windowType [
 	"Returns the name of the window type."
 
-	^ 'Unknown window'
+	^ DSWindowRecord unknownWindow
 ]

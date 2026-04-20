@@ -1,0 +1,17 @@
+Class {
+	#name : 'DSWindowClosedRecordTest',
+	#superclass : 'DSWindowEventRecordTest',
+	#category : 'DebuggingSpy-Tests',
+	#package : 'DebuggingSpy-Tests'
+}
+
+{ #category : 'tests' }
+DSWindowClosedRecordTest >> testEventName [
+
+	| record |
+	record := DSWindowClosedRecord new.
+	self assert: record eventName equals: 'Unknown Window closed'.
+
+	record toolInfo: (DSToolInfo new toolClass: StDebugger).
+	self assert: record eventName equals: 'Debugger closed'
+]

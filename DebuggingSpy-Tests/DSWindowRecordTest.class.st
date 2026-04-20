@@ -14,7 +14,7 @@ DSWindowRecordTest >> testBuildEvents [
 
 	eventsCollection := {
 		                    (DSWindowOpenedRecord new
-			                     windowName: 'Unknown window';
+			                     windowName: 'Unknown Window';
 			                     windowId: 42;
 			                     dateTime: '2008-01-22T16:00:25' asDateAndTime).
 		                    (DSMouseEnterWindowRecord new dateTime: '2008-01-22T16:00:31' asDateAndTime).

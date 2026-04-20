@@ -11,5 +11,7 @@ Class {
 
 { #category : 'accessing' }
 DSWindowActivatedRecord >> eventName [
-	^'Window activated'
+
+	toolInfo ifNil: [ ^ DSWindowRecord unknownWindow , ' activated' ].
+	^ toolInfo windowType , ' activated'
 ]

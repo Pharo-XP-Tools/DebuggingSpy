@@ -11,5 +11,7 @@ Class {
 
 { #category : 'accessing' }
 DSMouseLeaveWindowRecord >> eventName [
-	^'Leave window'
+
+	toolInfo ifNil: [ ^ 'Leave ' , DSWindowRecord unknownWindow ].
+	^ 'Leave ' , toolInfo windowType
 ]
