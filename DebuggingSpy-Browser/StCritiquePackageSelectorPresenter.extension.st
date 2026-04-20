@@ -10,5 +10,5 @@ StCritiquePackageSelectorPresenter class >> windowColor [
 { #category : '*DebuggingSpy-Browser' }
 StCritiquePackageSelectorPresenter class >> windowType [
 
-	^ 'Critique browser'
+	^ 'Critique Browser'
 ]

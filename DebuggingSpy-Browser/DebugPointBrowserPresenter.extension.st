@@ -10,5 +10,5 @@ DebugPointBrowserPresenter class >> windowColor [
 { #category : '*DebuggingSpy-Browser' }
 DebugPointBrowserPresenter class >> windowType [
 
-	^ 'Debug point browser'
+	^ 'Debug Point Browser'
 ]

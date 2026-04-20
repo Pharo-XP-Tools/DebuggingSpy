@@ -31,7 +31,7 @@ DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 
 	windowName := [ anEvent window label ]
 		              on: Error
-		              do: [ 'Unknown window' ]
+		              do: [ DSWindowRecord unknownWindow ]
 ]
 
 { #category : 'comparing' }

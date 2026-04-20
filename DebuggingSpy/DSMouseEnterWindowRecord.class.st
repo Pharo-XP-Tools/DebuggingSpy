@@ -11,5 +11,7 @@ Class {
 
 { #category : 'accessing' }
 DSMouseEnterWindowRecord >> eventName [
-	^'Enter window'
+
+	toolInfo ifNil: [ ^ 'Enter ' , DSWindowRecord unknownWindow ].
+	^ 'Enter ' , toolInfo windowType
 ]

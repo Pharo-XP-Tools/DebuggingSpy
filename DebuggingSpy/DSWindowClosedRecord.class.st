@@ -11,5 +11,7 @@ Class {
 
 { #category : 'accessing' }
 DSWindowClosedRecord >> eventName [
-	^'Window closed'
+
+	toolInfo ifNil: [ ^ DSWindowRecord unknownWindow , ' closed' ].
+	^ toolInfo windowType , ' closed'
 ]
