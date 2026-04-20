@@ -328,6 +328,7 @@ DSRecordBrowserPresenter >> recordsTable [
 		  addColumn: (SpStringTableColumn new
 				   displayBackgroundColor: [ :association | association key windowColor ];
 				   width: 4;
+				   beNotSortable;
 				   evaluated: [ :association | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
@@ -549,11 +550,13 @@ DSRecordBrowserPresenter >> windowsPresenter [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
+				   beNotSortable;
 				   evaluated: [ :item | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   width: 20;
 				   beNotExpandable;
+				   beNotSortable;
 				   displayBackgroundColor: [ :anItem | anItem windowColor ];
 				   evaluated: [ :item | '' ];
 				   yourself);

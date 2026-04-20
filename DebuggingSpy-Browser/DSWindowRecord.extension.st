@@ -15,12 +15,6 @@ DSWindowRecord >> type [
 ]
 
 { #category : '*DebuggingSpy-Browser' }
-DSWindowRecord >> window [
-
-	^ self
-]
-
-{ #category : '*DebuggingSpy-Browser' }
 DSWindowRecord >> windowColor [
 	"Returns the toolinfo associated window color, and the default color if undefined."
 
