@@ -46,7 +46,7 @@ DSTimerWindow >> currentTimeMorph [
 
 	^ StringMorph new
 		  contents: Time now print24;
-		  position: 335 @ 6
+		  position: 425 @ 6
 ]
 
 { #category : 'timer' }
@@ -186,14 +186,14 @@ DSTimerWindow >> recordingIcon [
 
 	^ ImageMorph new
 		  image: (self iconNamed: #glamorousRedCircle);
-		  position: 260 @ 7;
+		  position: 350 @ 7;
 		  yourself
 ]
 
 { #category : 'accessing' }
 DSTimerWindow >> size [
 
-	^ 410 @ 30
+	^ 500 @ 30
 ]
 
 { #category : 'accessing' }
@@ -224,7 +224,7 @@ DSTimerWindow >> stopButton [
 		  label: (IconicListItemMorph new icon: (self iconNamed: #stop));
 		  model: self;
 		  actionSelector: #stopTimer;
-		  position: 385 @ 4;
+		  position: 475 @ 4;
 		  yourself
 ]
 
@@ -241,7 +241,7 @@ DSTimerWindow >> timerMorph [
 
 	^ StringMorph new
 		  contents: '00:00:00';
-		  position: 275 @ 6
+		  position: 365 @ 6
 ]
 
 { #category : 'private - layout' }
