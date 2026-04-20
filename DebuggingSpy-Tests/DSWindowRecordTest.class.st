@@ -30,7 +30,7 @@ DSWindowRecordTest >> testBuildEvents [
 
 	self assert: windowRecord events size equals: 9.
 	self assert: windowRecord name equals: 'Unknown window'.
-	self assert: windowRecord windowType equals: 'External Window'.
+	self assert: windowRecord windowType equals: 'Unknown Window'.
 	self assert: windowRecord activePeriods size equals: 2.
 
 	windowRecord := DSWindowRecord new toolInfo: (DSToolInfo new toolClass: StDebugger).
@@ -113,11 +113,11 @@ DSWindowRecordTest >> testPrintOn [
 
 	windowRecord := DSWindowRecord new name: 'RandomName'.
 	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
-	self assert: printed equals: '[External Window] RandomName'.
+	self assert: printed equals: '[Unknown Window] RandomName'.
 
 	windowRecord := DSWindowRecord new name: DSWindowOpenedRecord.
 	printed := String streamContents: [ :stream | windowRecord printOn: stream ].
-	self assert: printed equals: '[External Window] DSWindowOpenedRecord'
+	self assert: printed equals: '[Unknown Window] DSWindowOpenedRecord'
 ]
 
 { #category : 'tests' }
@@ -131,7 +131,7 @@ DSWindowRecordTest >> testPrintTypeOn [
 
 	windowRecord := DSWindowRecord new.
 	printed := String streamContents: [ :stream | windowRecord printTypeOn: stream ].
-	self assert: printed equals: 'External Window'
+	self assert: printed equals: 'Unknown Window'
 ]
 
 { #category : 'tests' }
@@ -192,5 +192,5 @@ DSWindowRecordTest >> testWindowType [
 	self assert: windowRecord windowType equals: 'Debugger'.
 
 	windowRecord toolInfo: DSToolInfo new.
-	self assert: windowRecord windowType equals: 'External Window'
+	self assert: windowRecord windowType equals: 'Unknown Window'
 ]
