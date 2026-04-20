@@ -1,6 +1,6 @@
 Class {
 	#name : 'DSWindowClosedRecordTest',
-	#superclass : 'DSWindowEventRecordTest',
+	#superclass : 'TestCase',
 	#category : 'DebuggingSpy-Tests',
 	#package : 'DebuggingSpy-Tests'
 }

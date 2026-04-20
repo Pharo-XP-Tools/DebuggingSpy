@@ -29,7 +29,7 @@ DSWindowRecordTest >> testBuildEvents [
 	windowRecord buildEvents: eventsCollection.
 
 	self assert: windowRecord events size equals: 9.
-	self assert: windowRecord name equals: 'Unknown window'.
+	self assert: windowRecord name equals: 'Unknown Window'.
 	self assert: windowRecord windowType equals: 'Unknown Window'.
 	self assert: windowRecord activePeriods size equals: 2.
 

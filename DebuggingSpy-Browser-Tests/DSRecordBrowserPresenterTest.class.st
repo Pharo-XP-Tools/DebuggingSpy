@@ -164,19 +164,19 @@ DSRecordBrowserPresenterTest >> testColorAssociations [
 	| associations |
 	associations := {
 		                ((Color fromHexString: '#1f48ff') -> 'Browser').
-		                ((Color fromHexString: '#772980') -> 'Debug point browser').
+		                ((Color fromHexString: '#772980') -> 'Debug Point Browser').
 		                ((Color fromHexString: '#345e54') -> 'Epicea').
 		                ((Color fromHexString: '#00e5ff') -> 'Iceberg').
-		                ((Color fromHexString: '#ff9100') -> 'Critique browser').
+		                ((Color fromHexString: '#ff9100') -> 'Critique Browser').
 		                ((Color fromHexString: '#ff2200') -> 'Debugger').
 		                ((Color fromHexString: '#fad314') -> 'Inspector').
 		                ((Color fromHexString: '#70B77E') -> 'Playground').
-		                ((Color fromHexString: '#ffffff') -> 'Rewriter').
+		                (Color white -> 'Rewriter').
 		                ((Color fromHexString: '#ec45ff') -> 'Debugging Spy').
-		                ((Color fromHexString: '#b3b3b3') -> 'Unknown window') }.
+		                ((Color fromHexString: '#b3b3b3') -> 'Unknown Window') }.
 
 	self assert: associations size equals: DSRecordBrowserPresenter colorAssociations size.
-	self assert: (associations allSatisfy: [ :asso | DSRecordBrowserPresenter colorAssociations includes: asso ])
+	associations do: [ :asso | self assert: (DSRecordBrowserPresenter colorAssociations includes: asso) ]
 ]
 
 { #category : 'tests' }

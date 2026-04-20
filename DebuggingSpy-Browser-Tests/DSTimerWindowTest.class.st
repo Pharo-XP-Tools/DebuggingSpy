@@ -74,7 +74,7 @@ DSTimerWindowTest >> testGetFormattedNameFrom [
 	self assert: (timerWindow getFormattedNameFrom: DSBrowseRecord new) equals: 'Browse'.
 	self
 		assert: (timerWindow getFormattedNameFrom: (DSMouseEnterWindowRecord new toolInfo: toolInfo))
-		equals: 'Enter window (DSTimerWindowTest)'.
+		equals: 'Enter Unknown Window (DSTimerWindowTest)'.
 	self assert: (timerWindow getFormattedNameFrom: DSBrowseRecord new) equals: 'Browse (DSTimerWindowTest)'
 ]
 

@@ -1,6 +1,6 @@
 Class {
 	#name : 'DSMouseEnterWindowRecordTest',
-	#superclass : 'DSMouseEventRecordTest',
+	#superclass : 'TestCase',
 	#category : 'DebuggingSpy-Tests',
 	#package : 'DebuggingSpy-Tests'
 }
