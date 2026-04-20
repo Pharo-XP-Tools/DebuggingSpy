@@ -507,8 +507,8 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 	| stats |
 	selectedHistory ifNil: [ ^ self ].
 	stats := {
-		         ('Amount of events: ' , selectedHistory records size asString).
-		         ('Amount of windows: ' , selectedHistory windows size asString).
+		         ('Number of events: ' , selectedHistory records size asString).
+		         ('Number of windows: ' , selectedHistory windows size asString).
 		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
 		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
 		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
@@ -525,7 +525,7 @@ DSRecordBrowserPresenter >> updateToolbar [
 
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateWindowsPresenter [
-	"Updates the windows presenter by setting its roots by using the files presenter selected item."
+	"Updates the windows presenter by setting its roots using the selected item from files presenter."
 
 	selectedHistory ifNil: [ windowsPresenter roots: {  } ] ifNotNil: [ windowsPresenter roots: selectedHistory windows ]
 ]

@@ -381,8 +381,8 @@ DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
 	children := self statisticsPresenter children.
 	self assert: children size equals: 5.
 
-	self assert: children keys first label equals: 'Amount of events: 4'.
-	self assert: children keys second label equals: 'Amount of windows: 4'.
+	self assert: children keys first label equals: 'Number of events: 4'.
+	self assert: children keys second label equals: 'Number of windows: 4'.
 	self assert: children keys third label equals: 'Time taken: 00:00:03'.
 	self assert: children keys fourth label equals: 'Idle time: 00:00:00'.
 	self assert: children keys last label equals: 'Absolute time taken: 00:00:03'
@@ -403,20 +403,6 @@ DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
-
-	| records fileRef presenterMock windows |
-	records := self getRecordExamples.
-	fileRef := self generateRecordsFileFor: records.
-	presenterMock := MockObject new on: #selectedItem respond: fileRef.
-	browser updateWindowsPresenter: presenterMock.
-
-	windows := self windowsPresenter roots.
-	self assert: windows size equals: 4.
-	self assert: (windows allSatisfy: [ :window | window class = DSWindowRecord ])
-]
-
-{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testWindowColorFrom [
 
 	| record |
@@ -429,12 +415,6 @@ DSRecordBrowserPresenterTest >> testWindowColorFrom [
 DSRecordBrowserPresenterTest >> timelinePresenter [
 
 	^ browser presenterAt: #graphicTimeline 
-]
-
-{ #category : 'helpers' }
-DSRecordBrowserPresenterTest >> windowsPresenter [
-
-	^ browser presenterAt: #windowsPresenter
 ]
 
 { #category : 'helpers' }
