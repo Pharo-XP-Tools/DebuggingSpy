@@ -57,8 +57,7 @@ DSRecordHistory class >> windowLeaveEventTypes [
 DSRecordHistory >> absoluteTimeTaken [
 	"The absolute time taken to perform the recording of user events, including unmonitoring activities (interruptions or activities outside the IDE)."
 
-	^ ((records last dateTime asSeconds - records first dateTime asSeconds)
-	   / 60) asFloat
+	^ records last dateTime asSeconds - records first dateTime asSeconds
 ]
 
 { #category : 'API-history' }
@@ -163,6 +162,16 @@ DSRecordHistory >> collectTimeDiscrepancies [
 			previousRecord := record ].
 	
 	^ deltas
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> computeIdleTime [
+	"Returns the sum of all time discrepancies durations and returns the result as a number of seconds."
+
+	| associations |
+	associations := self collectTimeDiscrepancies collect: [ :association | association value asSeconds ].
+	associations ifEmpty: [ ^ 0 ].
+	^ associations sum
 ]
 
 { #category : 'API-history' }
@@ -609,8 +618,8 @@ DSRecordHistory >> timeTaken [
 	- last log minus the first log timestamp minus time gaps (or discrepancies)
 	- time gaps are calculated as the sum of time differences between two following events with a time delta > 5 min.
 	We consider that, if the user did not do anything (basically typing or moving the mouse) for more than 5 min, the she was away from the task."
-	^ ((records last dateTime asSeconds - records first dateTime asSeconds
-	   - self collectTimeDiscrepancies) / 60) asFloat
+
+	^ self absoluteTimeTaken - self computeIdleTime
 ]
 
 { #category : 'accessing' }

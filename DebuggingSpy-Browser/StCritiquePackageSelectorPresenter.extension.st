@@ -4,7 +4,7 @@ Extension { #name : 'StCritiquePackageSelectorPresenter' }
 StCritiquePackageSelectorPresenter class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#ff8f1f'
+	^ Color fromHexString: '#ff9100'
 ]
 
 { #category : '*DebuggingSpy-Browser' }

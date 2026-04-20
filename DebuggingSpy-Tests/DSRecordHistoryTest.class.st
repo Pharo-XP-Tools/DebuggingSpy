@@ -44,7 +44,7 @@ DSRecordHistoryTest >> setUp [
 DSRecordHistoryTest >> testAbsoluteTimeTaken [
 
 	history records: self getRecordsExample.
-	self assert: history absoluteTimeTaken equals: 22
+	self assert: history absoluteTimeTaken equals: 22 * 60
 ]
 
 { #category : 'tests' }
@@ -372,6 +372,30 @@ DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 	self assert: deltaDict third value equals: (Duration seconds: 16).
 	self assert: deltaDict third key first class equals: DSPrintItRecord.
 	self assert: deltaDict third key second class equals: DSClipboardCopyRecord
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testComputeIdleTime [
+
+	history records: {
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
+			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime) }.
+
+	self assert: history computeIdleTime equals: 0.
+
+	history records: {
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
+			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
+			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
+			(DSDebugItRecord new dateTime: '2024-09-23T15:02:56' asDateAndTime).
+			(DSMouseLeaveWindowRecord new dateTime: '2024-09-23T15:03:00' asDateAndTime).
+			(DSWindowClosedRecord new dateTime: '2024-09-23T15:03:03' asDateAndTime).
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:06:07' asDateAndTime).
+			(DSPrintItRecord new dateTime: '2024-09-23T15:06:10' asDateAndTime).
+			(DSClipboardCopyRecord new dateTime: '2024-09-23T15:06:26' asDateAndTime).
+			(DSMethodRemovedRecord new dateTime: '2024-09-23T15:06:30' asDateAndTime) }.
+
+	self assert: history computeIdleTime equals: 7 + 184 + 16
 ]
 
 { #category : 'tests' }
@@ -1124,6 +1148,24 @@ DSRecordHistoryTest >> testStopTime [
 
 	history records: self getRecordsExample.
 	self assert: history stopTime equals: '15:24:44' asTime
+]
+
+{ #category : 'tests' }
+DSRecordHistoryTest >> testTimeTaken [
+
+	history records: {
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
+			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
+			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
+			(DSDebugItRecord new dateTime: '2024-09-23T15:02:56' asDateAndTime).
+			(DSMouseLeaveWindowRecord new dateTime: '2024-09-23T15:03:00' asDateAndTime).
+			(DSWindowClosedRecord new dateTime: '2024-09-23T15:03:03' asDateAndTime).
+			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:06:07' asDateAndTime).
+			(DSPrintItRecord new dateTime: '2024-09-23T15:06:10' asDateAndTime).
+			(DSClipboardCopyRecord new dateTime: '2024-09-23T15:06:26' asDateAndTime).
+			(DSMethodRemovedRecord new dateTime: '2024-09-23T15:06:30' asDateAndTime) }.
+
+	self assert: history timeTaken equals: 3 * 60 + 46 - (7 + 184 + 16)
 ]
 
 { #category : 'tests' }

@@ -16,10 +16,15 @@ DSRecordBrowserPresenterTest >> filesPresenter [
 
 { #category : 'helpers' }
 DSRecordBrowserPresenterTest >> generateRecordsFile [
+
+	^ self generateRecordsFileFor: self getRecordExamples
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
 	"Generates a file of records and returns its file reference."
 
-	| records recordFileRef writeStream |
-	records := self getRecordExamples.
+	| recordFileRef writeStream |
 
 	recordFileRef := self temporaryDirectory / ('ds-spy-test-' , UUID new asString).
 	recordFileRef ensureCreateFile.
@@ -27,10 +32,10 @@ DSRecordBrowserPresenterTest >> generateRecordsFile [
 
 	writeStream nextPut: $[.
 
-	records doWithIndex: [ :record :index |
+	someRecords doWithIndex: [ :record :index |
 			writeStream nextPutAll: (STON toString: record).
 
-			index = records size ifFalse: [
+			index = someRecords size ifFalse: [
 					writeStream nextPut: $,.
 					writeStream crlf ] ].
 
@@ -81,6 +86,12 @@ DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
 	browser := DSRecordBrowserPresenter new
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> statisticsPresenter [
+
+	^ browser presenterAt: #statisticsPresenter
 ]
 
 { #category : 'running' }
@@ -153,15 +164,18 @@ DSRecordBrowserPresenterTest >> testColorAssociations [
 	| associations |
 	associations := {
 		                ((Color fromHexString: '#1f48ff') -> 'Browser').
-		                ((Color fromHexString: '#ff0fef') -> 'Debug point browser').
+		                ((Color fromHexString: '#772980') -> 'Debug point browser').
 		                ((Color fromHexString: '#345e54') -> 'Epicea').
 		                ((Color fromHexString: '#00e5ff') -> 'Iceberg').
-		                ((Color fromHexString: '#ff8f1f') -> 'Critique browser').
+		                ((Color fromHexString: '#ff9100') -> 'Critique browser').
 		                ((Color fromHexString: '#ff2200') -> 'Debugger').
 		                ((Color fromHexString: '#fad314') -> 'Inspector').
 		                ((Color fromHexString: '#70B77E') -> 'Playground').
-		                ((Color fromHexString: '#292929') -> 'Rewriter') }.
+		                ((Color fromHexString: '#ffffff') -> 'Rewriter').
+		                ((Color fromHexString: '#ec45ff') -> 'Debugging Spy').
+		                ((Color fromHexString: '#b3b3b3') -> 'Unknown window') }.
 
+	self assert: associations size equals: DSRecordBrowserPresenter colorAssociations size.
 	self assert: (associations allSatisfy: [ :asso | DSRecordBrowserPresenter colorAssociations includes: asso ])
 ]
 
@@ -215,7 +229,8 @@ DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 
 	| fileRef |
 	fileRef := self generateRecordsFile.
-	self assert: (browser getHistoryFrom: fileRef) class equals: DSRecordHistory
+	self assert: (browser getHistoryFrom: fileRef) class equals: DSRecordHistory.
+	self assert: (browser getHistoryFrom: nil) isNil
 ]
 
 { #category : 'tests' }
@@ -332,10 +347,10 @@ DSRecordBrowserPresenterTest >> testUpdateLastRecord [
 { #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
-	| fileRef presenterMock |
+	| fileRef |
 	fileRef := self generateRecordsFile.
-	presenterMock := MockObject new on: #selectedItem respond: fileRef.
-	browser updateRecordsTable: presenterMock.
+	browser selectedHistory: (browser getHistoryFrom: fileRef).
+	browser updateRecordsTable.
 
 	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
 	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
@@ -355,6 +370,39 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
+
+	| children |
+	self assert: browser updateStatisticsPresenter equals: browser.
+
+	browser selectedHistory: (browser getHistoryFrom: self generateRecordsFile).
+	browser updateStatisticsPresenter.
+
+	children := self statisticsPresenter children.
+	self assert: children size equals: 5.
+
+	self assert: children keys first label equals: 'Number of events: 4'.
+	self assert: children keys second label equals: 'Number of windows: 4'.
+	self assert: children keys third label equals: 'Time taken: 00:00:03'.
+	self assert: children keys fourth label equals: 'Idle time: 00:00:00'.
+	self assert: children keys last label equals: 'Absolute time taken: 00:00:03'
+]
+
+{ #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateWindowsPresenter [
+
+	| records fileRef windows |
+	records := self getRecordExamples.
+	fileRef := self generateRecordsFileFor: records.
+	browser selectedHistory: (browser getHistoryFrom: fileRef).
+	browser updateWindowsPresenter.
+
+	windows := self windowsPresenter roots.
+	self assert: windows size equals: 4.
+	self assert: (windows allSatisfy: [ :window | window class = DSWindowRecord ])
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testWindowColorFrom [
 
 	| record |
@@ -367,4 +415,10 @@ DSRecordBrowserPresenterTest >> testWindowColorFrom [
 DSRecordBrowserPresenterTest >> timelinePresenter [
 
 	^ browser presenterAt: #graphicTimeline 
+]
+
+{ #category : 'helpers' }
+DSRecordBrowserPresenterTest >> windowsPresenter [
+
+	^ browser presenterAt: #windowsPresenter
 ]

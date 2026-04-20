@@ -11,12 +11,14 @@ Class {
 		'files',
 		'recordsTablePresenter',
 		'timerWindow',
-		'graphicTimeline',
 		'recordsFilter',
 		'toolbarPresenter',
 		'fileListPresenter',
 		'startRecordButtonPresenter',
-		'stopRecordButtonPresenter'
+		'stopRecordButtonPresenter',
+		'windowsPresenter',
+		'statisticsPresenter',
+		'selectedHistory'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -37,7 +39,7 @@ DSRecordBrowserPresenter class >> colorAssociations [
 ]
 
 { #category : 'accessing' }
-DSRecordBrowserPresenter class >> defaultExtent [
+DSRecordBrowserPresenter class >> defaultPreferredExtent [
 
 	^ 1000 @ 600
 ]
@@ -72,6 +74,7 @@ DSRecordBrowserPresenter class >> resetBrowser [
 DSRecordBrowserPresenter class >> toggleBrowser [
 	"Opens the browser or closes it depending on its state. If it needs to be created, then creates and opens it."
 
+	<script>
 	uniqueInstance ifNotNil: [
 			uniqueInstance hasWindow ifTrue: [
 					^ uniqueInstance window isOpen
@@ -87,12 +90,25 @@ DSRecordBrowserPresenter class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
+{ #category : 'windows' }
+DSRecordBrowserPresenter class >> windowColor [
+
+	<DSWindowColor>
+	^ Color fromHexString: '#ec45ff'
+]
+
 { #category : 'accessing' }
 DSRecordBrowserPresenter class >> windowColorFrom: anObject [
 	"If the specified object is nil, returns the default windowColor, else return its window color."
 
 	anObject ifNil: [ ^ self defaultWindowColor ].
 	^ anObject windowColor
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter class >> windowType [
+
+	^ 'Debugging Spy'
 ]
 
 { #category : 'files' }
@@ -126,15 +142,14 @@ DSRecordBrowserPresenter >> colorReferential [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
-				   evaluated: [ ];
+				   evaluated: [ :association | '' ];
 				   displayBackgroundColor: [ :association | association key ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window type';
 				   evaluated: [ :association | association value ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
-		  roots: self class colorAssociations;
+		  roots: (self class colorAssociations sort: [ :a :b | a key hue <= b key hue ]);
 		  beResizable;
 		  yourself
 ]
@@ -144,10 +159,12 @@ DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
 	fileListPresenter whenSelectionChangedDo: [ :presenter |
-			self updateRecordsTable: presenter.
-			self updateTimelineChart ].
+			selectedHistory := self getHistoryFrom: presenter selectedItem.
+			self updateRecordsTable.
+			self updateWindowsPresenter.
+			self updateStatisticsPresenter ].
 
-	recordsFilter whenChangedDo: [ fileListPresenter selectedItem ifNotNil: [ self updateRecordsTable: fileListPresenter ] ]
+	recordsFilter whenChangedDo: [ self updateRecordsTable ]
 ]
 
 { #category : 'layout' }
@@ -165,7 +182,8 @@ DSRecordBrowserPresenter >> defaultLayout [
 				   add: (SpBoxLayout newTopToBottom
 						    add: (SpTabLayout new
 								     add: recordsTablePresenter label: 'Records';
-								     add: graphicTimeline label: 'Timeline';
+								     add: windowsPresenter label: 'Windows';
+								     add: statisticsPresenter label: 'Statistics';
 								     yourself);
 						    yourself);
 				   yourself)
@@ -212,6 +230,7 @@ DSRecordBrowserPresenter >> filterRecordsButton [
 DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
 
+	aFileReference ifNil: [ ^ nil ].
 	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
 ]
 
@@ -230,25 +249,10 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserPresenter >> getTimelinePointsFrom: aHistory [
-	"Returns a list of plots for the timeline chart."
-
-	^ aHistory windows collectWithIndex: [ :windowRecord :index |
-			  RSTimeLinePlot new
-				  entries: {
-						  windowRecord events first dateTime asNanoSeconds.
-						  windowRecord events last dateTime asNanoSeconds }
-				  at: index;
-				  color: windowRecord windowColor ]
-]
-
-{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	"Returns the record's corresponding window record in the history."
 
-	| rawRecords |
-	rawRecords := DSSpy materialize: fileListPresenter selectedItem.
-	^ ((DSRecordHistory on: rawRecords) windows select: [ :window | window windowId = aRecord windowId ]) first
+	^ (selectedHistory windows select: [ :window | window windowId = aRecord windowId ]) first
 ]
 
 { #category : 'initialization' }
@@ -259,8 +263,9 @@ DSRecordBrowserPresenter >> initializePresenters [
 	toolbarPresenter := self toolbar.
 	fileListPresenter := self fileList.
 	recordsTablePresenter := self recordsTable.
-	graphicTimeline := self newRoassal.
-	recordsFilter := self recordsFilter
+	recordsFilter := self recordsFilter.
+	windowsPresenter := self windowsPresenter.
+	statisticsPresenter := self statisticsPresenter
 ]
 
 { #category : 'operations' }
@@ -281,7 +286,7 @@ DSRecordBrowserPresenter >> listAddedFilesActions [
 					  iconName: #history;
 					  description: 'Inspect the record history';
 					  shortcutKey: $h meta;
-					  action: [ (self getHistoryFrom: fileListPresenter selectedItem) inspect ] ];
+					  action: [ selectedHistory inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Remove';
@@ -321,22 +326,22 @@ DSRecordBrowserPresenter >> recordsTable [
 
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
-				   title: 'Event';
-				   displayBackgroundColor: [ :association | association value ];
-				   evaluated: [ :association | association key eventName asString ];
-				   displayColor: [ :aRecord | Color white ];
+				   displayBackgroundColor: [ :association | association key windowColor ];
+				   width: 4;
+				   beNotSortable;
+				   evaluated: [ :association | '' ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Event type';
-				   displayBackgroundColor: [ :association | association value ];
+				   title: 'Event';
+				   evaluated: [ :association | association key eventName asString ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
 				   evaluated: [ :association | association key class asString ];
-				   displayColor: [ :aRecord | Color white ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
-				   displayBackgroundColor: [ :association | association value ];
-				   evaluated: [ :association | association key dateTime asTime print24 ];
-				   displayColor: [ :aRecord | Color white ];
+				   evaluated: [ :association | association key printAsFormattedTime ];
 				   yourself);
 		  beResizable;
 		  actions: self recordsTableActions;
@@ -381,6 +386,18 @@ DSRecordBrowserPresenter >> removeFile: aFileReference [
 	fileListPresenter selectItem: (files ifNotEmpty: [ files last ])
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> selectedHistory [
+
+	^ selectedHistory
+]
+
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> selectedHistory: anHistory [
+
+	selectedHistory := anHistory
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> startRecordButton [
 	"Instanciates a button that starts the DSSpy recording session on click."
@@ -407,6 +424,15 @@ DSRecordBrowserPresenter >> startRecording [
 ]
 
 { #category : 'layout' }
+DSRecordBrowserPresenter >> statisticsPresenter [
+	"Instanciates a new records table that displays data based on the selected file's records."
+
+	^ SpGridLayout new
+		  beColumnNotHomogeneous;
+		  yourself
+]
+
+{ #category : 'layout' }
 DSRecordBrowserPresenter >> stopRecordButton [
 	"Instanciates a button that stops the DSSpy recording session on click."
 
@@ -427,34 +453,6 @@ DSRecordBrowserPresenter >> stopRecording [
 	self currentWorld removeMorph: timerWindow.
 	self updateToolbar.
 	timerWindow := nil
-]
-
-{ #category : 'layout' }
-DSRecordBrowserPresenter >> timelineChart [
-	"Returns a chart that represents a timeline using the file list presenter's data for its plots."
-
-	| history names chart data |
-	fileListPresenter selectedItem ifNil: [ ^ nil ].
-
-	history := self getHistoryFrom: fileListPresenter selectedItem.
-	names := history windows collect: [ :i | i windowType ].
-
-	data := self getTimelinePointsFrom: history.
-	data size < 2 ifTrue: [ ^ nil ].
-
-	chart := RSCompositeChart new.
-	chart addAll: data.
-
-	chart verticalTick fromNames: names.
-
-	chart horizontalTick
-		useNiceLabel;
-		numberOfTicks: history windows size // 2;
-		useDiagonalLabel;
-		labelConversion: [ :v | (DateAndTime fromSeconds: v // 1000000000) asTime ]. "Plots are instancied using their dateTime as nano seconds to prevent events which last less than a second to be hided, so we convert them into seconds to get the label."
-
-	chart build.
-	^ chart
 ]
 
 { #category : 'accessing' }
@@ -489,31 +487,34 @@ DSRecordBrowserPresenter >> updateLastRecord: aRecord [
 ]
 
 { #category : 'operations' }
-DSRecordBrowserPresenter >> updateRecordsTable: filesPresenter [
+DSRecordBrowserPresenter >> updateRecordsTable [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
-	| fileRef recordColorAssociations |
+	| recordColorAssociations |
 	recordColorAssociations := Array new.
-	fileRef := filesPresenter selectedItem.
 
-	fileRef ifNotNil: [
-			recordColorAssociations := self getRecordColorAssociationsFrom: (self getHistoryFrom: fileRef) windows.
+	selectedHistory ifNotNil: [
+			recordColorAssociations := self getRecordColorAssociationsFrom: selectedHistory windows.
 			recordColorAssociations := recordColorAssociations reject: [ :association |
 				                           recordsFilter chosenItems includes: association key class ] ].
 
-	recordsTablePresenter roots: recordColorAssociations 
+	recordsTablePresenter roots: recordColorAssociations
 ]
 
 { #category : 'operations' }
-DSRecordBrowserPresenter >> updateTimelineChart [
-	"Regenerates the timeline chart using the selected record's data"
+DSRecordBrowserPresenter >> updateStatisticsPresenter [
+	"Updates the different fields in the statistics presenter depending on the selected history."
 
-	| chart |
-	chart := self timelineChart.
-	chart
-		ifNil: [ graphicTimeline script: [ :canvas |  ] ]
-		ifNotNil: [ graphicTimeline script: [ :canvas | chart renderIn: canvas ] ].
-	graphicTimeline refresh
+	| stats |
+	selectedHistory ifNil: [ ^ self ].
+	stats := {
+		         ('Number of events: ' , selectedHistory records size asString).
+		         ('Number of windows: ' , selectedHistory windows size asString).
+		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
+		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
+		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
+
+	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
 
 { #category : 'layout' }
@@ -521,6 +522,13 @@ DSRecordBrowserPresenter >> updateToolbar [
 
 	startRecordButtonPresenter enabled: DSSpy recordingSession not.
 	stopRecordButtonPresenter enabled: DSSpy recordingSession
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateWindowsPresenter [
+	"Updates the windows presenter by setting its roots using the selected item from files presenter."
+
+	selectedHistory ifNil: [ windowsPresenter roots: {  } ] ifNotNil: [ windowsPresenter roots: selectedHistory windows ]
 ]
 
 { #category : 'accessing' }
@@ -533,4 +541,57 @@ DSRecordBrowserPresenter >> windowIcon [
 DSRecordBrowserPresenter >> windowTitle [
 
 	^ 'Debugging record browser'
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> windowsPresenter [
+	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   width: 4;
+				   beNotSortable;
+				   evaluated: [ :item | '' ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   width: 20;
+				   beNotExpandable;
+				   beNotSortable;
+				   displayBackgroundColor: [ :anItem | anItem windowColor ];
+				   evaluated: [ :item | '' ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Window / Event';
+				   evaluated: [ :anItem | anItem asString ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
+				   evaluated: [ :anItem | anItem type ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Time';
+				   evaluated: [ :anItem | anItem printAsFormattedTime ];
+				   yourself);
+		  beResizable;
+		  actions: self windowsPresenterActions;
+		  children: [ :item |
+				  item class = DSWindowRecord
+					  ifTrue: [ item events ]
+					  ifFalse: [ {  } ] ];
+		  yourself
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> windowsPresenterActions [
+	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the selected element.';
+					  shortcutKey: $i meta;
+					  action: [ windowsPresenter selectedItem inspect ] ];
+		  yourself
 ]
