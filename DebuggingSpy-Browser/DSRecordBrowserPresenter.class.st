@@ -18,7 +18,8 @@ Class {
 		'stopRecordButtonPresenter',
 		'windowsPresenter',
 		'statisticsPresenter',
-		'selectedHistory'
+		'selectedHistory',
+		'recordTypesPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -162,7 +163,8 @@ DSRecordBrowserPresenter >> connectPresenters [
 			selectedHistory := self getHistoryFrom: fileListPresenter selectedItem.
 			self updateRecordsTable.
 			self updateWindowsPresenter.
-			self updateStatisticsPresenter ].
+			self updateStatisticsPresenter.
+			self updateRecordTypesPresenter ].
 
 	recordsFilter whenChangedDo: [ self updateRecordsTable ]
 ]
@@ -184,6 +186,7 @@ DSRecordBrowserPresenter >> defaultLayout [
 								     add: recordsTablePresenter label: 'Records';
 								     add: windowsPresenter label: 'Windows';
 								     add: statisticsPresenter label: 'Statistics';
+								     add: recordTypesPresenter label: 'Types';
 								     yourself);
 						    yourself);
 				   yourself)
@@ -277,6 +280,18 @@ DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 ]
 
 { #category : 'helpers' }
+DSRecordBrowserPresenter >> getNumberOfEventsPerType [
+	"Returns a list of dictionary that associates each type of records to the number of records of this type in the selected history."
+
+	| dict |
+	dict := Dictionary new.
+	DSAbstractEventRecord getLeafSubClasses do: [ :recordClass | dict at: recordClass put: 0 ].
+	selectedHistory ifNotNil: [
+		selectedHistory records do: [ :record | dict at: record class update: [ :nbOfRecords | nbOfRecords + 1 ] ] ].
+	^ dict
+]
+
+{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollection [
 	"Returns a sorted collection associating each record with its window's corresponding color, sorted by record's dateTime."
 
@@ -319,7 +334,8 @@ DSRecordBrowserPresenter >> initializePresenters [
 	recordsTablePresenter := self recordsTable.
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
-	statisticsPresenter := self statisticsPresenter
+	statisticsPresenter := self statisticsPresenter.
+	recordTypesPresenter := self recordTypesPresenter
 ]
 
 { #category : 'testing' }
@@ -343,6 +359,22 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 		            openModal.
 
 	newFiles ifNotNil: [ newFiles do: [ :file | self addFile: file asFileReference ] ]
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> recordTypesPresenter [
+	"Instanciates a new table that displays the record types and some information about them."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
+				   evaluated: [ :association | association key name ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Number of records';
+				   evaluated: [ :association | association value ];
+				   yourself);
+		  beResizable
 ]
 
 { #category : 'layout' }
@@ -519,6 +551,15 @@ DSRecordBrowserPresenter >> updateLastRecord: aRecord [
 ]
 
 { #category : 'operations' }
+DSRecordBrowserPresenter >> updateRecordTypesPresenter [
+	"Updates the record types presenter by setting its roots using the selected history."
+
+	selectedHistory
+		ifNil: [ recordTypesPresenter roots: {  } ]
+		ifNotNil: [ recordTypesPresenter roots: self getNumberOfEventsPerType associations ]
+]
+
+{ #category : 'operations' }
 DSRecordBrowserPresenter >> updateRecordsTable [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
@@ -539,17 +580,18 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 
 	| stats |
 	selectedHistory ifNil: [ ^ self ].
-	stats := {
-		         ('Number of events: ' , selectedHistory records size asString).
-		         ('Number of windows: ' , selectedHistory windows size asString).
-		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
-		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
-		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
+	stats := OrderedCollection new.
+	stats addAll: {
+			('Number of events: ' , selectedHistory records size asString).
+			('Number of windows: ' , selectedHistory windows size asString).
+			('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
+			('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
+			('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
 
-{ #category : 'layout' }
+{ #category : 'operations' }
 DSRecordBrowserPresenter >> updateToolbar [
 
 	startRecordButtonPresenter enabled: DSSpy recordingSession not.
@@ -558,7 +600,7 @@ DSRecordBrowserPresenter >> updateToolbar [
 
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateWindowsPresenter [
-	"Updates the windows presenter by setting its roots using the selected item from files presenter."
+	"Updates the windows presenter by setting its roots using the selected history."
 
 	selectedHistory ifNil: [ windowsPresenter roots: {  } ] ifNotNil: [ windowsPresenter roots: selectedHistory windows ]
 ]

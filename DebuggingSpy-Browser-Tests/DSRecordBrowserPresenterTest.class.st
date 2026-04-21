@@ -225,6 +225,24 @@ DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testGetNumberOfEventsPerType [
+
+	| dict |
+	browser selectedHistory: (DSRecordHistory on: {
+				 (DSMouseEnterWindowRecord new windowId: 1).
+				 (DSBrowseRecord new windowId: 1).
+				 (DSBrowseRecord new windowId: 1).
+				 (DSMouseLeaveWindowRecord new windowId: 1) }).
+
+	dict := browser getNumberOfEventsPerType.
+	self assert: dict keys size equals: DSAbstractEventRecord getLeafSubClasses size.
+	self assert: (dict at: DSMouseEnterWindowRecord) equals: 1.
+	self assert: (dict at: DSBrowseRecord) equals: 2.
+	self assert: (dict at: DSMouseLeaveWindowRecord) equals: 1.
+	self assert: (dict at: DSWindowOpenedRecord) equals: 0
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
 
 	| windows colorAssociations |
@@ -402,6 +420,18 @@ DSRecordBrowserPresenterTest >> testUpdateLastRecord [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateRecordTypesPresenter [
+
+	| presenter |
+	presenter := browser presenterAt: #recordTypesPresenter.
+	self assert: presenter roots isEmpty.
+	browser selectedHistory: (DSRecordHistory on: self getRecordExamples).
+	browser updateRecordTypesPresenter.
+
+	self assert: presenter roots equals: browser getNumberOfEventsPerType associations
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
 	| fileRef |
@@ -442,7 +472,7 @@ DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
 	self assert: children keys second label equals: 'Number of windows: 4'.
 	self assert: children keys third label equals: 'Time taken: 00:00:03'.
 	self assert: children keys fourth label equals: 'Idle time: 00:00:00'.
-	self assert: children keys last label equals: 'Absolute time taken: 00:00:03'
+	self assert: children keys fifth label equals: 'Absolute time taken: 00:00:03'
 ]
 
 { #category : 'tests' }
