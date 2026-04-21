@@ -261,6 +261,9 @@ DSRecordBrowserPresenterTest >> testGetRecordsFromFolderReference [
 	| records otherRecords fileRecords |
 	records := self getRecordExamples.
 	otherRecords := {
+		                (DSPrintItRecord new
+			                 windowId: 0;
+			                 dateTime: (DateAndTime fromSeconds: 0)).
 		                (DSMouseLeaveWindowRecord new
 			                 windowId: 7;
 			                 dateTime: (DateAndTime fromSeconds: 7)).
@@ -275,16 +278,16 @@ DSRecordBrowserPresenterTest >> testGetRecordsFromFolderReference [
 	self writeRecords: otherRecords inFile: self temporaryDirectory / 'otherRecords'.
 
 	fileRecords := browser getRecordsFromFileReference: self temporaryDirectory.
-	self assert: fileRecords size equals: 7.
+	self assert: fileRecords size equals: 8.
 
-	self assertThat: records first equals: fileRecords first.
-	self assertThat: records second equals: fileRecords second.
-	self assertThat: records third equals: fileRecords third.
-	self assertThat: records fourth equals: fileRecords fourth.
-
-	self assertThat: otherRecords second equals: fileRecords fifth.
-	self assertThat: otherRecords third equals: fileRecords sixth.
-	self assertThat: otherRecords first equals: fileRecords seventh
+	self assertThat: fileRecords first equals: otherRecords first.
+	self assertThat: fileRecords second equals: records first.
+	self assertThat: fileRecords third equals: records second.
+	self assertThat: fileRecords fourth equals: records third.
+	self assertThat: fileRecords fifth equals: records fourth.
+	self assertThat: fileRecords sixth equals: otherRecords third.
+	self assertThat: fileRecords seventh equals: otherRecords fourth.
+	self assertThat: fileRecords eighth equals: otherRecords second
 ]
 
 { #category : 'tests' }
