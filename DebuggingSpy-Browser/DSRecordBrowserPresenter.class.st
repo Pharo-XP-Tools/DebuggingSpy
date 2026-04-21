@@ -19,7 +19,8 @@ Class {
 		'windowsPresenter',
 		'statisticsPresenter',
 		'selectedHistory',
-		'recordTypesPresenter'
+		'recordTypesPresenter',
+		'activityPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -112,6 +113,43 @@ DSRecordBrowserPresenter class >> windowType [
 	^ 'Debugging Spy'
 ]
 
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> activityPresenter [
+	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   width: 4;
+				   beNotSortable;
+				   evaluated: [ :item | '' ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   width: 20;
+				   beNotExpandable;
+				   beNotSortable;
+				   displayBackgroundColor: [ :anItem | anItem windowColor ];
+				   evaluated: [ :item | '' ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Window / Event';
+				   evaluated: [ :anItem | anItem asString ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
+				   evaluated: [ :anItem | anItem type ];
+				   yourself);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Duration';
+				   evaluated: [ :anItem | anItem printAsFormattedTime ];
+				   yourself);
+		  beResizable;
+		  children: [ :item |
+				  item class = DSWindowActivityRecord
+					  ifTrue: [ item events ]
+					  ifFalse: [ {  } ] ];
+		  yourself
+]
+
 { #category : 'files' }
 DSRecordBrowserPresenter >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
@@ -164,7 +202,8 @@ DSRecordBrowserPresenter >> connectPresenters [
 			self updateRecordsTable.
 			self updateWindowsPresenter.
 			self updateStatisticsPresenter.
-			self updateRecordTypesPresenter ].
+			self updateRecordTypesPresenter.
+			self updateActivityPresenter ].
 
 	recordsFilter whenChangedDo: [ self updateRecordsTable ]
 ]
@@ -179,17 +218,13 @@ DSRecordBrowserPresenter >> defaultLayout [
 				   add: (SpPanedLayout newTopToBottom
 						    add: fileListPresenter;
 						    add: self colorReferential;
-						    positionOfSlider: 57 percent;
-						    yourself);
-				   add: (SpBoxLayout newTopToBottom
-						    add: (SpTabLayout new
-								     add: recordsTablePresenter label: 'Records';
-								     add: windowsPresenter label: 'Windows';
-								     add: statisticsPresenter label: 'Statistics';
-								     add: recordTypesPresenter label: 'Types';
-								     yourself);
-						    yourself);
-				   yourself)
+						    positionOfSlider: 57 percent);
+				   add: (SpTabLayout new
+						    add: activityPresenter label: 'Activity';
+						    add: recordsTablePresenter label: 'Records';
+						    add: statisticsPresenter label: 'Statistics';
+						    add: recordTypesPresenter label: 'Types';
+						    add: windowsPresenter label: 'Windows'))
 ]
 
 { #category : 'layout' }
@@ -335,7 +370,8 @@ DSRecordBrowserPresenter >> initializePresenters [
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter.
-	recordTypesPresenter := self recordTypesPresenter
+	recordTypesPresenter := self recordTypesPresenter.
+	activityPresenter := self activityPresenter
 ]
 
 { #category : 'testing' }
@@ -540,6 +576,13 @@ DSRecordBrowserPresenter >> toolbar [
 		  addItem: startRecordButtonPresenter;
 		  addItem: stopRecordButtonPresenter;
 		  addItem: self filterRecordsButton
+]
+
+{ #category : 'operations' }
+DSRecordBrowserPresenter >> updateActivityPresenter [
+	"Updates the activity presenter by setting its roots using the selected history."
+
+	selectedHistory ifNil: [ activityPresenter roots: {  } ] ifNotNil: [ activityPresenter roots: selectedHistory windowJumps ]
 ]
 
 { #category : 'operations' }

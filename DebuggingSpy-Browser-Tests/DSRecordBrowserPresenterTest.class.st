@@ -404,6 +404,21 @@ DSRecordBrowserPresenterTest >> testStopRecording [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateActivityPresenter [
+
+	| presenter history |
+	presenter := browser presenterAt: #activityPresenter.
+
+	self assert: presenter roots isEmpty.
+	history := browser getHistoryFrom: self generateRecordsFile.
+
+	browser selectedHistory: history.
+	browser updateActivityPresenter.
+
+	self assert: presenter roots equals: history windowJumps
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateLastRecord [
 
 	| record timerWindow |
@@ -425,7 +440,7 @@ DSRecordBrowserPresenterTest >> testUpdateRecordTypesPresenter [
 	| presenter |
 	presenter := browser presenterAt: #recordTypesPresenter.
 	self assert: presenter roots isEmpty.
-	browser selectedHistory: (DSRecordHistory on: self getRecordExamples).
+	browser selectedHistory: (browser getHistoryFrom: self generateRecordsFile).
 	browser updateRecordTypesPresenter.
 
 	self assert: presenter roots equals: browser getNumberOfEventsPerType associations
