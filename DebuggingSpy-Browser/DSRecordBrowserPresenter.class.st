@@ -242,6 +242,12 @@ DSRecordBrowserPresenter >> files [
 	^ files ifNil: [ files := OrderedCollection new ]
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> files: newFiles [
+
+	files := newFiles
+]
+
 { #category : 'operations' }
 DSRecordBrowserPresenter >> filterRecordClass: aClass [
 	"Add the specified class to the records filter."

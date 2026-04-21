@@ -166,6 +166,19 @@ DSRecordBrowserPresenterTest >> testCreatingAndOpeningBrowser [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testFileAdding [
+
+	| fileRef |
+	fileRef := self writeRecords: self getRecordExamples inFile: self temporaryDirectory / 'ds-spy/test'.
+	fileRef ensureCreateFile.
+	browser addFile: self temporaryDirectory.
+
+	self assert: (browser isFileAdded: self temporaryDirectory).
+	self assert: (browser isFileAdded: fileRef).
+	self deny: (browser isFileAdded: 'notAddedFile' asFileReference)
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testFilterRecordClass [
 
 	browser filterRecordClass: DSBrowseRecord.
@@ -309,13 +322,9 @@ DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 { #category : 'tests' }
 DSRecordBrowserPresenterTest >> testIsFileAdded [
 
-	| fileRef |
-	fileRef := self writeRecords: self getRecordExamples inFile: self temporaryDirectory / 'ds-spy/test'.
-	fileRef ensureCreateFile.
-	browser addFile: self temporaryDirectory.
-
-	self assert: (browser isFileAdded: self temporaryDirectory).
-	self assert: (browser isFileAdded: fileRef).
+	browser files: { 'aFolder' asFileReference } asOrderedCollection.
+	self assert: (browser isFileAdded: 'aFolder' asFileReference).
+	self assert: (browser isFileAdded: 'aFolder/testFile' asFileReference).
 	self deny: (browser isFileAdded: 'notAddedFile' asFileReference)
 ]
 
