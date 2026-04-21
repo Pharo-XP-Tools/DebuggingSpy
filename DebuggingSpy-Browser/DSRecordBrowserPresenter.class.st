@@ -218,7 +218,7 @@ DSRecordBrowserPresenter >> fileListPresenterActions [
 					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ (DSSpy materialize: fileListPresenter selectedItem) inspect ] ];
+					  action: [ selectedHistory records inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect history';
