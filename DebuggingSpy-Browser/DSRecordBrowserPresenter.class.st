@@ -267,7 +267,7 @@ DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
 
 	aFileReference ifNil: [ ^ nil ].
-	^ DSRecordHistory on: ((self getRecordsFromFileReference: aFileReference) sorted: [ :a :b | a dateTime < b dateTime ])
+	^ DSRecordHistory on: (self getRecordsFromFileReference: aFileReference)
 ]
 
 { #category : 'helpers' }
@@ -293,7 +293,7 @@ DSRecordBrowserPresenter >> getRecordsFromFileReference: aFileReference [
 
 	records := OrderedCollection new.
 	records addAll: (aFileReference children collect: [ :fileRef | self getRecordsFromFileReference: fileRef ]).
-	^ records flattened
+	^ records flattened sorted: [ :a :b | a dateTime < b dateTime ]
 ]
 
 { #category : 'helpers' }

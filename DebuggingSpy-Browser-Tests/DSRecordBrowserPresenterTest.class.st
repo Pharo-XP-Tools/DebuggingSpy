@@ -42,20 +42,16 @@ DSRecordBrowserPresenterTest >> getRecordExamples [
 	^ OrderedCollection new
 		  add: (DSBrowseRecord new
 				   windowId: 1;
-				   dateTime: (DateAndTime fromSeconds: 1);
-				   yourself);
+				   dateTime: (DateAndTime fromSeconds: 1));
 		  add: (DSMouseEnterWindowRecord new
 				   windowId: 2;
-				   dateTime: (DateAndTime fromSeconds: 2);
-				   yourself);
+				   dateTime: (DateAndTime fromSeconds: 2));
 		  add: (DSMouseLeaveWindowRecord new
 				   windowId: 3;
-				   dateTime: (DateAndTime fromSeconds: 3);
-				   yourself);
+				   dateTime: (DateAndTime fromSeconds: 3));
 		  add: (DSInspectItRecord new
 				   windowId: 4;
-				   dateTime: (DateAndTime fromSeconds: 4);
-				   yourself);
+				   dateTime: (DateAndTime fromSeconds: 4));
 		  yourself
 ]
 
@@ -97,11 +93,16 @@ DSRecordBrowserPresenterTest >> testAddFile [
 	| fileRef |
 	fileRef := self generateRecordsFile.
 
-	browser addFile: fileRef.
+	browser addFile: self temporaryDirectory.
+
 	self assert: browser files size equals: 1.
 	self assert: self filesPresenter roots size equals: 1.
+	self assert: self filesPresenter selectedItem equals: self temporaryDirectory.
 
-	self assert: self filesPresenter selectedItem equals: fileRef
+	browser addFile: fileRef. "fileRef is in temporary directory so it should not be added again"
+	self assert: browser files size equals: 1.
+	self assert: self filesPresenter roots size equals: 1.
+	self assert: self filesPresenter selectedItem equals: self temporaryDirectory
 ]
 
 { #category : 'tests' }
@@ -255,6 +256,38 @@ DSRecordBrowserPresenterTest >> testGetRecordsFromFileReference [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testGetRecordsFromFolderReference [
+
+	| records otherRecords fileRecords |
+	records := self getRecordExamples.
+	otherRecords := {
+		                (DSMouseLeaveWindowRecord new
+			                 windowId: 7;
+			                 dateTime: (DateAndTime fromSeconds: 7)).
+		                (DSMouseEnterWindowRecord new
+			                 windowId: 5;
+			                 dateTime: (DateAndTime fromSeconds: 5)).
+		                (DSInspectItRecord new
+			                 windowId: 6;
+			                 dateTime: (DateAndTime fromSeconds: 6)) }.
+
+	self generateRecordsFileFor: records.
+	self writeRecords: otherRecords inFile: self temporaryDirectory / 'otherRecords'.
+
+	fileRecords := browser getRecordsFromFileReference: self temporaryDirectory.
+	self assert: fileRecords size equals: 7.
+
+	self assertThat: records first equals: fileRecords first.
+	self assertThat: records second equals: fileRecords second.
+	self assertThat: records third equals: fileRecords third.
+	self assertThat: records fourth equals: fileRecords fourth.
+
+	self assertThat: otherRecords second equals: fileRecords fifth.
+	self assertThat: otherRecords third equals: fileRecords sixth.
+	self assertThat: otherRecords first equals: fileRecords seventh
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testGetWindowFromRecord [
 
 	| record fileRef window |
@@ -279,7 +312,8 @@ DSRecordBrowserPresenterTest >> testIsFileAdded [
 	browser addFile: self temporaryDirectory.
 
 	self assert: (browser isFileAdded: self temporaryDirectory).
-	self assert: (browser isFileAdded: fileRef)
+	self assert: (browser isFileAdded: fileRef).
+	self deny: (browser isFileAdded: 'notAddedFile' asFileReference)
 ]
 
 { #category : 'tests' }
