@@ -115,7 +115,7 @@ DSRecordBrowserPresenter class >> windowType [
 DSRecordBrowserPresenter >> addFile: aFileReference [
 	"Adds a file in the presenter and set is as selected, which updates the records displayed."
 
-	(files includes: aFileReference)
+	(self isFileAdded: aFileReference)
 		ifTrue: [ ^ self inform: 'File already added !' ]
 		ifFalse: [
 				files add: aFileReference.
@@ -158,8 +158,8 @@ DSRecordBrowserPresenter >> colorReferential [
 DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
-	fileListPresenter whenSelectionChangedDo: [ :presenter |
-			selectedHistory := self getHistoryFrom: presenter selectedItem.
+	fileListPresenter whenSelectionChangedDo: [
+			selectedHistory := self getHistoryFrom: fileListPresenter selectedItem.
 			self updateRecordsTable.
 			self updateWindowsPresenter.
 			self updateStatisticsPresenter ].
@@ -190,13 +190,49 @@ DSRecordBrowserPresenter >> defaultLayout [
 ]
 
 { #category : 'layout' }
-DSRecordBrowserPresenter >> fileList [
+DSRecordBrowserPresenter >> fileListPresenter [
 	"Instanciates a new presenter with a list of added files."
 
-	^ self newList
-		  items: self files;
-		  display: [ :file | file basenameWithoutExtension ];
-		  actions: self listAddedFilesActions;
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   evaluated: [ :file | file basenameWithoutExtension ];
+				   beNotSortable;
+				   yourself);
+		  roots: self files;
+		  children: [ :file |
+				  file isDirectory
+					  ifTrue: [ file children ]
+					  ifFalse: [ {  } ] ];
+		  actions: self fileListPresenterActions;
+		  hideColumnHeaders
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> fileListPresenterActions [
+	"Returns a list of actions for the list of added files. Action are: inspecting raw records, inspecting history, or removing the selected file from the list."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the raw records';
+					  shortcutKey: $i meta;
+					  action: [ (DSSpy materialize: fileListPresenter selectedItem) inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect history';
+					  iconName: #history;
+					  description: 'Inspect the record history';
+					  shortcutKey: $h meta;
+					  action: [ selectedHistory inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Remove';
+					  iconName: #remove;
+					  description: 'Remove the record from list';
+					  shortcutKey: $x meta;
+					  action: [ self removeFile: fileListPresenter selectedItem ] ];
 		  yourself
 ]
 
@@ -231,7 +267,7 @@ DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
 
 	aFileReference ifNil: [ ^ nil ].
-	^ DSRecordHistory on: (DSSpy materialize: aFileReference)
+	^ DSRecordHistory on: ((self getRecordsFromFileReference: aFileReference) sorted: [ :a :b | a dateTime < b dateTime ])
 ]
 
 { #category : 'helpers' }
@@ -249,6 +285,18 @@ DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollect
 ]
 
 { #category : 'helpers' }
+DSRecordBrowserPresenter >> getRecordsFromFileReference: aFileReference [
+	"Returns recursively a list of records taken in the specified file reference. If the argument is a folder, takes all its contained records."
+
+	| records |
+	aFileReference isDirectory ifFalse: [ ^ DSSpy materialize: aFileReference ].
+
+	records := OrderedCollection new.
+	records addAll: (aFileReference children collect: [ :fileRef | self getRecordsFromFileReference: fileRef ]).
+	^ records flattened
+]
+
+{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	"Returns the record's corresponding window record in the history."
 
@@ -261,40 +309,18 @@ DSRecordBrowserPresenter >> initializePresenters [
 	startRecordButtonPresenter := self startRecordButton.
 	stopRecordButtonPresenter := self stopRecordButton.
 	toolbarPresenter := self toolbar.
-	fileListPresenter := self fileList.
+	fileListPresenter := self fileListPresenter.
 	recordsTablePresenter := self recordsTable.
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter
 ]
 
-{ #category : 'operations' }
-DSRecordBrowserPresenter >> listAddedFilesActions [
-	"Returns a list of actions for the list of added files. Action are: inspecting raw records, inspecting history, or removing the selected file from the list."
+{ #category : 'testing' }
+DSRecordBrowserPresenter >> isFileAdded: aFileReference [
+	"Returns true if the specified file is already added in the files (or in a folder)."
 
-	^ SpActionGroup new
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect';
-					  iconName: #inspect;
-					  description: 'Inspect the raw records';
-					  shortcutKey: $i meta;
-					  action: [ (DSSpy materialize: fileListPresenter selectedItem) inspect ] ];
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect history';
-					  iconName: #history;
-					  description: 'Inspect the record history';
-					  shortcutKey: $h meta;
-					  action: [ selectedHistory inspect ] ];
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Remove';
-					  iconName: #remove;
-					  description: 'Remove the record from list';
-					  shortcutKey: $x meta;
-					  action: [ self removeFile: fileListPresenter selectedItem ] ];
-		  yourself
+	^ files anySatisfy: [ :fileRef | aFileReference pathString includesSubstring: fileRef pathString ]
 ]
 
 { #category : 'operations' }
@@ -305,7 +331,7 @@ DSRecordBrowserPresenter >> openAddFileDialog [
 	filesDirectory := DSSpy logger loggingDirectory.
 	filesDirectory ensureCreateDirectory.
 
-	newFiles := StOpenFilePresenter new
+	newFiles := StOpenFileOrDirectoryPresenter new
 		            beMultipleSelection;
 		            defaultFolder: filesDirectory;
 		            openModal.
@@ -348,7 +374,7 @@ DSRecordBrowserPresenter >> recordsTable [
 		  yourself
 ]
 
-{ #category : 'operations' }
+{ #category : 'layout' }
 DSRecordBrowserPresenter >> recordsTableActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
