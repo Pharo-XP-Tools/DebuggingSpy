@@ -458,31 +458,6 @@ DSRecordBrowserPresenterTest >> testUpdateRecordsPresenterWithRecords [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
-
-	| fileRef |
-	fileRef := self generateRecordsFile.
-	browser selectedHistory: (browser getHistoryFrom: fileRef).
-	browser updateRecordsTable.
-
-	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
-	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
-	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
-	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
-]
-
-{ #category : 'tests' }
-DSRecordBrowserPresenterTest >> testUpdateRecordsTableWhenAddingFile [
-
-	browser addFile: self generateRecordsFile.
-
-	self assert: self recordsTablePresenter roots first key class equals: DSBrowseRecord.
-	self assert: (self recordsTablePresenter roots at: 2) key class equals: DSMouseEnterWindowRecord.
-	self assert: (self recordsTablePresenter roots at: 3) key class equals: DSMouseLeaveWindowRecord.
-	self assert: self recordsTablePresenter roots last key class equals: DSInspectItRecord
-]
-
-{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
 
 	| children |

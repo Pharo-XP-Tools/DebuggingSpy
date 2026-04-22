@@ -195,15 +195,12 @@ DSRecordBrowserPresenter >> colorReferential [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Color';
 				   evaluated: [ :association | '' ];
-				   displayBackgroundColor: [ :association | association key ];
-				   yourself);
+				   displayBackgroundColor: [ :association | association key ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window type';
-				   evaluated: [ :association | association value ];
-				   yourself);
+				   evaluated: [ :association | association value ]);
 		  roots: (self class colorAssociations sort: [ :a :b | a key hue <= b key hue ]);
-		  beResizable;
-		  yourself
+		  beResizable
 ]
 
 { #category : 'initialization' }
@@ -212,13 +209,14 @@ DSRecordBrowserPresenter >> connectPresenters [
 
 	fileListPresenter whenSelectionChangedDo: [
 			selectedHistory := self getHistoryFrom: fileListPresenter selectedItem.
-			self updateRecordsTable.
+			selectedHistory ifNotNil: [ self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records ].
 			self updateWindowsPresenter.
 			self updateStatisticsPresenter.
 			self updateRecordTypesPresenter.
 			self updateActivityPresenter ].
 
-	recordsFilter whenChangedDo: [ self updateRecordsTable ].
+	recordsFilter whenChangedDo: [
+		selectedHistory ifNotNil: [ self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records ] ].
 
 	windowsPresenter whenSelectedItemChangedDo: [ :selectedItem |
 		selectedItem ifNotNil: [ self updateRecordsPresenter: windowsRecordsPresenter withRecords: selectedItem events ] ].
@@ -385,7 +383,7 @@ DSRecordBrowserPresenter >> initializePresenters [
 	stopRecordButtonPresenter := self stopRecordButton.
 	toolbarPresenter := self toolbar.
 	fileListPresenter := self fileListPresenter.
-	recordsTablePresenter := self recordsTablePresenter.
+	recordsTablePresenter := self recordsPresenter.
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter.
@@ -461,35 +459,7 @@ DSRecordBrowserPresenter >> recordsPresenter [
 ]
 
 { #category : 'layout' }
-DSRecordBrowserPresenter >> recordsTablePresenter [
-	"Instanciates a new records table that displays data based on the selected file's records."
-
-	^ self newTreeTable
-		  addColumn: (SpStringTableColumn new
-				   displayBackgroundColor: [ :association | association key windowColor ];
-				   width: 4;
-				   beNotSortable;
-				   evaluated: [ :association | '' ];
-				   yourself);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Event';
-				   evaluated: [ :association | association key eventName asString ];
-				   yourself);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Type';
-				   evaluated: [ :association | association key class asString ];
-				   yourself);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Time';
-				   evaluated: [ :association | association key printAsFormattedTime ];
-				   yourself);
-		  beResizable;
-		  actions: self recordsTablePresenterActions;
-		  yourself
-]
-
-{ #category : 'layout' }
-DSRecordBrowserPresenter >> recordsTablePresenterActions [
+DSRecordBrowserPresenter >> recordsPresenterActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
 	^ SpActionGroup new
@@ -646,22 +616,7 @@ DSRecordBrowserPresenter >> updateRecordTypesPresenter [
 DSRecordBrowserPresenter >> updateRecordsPresenter: aPresenter withRecords: someRecords [
 	"Updates the records presenter by updating its roots."
 
-	aPresenter roots: someRecords
-]
-
-{ #category : 'operations' }
-DSRecordBrowserPresenter >> updateRecordsTable [
-	"Updates the records' table presenter and add to each record its corresponding color."
-
-	| recordColorAssociations |
-	recordColorAssociations := Array new.
-
-	selectedHistory ifNotNil: [
-			recordColorAssociations := self getRecordColorAssociationsFrom: selectedHistory windows.
-			recordColorAssociations := recordColorAssociations reject: [ :association |
-				                           recordsFilter chosenItems includes: association key class ] ].
-
-	recordsTablePresenter roots: recordColorAssociations
+	aPresenter roots: (someRecords reject: [ :record | recordsFilter chosenItems includes: record class ])
 ]
 
 { #category : 'operations' }
