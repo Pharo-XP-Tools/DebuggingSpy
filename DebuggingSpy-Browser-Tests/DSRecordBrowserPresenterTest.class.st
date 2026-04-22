@@ -194,7 +194,7 @@ DSRecordBrowserPresenterTest >> testFilteringAClassOfRecords [
 	history := browser getHistoryFrom: fileRef.
 
 	browser addFile: fileRef.
-	self assert: self recordsTablePresenter roots size equals: history records size.
+	self assert: self recordsTablePresenter roots size equals: history events size.
 
 	self recordsFilterPresenter sourceList selectItem: DSBrowseRecord.
 	self recordsFilterPresenter addSelected.

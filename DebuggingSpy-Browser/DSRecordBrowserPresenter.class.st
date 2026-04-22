@@ -218,7 +218,7 @@ DSRecordBrowserPresenter >> fileListPresenterActions [
 					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ selectedHistory records inspect ] ];
+					  action: [ selectedHistory events inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect history';
@@ -540,7 +540,7 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 	| stats |
 	selectedHistory ifNil: [ ^ self ].
 	stats := {
-		         ('Number of events: ' , selectedHistory records size asString).
+		         ('Number of events: ' , selectedHistory events size asString).
 		         ('Number of windows: ' , selectedHistory windows size asString).
 		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
 		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
