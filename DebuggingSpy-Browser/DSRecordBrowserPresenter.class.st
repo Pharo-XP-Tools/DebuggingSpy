@@ -121,32 +121,49 @@ DSRecordBrowserPresenter >> activityPresenter [
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotSortable;
-				   evaluated: [ :item | '' ];
-				   yourself);
+				   evaluated: [ :item | '' ]);
 		  addColumn: (SpStringTableColumn new
 				   width: 20;
 				   beNotExpandable;
 				   beNotSortable;
 				   displayBackgroundColor: [ :anItem | anItem windowColor ];
-				   evaluated: [ :item | '' ];
-				   yourself);
+				   evaluated: [ :item | '' ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Window / Event';
-				   evaluated: [ :anItem | anItem asString ];
+				   evaluated: [ :anItem |
+						   anItem class = DSWindowActivityRecord
+							   ifTrue: [ anItem window asString ]
+							   ifFalse: [ anItem asString ] ];
 				   yourself);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Type';
-				   evaluated: [ :anItem | anItem type ];
-				   yourself);
+				   evaluated: [ :anItem | anItem type ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Duration';
-				   evaluated: [ :anItem | anItem printAsFormattedTime ];
-				   yourself);
+				   evaluated: [ :anItem | anItem class = DSWindowActivityRecord ifTrue: [ anItem duration ] ]);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Time';
+				   evaluated: [ :anItem | anItem printAsFormattedTime ]);
 		  beResizable;
 		  children: [ :item |
 				  item class = DSWindowActivityRecord
 					  ifTrue: [ item events ]
 					  ifFalse: [ {  } ] ];
+		  actions: self activityPresenterActions
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> activityPresenterActions [
+	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the selected element.';
+					  shortcutKey: $i meta;
+					  action: [ activityPresenter selectedItem inspect ] ];
 		  yourself
 ]
 
@@ -366,7 +383,7 @@ DSRecordBrowserPresenter >> initializePresenters [
 	stopRecordButtonPresenter := self stopRecordButton.
 	toolbarPresenter := self toolbar.
 	fileListPresenter := self fileListPresenter.
-	recordsTablePresenter := self recordsTable.
+	recordsTablePresenter := self recordsTablePresenter.
 	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter.
@@ -421,7 +438,7 @@ DSRecordBrowserPresenter >> recordsFilter [
 ]
 
 { #category : 'layout' }
-DSRecordBrowserPresenter >> recordsTable [
+DSRecordBrowserPresenter >> recordsTablePresenter [
 	"Instanciates a new records table that displays data based on the selected file's records."
 
 	^ self newTreeTable
@@ -444,12 +461,12 @@ DSRecordBrowserPresenter >> recordsTable [
 				   evaluated: [ :association | association key printAsFormattedTime ];
 				   yourself);
 		  beResizable;
-		  actions: self recordsTableActions;
+		  actions: self recordsTablePresenterActions;
 		  yourself
 ]
 
 { #category : 'layout' }
-DSRecordBrowserPresenter >> recordsTableActions [
+DSRecordBrowserPresenter >> recordsTablePresenterActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
 	^ SpActionGroup new
