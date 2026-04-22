@@ -447,6 +447,17 @@ DSRecordBrowserPresenterTest >> testUpdateRecordTypesPresenter [
 ]
 
 { #category : 'tests' }
+DSRecordBrowserPresenterTest >> testUpdateRecordsPresenterWithRecords [
+
+	| presenter records |
+	presenter := browser recordsPresenter.
+	records := self getRecordExamples.
+	browser updateRecordsPresenter: presenter withRecords: records.
+
+	self assert: presenter roots equals: records
+]
+
+{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateRecordsTable [
 
 	| fileRef |

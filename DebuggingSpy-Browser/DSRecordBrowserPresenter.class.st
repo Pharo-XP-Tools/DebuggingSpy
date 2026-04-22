@@ -20,7 +20,9 @@ Class {
 		'statisticsPresenter',
 		'selectedHistory',
 		'recordTypesPresenter',
-		'activityPresenter'
+		'activityPresenter',
+		'activityRecordsPresenter',
+		'windowsRecordsPresenter'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -113,6 +115,16 @@ DSRecordBrowserPresenter class >> windowType [
 	^ 'Debugging Spy'
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> activityLayout [
+	"Returns the layout that displays the activity table and the selected records if applicable."
+
+	^ SpPanedLayout newTopToBottom
+		  add: activityPresenter;
+		  add: activityRecordsPresenter;
+		  positionOfSlider: 70 percent
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> activityPresenter [
 	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
@@ -121,34 +133,18 @@ DSRecordBrowserPresenter >> activityPresenter [
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotSortable;
-				   evaluated: [ :item | '' ]);
+				   displayBackgroundColor: [ :windowJump | windowJump windowColor ];
+				   evaluated: [ :windowJump | '' ]);
 		  addColumn: (SpStringTableColumn new
-				   width: 20;
-				   beNotExpandable;
-				   beNotSortable;
-				   displayBackgroundColor: [ :anItem | anItem windowColor ];
-				   evaluated: [ :item | '' ]);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Window / Event';
-				   evaluated: [ :anItem |
-						   anItem class = DSWindowActivityRecord
-							   ifTrue: [ anItem window asString ]
-							   ifFalse: [ anItem asString ] ];
-				   yourself);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Type';
-				   evaluated: [ :anItem | anItem type ]);
+				   title: 'Window';
+				   evaluated: [ :windowJump | windowJump window asString ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Duration';
-				   evaluated: [ :anItem | anItem class = DSWindowActivityRecord ifTrue: [ anItem duration ] ]);
+				   evaluated: [ :windowJump | windowJump duration ]);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Time';
-				   evaluated: [ :anItem | anItem printAsFormattedTime ]);
+				   title: 'Number of events';
+				   evaluated: [ :windowJump | windowJump events size ]);
 		  beResizable;
-		  children: [ :item |
-				  item class = DSWindowActivityRecord
-					  ifTrue: [ item events ]
-					  ifFalse: [ {  } ] ];
 		  actions: self activityPresenterActions
 ]
 
@@ -222,7 +218,13 @@ DSRecordBrowserPresenter >> connectPresenters [
 			self updateRecordTypesPresenter.
 			self updateActivityPresenter ].
 
-	recordsFilter whenChangedDo: [ self updateRecordsTable ]
+	recordsFilter whenChangedDo: [ self updateRecordsTable ].
+
+	windowsPresenter whenSelectedItemChangedDo: [ :selectedItem |
+		selectedItem ifNotNil: [ self updateRecordsPresenter: windowsRecordsPresenter withRecords: selectedItem events ] ].
+
+	activityPresenter whenSelectedItemChangedDo: [ :selectedItem |
+		selectedItem ifNotNil: [ self updateRecordsPresenter: activityRecordsPresenter withRecords: selectedItem events ] ]
 ]
 
 { #category : 'layout' }
@@ -237,11 +239,11 @@ DSRecordBrowserPresenter >> defaultLayout [
 						    add: self colorReferential;
 						    positionOfSlider: 57 percent);
 				   add: (SpTabLayout new
-						    add: activityPresenter label: 'Activity';
+						    add: self activityLayout label: 'Activity';
 						    add: recordsTablePresenter label: 'Records';
 						    add: statisticsPresenter label: 'Statistics';
 						    add: recordTypesPresenter label: 'Types';
-						    add: windowsPresenter label: 'Windows'))
+						    add: self windowsLayout label: 'Windows'))
 ]
 
 { #category : 'layout' }
@@ -388,7 +390,9 @@ DSRecordBrowserPresenter >> initializePresenters [
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter.
 	recordTypesPresenter := self recordTypesPresenter.
-	activityPresenter := self activityPresenter
+	activityPresenter := self activityPresenter.
+	windowsRecordsPresenter := self recordsPresenter.
+	activityRecordsPresenter := self recordsPresenter
 ]
 
 { #category : 'testing' }
@@ -435,6 +439,25 @@ DSRecordBrowserPresenter >> recordsFilter [
 	"Instanciates a new chooser that displays every record classes that could be used to filter records in table."
 
 	^ SpChooserPresenter new sourceItems: DSAbstractEventRecord getLeafSubClasses
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> recordsPresenter [
+	"Instanciates a new records table that displays data based on the selected records in windows or activity tabs."
+
+	^ self newTreeTable
+		  addColumn: (SpStringTableColumn new
+				   displayBackgroundColor: [ :record | record windowColor ];
+				   width: 4;
+				   beNotSortable;
+				   evaluated: [ :record | '' ]);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Event';
+				   evaluated: [ :record | record asString ]);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Time';
+				   evaluated: [ :record | record printAsFormattedTime ]);
+		  beResizable
 ]
 
 { #category : 'layout' }
@@ -620,6 +643,13 @@ DSRecordBrowserPresenter >> updateRecordTypesPresenter [
 ]
 
 { #category : 'operations' }
+DSRecordBrowserPresenter >> updateRecordsPresenter: aPresenter withRecords: someRecords [
+	"Updates the records presenter by updating its roots."
+
+	aPresenter roots: someRecords
+]
+
+{ #category : 'operations' }
 DSRecordBrowserPresenter >> updateRecordsTable [
 	"Updates the records' table presenter and add to each record its corresponding color."
 
@@ -677,6 +707,16 @@ DSRecordBrowserPresenter >> windowTitle [
 	^ 'Debugging record browser'
 ]
 
+{ #category : 'accessing' }
+DSRecordBrowserPresenter >> windowsLayout [
+	"Returns the layout that displays the windows table and the selected records if applicable."
+
+	^ SpPanedLayout newTopToBottom
+		  add: windowsPresenter;
+		  add: windowsRecordsPresenter;
+		  positionOfSlider: 70 percent
+]
+
 { #category : 'layout' }
 DSRecordBrowserPresenter >> windowsPresenter [
 	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
@@ -685,34 +725,20 @@ DSRecordBrowserPresenter >> windowsPresenter [
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotSortable;
-				   evaluated: [ :item | '' ];
-				   yourself);
+				   displayBackgroundColor: [ :window | window windowColor ];
+				   evaluated: [ :window | '' ]);
 		  addColumn: (SpStringTableColumn new
-				   width: 20;
-				   beNotExpandable;
-				   beNotSortable;
-				   displayBackgroundColor: [ :anItem | anItem windowColor ];
-				   evaluated: [ :item | '' ];
-				   yourself);
+				   title: 'Window';
+				   evaluated: [ :window | window asString ]);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Window / Event';
-				   evaluated: [ :anItem | anItem asString ];
-				   yourself);
+				   title: 'Duration';
+				   evaluated: [ :window | window printAsFormattedTime ]);
 		  addColumn: (SpStringTableColumn new
-				   title: 'Type';
-				   evaluated: [ :anItem | anItem type ];
-				   yourself);
-		  addColumn: (SpStringTableColumn new
-				   title: 'Time';
-				   evaluated: [ :anItem | anItem printAsFormattedTime ];
+				   title: 'Number of events';
+				   evaluated: [ :window | window events size ];
 				   yourself);
 		  beResizable;
-		  actions: self windowsPresenterActions;
-		  children: [ :item |
-				  item class = DSWindowRecord
-					  ifTrue: [ item events ]
-					  ifFalse: [ {  } ] ];
-		  yourself
+		  actions: self windowsPresenterActions
 ]
 
 { #category : 'layout' }
