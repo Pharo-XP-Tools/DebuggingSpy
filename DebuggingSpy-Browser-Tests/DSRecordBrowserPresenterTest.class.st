@@ -243,28 +243,6 @@ DSRecordBrowserPresenterTest >> testGetNumberOfEventsPerType [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testGetRecordColorAssociationsFrom [
-
-	| windows colorAssociations |
-	windows := { (DSWindowRecord new
-		            toolInfo: (DSToolInfo new
-				             toolClass: StPlaygroundPresenter;
-				             yourself);
-		            events: {
-				            DSWindowOpenedRecord new.
-				            DSDoItRecord new.
-				            DSStepThroughRecord new }) } asOrderedCollection.
-
-	colorAssociations := browser getRecordColorAssociationsFrom: windows.
-
-	self assert: colorAssociations first key class equals: DSWindowOpenedRecord.
-	self assert: (colorAssociations at: 2) key class equals: DSDoItRecord.
-	self assert: colorAssociations last key class equals: DSStepThroughRecord.
-
-	colorAssociations do: [ :association | self assert: association value equals: (Color fromHexString: '#70B77E') ]
-]
-
-{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testGetRecordsFromFileReference [
 
 	| records fileRef fileRecords |

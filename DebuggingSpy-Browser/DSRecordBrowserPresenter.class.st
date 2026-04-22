@@ -344,20 +344,6 @@ DSRecordBrowserPresenter >> getNumberOfEventsPerType [
 ]
 
 { #category : 'helpers' }
-DSRecordBrowserPresenter >> getRecordColorAssociationsFrom: aWindowRecordCollection [
-	"Returns a sorted collection associating each record with its window's corresponding color, sorted by record's dateTime."
-
-	| recordColorsAssociations |
-	recordColorsAssociations := OrderedCollection new.
-
-	aWindowRecordCollection do: [ :windowRecord |
-		recordColorsAssociations addAll:
-			(windowRecord events collect: [ :record | record -> windowRecord windowColor ]) ].
-
-	^ recordColorsAssociations sorted: [ :recordA :recordB | recordA key dateTime < recordB key dateTime ]
-]
-
-{ #category : 'helpers' }
 DSRecordBrowserPresenter >> getRecordsFromFileReference: aFileReference [
 	"Returns recursively a list of records taken in the specified file reference. If the argument is a folder, takes all its contained records."
 
