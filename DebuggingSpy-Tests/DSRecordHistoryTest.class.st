@@ -43,7 +43,7 @@ DSRecordHistoryTest >> setUp [
 { #category : 'tests' }
 DSRecordHistoryTest >> testAbsoluteTimeTaken [
 
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	self assert: history absoluteTimeTaken equals: 22 * 60
 ]
 
@@ -74,7 +74,7 @@ DSRecordHistoryTest >> testAddWindowRecord [
 DSRecordHistoryTest >> testAllRecordsOfKind [
 
 	| record |
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 
 	self assert: (history allRecordsOfKind: DSMouseLeaveWindowRecord) size equals: 2.
 	record := (history allRecordsOfKind: DSMouseLeaveWindowRecord) first.
@@ -91,7 +91,7 @@ DSRecordHistoryTest >> testAllRecordsOfKind [
 DSRecordHistoryTest >> testBuildWindowHistory [
 
 	| windowsHistory listOfRecords |
-	history records: {
+	history events: {
 			DSDoItRecord new.
 			(DSWindowOpenedRecord new
 				 windowId: 1;
@@ -270,7 +270,7 @@ DSRecordHistoryTest >> testBuildWindows [
 				  (DSMouseEnterWindowRecord new windowId: -1).
 				  DSClipboardCopyRecord new.
 				  DSMouseLeaveWindowRecord new } asOrderedCollection) } as: IdentityDictionary).
-	history records: {
+	history events: {
 			DSDoItRecord new.
 			sourceDebugger.
 			DSClipboardCopyRecord new.
@@ -299,7 +299,7 @@ DSRecordHistoryTest >> testBuildWindows [
 DSRecordHistoryTest >> testCollectScrollingPeriods [
 
 	| scrollList |
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new
 				 dateTime: '2026-03-25T10:01:17' asDateAndTime;
 				 windowId: 1).
@@ -348,7 +348,7 @@ DSRecordHistoryTest >> testCollectScrollingPeriods [
 DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 
 	| deltaDict |
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
 			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
 			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
@@ -377,13 +377,13 @@ DSRecordHistoryTest >> testCollectTimeDiscrepancies [
 { #category : 'tests' }
 DSRecordHistoryTest >> testComputeIdleTime [
 
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
 			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime) }.
 
 	self assert: history computeIdleTime equals: 0.
 
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
 			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
 			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
@@ -401,7 +401,7 @@ DSRecordHistoryTest >> testComputeIdleTime [
 { #category : 'tests' }
 DSRecordHistoryTest >> testCountDebugActions [
 
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMouseLeaveWindowRecord new.
 			DSDoItRecord new.
@@ -421,14 +421,14 @@ DSRecordHistoryTest >> testCountDebugActions [
 { #category : 'tests' }
 DSRecordHistoryTest >> testDateTime [
 
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	self assert: history dateTime equals: '2000-05-07T15:02:44' asDateAndTime
 ]
 
 { #category : 'tests' }
 DSRecordHistoryTest >> testDebugPointAdds [
 
-	history records: {
+	history events: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name).
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
@@ -439,7 +439,7 @@ DSRecordHistoryTest >> testDebugPointAdds [
 DSRecordHistoryTest >> testDebugPointEvents [
 
 	| debugPointEvents |
-	history records: {
+	history events: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
@@ -457,7 +457,7 @@ DSRecordHistoryTest >> testDebugPointEvents [
 DSRecordHistoryTest >> testDebugPointEventsSelection [
 
 	| debugPointEvents |
-	history records: {
+	history events: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name). 
@@ -476,7 +476,7 @@ DSRecordHistoryTest >> testDebugPointEventsSelection [
 { #category : 'tests' }
 DSRecordHistoryTest >> testDebugPointHit [
 
-	history records: {
+	history events: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointHit name).
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointAdded name) } asOrderedCollection.
@@ -486,7 +486,7 @@ DSRecordHistoryTest >> testDebugPointHit [
 { #category : 'tests' }
 DSRecordHistoryTest >> testDebugPointRemoved [
 
-	history records: {
+	history events: {
 			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name).
 			DSMouseEnterWindowRecord new.
 			(DSBreakDebugPointEventRecord new eventName: DebugPointRemoved name) } asOrderedCollection.
@@ -496,7 +496,7 @@ DSRecordHistoryTest >> testDebugPointRemoved [
 { #category : 'tests' }
 DSRecordHistoryTest >> testDetectTimeDiscrepancies [
 
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	self assert: history detectTimeDiscrepancies equals: 1320.
 ]
 
@@ -560,7 +560,7 @@ DSRecordHistoryTest >> testEstimateSourceEventOfFrom [
 DSRecordHistoryTest >> testEventsAfter [
 
 	| listOfEvents |
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	listOfEvents := history eventsAfter: '2000-05-07T15:06:05' asDateAndTime.
 
 	self assert: listOfEvents size equals: 2.
@@ -572,7 +572,7 @@ DSRecordHistoryTest >> testEventsAfter [
 DSRecordHistoryTest >> testEventsBefore [
 
 	| listOfEvents |
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	listOfEvents := history eventsBefore: '2000-05-07T15:13:47' asDateAndTime.
 
 	self assert: listOfEvents size equals: 3.
@@ -584,7 +584,7 @@ DSRecordHistoryTest >> testEventsBefore [
 { #category : 'tests' }
 DSRecordHistoryTest >> testExecutedCode [
 
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSDoItRecord new.
 			DSStepIntoRecord new.
@@ -664,7 +664,7 @@ DSRecordHistoryTest >> testFindWindowRecordKeyForID [
 { #category : 'tests' }
 DSRecordHistoryTest >> testFixMissingWindowIds [
 
-	history records: {
+	history events: {
 			DSDoItRecord new.
 			(DSMouseEnterWindowRecord new windowId: 1).
 			DSMethodAddedRecord new.
@@ -680,11 +680,11 @@ DSRecordHistoryTest >> testFixMissingWindowIds [
 
 	history fixMissingWindowIds.
 
-	self assert: history records first windowId equals: -1.
-	self assert: history records third windowId equals: 1.
-	self assert: (history records at: 6) windowId equals: -1.
-	self assert: (history records at: 8) windowId equals: 3.
-	self assert: (history records at: 10) windowId equals: -1.
+	self assert: history events first windowId equals: -1.
+	self assert: history events third windowId equals: 1.
+	self assert: (history events at: 6) windowId equals: -1.
+	self assert: (history events at: 8) windowId equals: 3.
+	self assert: (history events at: 10) windowId equals: -1.
 
 	self assert: history windowNames size equals: 1.
 	self assert: (history windowNames at: 3) equals: 'TestWindow'
@@ -715,7 +715,7 @@ DSRecordHistoryTest >> testFixWindowRecordKeysNames [
 DSRecordHistoryTest >> testGetSumOfScrollingPeriods [
 
 	| scrollList |
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new
 				 dateTime: '2026-03-25T10:01:17' asDateAndTime;
 				 windowId: 1).
@@ -765,7 +765,7 @@ DSRecordHistoryTest >> testGetSumOfScrollingPeriods [
 DSRecordHistoryTest >> testMergeContinuousEvents [
 
 	| newRecordList |
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMouseEnterWindowRecord new.
 			DSMethodAddedRecord new.
@@ -900,7 +900,7 @@ DSRecordHistoryTest >> testMergeFilteredWindowJumps [
 { #category : 'tests' }
 DSRecordHistoryTest >> testMethodsAdded [
 
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMethodAddedRecord new.
 			DSMethodRemovedRecord new.
@@ -912,7 +912,7 @@ DSRecordHistoryTest >> testMethodsAdded [
 { #category : 'tests' }
 DSRecordHistoryTest >> testMethodsModified [
 
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMethodAddedRecord new.
 			DSMethodModifiedRecord new.
@@ -927,7 +927,7 @@ DSRecordHistoryTest >> testMethodsModified [
 DSRecordHistoryTest >> testMethodsModifiedEvents [
 
 	| methodModifiedEvents |
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMethodAddedRecord new.
 			(DSMethodModifiedRecord new windowId: 23).
@@ -948,7 +948,7 @@ DSRecordHistoryTest >> testMethodsModifiedEvents [
 { #category : 'tests' }
 DSRecordHistoryTest >> testMethodsRemoved [
 
-	history records: {
+	history events: {
 			DSMouseEnterWindowRecord new.
 			DSMethodAddedRecord new.
 			DSMethodRemovedRecord new.
@@ -970,7 +970,7 @@ DSRecordHistoryTest >> testName [
 { #category : 'tests' }
 DSRecordHistoryTest >> testNumberOfSteps [
 
-	history records: {
+	history events: {
 			DSProceedRecord new.
 			DSMouseEnterWindowRecord new.
 			DSReturnValue new.
@@ -1025,7 +1025,7 @@ DSRecordHistoryTest >> testProcessRecords [
 
 	history processRecords: recordList.
 
-	self assert: history records size equals: 12.
+	self assert: history events size equals: 12.
 	self assert: history windows size equals: 3.
 	self assert: history windowsHistory size equals: 3.
 	self assert: history filteredWindows size equals: 3.
@@ -1054,7 +1054,7 @@ DSRecordHistoryTest >> testProcessRecordsOneWindow [
 
 	history processRecords: recordList.
 
-	self assert: history records size equals: 4.
+	self assert: history events size equals: 4.
 	self assert: history windows size equals: 1.
 	self assert: history windowsHistory size equals: 1.
 	self assert: history filteredWindows size equals: 1.
@@ -1087,7 +1087,7 @@ DSRecordHistoryTest >> testReconstructSourcesOfDebuggerOpenings [
 	sourceEvent1 := DSDebugItRecord new windowId: 1.
 	sourceEvent2 := DSPrintItRecord new windowId: 3.
 
-	history records: {
+	history events: {
 			DSDoItRecord new.
 			sourceEvent1.
 			DSStepIntoRecord new.
@@ -1118,7 +1118,7 @@ DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 		                   windowIdentityHash: 1;
 		                   toolIdentityHash: 42.
 
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new toolInfo: toolInfoExample).
 			DSDebugItRecord new.
 			(DSMouseEnterWindowRecord new toolInfo: nil) }.
@@ -1139,21 +1139,21 @@ DSRecordHistoryTest >> testReconstructWindowsToolInfo [
 { #category : 'tests' }
 DSRecordHistoryTest >> testStartTime [
 
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	self assert: history startTime equals: '15:02:44' asTime
 ]
 
 { #category : 'tests' }
 DSRecordHistoryTest >> testStopTime [
 
-	history records: self getRecordsExample.
+	history events: self getRecordsExample.
 	self assert: history stopTime equals: '15:24:44' asTime
 ]
 
 { #category : 'tests' }
 DSRecordHistoryTest >> testTimeTaken [
 
-	history records: {
+	history events: {
 			(DSMouseEnterWindowRecord new dateTime: '2024-09-23T15:02:44' asDateAndTime).
 			(DSDoItRecord new dateTime: '2024-09-23T15:02:47' asDateAndTime).
 			(DSStepIntoRecord new dateTime: '2024-09-23T15:02:54' asDateAndTime).
