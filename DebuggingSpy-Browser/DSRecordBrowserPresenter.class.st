@@ -207,6 +207,8 @@ DSRecordBrowserPresenter >> colorReferential [
 DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
+	"This method is awful, its gonna be refactored when History, Windows and Jumps would be using an unified method that returns their events."
+
 	fileListPresenter whenSelectionChangedDo: [
 			selectedHistory := self getHistoryFrom: fileListPresenter selectedItem.
 			selectedHistory ifNotNil: [ self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records ].
@@ -216,7 +218,12 @@ DSRecordBrowserPresenter >> connectPresenters [
 			self updateActivityPresenter ].
 
 	recordsFilter whenChangedDo: [
-		selectedHistory ifNotNil: [ self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records ] ].
+			selectedHistory ifNotNil: [
+					self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records.
+					windowsPresenter selectedItem ifNotNil: [
+						self updateRecordsPresenter: windowsRecordsPresenter withRecords: windowsPresenter selectedItem events ].
+					activityPresenter selectedItem ifNotNil: [
+						self updateRecordsPresenter: activityRecordsPresenter withRecords: activityPresenter selectedItem events ] ] ].
 
 	windowsPresenter whenSelectedItemChangedDo: [ :selectedItem |
 		selectedItem ifNotNil: [ self updateRecordsPresenter: windowsRecordsPresenter withRecords: selectedItem events ] ].
@@ -429,7 +436,10 @@ DSRecordBrowserPresenter >> recordsFilter [
 DSRecordBrowserPresenter >> recordsPresenter [
 	"Instanciates a new records table that displays data based on the selected records in windows or activity tabs."
 
-	^ self newTreeTable
+	| presenter |
+	presenter := self newTreeTable.
+
+	^ presenter
 		  addColumn: (SpStringTableColumn new
 				   displayBackgroundColor: [ :record | record windowColor ];
 				   width: 4;
@@ -441,11 +451,12 @@ DSRecordBrowserPresenter >> recordsPresenter [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
 				   evaluated: [ :record | record printAsFormattedTime ]);
+		  actions: (self recordsPresenterActionsFor: presenter);
 		  beResizable
 ]
 
 { #category : 'layout' }
-DSRecordBrowserPresenter >> recordsPresenterActions [
+DSRecordBrowserPresenter >> recordsPresenterActionsFor: aRecordTable [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
 	^ SpActionGroup new
@@ -455,22 +466,21 @@ DSRecordBrowserPresenter >> recordsPresenterActions [
 					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ recordsTablePresenter selectedItem key inspect ] ];
+					  action: [ aRecordTable selectedItem inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect the window';
 					  iconName: #window;
 					  description: 'Inspect the record window';
 					  shortcutKey: $w meta;
-					  action: [ (self getWindowFromRecord: recordsTablePresenter selectedItem key) inspect ] ];
+					  action: [ (self getWindowFromRecord: aRecordTable selectedItem) inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Filter this type of records';
 					  iconName: #packageAdd;
 					  description: 'Filter this type of records';
 					  shortcutKey: $f meta;
-					  action: [ self filterRecordClass: recordsTablePresenter selectedItem key class ] ];
-		  yourself
+					  action: [ self filterRecordClass: aRecordTable selectedItem class ] ]
 ]
 
 { #category : 'files' }
