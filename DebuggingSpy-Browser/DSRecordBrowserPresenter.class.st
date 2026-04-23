@@ -148,7 +148,7 @@ DSRecordBrowserPresenter >> activityPresenter [
 		  actions: self activityPresenterActions
 ]
 
-{ #category : 'layout' }
+{ #category : 'actions' }
 DSRecordBrowserPresenter >> activityPresenterActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
@@ -269,7 +269,7 @@ DSRecordBrowserPresenter >> fileListPresenter [
 		  hideColumnHeaders
 ]
 
-{ #category : 'layout' }
+{ #category : 'actions' }
 DSRecordBrowserPresenter >> fileListPresenterActions [
 	"Returns a list of actions for the list of added files. Action are: inspecting raw records, inspecting history, or removing the selected file from the list."
 
@@ -455,7 +455,7 @@ DSRecordBrowserPresenter >> recordsPresenter [
 		  beResizable
 ]
 
-{ #category : 'layout' }
+{ #category : 'actions' }
 DSRecordBrowserPresenter >> recordsPresenterActionsFor: aRecordTable [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
@@ -692,7 +692,7 @@ DSRecordBrowserPresenter >> windowsPresenter [
 		  actions: self windowsPresenterActions
 ]
 
-{ #category : 'layout' }
+{ #category : 'actions' }
 DSRecordBrowserPresenter >> windowsPresenterActions [
 	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
 
