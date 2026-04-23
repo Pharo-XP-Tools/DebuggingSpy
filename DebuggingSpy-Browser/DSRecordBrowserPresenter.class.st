@@ -186,8 +186,7 @@ DSRecordBrowserPresenter >> addRecordButton [
 		  label: 'Add';
 		  icon: (self iconNamed: #smallAdd);
 		  help: 'Add a new record.';
-		  action: [ self openAddFileDialog ];
-		  yourself
+		  action: [ self openAddFileDialog ]
 ]
 
 { #category : 'layout' }
@@ -325,8 +324,7 @@ DSRecordBrowserPresenter >> filterRecordsButton [
 		  label: 'Filter';
 		  icon: (self iconNamed: #diff);
 		  help: 'Filter records.';
-		  action: [ recordsFilter open ];
-		  yourself
+		  action: [ recordsFilter open ]
 ]
 
 { #category : 'helpers' }
@@ -345,7 +343,7 @@ DSRecordBrowserPresenter >> getNumberOfEventsPerType [
 	dict := Dictionary new.
 	DSAbstractEventRecord getLeafSubClasses do: [ :recordClass | dict at: recordClass put: 0 ].
 	selectedHistory ifNotNil: [
-		selectedHistory records do: [ :record | dict at: record class update: [ :nbOfRecords | nbOfRecords + 1 ] ] ].
+		selectedHistory events do: [ :record | dict at: record class update: [ :nbOfRecords | nbOfRecords + 1 ] ] ].
 	^ dict
 ]
 
