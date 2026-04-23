@@ -115,6 +115,19 @@ DSRecordBrowserPresenter class >> windowType [
 	^ 'Debugging Spy'
 ]
 
+{ #category : 'actions' }
+DSRecordBrowserPresenter >> activityActionsFor: aPresenter [
+	"Return a list of actions which can be done on a window jump."
+
+	^ SpActionGroup new addActionWith: [ :anItem |
+			  anItem
+				  name: 'Inspect';
+				  iconName: #inspect;
+				  description: 'Inspect the selected element.';
+				  shortcutKey: $i meta;
+				  action: [ aPresenter selectedItem inspect ] ]
+]
+
 { #category : 'accessing' }
 DSRecordBrowserPresenter >> activityLayout [
 	"Returns the layout that displays the activity table and the selected records if applicable."
@@ -129,7 +142,10 @@ DSRecordBrowserPresenter >> activityLayout [
 DSRecordBrowserPresenter >> activityPresenter [
 	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
 
-	^ self newTreeTable
+	| presenter |
+	presenter := self newTreeTable.
+
+	^ presenter
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotSortable;
@@ -145,22 +161,9 @@ DSRecordBrowserPresenter >> activityPresenter [
 				   title: 'Number of events';
 				   evaluated: [ :windowJump | windowJump events size ]);
 		  beResizable;
-		  actions: self activityPresenterActions
-]
-
-{ #category : 'actions' }
-DSRecordBrowserPresenter >> activityPresenterActions [
-	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
-
-	^ SpActionGroup new
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect';
-					  iconName: #inspect;
-					  description: 'Inspect the selected element.';
-					  shortcutKey: $i meta;
-					  action: [ activityPresenter selectedItem inspect ] ];
-		  yourself
+		  actions: (SpActionGroup new
+				   add: (self activityActionsFor: presenter);
+				   add: (self historyActionsFor: presenter))
 ]
 
 { #category : 'files' }
@@ -207,29 +210,25 @@ DSRecordBrowserPresenter >> colorReferential [
 DSRecordBrowserPresenter >> connectPresenters [
 	"Updates the records and the timeline whenever the selected file is changed."
 
-	"This method is awful, its gonna be refactored when History, Windows and Jumps would be using an unified method that returns their events."
-
 	fileListPresenter whenSelectionChangedDo: [
 			selectedHistory := self getHistoryFrom: fileListPresenter selectedItem.
-			selectedHistory ifNotNil: [ self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records ].
+			self updateRecordsPresenter: recordsTablePresenter with: selectedHistory.
+
 			self updateWindowsPresenter.
 			self updateStatisticsPresenter.
 			self updateRecordTypesPresenter.
 			self updateActivityPresenter ].
 
 	recordsFilter whenChangedDo: [
-			selectedHistory ifNotNil: [
-					self updateRecordsPresenter: recordsTablePresenter withRecords: selectedHistory records.
-					windowsPresenter selectedItem ifNotNil: [
-						self updateRecordsPresenter: windowsRecordsPresenter withRecords: windowsPresenter selectedItem events ].
-					activityPresenter selectedItem ifNotNil: [
-						self updateRecordsPresenter: activityRecordsPresenter withRecords: activityPresenter selectedItem events ] ] ].
+			self updateRecordsPresenter: recordsTablePresenter with: selectedHistory.
+			self updateRecordsPresenter: windowsRecordsPresenter with: windowsPresenter selectedItem.
+			self updateRecordsPresenter: activityRecordsPresenter with: activityPresenter selectedItem ].
 
 	windowsPresenter whenSelectedItemChangedDo: [ :selectedItem |
-		selectedItem ifNotNil: [ self updateRecordsPresenter: windowsRecordsPresenter withRecords: selectedItem events ] ].
+		self updateRecordsPresenter: windowsRecordsPresenter with: selectedItem ].
 
 	activityPresenter whenSelectedItemChangedDo: [ :selectedItem |
-		selectedItem ifNotNil: [ self updateRecordsPresenter: activityRecordsPresenter withRecords: selectedItem events ] ]
+		self updateRecordsPresenter: activityRecordsPresenter with: selectedItem ]
 ]
 
 { #category : 'layout' }
@@ -251,27 +250,9 @@ DSRecordBrowserPresenter >> defaultLayout [
 						    add: self windowsLayout label: 'Windows'))
 ]
 
-{ #category : 'layout' }
-DSRecordBrowserPresenter >> fileListPresenter [
-	"Instanciates a new presenter with a list of added files."
-
-	^ self newTreeTable
-		  addColumn: (SpStringTableColumn new
-				   evaluated: [ :file | file basenameWithoutExtension ];
-				   beNotSortable;
-				   yourself);
-		  roots: self files;
-		  children: [ :file |
-				  file isDirectory
-					  ifTrue: [ file children ]
-					  ifFalse: [ {  } ] ];
-		  actions: self fileListPresenterActions;
-		  hideColumnHeaders
-]
-
 { #category : 'actions' }
-DSRecordBrowserPresenter >> fileListPresenterActions [
-	"Returns a list of actions for the list of added files. Action are: inspecting raw records, inspecting history, or removing the selected file from the list."
+DSRecordBrowserPresenter >> fileActionsFor: aPresenter [
+	"Return a list of actions which can be done on a file."
 
 	^ SpActionGroup new
 		  addActionWith: [ :anItem |
@@ -280,22 +261,40 @@ DSRecordBrowserPresenter >> fileListPresenterActions [
 					  iconName: #inspect;
 					  description: 'Inspect the raw records';
 					  shortcutKey: $i meta;
-					  action: [ selectedHistory records inspect ] ];
+					  action: [ selectedHistory events inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Inspect history';
 					  iconName: #history;
-					  description: 'Inspect the record history';
+					  description: 'Inspect the history';
 					  shortcutKey: $h meta;
 					  action: [ selectedHistory inspect ] ];
 		  addActionWith: [ :anItem |
 				  anItem
 					  name: 'Remove';
 					  iconName: #remove;
-					  description: 'Remove the record from list';
+					  description: 'Remove the file from list';
 					  shortcutKey: $x meta;
-					  action: [ self removeFile: fileListPresenter selectedItem ] ];
-		  yourself
+					  action: [ self removeFile: aPresenter selectedItem ] ]
+]
+
+{ #category : 'layout' }
+DSRecordBrowserPresenter >> fileListPresenter [
+	"Instanciates a new presenter with a list of added files."
+
+	| presenter |
+	presenter := self newTreeTable.
+	^ presenter
+		  addColumn: (SpStringTableColumn new
+				   evaluated: [ :file | file basenameWithoutExtension ];
+				   beNotSortable);
+		  roots: self files;
+		  children: [ :file |
+				  file isDirectory
+					  ifTrue: [ file children ]
+					  ifFalse: [ {  } ] ];
+		  actions: (self fileActionsFor: presenter);
+		  hideColumnHeaders
 ]
 
 { #category : 'accessing' }
@@ -369,6 +368,19 @@ DSRecordBrowserPresenter >> getWindowFromRecord: aRecord [
 	^ (selectedHistory windows select: [ :window | window windowId = aRecord windowId ]) first
 ]
 
+{ #category : 'actions' }
+DSRecordBrowserPresenter >> historyActionsFor: aPresenter [
+	"Return a list of actions which can be done on a history."
+
+	^ SpActionGroup new addActionWith: [ :anItem |
+			  anItem
+				  name: 'Inspect history';
+				  iconName: #history;
+				  description: 'Inspect history.';
+				  shortcutKey: $h meta;
+				  action: [ (DSRecordHistory on: aPresenter selectedItem events) inspect ] ]
+]
+
 { #category : 'initialization' }
 DSRecordBrowserPresenter >> initializePresenters [
 
@@ -416,13 +428,39 @@ DSRecordBrowserPresenter >> recordTypesPresenter [
 	^ self newTreeTable
 		  addColumn: (SpStringTableColumn new
 				   title: 'Type';
-				   evaluated: [ :association | association key name ];
-				   yourself);
+				   evaluated: [ :association | association key name ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Number of records';
-				   evaluated: [ :association | association value ];
-				   yourself);
+				   evaluated: [ :association | association value ]);
 		  beResizable
+]
+
+{ #category : 'actions' }
+DSRecordBrowserPresenter >> recordsActionsFor: aPresenter [
+	"Return a list of actions which can be done on a record."
+
+	^ SpActionGroup new
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect';
+					  iconName: #inspect;
+					  description: 'Inspect the raw records';
+					  shortcutKey: $i meta;
+					  action: [ aPresenter selectedItem inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Inspect the window';
+					  iconName: #window;
+					  description: 'Inspect the record window';
+					  shortcutKey: $w meta;
+					  action: [ (self getWindowFromRecord: aPresenter selectedItem) inspect ] ];
+		  addActionWith: [ :anItem |
+				  anItem
+					  name: 'Filter this type of records';
+					  iconName: #packageAdd;
+					  description: 'Filter this type of records';
+					  shortcutKey: $f meta;
+					  action: [ self filterRecordClass: aPresenter selectedItem class ] ]
 ]
 
 { #category : 'layout' }
@@ -451,36 +489,8 @@ DSRecordBrowserPresenter >> recordsPresenter [
 		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
 				   evaluated: [ :record | record printAsFormattedTime ]);
-		  actions: (self recordsPresenterActionsFor: presenter);
+		  actions: (self recordsActionsFor: presenter);
 		  beResizable
-]
-
-{ #category : 'actions' }
-DSRecordBrowserPresenter >> recordsPresenterActionsFor: aRecordTable [
-	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
-
-	^ SpActionGroup new
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect';
-					  iconName: #inspect;
-					  description: 'Inspect the raw records';
-					  shortcutKey: $i meta;
-					  action: [ aRecordTable selectedItem inspect ] ];
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect the window';
-					  iconName: #window;
-					  description: 'Inspect the record window';
-					  shortcutKey: $w meta;
-					  action: [ (self getWindowFromRecord: aRecordTable selectedItem) inspect ] ];
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Filter this type of records';
-					  iconName: #packageAdd;
-					  description: 'Filter this type of records';
-					  shortcutKey: $f meta;
-					  action: [ self filterRecordClass: aRecordTable selectedItem class ] ]
 ]
 
 { #category : 'files' }
@@ -513,8 +523,7 @@ DSRecordBrowserPresenter >> startRecordButton [
 		  icon: (self iconNamed: #glamorousGo);
 		  help: 'Start recording events.';
 		  action: [ self startRecording ];
-		  enabled: DSSpy recordingSession not;
-		  yourself
+		  enabled: DSSpy recordingSession not
 ]
 
 { #category : 'recording' }
@@ -533,9 +542,7 @@ DSRecordBrowserPresenter >> startRecording [
 DSRecordBrowserPresenter >> statisticsPresenter [
 	"Instanciates a new records table that displays data based on the selected file's records."
 
-	^ SpGridLayout new
-		  beColumnNotHomogeneous;
-		  yourself
+	^ SpGridLayout new beColumnNotHomogeneous
 ]
 
 { #category : 'layout' }
@@ -547,8 +554,7 @@ DSRecordBrowserPresenter >> stopRecordButton [
 		  icon: (self iconNamed: #stop);
 		  help: 'Stop recording events.';
 		  action: [ self stopRecording ];
-		  enabled: DSSpy recordingSession;
-		  yourself
+		  enabled: DSSpy recordingSession
 ]
 
 { #category : 'recording' }
@@ -609,10 +615,13 @@ DSRecordBrowserPresenter >> updateRecordTypesPresenter [
 ]
 
 { #category : 'operations' }
-DSRecordBrowserPresenter >> updateRecordsPresenter: aPresenter withRecords: someRecords [
-	"Updates the records presenter by updating its roots."
+DSRecordBrowserPresenter >> updateRecordsPresenter: aRecordPresenter with: anEventsContainer [
+	"Update a record presenter using an object that defines a method returning its events."
 
-	aPresenter roots: (someRecords reject: [ :record | recordsFilter chosenItems includes: record class ])
+	anEventsContainer
+		ifNil: [ aRecordPresenter roots: {  } ]
+		ifNotNil: [
+		aRecordPresenter roots: (anEventsContainer events reject: [ :event | recordsFilter chosenItems includes: event class ]) ]
 ]
 
 { #category : 'operations' }
@@ -621,13 +630,12 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 
 	| stats |
 	selectedHistory ifNil: [ ^ self ].
-	stats := OrderedCollection new.
-	stats addAll: {
-			('Number of events: ' , selectedHistory records size asString).
-			('Number of windows: ' , selectedHistory windows size asString).
-			('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
-			('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
-			('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
+	stats := {
+		         ('Number of events: ' , selectedHistory events size asString).
+		         ('Number of windows: ' , selectedHistory windows size asString).
+		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
+		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
+		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
@@ -655,7 +663,20 @@ DSRecordBrowserPresenter >> windowIcon [
 { #category : 'accessing' }
 DSRecordBrowserPresenter >> windowTitle [
 
-	^ 'Debugging record browser'
+	^ 'Debugging Spy browser'
+]
+
+{ #category : 'actions' }
+DSRecordBrowserPresenter >> windowsActionsFor: aPresenter [
+	"Return a list of actions which can be done on a window."
+
+	^ SpActionGroup new addActionWith: [ :anItem |
+			  anItem
+				  name: 'Inspect';
+				  iconName: #inspect;
+				  description: 'Inspect the selected element.';
+				  shortcutKey: $i meta;
+				  action: [ aPresenter selectedItem inspect ] ]
 ]
 
 { #category : 'accessing' }
@@ -672,7 +693,10 @@ DSRecordBrowserPresenter >> windowsLayout [
 DSRecordBrowserPresenter >> windowsPresenter [
 	"Instanciates a new table that displays the windows and their events as children. For each column, the manipulated object could be either a DSWindowRecord or a record that inherits from DSAbstractEventRecord."
 
-	^ self newTreeTable
+	| presenter |
+	presenter := self newTreeTable.
+
+	^ presenter
 		  addColumn: (SpStringTableColumn new
 				   width: 4;
 				   beNotSortable;
@@ -686,23 +710,7 @@ DSRecordBrowserPresenter >> windowsPresenter [
 				   evaluated: [ :window | window printAsFormattedTime ]);
 		  addColumn: (SpStringTableColumn new
 				   title: 'Number of events';
-				   evaluated: [ :window | window events size ];
-				   yourself);
+				   evaluated: [ :window | window events size ]);
 		  beResizable;
-		  actions: self windowsPresenterActions
-]
-
-{ #category : 'actions' }
-DSRecordBrowserPresenter >> windowsPresenterActions [
-	"Return a list of actions which can be done on a record from the table. For example, inspect the selected record."
-
-	^ SpActionGroup new
-		  addActionWith: [ :anItem |
-				  anItem
-					  name: 'Inspect';
-					  iconName: #inspect;
-					  description: 'Inspect the selected element.';
-					  shortcutKey: $i meta;
-					  action: [ windowsPresenter selectedItem inspect ] ];
-		  yourself
+		  actions: (self windowsActionsFor: presenter)
 ]

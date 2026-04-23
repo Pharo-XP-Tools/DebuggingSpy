@@ -425,12 +425,12 @@ DSRecordBrowserPresenterTest >> testUpdateRecordTypesPresenter [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testUpdateRecordsPresenterWithRecords [
+DSRecordBrowserPresenterTest >> testUpdateRecordsPresenterWith [
 
 	| presenter records |
 	presenter := browser recordsPresenter.
 	records := self getRecordExamples.
-	browser updateRecordsPresenter: presenter withRecords: records.
+	browser updateRecordsPresenter: presenter with: (DSWindowRecord new events: records).
 
 	self assert: presenter roots equals: records
 ]
