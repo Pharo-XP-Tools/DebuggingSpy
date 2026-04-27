@@ -648,10 +648,11 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 		         ('Debug points added: ' , selectedHistory debugPointAdds asString).
 		         ('Debug points hit: ' , selectedHistory debugPointHit asString).
 		         ('Debug points removed: ' , selectedHistory debugPointRemoved asString).
-		         ('Methods added ' , selectedHistory methodsAdded asString).
-		         ('Methods modified ' , selectedHistory methodsModified asString).
-		         ('Methods removed ' , selectedHistory methodsRemoved asString).
-		         ('Number of steps: ' , selectedHistory numberOfSteps asString) }.
+		         ('Methods added: ' , selectedHistory methodsAdded asString).
+		         ('Methods modified: ' , selectedHistory methodsModified asString).
+		         ('Methods removed: ' , selectedHistory methodsRemoved asString).
+		         ('Number of steps: ' , selectedHistory numberOfSteps asString).
+		         ('Executed code:  ' , selectedHistory executedCode asString) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
