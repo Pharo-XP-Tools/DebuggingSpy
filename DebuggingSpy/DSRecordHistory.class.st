@@ -275,9 +275,9 @@ DSRecordHistory >> events [
 ]
 
 { #category : 'accessing' }
-DSRecordHistory >> events: anObject [
+DSRecordHistory >> events: aCollectionOfRecords [
 
-	events := anObject
+	events := aCollectionOfRecords
 ]
 
 { #category : 'API-history' }

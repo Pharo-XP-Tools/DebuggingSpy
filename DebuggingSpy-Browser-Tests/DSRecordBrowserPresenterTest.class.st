@@ -384,16 +384,48 @@ DSRecordBrowserPresenterTest >> testStopRecording [
 { #category : 'tests' }
 DSRecordBrowserPresenterTest >> testUpdateActivityPresenter [
 
-	| presenter history |
+	| presenter records jumps history |
 	presenter := browser presenterAt: #activityPresenter.
+	records := OrderedCollection new
+		           add: (DSMouseEnterWindowRecord new
+				            windowId: 1;
+				            dateTime: (DateAndTime fromSeconds: 1));
+		           add: (DSBrowseRecord new
+				            windowId: 1;
+				            dateTime: (DateAndTime fromSeconds: 6));
+		           add: (DSMouseLeaveWindowRecord new
+				            windowId: 1;
+				            dateTime: (DateAndTime fromSeconds: 8));
+		           add: (DSMouseEnterWindowRecord new
+				            windowId: 2;
+				            dateTime: (DateAndTime fromSeconds: 9));
+		           add: (DSInspectItRecord new
+				            windowId: 2;
+				            dateTime: (DateAndTime fromSeconds: 10));
+		           add: (DSMouseLeaveWindowRecord new
+				            windowId: 2;
+				            dateTime: (DateAndTime fromSeconds: 15));
+		           yourself.
+
+	jumps := OrderedCollection new
+		         add: (DSWindowActivityRecord start: records first stop: records third events: {
+						          records first.
+						          records second.
+						          records third });
+		         add: (DSWindowActivityRecord start: records fourth stop: records sixth events: {
+						          records fourth.
+						          records fifth.
+						          records sixth });
+		         yourself.
 
 	self assert: presenter roots isEmpty.
-	history := browser getHistoryFrom: self generateRecordsFile.
+	history := DSRecordHistory on: records.
+	history windowJumps: jumps.
 
 	browser selectedHistory: history.
 	browser updateActivityPresenter.
 
-	self assert: presenter roots equals: history windowJumps
+	self assert: presenter roots equals: jumps
 ]
 
 { #category : 'tests' }
@@ -445,13 +477,23 @@ DSRecordBrowserPresenterTest >> testUpdateStatisticsPresenter [
 	browser updateStatisticsPresenter.
 
 	children := self statisticsPresenter children.
-	self assert: children size equals: 5.
+	self assert: children size equals: 15.
 
 	self assert: children keys first label equals: 'Number of events: 4'.
-	self assert: children keys second label equals: 'Number of windows: 4'.
-	self assert: children keys third label equals: 'Time taken: 00:00:03'.
-	self assert: children keys fourth label equals: 'Idle time: 00:00:00'.
-	self assert: children keys fifth label equals: 'Absolute time taken: 00:00:03'
+	self assert: (children keys at: 2) label equals: 'Number of windows: 4'.
+	self assert: (children keys at: 3) label equals: 'Time taken: 00:00:03'.
+	self assert: (children keys at: 4) label equals: 'Idle time: 00:00:00'.
+	self assert: (children keys at: 5) label equals: 'Absolute time taken: 00:00:03'.
+	self assert: (children keys at: 6) label equals: 'Number of debug actions: 1'.
+	self assert: (children keys at: 7) label equals: 'Date: ' , (DateAndTime fromSeconds: 1) asString.
+	self assert: (children keys at: 8) label equals: 'Debug points added: 0'.
+	self assert: (children keys at: 9) label equals: 'Debug points hit: 0'.
+	self assert: (children keys at: 10) label equals: 'Debug points removed: 0'.
+	self assert: (children keys at: 11) label equals: 'Methods added: 0'.
+	self assert: (children keys at: 12) label equals: 'Methods modified: 0'.
+	self assert: (children keys at: 13) label equals: 'Methods removed: 0'.
+	self assert: (children keys at: 14) label equals: 'Number of steps: 0'.
+	self assert: (children keys at: 15) label equals: 'Executed code: 1'
 ]
 
 { #category : 'tests' }

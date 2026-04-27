@@ -644,7 +644,7 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
 		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24).
 		         ('Number of debug actions: ' , selectedHistory countDebugActions asString).
-		         ('Date : ' , selectedHistory dateTime asString).
+		         ('Date: ' , selectedHistory dateTime asString).
 		         ('Debug points added: ' , selectedHistory debugPointAdds asString).
 		         ('Debug points hit: ' , selectedHistory debugPointHit asString).
 		         ('Debug points removed: ' , selectedHistory debugPointRemoved asString).
@@ -652,7 +652,7 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 		         ('Methods modified: ' , selectedHistory methodsModified asString).
 		         ('Methods removed: ' , selectedHistory methodsRemoved asString).
 		         ('Number of steps: ' , selectedHistory numberOfSteps asString).
-		         ('Executed code:  ' , selectedHistory executedCode asString) }.
+		         ('Executed code: ' , selectedHistory executedCode asString) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
