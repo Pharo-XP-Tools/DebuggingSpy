@@ -155,6 +155,12 @@ DSRecordBrowserPresenter >> activityPresenter [
 				   title: 'Window';
 				   evaluated: [ :windowJump | windowJump window asString ]);
 		  addColumn: (SpStringTableColumn new
+				   title: 'Start';
+				   evaluated: [ :windowJump | windowJump start printAsFormattedTime ]);
+		  addColumn: (SpStringTableColumn new
+				   title: 'Stop';
+				   evaluated: [ :windowJump | windowJump stop printAsFormattedTime ]);
+		  addColumn: (SpStringTableColumn new
 				   title: 'Duration';
 				   evaluated: [ :windowJump | windowJump duration ]);
 		  addColumn: (SpStringTableColumn new
@@ -485,6 +491,9 @@ DSRecordBrowserPresenter >> recordsPresenter [
 				   title: 'Event';
 				   evaluated: [ :record | record asString ]);
 		  addColumn: (SpStringTableColumn new
+				   title: 'Type';
+				   evaluated: [ :record | record class name ]);
+		  addColumn: (SpStringTableColumn new
 				   title: 'Time';
 				   evaluated: [ :record | record printAsFormattedTime ]);
 		  actions: (self recordsActionsFor: presenter);
@@ -633,7 +642,16 @@ DSRecordBrowserPresenter >> updateStatisticsPresenter [
 		         ('Number of windows: ' , selectedHistory windows size asString).
 		         ('Time taken: ' , (Time fromSeconds: selectedHistory timeTaken) print24).
 		         ('Idle time: ' , (Time fromSeconds: selectedHistory computeIdleTime) print24).
-		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24) }.
+		         ('Absolute time taken: ' , (Time fromSeconds: selectedHistory absoluteTimeTaken) print24).
+		         ('Number of debug actions: ' , selectedHistory countDebugActions asString).
+		         ('Date : ' , selectedHistory dateTime asString).
+		         ('Debug points added: ' , selectedHistory debugPointAdds asString).
+		         ('Debug points hit: ' , selectedHistory debugPointHit asString).
+		         ('Debug points removed: ' , selectedHistory debugPointRemoved asString).
+		         ('Methods added ' , selectedHistory methodsAdded asString).
+		         ('Methods modified ' , selectedHistory methodsModified asString).
+		         ('Methods removed ' , selectedHistory methodsRemoved asString).
+		         ('Number of steps: ' , selectedHistory numberOfSteps asString) }.
 
 	stats doWithIndex: [ :stat :index | statisticsPresenter add: stat asPresenter atPoint: 1 @ index ]
 ]
