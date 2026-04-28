@@ -449,10 +449,13 @@ DSRecordBrowserPresenterTest >> testUpdateRecordTypesPresenter [
 	| presenter |
 	presenter := browser presenterAt: #recordTypesPresenter.
 	self assert: presenter roots isEmpty.
-	browser selectedHistory: (browser getHistoryFrom: self generateRecordsFile).
+	browser selectedHistory: (DSRecordHistory new events: { DSBrowseRecord new }).
 	browser updateRecordTypesPresenter.
 
-	self assert: presenter roots equals: browser getNumberOfEventsPerType associations
+	self assert: (presenter roots allSatisfy: [ :association |
+				 association key = DSBrowseRecord
+					 ifTrue: [ association value = 1 ]
+					 ifFalse: [ association value = 0 ] ])
 ]
 
 { #category : 'tests' }
