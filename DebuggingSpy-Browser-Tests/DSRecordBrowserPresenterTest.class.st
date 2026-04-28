@@ -228,7 +228,7 @@ DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 DSRecordBrowserPresenterTest >> testGetNumberOfEventsPerType [
 
 	| dict |
-	browser selectedHistory: (DSRecordHistory on: {
+	browser selectedHistory: (DSRecordHistory new events: {
 				 (DSMouseEnterWindowRecord new windowId: 1).
 				 (DSBrowseRecord new windowId: 1).
 				 (DSBrowseRecord new windowId: 1).
@@ -419,8 +419,7 @@ DSRecordBrowserPresenterTest >> testUpdateActivityPresenter [
 		         yourself.
 
 	self assert: presenter roots isEmpty.
-	history := DSRecordHistory on: records.
-	history windowJumps: jumps.
+	history := DSRecordHistory new windowJumps: jumps.
 
 	browser selectedHistory: history.
 	browser updateActivityPresenter.
