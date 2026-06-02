@@ -235,11 +235,11 @@ DSRecordBrowserPresenterTest >> testGetNumberOfEventsPerType [
 				 (DSMouseLeaveWindowRecord new windowId: 1) }).
 
 	dict := browser getNumberOfEventsPerType.
-	self assert: dict keys size equals: DSAbstractEventRecord getLeafSubClasses size.
+	self assert: dict keys size equals: 3.
 	self assert: (dict at: DSMouseEnterWindowRecord) equals: 1.
 	self assert: (dict at: DSBrowseRecord) equals: 2.
 	self assert: (dict at: DSMouseLeaveWindowRecord) equals: 1.
-	self assert: (dict at: DSWindowOpenedRecord) equals: 0
+	self deny: (dict includesKey: DSWindowOpenedRecord)
 ]
 
 { #category : 'tests' }

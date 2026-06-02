@@ -342,9 +342,11 @@ DSRecordBrowserPresenter >> getNumberOfEventsPerType [
 
 	| dict |
 	dict := Dictionary new.
-	DSAbstractEventRecord getLeafSubClasses do: [ :recordClass | dict at: recordClass put: 0 ].
 	selectedHistory ifNotNil: [
-		selectedHistory events do: [ :record | dict at: record class update: [ :nbOfRecords | nbOfRecords + 1 ] ] ].
+			selectedHistory events do: [ :record |
+					(dict includesKey: record class)
+						ifTrue: [ dict at: record class update: [ :nbOfRecords | nbOfRecords + 1 ] ]
+						ifFalse: [ dict at: record class put: 1 ] ] ].
 	^ dict
 ]
 
