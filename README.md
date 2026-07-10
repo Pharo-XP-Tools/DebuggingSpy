@@ -6,6 +6,6 @@ A tool to spy on debugging actions for research experiments.
 ```Smalltalk
 Metacello new
     baseline: 'DebuggingSpy';
-    repository: 'github://StevenCostiou/DebuggingSpy';
+    repository: 'github://Pharo-XP-Tools/DebuggingSpy:P10';
     load.
 ```
