@@ -1,8 +1,10 @@
 # DebuggingSpy
+
+[![Tests](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml/badge.svg)](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml)
+
 A tool to spy on debugging actions for research experiments.
 
-
-[![Tests](https://github.com/StevenCostiou/DebuggingSpy/actions/workflows/dsspy.yaml/badge.svg)](https://github.com/StevenCostiou/DebuggingSpy/actions/workflows/dsspy.yaml)
+In order to install this repository in a Pharo 14 image, launch the following code in a Playground:
 
 ```Smalltalk
 Metacello new
@@ -32,46 +34,35 @@ To cite the use of this tool, please use: https://hal.science/hal-04858378v1
 }
 ```
 
-# Recorded events
+# Usage
 
-| **Type of traces**         | **User activity/block event or action** | **Debugging action** | **Navigation/inspection action** | **Debugging event** | **Code edition action** |
-|-----------------------------|------------------------------------------|-----------------------|-----------------------------------|---------------------|--------------------------|
-| DebugPoint                 |                                          | x                     |                                   |                     |                          |
-| Watch DebugPoint           |                                          | x                     |                                   |                     |                          |
-| Halt change                |                                          | x                     |                                   |                     |                          |
-| Halt hit                   |                                          |                       |                                   | x                   |                          |
-| Clipboard copy             |                                          |                       |                                   |                     | x                        |
-| Clipboard paste            |                                          |                       |                                   |                     | x                        |
-| Debug it                   | x                                        |                       |                                   |                     |                          |
-| Do it                      | ?                                        |                       |                                   |                     |                          |
-| Do it and go               | ?                                        |                       |                                   |                     |                          |
-| Print it                   |                                          |                       | x                                 |                     |                          |
-| Browse                     |                                          |                       | x                                 |                     |                          |
-| Implementors               | x                                        |                       |                                   |                     |                          |
-| Senders                    | x                                        |                       |                                   |                     |                          |
-| Inspect                    | x                                        |                       |                                   |                     |                          |
-| Logging error              |                                          |                       |                                   | x                   |                          |
-| Method added               |                                          |                       |                                   |                     | x                        |
-| Method modified            |                                          |                       |                                   |                     | x                        |
-| Method removed             |                                          |                       |                                   |                     | x                        |
-| Source code change         |                                          |                       |                                   |                     | x                        |
-| Mouse enter window         | x                                        |                       |                                   |                     |                          |
-| Mouse leave window         | x                                        |                       |                                   |                     |                          |
-| Step                       |                                          | x                     |                                   |                     |                          |
-| Window activated           | x                                        |                       |                                   |                     |                          |
-| Window opened              | x                                        |                       |                                   |                     |                          |
-| Window closed              | x                                        |                       |                                   |                     |                          |
-| Proceed command            |                                          | x                     |                                   |                     |                          |
-| Restart command            |                                          | x                     |                                   |                     |                          |
-| Return value command       |                                          | x                     |                                   |                     |                          |
-| Run to selection command   |                                          | x                     |                                   |                     |                          |
-| Step into                  |                                          | x                     |                                   |                     |                          |
-| Step over                  |                                          | x                     |                                   |                     |                          |
-| Step through               |                                          | x                     |                                   |                     |                          |
+To use our system, you can either use the User Interface or command lines in the Pharo Playground.
 
+## User Interface 
 
-# User documentation
-## Log data to local file
+After loading the repository in your Pharo Image, a new command button must appear:
+
+![Command button](/images/Command_button.png)
+
+Clicking on it will show you the DebuggingSpy's interface:
+
+![DSSpy Browser](/images/DSSpy_browser.png)
+
+### Recording session 
+
+### Visualization
+
+Several tabs offer visualizations:
+
+- "Activity"
+- "Records"
+- "Statistics"
+- "Types"
+- "Windows" 
+
+Note that the color panel indicates what is the window type for each record in tabs. 
+
+## Command lines in Pharo Playground
 
 Load the baseline into a Pharo image, then execute the following line:
 ```Smalltalk
@@ -131,6 +122,39 @@ The history object exposes an API to explore the logged execution: (TODO: the AP
 
 ![Capture d’écran 2025-03-10 à 14 37 33](https://github.com/user-attachments/assets/95592964-d3c8-4bae-92d0-5ee2aa82f6b1)
 
+# Recorded events
 
-### Build visualizations
-TODO
+| **Type of traces**         | **User activity/block event or action** | **Debugging action** | **Navigation/inspection action** | **Debugging event** | **Code edition action** |
+|-----------------------------|------------------------------------------|-----------------------|-----------------------------------|---------------------|--------------------------|
+| DebugPoint                 |                                          | x                     |                                   |                     |                          |
+| Watch DebugPoint           |                                          | x                     |                                   |                     |                          |
+| Halt change                |                                          | x                     |                                   |                     |                          |
+| Halt hit                   |                                          |                       |                                   | x                   |                          |
+| Clipboard copy             |                                          |                       |                                   |                     | x                        |
+| Clipboard paste            |                                          |                       |                                   |                     | x                        |
+| Debug it                   | x                                        |                       |                                   |                     |                          |
+| Do it                      | ?                                        |                       |                                   |                     |                          |
+| Do it and go               | ?                                        |                       |                                   |                     |                          |
+| Print it                   |                                          |                       | x                                 |                     |                          |
+| Browse                     |                                          |                       | x                                 |                     |                          |
+| Implementors               | x                                        |                       |                                   |                     |                          |
+| Senders                    | x                                        |                       |                                   |                     |                          |
+| Inspect                    | x                                        |                       |                                   |                     |                          |
+| Logging error              |                                          |                       |                                   | x                   |                          |
+| Method added               |                                          |                       |                                   |                     | x                        |
+| Method modified            |                                          |                       |                                   |                     | x                        |
+| Method removed             |                                          |                       |                                   |                     | x                        |
+| Source code change         |                                          |                       |                                   |                     | x                        |
+| Mouse enter window         | x                                        |                       |                                   |                     |                          |
+| Mouse leave window         | x                                        |                       |                                   |                     |                          |
+| Step                       |                                          | x                     |                                   |                     |                          |
+| Window activated           | x                                        |                       |                                   |                     |                          |
+| Window opened              | x                                        |                       |                                   |                     |                          |
+| Window closed              | x                                        |                       |                                   |                     |                          |
+| Proceed command            |                                          | x                     |                                   |                     |                          |
+| Restart command            |                                          | x                     |                                   |                     |                          |
+| Return value command       |                                          | x                     |                                   |                     |                          |
+| Run to selection command   |                                          | x                     |                                   |                     |                          |
+| Step into                  |                                          | x                     |                                   |                     |                          |
+| Step over                  |                                          | x                     |                                   |                     |                          |
+| Step through               |                                          | x                     |                                   |                     |                          |
