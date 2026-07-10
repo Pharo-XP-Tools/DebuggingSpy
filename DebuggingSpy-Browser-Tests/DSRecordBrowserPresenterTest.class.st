@@ -151,6 +151,8 @@ DSRecordBrowserPresenterTest >> testColorAssociations [
 		                ((Color fromHexString: '#70B77E') -> 'Playground').
 		                (Color white -> 'Rewriter').
 		                ((Color fromHexString: '#ec45ff') -> 'Debugging Spy').
+		                ((Color fromHexString: '#996D49') -> 'Method browser').
+		                ((Color fromHexString: '#B88456') -> 'Method browser group').
 		                ((Color fromHexString: '#b3b3b3') -> 'Unknown Window') }.
 
 	self assert: associations size equals: DSRecordBrowserPresenter colorAssociations size.
