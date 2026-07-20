@@ -67,23 +67,23 @@ Then several tabs offer visualizations:
 
 - "Activity" groups logs as activities into a window and order them chronologically. So you can see in which window an activity happened, when it started and ended (date and time), the duration of this activity and the number of events recorded in it. Activities with duration of less than 0.5 seconds or containing less than 3 events are not displayed. 
 
-[Activity tab](images/Activity_tab.png)
+![Activity tab](images/Activity_tab.png)
 
 - "Records" shows all logs recorded ordered chronologically. 
 
-[Records tab](images/Records_tab.png)
+![Records tab](images/Records_tab.png)
 
 - "Statistics" gives some indicators about data such as: number of events, number of windows, time taken, ... 
 
-[Statistics tab](images/Statistics_tab.png)
+![Statistics tab](images/Statistics_tab.png)
 
 - "Types" allows to find all logs from a specific type.
 
-[Types tab](images/Types_tab.png)
+![Types tab](images/Types_tab.png)
 
 - "Windows" groups logs by window so that you can find all events recorded in a specific window. 
 
-[Windows tab](images/Windows_tab.png)
+![Windows tab](images/Windows_tab.png)
 
 Note that the color panel indicates what is the window's type for each record in tabs. 
 
