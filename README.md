@@ -50,39 +50,64 @@ Clicking on it will show you the DebuggingSpy's interface:
 
 ### Recording session 
 
+To start a recording session, you have to click on the upper left button "Start" in the DebuggingSpy's interface. 
+Then a new window with a timer will appear and you can end the session by clicking on the "Stop" button in this window or in the DebuggingSpy's interface.  
+
+The timer window must be at the bottom right of the Pharo IDE and looks like this:
+
+![Timer window](/images/Timer_window.png)
+
 ### Visualization
 
-Several tabs offer visualizations:
+When you have done a recording session, a file of logs is stored into your image's working directory at `Pharo/images/my_pharo_image/ds-spy` and it is named as `YYYY-MM-DD_HH:MM:SS`.
 
-- "Activity"
-- "Records"
-- "Statistics"
-- "Types"
-- "Windows" 
+By using the DebuggingSpy's interface, you can add these logs files for visualization. To do this, just click on "Add" button and select a least one file that you want to have in the interface.
 
-Note that the color panel indicates what is the window type for each record in tabs. 
+Then several tabs offer visualizations:
+
+- "Activity" groups logs as activities into a window and order them chronologically. So you can see in which window an activity happened, when it started and ended (date and time), the duration of this activity and the number of events recorded in it. Activities with duration of less than 0.5 seconds or containing less than 3 events are not displayed. 
+
+[Activity tab](images/Activity_tab.png)
+
+- "Records" shows all logs recorded ordered chronologically. 
+
+[Records tab](images/Records_tab.png)
+
+- "Statistics" gives some indicators about data such as: number of events, number of windows, time taken, ... 
+
+[Statistics tab](images/Statistics_tab.png)
+
+- "Types" allows to find all logs from a specific type.
+
+[Types tab](images/Types_tab.png)
+
+- "Windows" groups logs by window so that you can find all events recorded in a specific window. 
+
+[Windows tab](images/Windows_tab.png)
+
+Note that the color panel indicates what is the window's type for each record in tabs. 
+
+It is also possible to changes the way of sorting data by using the little arrows next to columns' name. 
 
 ## Command lines in Pharo Playground
 
-Load the baseline into a Pharo image, then execute the following line:
+### Start a recording session
+
+Once you've installed the it is possible to use DebuggingSpy and to start a recording session by executing the following line in a Pharo Playground:
 ```Smalltalk
 DSSpyInstrumenter instrumentSystem
 ```
-After that, the system starts logging.
-Logs are serialized in the image working directory, in the *ds-spy* folder:
-
-<img width="445" alt="Capture d’écran 2025-03-09 à 22 45 10" src="https://github.com/user-attachments/assets/c0f7595b-6d32-4101-b6c2-45f54c5fddd0" />
-
-To stop the instrumentation, execute the following line:
+After that, the system starts logging. To stop the recording session, execute the following line:
 ```Smalltalk
 DSSpyInstrumenter stopInstrumentation
 ```
 
-## Log data to a remote server
-TODO
+Logs files can be found in the *ds-spy* folder of your image's working directory (`Pharo/images/my_pharo_image/ds-spy`) and they are named as `YYYY-MM-DD_HH:MM:SS`.
 
-## Read logged data
-### Materialize raw logs
+### Read logged data with Pharo Objects 
+
+#### Materialize raw logs
+
 You need a reference to the log files, for example, to read the one from the screenshot above in the *ds-spy* folder, execute the following code:
 ```Smalltalk
 raw := DSSpy materialize: 'ds-spy/eb41bb7a-51ec-0d00-9087-17590e41b7db' asFileReference
@@ -90,8 +115,9 @@ raw := DSSpy materialize: 'ds-spy/eb41bb7a-51ec-0d00-9087-17590e41b7db' asFileRe
 Upon inspection, you obtain a raw list of event, chronologically sorted:
 <img width="695" alt="Capture d’écran 2025-03-09 à 22 50 33" src="https://github.com/user-attachments/assets/5c52dfeb-4f9c-4c61-bbb9-1112d4323157" />
 
-### Build event history
-DebuggingSpy provides a history object with an API to explore what happened during logging.
+#### Build event history
+
+DebuggingSpy provides a history object which sorts records and gives an API to explore what happened during logging.
 The history is obtained by executing:
 
 ```Smalltalk
@@ -121,6 +147,10 @@ Some windows may have unusual names, such as:
 The history object exposes an API to explore the logged execution: (TODO: the API should be documented)
 
 ![Capture d’écran 2025-03-10 à 14 37 33](https://github.com/user-attachments/assets/95592964-d3c8-4bae-92d0-5ee2aa82f6b1)
+
+## Log data to a remote server
+
+For now, we do not have an integrated system for logging data to a remote server. However, it must be done using https://github.com/Pharo-XP-Tools/ExperimentModel 
 
 # Recorded events
 
