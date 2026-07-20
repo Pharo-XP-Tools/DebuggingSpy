@@ -53,9 +53,15 @@ Clicking on it will show you the DebuggingSpy's interface:
 To start a recording session, you have to click on the upper left button "Start" in the DebuggingSpy's interface. 
 Then a new window with a timer will appear and you can end the session by clicking on the "Stop" button in this window or in the DebuggingSpy's interface.  
 
+You can find buttons in the upper left of the interface:
+
+![Buttons](images/Stop_start_buttons.png)
+
 The timer window must be at the bottom right of the Pharo IDE and looks like this:
 
 ![Timer window](/images/Timer_window.png)
+
+Note that, in addition of a timer and a stop button, you can see the last event recorded on this window. 
 
 ### Visualization
 
@@ -108,12 +114,16 @@ Logs files can be found in the *ds-spy* folder of your image's working directory
 
 #### Materialize raw logs
 
-You need a reference to the log files, for example, to read the one from the screenshot above in the *ds-spy* folder, execute the following code:
+To get the records from a log file, execute the following code:
 ```Smalltalk
-raw := DSSpy materialize: 'ds-spy/eb41bb7a-51ec-0d00-9087-17590e41b7db' asFileReference
+raw := DSSpy materialize: 'ds-spy/YYYY-MM-DD_HH:MM:SS' asFileReference
 ```
-Upon inspection, you obtain a raw list of event, chronologically sorted:
-<img width="695" alt="Capture d’écran 2025-03-09 à 22 50 33" src="https://github.com/user-attachments/assets/5c52dfeb-4f9c-4c61-bbb9-1112d4323157" />
+
+Where `ds-spy/YYYY-MM-DD_HH:MM:SS` is the path reference to the log file you want to investigate. 
+
+Upon inspection, you obtain a raw list of event chronologically sorted which looks like:
+
+![List of raw events](images/List_raw_data.png)
 
 #### Build event history
 
@@ -125,28 +135,17 @@ history := DSRecordHistory on: raw
 ```
 Upon inspection, the history looks like this:
 
-![Capture d’écran 2025-03-10 à 14 08 43](https://github.com/user-attachments/assets/7b4464a5-7f5e-4b67-a6e5-3079cad98fcf)
+![History](images/History.png)
 
 The history object exposes data organized in different perspectives:
+
 - **records** → the sequential list of logged events.  
-
 - **windows** → the complete list of open windows. Each window contains its own list of events, a list of events grouped by active periods (*activePeriods*, i.e., each period marks an interruption in the window's activity), and the source event (*sourceEvent*) that triggered the window's opening. *(Note: this information is difficult to retrieve automatically and requires manual interpretation to be useful.)*  
-
 - **windowJumps** → the sequential list of activity per window. This allows us to track activity within each window until a switch occurs, showing which window the user jumps to, what they do there, and when they return. Each window jump includes a start event (*startEvent*), an end event (*stopEvent*), a collection of events (*events*) recorded from entry to exit of the window, and the window linked to the activity (*window*, see the previous point). Each window jump corresponds to an activity period from the previous point.  
 
-Some windows may have unusual names, such as:  
+The history object exposes an API to explore the logged execution:
 
-- **external window** → a window that was already open before measurements began (typically, in our data, this is the window displaying instructions).  
-
-- **Weird titles like "Color: a color window"** → this is an application window, typically the program being debugged, rather than a tool window.
-
-- Windows that correspond to the opening of a debugger, and only those, have a *source event* indicating which event triggered the window's opening. This applies only at the *window* level, not at the *jump* level. A jump is triggered by a mouse movement from one window to another. To determine the event that triggered the opening of the window being jumped to, one must use *"window sourceEvent"* from the jump.
-
-- The activity records, also referred to as *jumps* or *basic blocks* depending on the context, now respond to *windowId*. This information indicates that the activity was performed in a window of the same id. This is a lazy accessor.
-
-The history object exposes an API to explore the logged execution: (TODO: the API should be documented)
-
-![Capture d’écran 2025-03-10 à 14 37 33](https://github.com/user-attachments/assets/95592964-d3c8-4bae-92d0-5ee2aa82f6b1)
+![History API](images/History_API.png)
 
 ## Log data to a remote server
 
