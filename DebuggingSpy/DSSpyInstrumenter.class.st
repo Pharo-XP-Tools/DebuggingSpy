@@ -46,7 +46,7 @@ DSSpyInstrumenter class >> stopInstrumentation [
 DSSpyInstrumenter >> instrumentBrowseActions [
 	"Instruments browse actions"
 
-	ClySpawnFullBrowserCommand link: DSBrowseRecord link toAST: (ClySpawnFullBrowserCommand>>#execute) ast.
+	ClyBrowserMorph link: DSBrowseRecord link toAST: (ClyBrowserMorph>>#spawnFullBrowser) ast.
 	SpBrowseClassCommand link: DSBrowseRecord link toAST: (SpBrowseClassCommand >> #execute) ast
 ]
 
