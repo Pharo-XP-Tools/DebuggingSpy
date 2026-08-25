@@ -1,14 +1,14 @@
-Extension { #name : 'StMethodBrowser' }
+Extension { #name : 'ClyQueryBrowserMorph' }
 
 { #category : '*DebuggingSpy-Browser' }
-StMethodBrowser class >> windowColor [
+ClyQueryBrowserMorph class >> windowColor [
 
 	<DSWindowColor>
 	^ Color fromHexString: '#996D49'
 ]
 
 { #category : '*DebuggingSpy-Browser' }
-StMethodBrowser class >> windowType [
+ClyQueryBrowserMorph class >> windowType [
 
 	^ 'Method browser'
 ]

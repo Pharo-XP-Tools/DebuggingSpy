@@ -109,8 +109,7 @@ DSSpyInstrumenter >> instrumentImplementorsActions [
 	ClyShowMessageImplementorCommand link: DSImplementorsRecord link toAST: (ClyShowMessageImplementorCommand >> #execute) ast.
 	ClyTextEditor link: DSImplementorsRecord link toAST: (ClyTextEditor >> #implementorsOf:) ast.
 	RubSmalltalkEditor link: DSImplementorsRecord link toAST: (RubSmalltalkEditor >> #implementorsOf:) ast.
-	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast.
-	StImplementorsCommand link: DSImplementorsRecord link toAST: (StImplementorsCommand >> #execute) ast
+	SpBrowseImplementorsCommand link: DSImplementorsRecord link toAST: (SpBrowseImplementorsCommand >> #execute) ast
 ]
 
 { #category : 'interactions' }
