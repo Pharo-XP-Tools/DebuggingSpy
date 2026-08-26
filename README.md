@@ -9,7 +9,7 @@ In order to install this repository in a Pharo 14 image, launch the following co
 ```Smalltalk
 Metacello new
     baseline: 'DebuggingSpy';
-    repository: 'github://Pharo-XP-Tools/DebuggingSpy:P14';
+    repository: 'github://Pharo-XP-Tools/DebuggingSpy:P13';
     load.
 ```
 
