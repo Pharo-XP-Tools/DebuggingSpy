@@ -197,43 +197,6 @@ DSRecordBrowserPresenterTest >> testFileAdding [
 ]
 
 { #category : 'tests' }
-DSRecordBrowserPresenterTest >> testFilterRecordClass [
-
-	browser filterRecordClass: DSBrowseRecord.
-	self deny: ((browser presenterAt: #recordsFilter) sourceList items includes: DSBrowseRecord).
-	self assert: ((browser presenterAt: #recordsFilter) targetList items includes: DSBrowseRecord)
-]
-
-{ #category : 'tests' }
-DSRecordBrowserPresenterTest >> testFilteringAClassOfRecords [
-
-	| fileRef history |
-	fileRef := self generateRecordsFile.
-	history := browser getHistoryFrom: fileRef.
-
-	browser addFile: fileRef.
-	self assert: self recordsTablePresenter roots size equals: history events size.
-
-	self recordsFilterPresenter sourceList selectItem: DSBrowseRecord.
-	self recordsFilterPresenter addSelected.
-
-	self deny: self recordsTablePresenter roots first class equals: DSBrowseRecord
-]
-
-{ #category : 'tests' }
-DSRecordBrowserPresenterTest >> testFilteringAllRecords [
-
-	| fileRef history |
-	fileRef := self generateRecordsFile.
-	history := browser getHistoryFrom: fileRef.
-
-	browser addFile: fileRef.
-
-	self recordsFilterPresenter addAll.
-	self assert: self recordsTablePresenter roots size equals: 0
-]
-
-{ #category : 'tests' }
 DSRecordBrowserPresenterTest >> testGetHistoryFrom [
 
 	| fileRef |

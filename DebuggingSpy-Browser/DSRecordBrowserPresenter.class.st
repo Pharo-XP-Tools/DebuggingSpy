@@ -11,7 +11,6 @@ Class {
 		'files',
 		'recordsTablePresenter',
 		'timerWindow',
-		'recordsFilter',
 		'toolbarPresenter',
 		'fileListPresenter',
 		'startRecordButtonPresenter',
@@ -233,11 +232,6 @@ DSRecordBrowserPresenter >> connectPresenters [
 			self updateRecordTypesPresenter.
 			self updateActivityPresenter ].
 
-	recordsFilter whenChangedDo: [
-			self updateRecordsPresenter: recordsTablePresenter with: selectedHistory.
-			self updateRecordsPresenter: windowsRecordsPresenter with: windowsPresenter selectedItem.
-			self updateRecordsPresenter: activityRecordsPresenter with: activityPresenter selectedItem ].
-
 	windowsPresenter whenSelectedItemChangedDo: [ :selectedItem |
 		self updateRecordsPresenter: windowsRecordsPresenter with: selectedItem ].
 
@@ -310,25 +304,6 @@ DSRecordBrowserPresenter >> files: newFiles [
 	files := newFiles
 ]
 
-{ #category : 'operations' }
-DSRecordBrowserPresenter >> filterRecordClass: aClass [
-	"Add the specified class to the records filter."
-
-	recordsFilter sourceList selectItems: { aClass }.
-	recordsFilter addSelected
-]
-
-{ #category : 'layout' }
-DSRecordBrowserPresenter >> filterRecordsButton [
-	"Instanciates a new layout button which opens the records' filter window."
-
-	^ SpToolbarButtonPresenter new
-		  label: 'Filter';
-		  icon: (self iconNamed: #diff);
-		  help: 'Filter records.';
-		  action: [ recordsFilter open ]
-]
-
 { #category : 'helpers' }
 DSRecordBrowserPresenter >> getHistoryFrom: aFileReference [
 	"Returns the generated history using the specified file reference which should countains DSSpy records."
@@ -378,7 +353,6 @@ DSRecordBrowserPresenter >> initializePresenters [
 	toolbarPresenter := self toolbar.
 	fileListPresenter := self fileListPresenter.
 	recordsTablePresenter := self recordsPresenter.
-	recordsFilter := self recordsFilter.
 	windowsPresenter := self windowsPresenter.
 	statisticsPresenter := self statisticsPresenter.
 	recordTypesPresenter := self recordTypesPresenter.
@@ -573,8 +547,7 @@ DSRecordBrowserPresenter >> toolbar [
 	^ self newToolbar
 		  addItem: self addRecordButton;
 		  addItem: startRecordButtonPresenter;
-		  addItem: stopRecordButtonPresenter;
-		  addItem: self filterRecordsButton
+		  addItem: stopRecordButtonPresenter
 ]
 
 { #category : 'operations' }
@@ -607,8 +580,7 @@ DSRecordBrowserPresenter >> updateRecordsPresenter: aRecordPresenter with: anEve
 
 	anEventsContainer
 		ifNil: [ aRecordPresenter roots: {  } ]
-		ifNotNil: [
-		aRecordPresenter roots: (anEventsContainer events reject: [ :event | recordsFilter chosenItems includes: event class ]) ]
+		ifNotNil: [ aRecordPresenter roots: anEventsContainer events ]
 ]
 
 { #category : 'operations' }
