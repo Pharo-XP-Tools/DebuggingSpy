@@ -16,30 +16,6 @@ Class {
 	#tag : 'Records'
 }
 
-{ #category : 'instance creation' }
-DSSourceCodeChangeEventRecord class >> added: aMethod [
-
-	^ (self for: aMethod)
-		  eventName: 'Method added';
-		  yourself
-]
-
-{ #category : 'instance creation' }
-DSSourceCodeChangeEventRecord class >> modified: aMethod [
-
-	^ (self for: aMethod)
-		  eventName: 'Method modified';
-		  yourself
-]
-
-{ #category : 'instance creation' }
-DSSourceCodeChangeEventRecord class >> removed: aMethod [
-
-	^ (self for: aMethod)
-		  eventName: 'Method removed';
-		  yourself
-]
-
 { #category : 'accessing' }
 DSSourceCodeChangeEventRecord >> eventName [
 	^'Source code modification'

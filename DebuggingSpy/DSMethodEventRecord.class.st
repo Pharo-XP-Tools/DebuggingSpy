@@ -18,7 +18,6 @@ Class {
 DSMethodEventRecord class >> added: aMethod [
 
 	^ (self for: aMethod)
-		  eventName: 'Method added';
 		  yourself
 ]
 
@@ -26,7 +25,6 @@ DSMethodEventRecord class >> added: aMethod [
 DSMethodEventRecord class >> modified: aMethod [
 
 	^ (self for: aMethod)
-		  eventName: 'Method modified';
 		  yourself
 ]
 
@@ -34,7 +32,6 @@ DSMethodEventRecord class >> modified: aMethod [
 DSMethodEventRecord class >> removed: aMethod [
 
 	^ (self for: aMethod)
-		  eventName: 'Method removed';
 		  yourself
 ]
 

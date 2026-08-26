@@ -6,65 +6,42 @@ Class {
 	#name : 'DSToolInfo',
 	#superclass : 'Object',
 	#instVars : [
-		'toolClassName',
+		'toolClass',
 		'toolIdentityHash',
-		'windowIdentityHash',
-		'toolAction'
+		'windowIdentityHash'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'instance creation' }
-DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId [
+DSToolInfo class >> toolClass: aToolName id: aToolId windowId: aWindowId [
 
 	^ self new
-		  toolClassName: aToolName;
+		  toolClass: aToolName;
 		  toolIdentityHash: aToolId;
 		  windowIdentityHash: aWindowId;
-		  yourself
-]
-
-{ #category : 'instance creation' }
-DSToolInfo class >> toolNamed: aToolName id: aToolId windowId: aWindowId action: aString [
-
-	^ (self toolNamed: aToolName id: aToolId windowId: aWindowId)
-		  toolAction: aString;
 		  yourself
 ]
 
 { #category : 'printing' }
 DSToolInfo >> printOn: str [
 
-	str << (toolClassName ifNil: [ 'missing tool name' ]).
-	toolAction ifNil: [ ^ self ].
+	str << (toolClass ifNil: [ 'missing tool name' ]).
 	str space.
-	str << toolAction
 ]
 
 { #category : 'accessing' }
-DSToolInfo >> toolAction [
+DSToolInfo >> toolClass [
 
-	^ toolAction
+	^ toolClass
 ]
 
 { #category : 'accessing' }
-DSToolInfo >> toolAction: anObject [
+DSToolInfo >> toolClass: anObject [
 
-	toolAction := anObject
-]
-
-{ #category : 'accessing' }
-DSToolInfo >> toolClassName [
-
-	^ toolClassName
-]
-
-{ #category : 'accessing' }
-DSToolInfo >> toolClassName: anObject [
-
-	toolClassName := anObject
+	toolClass := anObject
 ]
 
 { #category : 'accessing' }
@@ -89,4 +66,12 @@ DSToolInfo >> windowIdentityHash [
 DSToolInfo >> windowIdentityHash: anObject [
 
 	windowIdentityHash := anObject
+]
+
+{ #category : 'accessing' }
+DSToolInfo >> windowType [
+	"Returns the window type if the tool is known, and unknown window otherwise."
+
+	toolClass ifNotNil: [ ^ toolClass windowType ].
+	^ DSWindowRecord unknownWindow
 ]

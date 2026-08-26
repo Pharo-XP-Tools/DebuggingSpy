@@ -2,10 +2,9 @@ Class {
 	#name : 'DSSTONFileLoggerTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'logger',
 		'survey',
 		'task',
-		'oldLogger'
+		'logger'
 	],
 	#category : 'DebuggingSpy-Tests-Tests - model',
 	#package : 'DebuggingSpy-Tests',
@@ -15,9 +14,8 @@ Class {
 { #category : 'running' }
 DSSTONFileLoggerTest >> setUp [
 	super setUp.
-	oldLogger := DSSpy logger.
-	logger := DSSTONFileLogger new.
-	DSSpy logger: logger.
+	DSSpy testingSession: true.
+	logger := DSSpy logger.
 	survey := DSTestSurvey new.
 	task := DSTestTask new
 ]
@@ -25,21 +23,26 @@ DSSTONFileLoggerTest >> setUp [
 { #category : 'running' }
 DSSTONFileLoggerTest >> tearDown [
 
-	DSSpy logger: oldLogger.
+	DSSpy resetSpy.
+	DSRecordRegistry current reset.
+	
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 
 { #category : 'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingDirectoryName [
 
-	self
-		assert: logger defaultLoggingDirectoryName
-		equals: 'ds-spy'
+	self assert: logger defaultLoggingDirectoryName equals: 'tests'.
+
+	DSSpy testingSession: false.
+
+	self assert: logger defaultLoggingDirectoryName equals: 'ds-spy'
 ]
 
 { #category : 'tests - file handling' }
 DSSTONFileLoggerTest >> testDefaultLoggingFileName [
- 	self assert: logger defaultLoggingFileName equals: SessionManager default currentSession id asString
+ 	self assert: logger defaultLoggingFileName equals: DSSpy getRecordFileName 
 ]
 
 { #category : 'tests - file handling' }
@@ -47,9 +50,8 @@ DSSTONFileLoggerTest >> testEnsureCreateLoggingFileReference [
 
 	| fileReference |
 	fileReference := logger loggingDirectory / logger loggingFileName.
-	fileReference ensureDelete.
 	self deny: fileReference exists.
-	logger ensureCreateLoggingFileReference.
+	fileReference := logger ensureCreateLoggingFileReference.
 	self assert: fileReference exists
 ]
 
@@ -66,7 +68,7 @@ DSSTONFileLoggerTest >> testFilenameForSurvey [
 DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 	logger reset.
 	logger forceLoggingFileNameFor: task.	
-	self assert: logger loggingFileName equals: (task title, '-', SessionManager default currentSession id asString).
+	self assert: logger loggingFileName equals: (task title, '-', DSSpy getRecordFileName).
 	self assert: logger loggingFileName equals: logger loggingFileReference basename.
 	self assert: logger loggingFileReference exists
 ]
@@ -74,12 +76,8 @@ DSSTONFileLoggerTest >> testForceLoggingFileNameFor [
 { #category : 'tests - task management' }
 DSSTONFileLoggerTest >> testForceRunningTask [
 
-	DSSpy resetSpy.
 	DSSpy forceRunningTask: task.
-	self
-		assert: logger loggingFileName
-		equals:
-		task title , '-' , SessionManager default currentSession id asString
+	self assert: logger loggingFileName equals: task title , '-' , DSSpy getRecordFileName
 ]
 
 { #category : 'tests - file handling' }

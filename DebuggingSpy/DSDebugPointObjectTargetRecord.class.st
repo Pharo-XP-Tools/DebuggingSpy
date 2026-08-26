@@ -1,12 +1,15 @@
+"
+I am a class that reprensent object target record for debugPoint.
+"
 Class {
 	#name : 'DSDebugPointObjectTargetRecord',
 	#superclass : 'DSAbstractDebugPointTargetRecord',
 	#instVars : [
 		'subTarget'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'actions api' }

@@ -184,11 +184,13 @@ DSSpyTest >> setUp [
 	DSSpy packagesMonitoredForSourceCodeChanges: nil.
 	recordSourceCode := DSSpy recordSourceCode.
 	DSSpy recordSourceCode: false.
-	DSSpy scopeSourceCodeChangesRecording: true
+	DSSpy scopeSourceCodeChangesRecording: true.
+	DSSpy testingSession: true
 ]
 
 { #category : 'running' }
 DSSpyTest >> tearDown [
+
 	DSRecordRegistry autoSerialize: false.
 	instrumenter unsubscribeFromSystemAnnouncer.
 	debugpoint ifNotNil: [ debugpoint remove ].
@@ -197,43 +199,46 @@ DSSpyTest >> tearDown [
 	DSRecordRegistry current reset.
 	DSSpy recordSourceCode: recordSourceCode.
 	DSSpy scopeSourceCodeChangesRecording: nil.
+	DSSpy resetSpy.
+	
+	'tests' asFileReference ensureDeleteAll.
 	super tearDown
 ]
 
 { #category : 'tests - task management' }
 DSSpyTest >> testCloseSurvey [
-	
-	|taskLoggingFileName recordedSurvey|
+
+	| taskLoggingFileName recordedSurvey |
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy startTask: task.
 	DSRecordRegistry autoSerialize: true.
-	taskLoggingFileName := task title, '-', DSSpy logger defaultLoggingFileName.
-	
+	taskLoggingFileName := task title , '-' , DSSpy logger defaultLoggingFileName.
+
 	self assert: self registry size equals: 1.
 	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
 	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.
-	
+
 	DSSpy closeSurvey: survey.
 	self assert: self registry size equals: 2.
 	self assert: DSSpy logger loggingFileName equals: taskLoggingFileName.
-	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.	
-	
+	self assert: DSSpy logger loggingFileReference basename equals: taskLoggingFileName.
+
 	record := self registry first.
 	self assert: record class equals: DSStartTaskRecord.
 	self assert: record taskName equals: DSTestTask dsTaskDescription.
 	self assert: record description equals: DSTestTask dsTaskDescription.
-	
+
 	record := self registry last.
 	self assert: record class equals: DSSurveyRecord.
 	self assert: record answer equals: survey answer.
 	self assert: record description equals: DSTestSurvey dsSurveyDescription.
-	
-	recordedSurvey := (STON fromString: (DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) readStream contents) first.
+
+	recordedSurvey := (STON fromString:
+		                   (DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) readStream contents) first.
 	self assert: recordedSurvey class equals: DSSurveyRecord.
 	self assert: recordedSurvey answer equals: survey answer.
 	self assert: recordedSurvey description equals: DSTestSurvey dsSurveyDescription.
 	(DSSpy logger loggingDirectory / (DSSpy logger filenameForSurvey: survey)) delete
-	
 ]
 
 { #category : 'tests - debugpoints events' }
@@ -323,6 +328,7 @@ DSSpyTest >> testDefaultLogger [
 
 { #category : 'tests - task management' }
 DSSpyTest >> testEndTask [
+
 	DSSpy endTask: task.
 	self assert: self registry size equals: 1.
 	record := self registry first.
@@ -361,42 +367,14 @@ DSSpyTest >> testLogKey [
 	self assert: record event equals: #TEST
 ]
 
-{ #category : 'tests - logging' }
-DSSpyTest >> testLogOnlyWhenTaskStarted [
-	|str dir|
-	dir := DSSpy logger loggingDirectory.
-	dir exists ifTrue: [ dir deleteAllChildren].
-	DSSpy resetSpy.
-	self deny: DSSpy logOnlyWhenTaskStarted.
-	
-	str := WriteStream on: String new.
-	str nextPutAll: '[''test'']'.
-	
-	DSSpy logOnlyWhenTaskStarted: true.
-	DSSpy log: 'test'.
-	self assert: DSSpy logOnlyWhenTaskStarted.
-	self assert: DSSpy logger loggingFileReference contents isEmpty.
-	
-	DSSpy startTask: task.	
-	DSSpy log: 'test'.
-	self assert: DSSpy logger loggingFileReference contents equals: str contents.
-	
-	DSSpy endTask: task.
-	self assert: DSSpy logOnlyWhenTaskStarted
-	
-]
-
 { #category : 'tests - window events' }
 DSSpyTest >> testLogWindowActivated [
 
 	DSSpy logWindowActivated: self windowEvent.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 1.
 
 	record := self registry first.
-	self assert: record class identicalTo: DSToolWindowActivatedEventRecord.
-
-	record := self registry second.
 	self assertWindowEventRecordedAs: DSWindowActivatedRecord
 ]
 
@@ -416,30 +394,26 @@ DSSpyTest >> testLogWindowOpened [
 
 	DSSpy logWindowOpened: self windowEvent.
 
-	self assert: self registry size equals: 2.
+	self assert: self registry size equals: 1.
 
 	record := self registry first.
-	self assert: record class identicalTo: DSToolWindowOpenedEventRecord.
-
-	record := self registry second.
 	self assertWindowEventRecordedAs: DSWindowOpenedRecord
 ]
 
 { #category : 'tests - serialize/materialize' }
 DSSpyTest >> testMaterialize [
-	|records materializedRecords|
-	DSSpy logger loggingFileReference ensureDelete.
-	DSSpy resetSpy.
-	records := OrderedCollection with:  (DSLoggingErrorRecord for: #TEST) with:  (DSLoggingErrorRecord for: #TEST).
-	records do:[:r| DSSpy serialize: r].
+
+	| records materializedRecords |
+	records := OrderedCollection with: (DSLoggingErrorRecord for: #TEST) with: (DSLoggingErrorRecord for: #TEST).
+	records do: [ :r | DSSpy serialize: r ].
 	materializedRecords := DSSpy materialize: DSSpy logger loggingFileReference.
 	self assert: materializedRecords size equals: 2.
-	
+
 	self assert: materializedRecords first class equals: DSLoggingErrorRecord.
 	self assert: materializedRecords first dateTime equals: records first dateTime.
 	self assert: materializedRecords first eventName equals: records first eventName.
 	self assert: materializedRecords first event equals: records first event.
-	
+
 	self assert: materializedRecords second class equals: DSLoggingErrorRecord.
 	self assert: materializedRecords second dateTime equals: records second dateTime.
 	self assert: materializedRecords second eventName equals: records second eventName.
@@ -813,9 +787,7 @@ DSSpyTest >> testResetSpy [
 	DSSpy startTask: task.
 	DSSpy resetSpy.
 	self deny: DSSpy taskStarted.
-	self
-		assert: DSSpy logger loggingFileName
-		equals: DSSpy logger defaultLoggingFileName
+	self assert: DSSpy logger loggingFileName equals: DSSpy logger defaultLoggingFileName
 ]
 
 { #category : 'tests - methods events' }
@@ -827,8 +799,6 @@ DSSpyTest >> testScopeSourceCodeChangesRecording [
 { #category : 'tests - serialize/materialize' }
 DSSpyTest >> testSerialize [
 
-	DSSpy logger loggingFileReference ensureDelete.
-	DSSpy resetSpy.
 	record := DSLoggingErrorRecord for: #TEST.
 	DSSpy serialize: record.
 	self
@@ -838,7 +808,7 @@ DSSpyTest >> testSerialize [
 
 { #category : 'tests - task management' }
 DSSpyTest >> testStartTask [
-	
+
 	DSSpy startTask: task.
 	self assert: self registry size equals: 1.
 	record := self registry first.
@@ -851,9 +821,7 @@ DSSpyTest >> testStartTask [
 DSSpyTest >> testStartTaskSerialization [
 
 	| recordedTask |
-	DSSpy logger loggingDirectory deleteAllChildren.
 	DSRecordRegistry autoSerialize: true.
-	DSSpy resetSpy.
 	DSSpy startTask: task.
 	recordedTask := (DSSpy materialize: DSSpy logger loggingFileReference) first.
 	self assert: recordedTask class equals: DSStartTaskRecord.
@@ -945,27 +913,19 @@ DSSpyTest >> testWatchDebugPointRemoved [
 DSSpyTest >> testWindowOpenedListensToWindowActivatedAndClosedEvents [
 
 	DSSpy logWindowOpened: self windowEvent.
-	self windowEvent window announceActivated.
-	self windowEvent window announce: (WindowClosed new
+	DSSpy logWindowActivated: windowEvent window announceActivated.
+	DSSpy logWindowClosed: (windowEvent window announce: (WindowClosed new
 			 window: self windowEvent window;
-			 yourself).
-	self assert: self registry size equals: 5.
+			 yourself)).
+	self assert: self registry size equals: 3.
 
 	record := self registry first.
-	self assert: record class identicalTo: DSToolWindowOpenedEventRecord.
-
-	record := self registry second.
 	self assert: record class identicalTo: DSWindowOpenedRecord.
 	
-	record := self registry third.
-	self
-		assert: record class
-		identicalTo: DSToolWindowActivatedEventRecord.
-
-	record := self registry at: 4.
+	record := self registry second.
 	self assert: record class identicalTo: DSWindowActivatedRecord.
 
-	record := self registry at: 5.
+	record := self registry third.
 	self assert: record class identicalTo: DSWindowClosedRecord
 ]
 

@@ -19,15 +19,28 @@ DSAbstractHaltRecord >> method [
 	^ method
 ]
 
+{ #category : 'accessing' }
+DSAbstractHaltRecord >> method: aMethod [
+
+	method := aMethod
+]
+
 { #category : 'actions api' }
 DSAbstractHaltRecord >> record: anRBProgramNode [
 
 	method := anRBProgramNode methodNode compiledMethod name.
-	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop
+	sourceCodeInterval := anRBProgramNode start to: anRBProgramNode stop.
+	super record: anRBProgramNode
 ]
 
 { #category : 'accessing' }
 DSAbstractHaltRecord >> sourceCodeInterval [
 
 	^ sourceCodeInterval
+]
+
+{ #category : 'accessing' }
+DSAbstractHaltRecord >> sourceCodeInterval: aSourceCodeInterval [
+
+	sourceCodeInterval := aSourceCodeInterval
 ]

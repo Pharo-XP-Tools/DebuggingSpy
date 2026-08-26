@@ -19,13 +19,16 @@ Class {
 
 { #category : 'accessing' }
 DSSTONFileLogger >> defaultLoggingDirectoryName [
-	^'ds-spy'
+
+	^ DSSpy testingSession
+		  ifTrue: [ 'tests' ]
+		  ifFalse: [ 'ds-spy' ]
 ]
 
 { #category : 'accessing' }
 DSSTONFileLogger >> defaultLoggingFileName [
 
-	^ SessionManager default currentSession id asString
+	^ DSSpy getRecordFileName 
 ]
 
 { #category : 'logging' }
@@ -78,10 +81,22 @@ DSSTONFileLogger >> loggingFileName [
 ]
 
 { #category : 'accessing' }
+DSSTONFileLogger >> loggingFileName: aFileName [
+
+	loggingFilename := aFileName
+]
+
+{ #category : 'accessing' }
 DSSTONFileLogger >> loggingFileReference [
 
 	^ loggingFileReference ifNil: [
 		  loggingFileReference := self ensureCreateLoggingFileReference ]
+]
+
+{ #category : 'accessing' }
+DSSTONFileLogger >> loggingFileReference: aFileReference [
+
+	^ loggingFileReference := aFileReference
 ]
 
 { #category : 'initialization' }

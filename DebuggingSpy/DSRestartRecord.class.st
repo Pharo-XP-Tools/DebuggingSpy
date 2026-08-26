@@ -1,12 +1,16 @@
+"
+I am a record for the 'Restart' command in the Debugger.
+"
 Class {
 	#name : 'DSRestartRecord',
-	#superclass : 'DSStepRecord',
-	#category : 'DebuggingSpy-Records-Extensions',
+	#superclass : 'DSAbstractDebuggerActionRecord',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Records-Extensions'
+	#tag : 'Records'
 }
 
 { #category : 'accessing' }
-DSRestartRecord >> eventSymbol [
-	^'R'
+DSRestartRecord >> eventName [
+
+	^ 'Restart'
 ]

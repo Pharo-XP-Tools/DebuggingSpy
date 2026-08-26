@@ -1,8 +1,14 @@
+"
+Class which represent a record of a window event : openned, closed or activated.
+
+This type of record is useful to know which are the tools used by a developper.
+"
 Class {
 	#name : 'DSWindowEventRecord',
 	#superclass : 'DSAbstractEventRecord',
 	#instVars : [
-		'windowName'
+		'windowName',
+		'toolInfo'
 	],
 	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
@@ -11,15 +17,13 @@ Class {
 
 { #category : 'actions api' }
 DSWindowEventRecord >> record: aWindowEvent [
-	self recordWindowIdFromEvent: aWindowEvent.
-	self recordWindowNameFromEvent: aWindowEvent
-]
 
-{ #category : 'recording' }
-DSWindowEventRecord >> recordWindowIdFromEvent: anEvent [
-	|win|
-	win := anEvent window.
-	windowId := win identityHash
+	| tool |
+	self windowId: aWindowEvent window identityHash.
+	self recordWindowNameFromEvent: aWindowEvent.
+	tool := DSSpy toolInWindow: aWindowEvent window.
+	tool ifNil: [ ^ self ].
+	toolInfo := DSToolInfo toolClass: tool class id: tool identityHash windowId: windowId
 ]
 
 { #category : 'recording' }
@@ -27,7 +31,7 @@ DSWindowEventRecord >> recordWindowNameFromEvent: anEvent [
 
 	windowName := [ anEvent window label ]
 		              on: Error
-		              do: [ 'Unknown window' ]
+		              do: [ DSWindowRecord unknownWindow ]
 ]
 
 { #category : 'comparing' }
@@ -36,9 +40,21 @@ DSWindowEventRecord >> sameWindowAsIn: aDSWindowEventRecord [
 ]
 
 { #category : 'accessing' }
+DSWindowEventRecord >> toolInfo [
+
+	^ toolInfo
+]
+
+{ #category : 'accessing' }
+DSWindowEventRecord >> toolInfo: aToolInfo [
+
+	toolInfo := aToolInfo
+]
+
+{ #category : 'accessing' }
 DSWindowEventRecord >> windowName [
 
-	^ windowName
+	^ windowName ifNil: [ ^ windowId ]
 ]
 
 { #category : 'accessing' }

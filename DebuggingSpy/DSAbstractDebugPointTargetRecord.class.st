@@ -1,12 +1,15 @@
+"
+I am an abstract class representing a record of a debugPoint's target.
+"
 Class {
 	#name : 'DSAbstractDebugPointTargetRecord',
 	#superclass : 'Object',
 	#instVars : [
 		'target'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'instance creation' }

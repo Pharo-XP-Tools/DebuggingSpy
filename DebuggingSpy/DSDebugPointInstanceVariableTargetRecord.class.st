@@ -1,12 +1,15 @@
+"
+I am a class that reprensent instance variable target record for debugPoint.
+"
 Class {
 	#name : 'DSDebugPointInstanceVariableTargetRecord',
 	#superclass : 'DSDebugPointClassTargetRecord',
 	#instVars : [
 		'accessStrategy'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'accessing' }

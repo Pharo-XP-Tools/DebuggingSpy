@@ -1,3 +1,6 @@
+"
+I am a registry containing all records during a recording session.
+"
 Class {
 	#name : 'DSRecordRegistry',
 	#superclass : 'Object',
@@ -44,6 +47,7 @@ DSRecordRegistry class >> log: aDSRecord [
 DSRecordRegistry >> addRecord: aRecord [
 	self assert: aRecord dateTime notNil.
 	records add: aRecord.
+	DSRecordBrowserPresenter uniqueInstance updateLastRecord: aRecord.
 	self class log: aRecord.
 	self flag: 'Add debug code here to see what is traced'.
 	"aRecord crTrace"

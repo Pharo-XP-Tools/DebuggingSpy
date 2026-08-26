@@ -10,6 +10,24 @@ Class {
 }
 
 { #category : 'tests' }
+DSRecordTest >> testGettingLeafSubclasses [
+
+	| subclasses |
+	subclasses := {
+		              DSBrowseRecord.
+		              DSImplementorsRecord.
+		              DSSendersRecord } asOrderedCollection.
+
+	self assert: DSAbstractBrowserRecord getLeafSubClasses equals: subclasses
+]
+
+{ #category : 'tests' }
+DSRecordTest >> testGettingLeafSubclassesIncludesDSDoItRecord [
+
+	self assert: (DSAbstractEventRecord getLeafSubClasses includes: DSDoItRecord)
+]
+
+{ #category : 'tests' }
 DSRecordTest >> testRecordPrinting [
 
 	| str |

@@ -7,7 +7,6 @@ Class {
 	#instVars : [
 		'taskName',
 		'user',
-		'records',
 		'windowsHistory',
 		'tag',
 		'windowNames',
@@ -15,11 +14,12 @@ Class {
 		'windowJumps',
 		'filteredWindowJumps',
 		'filteredWindows',
-		'mergedWindowJumps'
+		'mergedWindowJumps',
+		'events'
 	],
-	#category : 'DebuggingSpy-Records',
+	#category : 'DebuggingSpy-Records-Extensions',
 	#package : 'DebuggingSpy',
-	#tag : 'Records'
+	#tag : 'Records-Extensions'
 }
 
 { #category : 'instance creation' }
@@ -55,10 +55,9 @@ DSRecordHistory class >> windowLeaveEventTypes [
 
 { #category : 'API-history' }
 DSRecordHistory >> absoluteTimeTaken [
-	"The absoulte time taken to perform the recording of user events, including unmonitoring activities (interruptions or activities outside the IDE)."
+	"The absolute time taken to perform the recording of user events, including unmonitoring activities (interruptions or activities outside the IDE)."
 
-	^ ((records last dateTime asSeconds - records first dateTime asSeconds)
-	   / 60) asFloat
+	^ events last dateTime asSeconds - events first dateTime asSeconds
 ]
 
 { #category : 'API-history' }
@@ -72,53 +71,7 @@ DSRecordHistory >> addWindowRecord: aDSRecord [
 { #category : 'private - history' }
 DSRecordHistory >> allRecordsOfKind: aClass [
 
-	^ records select: [ :record | record isKindOf: aClass ]
-]
-
-{ #category : 'API-history' }
-DSRecordHistory >> breakpointAdds [
-
-	^ (self breakpointEvents: BreakpointAdded name) size
-]
-
-{ #category : 'API-history' }
-DSRecordHistory >> breakpointAnalysisMap [
-
-	| report |
-	report := Dictionary new.
-	(self allRecordsOfKind: DSDebugPointRecord) do: [ :bp |
-		(report at: bp targetClassOrMethod ifAbsentPut: [
-			 DSBreakpointReport new
-				 method: bp targetClassOrMethod;
-				 yourself ]) add: bp ].
-	^ report
-]
-
-{ #category : 'private - history' }
-DSRecordHistory >> breakpointEvents [
-
-	^ self records select: [ :r |
-		  (r isKindOf: DSAbstractDebugPointEventRecord) or: [
-			  r isKindOf: DSDebugPointRecord ] ]
-]
-
-{ #category : 'private - history' }
-DSRecordHistory >> breakpointEvents: aBreakpointEventName [
-
-	^ self breakpointEvents select: [ :bpEvent | 
-		  bpEvent eventName = aBreakpointEventName ]
-]
-
-{ #category : 'API-history' }
-DSRecordHistory >> breakpointHit [
-
-	^ (self breakpointEvents: BreakpointHit name) size
-]
-
-{ #category : 'API-history' }
-DSRecordHistory >> breakpointRemove [
-
-	^ (self breakpointEvents: BreakpointRemoved name) size
+	^ events select: [ :record | record isKindOf: aClass ]
 ]
 
 { #category : 'API-history' }
@@ -126,166 +79,215 @@ DSRecordHistory >> buildWindowHistory [
 
 	self windowsHistory removeAll.
 	self fixMissingWindowIds.
-	self records do: [ :r | r recordWindowHistoryOn: self ].
+	events do: [ :r | self addWindowRecord: r ].
 	self fixWindowRecordKeysNames
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> buildWindowJumps [
 
-	| jumps previousWindowActivity nextWindowActivity |
+	| previousWindowActivity nextWindowActivity |
 	windowJumps := OrderedCollection new.
-	jumps := self allRecordsOfKind: DSMouseEnterWindowRecord.
 
-	jumps do: [ :jumpEvent |
-		(filteredWindows
-			 detect: [ :w | w windowId = jumpEvent windowId ]
-			 ifNone: [ nil ]) ifNotNil: [ :w |
-			(w activePeriods
-				 detect: [ :period | period start == jumpEvent ]
-				 ifNone: [ nil ]) ifNotNil: [ :period | windowJumps add: period ] ] ].
+	filteredWindows do: [ :window | windowJumps addAll: window activePeriods ].
+	windowJumps sort: [ :period1 :period2 | period1 start < period2 start ].
 
-	filteredWindowJumps := windowJumps "reject: [ :e |
-		                       e events size <= 3 or: [
-			                       e stop dateTime - e start dateTime
-			                       < 500 milliSeconds" "or: [ ""self halt."" ""e type = 'Finish'"" true] "" ] ]".
+	filteredWindowJumps := windowJumps reject: [ :e | e events size <= 3 or: [ e stop dateTime - e start dateTime < 0.5 seconds ] ].
 
 	previousWindowActivity := nil.
 	filteredWindowJumps do: [ :period |
-		period previous: previousWindowActivity.
-		previousWindowActivity := period ].
+			period previous: previousWindowActivity.
+			previousWindowActivity := period ].
 
 	nextWindowActivity := nil.
 	filteredWindowJumps reverseDo: [ :period |
-		period next: nextWindowActivity.
-		nextWindowActivity := period ].
-	
-	self mergeFilteredWindowJumps
-	
+			period next: nextWindowActivity.
+			nextWindowActivity := period ]
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> buildWindows [
 
 	windows := OrderedCollection new.
-	windowsHistory valuesDo: [ :events |
-		windows add: (DSWindowRecord for: events) ].
+	self windowsHistory valuesDo: [ :events | windows add: (DSWindowRecord for: events) ].
+	self reconstructWindowsToolInfo. 
 	self reconstructSourcesOfDebuggerOpenings.
 
 	filteredWindows := windows reject: [ :w |
-		                   (w totalTime < 0.5 seconds or: [
-			                    (w respondsTo: #type) and: [
-				                    #( 'Finish' 'Post-task' 'Survey' ) includes:
-					                    w type ] ]) or: [ w windowId = -1 ] ]
+			                   w totalTime < 0.5 seconds or: [
+				                   ((w respondsTo: #type) and: [ #( 'Finish' 'Post-task' 'Survey' ) includes: w type ]) or: [ w windowId = -1 ] ] ]
 ]
 
 { #category : 'API-history' }
-DSRecordHistory >> callStackBrowing [
+DSRecordHistory >> collectScrollingPeriods [
 
-	^ (self allRecordsOfKind: DSBrowseContextRecord) size
+	| i scrollingPeriods |
+	i := 1.
+	scrollingPeriods := OrderedCollection new.
+
+	[ i <= events size ] whileTrue: [
+			(events at: i) class = DSScrollingRecord ifTrue: [
+					| start stop |
+					start := (events at: i) dateTime.
+					stop := (events at: i) dateTime.
+					i := i + 1.
+					[ i <= events size and: [ (events at: i) class = DSScrollingRecord ] ] whileTrue: [
+							stop := (events at: i) dateTime.
+							i := i + 1 ].
+					scrollingPeriods add: {
+							start.
+							stop } -> (events at: i - 1) windowId ].
+			i := i + 1 ].
+
+	^ scrollingPeriods
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> collectTimeDiscrepancies [
+	"Returns a dictionary which contains all delta between two records above than 5s"
 
-	| time currentRecord deltas |
+	| time previousRecord copyOfRecords deltas |
+	copyOfRecords := events deepCopy.
 	time := 0.
 	deltas := OrderedCollection new.
-	currentRecord := records first.
-	records do: [ :r |
-		| delta |
-		delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
-		time := time
-		        + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		delta > 5 ifTrue: [
-			deltas add: {
-					r.
-					currentRecord.
-					records } -> delta asSeconds ].
-		currentRecord := r ].
+	previousRecord := copyOfRecords first.
+	copyOfRecords do: [ :record |
+			| delta |
+			delta := record dateTime asSeconds - previousRecord dateTime asSeconds.
+			time := time + delta.
+			delta > 5 ifTrue: [
+					deltas add: {
+							previousRecord .
+							record } -> delta asSeconds ].
+			previousRecord := record ].
+	
 	^ deltas
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> computeIdleTime [
+	"Returns the sum of all time discrepancies durations and returns the result as a number of seconds."
+
+	| associations |
+	associations := self collectTimeDiscrepancies collect: [ :association | association value asSeconds ].
+	associations ifEmpty: [ ^ 0 ].
+	^ associations sum
 ]
 
 { #category : 'API-history' }
 DSRecordHistory >> countDebugActions [
 
-	^ self breakpointAdds + self breakpointRemove + self executedCode
+	^ self debugPointAdds + self debugPointRemoved + self executedCode
 	  + self methodsAdded + self methodsModified + self methodsRemoved
-	  + self numberOfSteps + self callStackBrowing
+	  + self numberOfSteps
 ]
 
 { #category : 'accessing' }
 DSRecordHistory >> dateTime [
-	^records first dateTime
+	^events first dateTime
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> debugPointAdds [
+
+	^ (self debugPointEvents: DebugPointAdded name) size
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> debugPointAnalysisMap [
+
+	| report |
+	report := Dictionary new.
+	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: [ :debugPoint |
+			(report at: debugPoint target ifAbsentPut: [
+					 DSDebugPointReport new
+						 method: debugPoint target;
+						 yourself ]) add: debugPoint ].
+	^ report
+]
+
+{ #category : 'private - history' }
+DSRecordHistory >> debugPointEvents [
+
+	^ self events select: [ :r | (r isKindOf: DSAbstractDebugPointEventRecord)]
+]
+
+{ #category : 'private - history' }
+DSRecordHistory >> debugPointEvents: aDebugPointEventName [
+
+	^ self debugPointEvents select: [ :bpEvent | 
+		  bpEvent eventName = aDebugPointEventName ]
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> debugPointHit [
+
+	^ (self debugPointEvents: DebugPointHit name) size
+]
+
+{ #category : 'API-history' }
+DSRecordHistory >> debugPointRemoved [
+
+	^ (self debugPointEvents: DebugPointRemoved name) size
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> detectTimeDiscrepancies [
-	|time currentRecord totalDelta|
-	time := 0.
+	"Returns the sum of all breaks between two records which lasted more than 1 minute"
+
+	| currentRecord totalDelta |
 	totalDelta := 0.
-	currentRecord := records first.
-	records do:[:r| |delta|
-				((r isKindOf: DSWindowOpenedRecord) and: [
-			                    'Finish task *' match:
-				                    r windowName asString ]) ifTrue:[^totalDelta].
-		delta := (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		time := time + (r dateTime asSeconds - currentRecord dateTime asSeconds).
-		(delta) > 60 ifTrue:[totalDelta := totalDelta + delta]. 		
-		currentRecord := r.		
-		].
-	^totalDelta
-	
+	currentRecord := events first.
+	events do: [ :r |
+			| delta |
+			((r isKindOf: DSWindowOpenedRecord) and: [ 'Finish task *' match: r windowName asString ]) ifTrue: [ ^ totalDelta ].
+			delta := r dateTime asSeconds - currentRecord dateTime asSeconds.
+			delta > 60 ifTrue: [ totalDelta := totalDelta + delta ].
+			currentRecord := r ].
+	^ totalDelta
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> estimateSourceEventOf: aDSDebuggerOpeningRecord from: aRecordList [
 
-	| eventIndex previousRecord |
+	| eventIndex |
 	eventIndex := aRecordList indexOf: aDSDebuggerOpeningRecord.
 
 	eventIndex = 1 ifTrue: [ ^ nil ].
 
-
 	(self
-		 findSourceEventLike:
-		 aDSDebuggerOpeningRecord primarySourcesOfWindowOpenings
+		 findSourceEventLike: self primarySourcesOfDebuggerOpenings
 		 forRecord: aDSDebuggerOpeningRecord
 		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
 
-
-	previousRecord := aRecordList at: eventIndex - 1.
-	(previousRecord class == DSMouseEnterTableItemRecord and: [
-		 previousRecord isOverTestCase ]) ifTrue: [
-		^ DSRunTestRecord for: previousRecord ].
-
-
 	(self
-		 findSourceEventLike:
-		 aDSDebuggerOpeningRecord secondarySourcesOfWindowOpenings
+		 findSourceEventLike: self secondarySourcesOfDebuggerOpenings
 		 forRecord: aDSDebuggerOpeningRecord
 		 in: aRecordList) ifNotNil: [ :sourceEvent | ^ sourceEvent ].
 
-
-	aDSDebuggerOpeningRecord contextName = 'CompiledMethod>>#DoIt'
-		ifTrue: [
-			^DSDebugItRecord new
-				selectedString: aDSDebuggerOpeningRecord sourceNodeCode;
-				windowId: (aRecordList at: eventIndex - 1) windowId;
-				yourself ].
-
-	"self halt: 'If we get there we forgot a case...'."
 	^ aRecordList at: eventIndex - 1
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> events [
+
+	^ events
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> events: aCollectionOfRecords [
+
+	events := aCollectionOfRecords
 ]
 
 { #category : 'API-history' }
 DSRecordHistory >> eventsAfter: aDateAndTime [ 
-	^records select:[:e| e dateTime > aDateAndTime]
+	^events select:[:e| e dateTime > aDateAndTime]
 ]
 
 { #category : 'API-history' }
 DSRecordHistory >> eventsBefore: aDateAndTime [ 
-	self shouldBeImplemented.
+	^events select:[:e| e dateTime < aDateAndTime]
 ]
 
 { #category : 'API-history' }
@@ -301,9 +303,21 @@ DSRecordHistory >> filteredWindowJumps [
 ]
 
 { #category : 'accessing' }
+DSRecordHistory >> filteredWindowJumps: aListOfWindowJumps [
+
+	filteredWindowJumps := aListOfWindowJumps
+]
+
+{ #category : 'accessing' }
 DSRecordHistory >> filteredWindows [
 
 	^ filteredWindows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> filteredWindows: aCollectionOfWindows [
+
+	filteredWindows := aCollectionOfWindows
 ]
 
 { #category : 'private - history' }
@@ -333,12 +347,13 @@ DSRecordHistory >> findWindowRecordKeyForID: id [
 
 { #category : 'private - history' }
 DSRecordHistory >> fixMissingWindowIds [
+	"Process all records, when the windowId is nil change it by the predecessor one. If there is no predecessor, put -1."
 
 	| openedWindowStack |
 	openedWindowStack := Stack new.
 	windowNames := Dictionary new.
 
-	records do: [ :r | 
+	events do: [ :r | 
 		r windowId ifNotNil: [ 
 			({ 
 				 DSWindowClosedRecord.
@@ -363,39 +378,6 @@ DSRecordHistory >> fixMissingWindowIds [
 ]
 
 { #category : 'private - history' }
-DSRecordHistory >> fixWindowIdsOf: aCollection [
-
-	| windowlessRecords validEvents enterAndLeaveSequences currentWindowId currentSequence |
-
-	windowlessRecords := aCollection select: [ :e | e windowId isNil ].
-	validEvents := aCollection select:[ :e | (#( nil 0 ) includes: e windowId) not ].
-
-	"First we sort all events in sequences happening in the same window"
-	enterAndLeaveSequences := OrderedCollection new.
-	currentWindowId := validEvents first windowId.
-	currentSequence := OrderedCollection new.
-	validEvents do: [:e |	
-			
-		(e windowId ~= currentWindowId or: [(self class windowLeaveEventTypes includes: e class)])
-			ifTrue: [
-				(self class windowLeaveEventTypes includes: e class) ifTrue:[currentSequence add: e].
-				enterAndLeaveSequences add: currentSequence.
-				currentSequence := OrderedCollection new.
-				currentSequence add: e.
-				currentWindowId := e windowId ]
-			ifFalse: [ currentSequence add: e ] ].
-
-	"Then for each sequence, we try to find events without window id happening between the start and the end of that sequence"
-	enterAndLeaveSequences do: [ :sequence |
-		| enter leave |
-		enter := sequence first.
-		leave := sequence last.
-		(windowlessRecords select: [ :e |
-			 e dateTime > enter dateTime and: [ e dateTime < leave dateTime ] ])
-			do: [ :e | e windowId: enter windowId ] ]
-]
-
-{ #category : 'private - history' }
 DSRecordHistory >> fixWindowRecordKeysNames [
 
 	windowNames keysAndValuesDo: [ :id :name | 
@@ -403,22 +385,31 @@ DSRecordHistory >> fixWindowRecordKeysNames [
 ]
 
 { #category : 'API-history' }
+DSRecordHistory >> getSumOfScrollingPeriods [
+
+	| scrollingPeriods |
+	scrollingPeriods := self collectScrollingPeriods.
+	scrollingPeriods := scrollingPeriods collect: [ :association |
+		                    association key second - association key first -> association value ].
+
+	scrollingPeriods := scrollingPeriods groupedBy: [ :association | association value ].
+
+	scrollingPeriods := scrollingPeriods collect: [ :array | array collect: [ :association | association key ] ].
+
+	^ scrollingPeriods collect: [ :value | value sum ]
+]
+
+{ #category : 'API-history' }
 DSRecordHistory >> haltAnalysisMap [
 
 	| report |
 	report := Dictionary new.
-	(self allRecordsOfKind: DSAbstractHaltRecord) do: [ :bp |
-		(report at: bp method ifAbsentPut: [
+	(self allRecordsOfKind: DSAbstractHaltRecord) do: [ :haltRecord |
+		(report at: haltRecord method ifAbsentPut: [
 			 DSHaltReport new
-				 method: bp method;
-				 yourself ]) add: bp ].
+				 method: haltRecord method;
+				 yourself ]) add: haltRecord ].
 	^ report
-]
-
-{ #category : 'initialization' }
-DSRecordHistory >> initialize [
-	super initialize.
-	self flag: 'I am not tested! Please do it!' 
 ]
 
 { #category : 'private - history' }
@@ -427,14 +418,17 @@ DSRecordHistory >> mergeContinuousEvents [
 	| newRecords merge record |
 	newRecords := OrderedCollection new.
 	merge := OrderedCollection new.
-	record := records first.
+	record := events first.
 	merge add: record.
-	(records copy asOrderedCollection removeFirst; yourself) do: [ :next |
-		record class = next class ifFalse: [
-			newRecords add: merge.
-			merge := OrderedCollection new ].
-		merge add: next.
-		record := next ].
+	(events copy asOrderedCollection
+		 removeFirst;
+		 yourself) do: [ :next |
+			record class = next class ifFalse: [
+					newRecords add: merge.
+					merge := OrderedCollection new ].
+			merge add: next.
+			record := next ].
+	newRecords add: merge.
 	^ newRecords
 ]
 
@@ -446,18 +440,12 @@ DSRecordHistory >> mergeFilteredWindowJumps [
 	currentJump := filteredWindowJumps first.
 
 	[ currentJump notNil ] whileTrue: [
-		currentJump next ifNil: [
-			mergedWindowJumps add: currentJump.
-			^ self ].
-		currentJump windowId = currentJump next windowId
-			ifTrue: [ currentJump merge: currentJump next ]
-			ifFalse: [
-				mergedWindowJumps ifNotEmpty: [
-					currentJump previous: mergedWindowJumps last ].
-				mergedWindowJumps add: currentJump.
-				currentJump := currentJump next ] ].
-
-	self validateMergedJumps
+			(currentJump next isNotNil and: [ currentJump window = currentJump next window ])
+				ifTrue: [ currentJump := currentJump mergeWith: currentJump next ]
+				ifFalse: [
+						mergedWindowJumps ifNotEmpty: [ currentJump previous: mergedWindowJumps last ].
+						mergedWindowJumps add: currentJump.
+						currentJump := currentJump next ] ]
 ]
 
 { #category : 'accessing' }
@@ -499,105 +487,104 @@ DSRecordHistory >> name [
 { #category : 'API-history' }
 DSRecordHistory >> numberOfSteps [
 
-	^ (self allRecordsOfKind: DSStepActionRecord) size
+	^ (self allRecordsOfKind: DSAbstractDebuggerActionRecord) size
 ]
 
-{ #category : 'API-history' }
-DSRecordHistory >> openedDebuggers [
+{ #category : 'private - history' }
+DSRecordHistory >> primarySourcesOfDebuggerOpenings [
 
-	^ (self allRecordsOfKind: DSDebuggerOpeningRecord) size
+	^ ({
+		   DSAbstractDebugPointEventRecord.
+			DSDebugItRecord.
+		   DSHaltHitRecord.
+		   DSUnhandledExceptionRecord } collect: [ :element | element withAllSubclasses ]) flattened
 ]
 
 { #category : 'initialization' }
-DSRecordHistory >> processRecords: array [
+DSRecordHistory >> processRecords: anArrayOfRecords [
+	"Build the history from an array of records"
 
-	self fixWindowIdsOf: array.
 	"events with window id equals to 0 are automatic events triggered while opening a spec presenter while the window is not already open -> noise "
-	self records:
-		(array reject: [ :e | #( 0 ) includes: e windowId ]).
-		
-	"Transform raw events to model events"
-	(self allRecordsOfKind: DSStepActionRecord) do: #asStepRecord.
-	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord.
+	events := (anArrayOfRecords reject: [ :e | #( 0 ) includes: e windowId ]). 
 	
-	"Detect if we're in a specific task"	
-	(self records first isKindOf: DSStartTaskRecord) ifTrue: [
-		self taskName: self records first taskName ].
+	"Transform raw events to model events"
+	(self allRecordsOfKind: DSAbstractDebugPointEventRecord) do: #asDebugPointRecord. 
+	
+	"Detect if we're in a specific task"
+	(events first isKindOf: DSStartTaskRecord) ifTrue: [ taskName := events first taskName ]. 
 	
 	"Windows"
 	self buildWindowHistory.
 	self buildWindows.
-	self buildWindowJumps.
-	self reconstructWindowsToolInfo.
+	self buildWindowJumps.	
+	filteredWindowJumps ifNotEmpty: [ self mergeFilteredWindowJumps ].
 	
 	"Check data consistency (raises a warning that can be proceeded)"
-	self validateWindows
+	self validateWindows.
+
+	^ self
 ]
 
 { #category : 'private - history' }
 DSRecordHistory >> reconstructSourcesOfDebuggerOpenings [
 
 	| sortedDebuggerWindows recordsCopy |
-	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ])
-		                         sort: [ :d1 :d2 | d1 events first dateTime < d2 events first dateTime ].
+	sortedDebuggerWindows := (windows select: [ :w | w isDebugger ]) sort: [ :d1 :d2 |
+		                         d1 events first dateTime < d2 events first dateTime ].
 
-	recordsCopy := records copy asOrderedCollection.
+	recordsCopy := events copy asOrderedCollection.
 
 	sortedDebuggerWindows do: [ :w |
-		|sourceEvent|
-		sourceEvent := (self estimateSourceEventOf: w events first from: recordsCopy).
-		recordsCopy remove: w events first.
-		recordsCopy remove: sourceEvent realRecord ifAbsent:[]. 			
-		w sourceEvent: sourceEvent ]
+			| sourceEvent |
+			sourceEvent := self estimateSourceEventOf: w events first from: recordsCopy.
+			recordsCopy removeFirst: (recordsCopy indexOf: w events first).
+			w sourceEvent: sourceEvent ]
 ]
 
 { #category : 'API-history' }
 DSRecordHistory >> reconstructWindowsToolInfo [
 
 	| toolInfos validWindows |
-	toolInfos := (((records select: [ :r |
-		                (r isKindOf: DSToolWindowEvent) or: [
-			                r class = DSMouseEnterWindowRecord ] ]) collect:
-		               #toolInfo) reject: #isNil) asOrderedCollection
-		             groupedBy: #windowIdentityHash.
+	toolInfos := Dictionary new.
+
+	events do: [ :record |
+			(record class = DSMouseEnterWindowRecord and: [ record toolInfo isNotNil ]) ifTrue: [
+				toolInfos at: record toolInfo windowIdentityHash ifAbsentPut: record toolInfo ] ].
 
 	validWindows := windows groupedBy: #windowId.
 	validWindows
-		removeKey: -1 ifAbsent: [];
-		removeKey: nil ifAbsent: [].
+		removeKey: -1 ifAbsent: [ ];
+		removeKey: nil ifAbsent: [ ].
+	
 	validWindows keysAndValuesDo: [ :id :col |
-		id ifNotNil: [
-			| window |
-			window := col first.
-			window toolInfos: (toolInfos at: id ifAbsent:[nil]) ] ]
-]
-
-{ #category : 'accessing' }
-DSRecordHistory >> records [
-
-	^ records
-]
-
-{ #category : 'accessing' }
-DSRecordHistory >> records: anObject [
-
-	records := anObject
+			id ifNotNil: [
+					| window |
+					window := col first.
+					window toolInfo: (toolInfos at: id ifAbsent: [ nil ]) ] ].
 ]
 
 { #category : 'initialization' }
 DSRecordHistory >> reprocessRecords [
-	self processRecords: records asOrderedCollection 
+	self processRecords: events asOrderedCollection 
+]
+
+{ #category : 'private - history' }
+DSRecordHistory >> secondarySourcesOfDebuggerOpenings [
+
+	^ ({
+		   DSCodeActionRecord.
+		   DSAbstractDebuggerActionRecord } collect: [ :c | c withAllSubclasses ]) flattened
 ]
 
 { #category : 'accessing' }
 DSRecordHistory >> startTime [
 
-	^ records first dateTime asTime
+	^ events first dateTime asTime
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'accessing' }
 DSRecordHistory >> stopTime [
-	^records last dateTime asTime
+	^events last dateTime asTime
 ]
 
 { #category : 'accessing' }
@@ -631,15 +618,15 @@ DSRecordHistory >> timeTaken [
 	- last log minus the first log timestamp minus time gaps (or discrepancies)
 	- time gaps are calculated as the sum of time differences between two following events with a time delta > 5 min.
 	We consider that, if the user did not do anything (basically typing or moving the mouse) for more than 5 min, the she was away from the task."
-	^ ((records last dateTime asSeconds - records first dateTime asSeconds
-	   - self collectTimeDiscrepancies) / 60) asFloat
+
+	^ self absoluteTimeTaken - self computeIdleTime
 ]
 
 { #category : 'accessing' }
-DSRecordHistory >> toolInfosFor: anInteger [
+DSRecordHistory >> toolInfosFor: aWindowId [
 
-	^ ((windows groupedBy: #windowId) at: anInteger ifAbsent: [ ^ nil ])
-		  first toolInfos
+	^ ((windows groupedBy: #windowId) at: aWindowId ifAbsent: [ ^ nil ])
+		  first toolInfo
 ]
 
 { #category : 'accessing' }
@@ -647,8 +634,8 @@ DSRecordHistory >> usedTools [
 
 	| allTools filteredTools |
 	allTools := ((windows reject: [ :w |
-		              w toolInfos isNil or: [ w toolInfos isEmpty ] ])
-		             collect: [ :w | w toolInfos first toolClassName ])
+		              w toolInfo isNil or: [ w toolInfo isEmpty ] ])
+		             collect: [ :w | w toolInfo first toolClass ])
 		            asSet.
 	filteredTools := OrderedCollection new.
 	allTools do: [ :tName |
@@ -685,71 +672,73 @@ DSRecordHistory >> user: anObject [
 ]
 
 { #category : 'private - history' }
-DSRecordHistory >> validateMergedJumps [
-
-	1 to: mergedWindowJumps size do:[:i|
-		|current next|
-		current := mergedWindowJumps at: i.
-		current = mergedWindowJumps last ifFalse:[ 
-			|w wId| 
-			next := mergedWindowJumps at: i + 1.
-			self assert: next previous == current.
-			self assert: current next == next.
-			w := current window.
-			wId := current windowId.
-			
-			self assert: (current events allSatisfy: [:e| e windowId = w and:[e window == w]]).
-			self assert: (current events allSatisfy: [:e| e dateTime < next start dateTime])
-		]
-	]
-]
-
-{ #category : 'private - history' }
 DSRecordHistory >> validateWindows [
 	"Validates that each windows starts by a window entering or opening event, finishes by a window closing or leaving event, and that every event contained in the window happened between the opening event timestamp and the closing even timestamp"
 
 	| erroneousWindows |
 	erroneousWindows := Dictionary new.
 
-	windows do: [ :w |
-		| firstEvent lastEvent |
-		firstEvent := w events first.
-		lastEvent := w events last.
-
-		({
-			 DSWindowOpenedRecord.
-			 DSWindowActivatedRecord.
-			 DSMouseEnterWindowRecord.
-			 DSDebuggerOpeningRecord.
-			 DSBrowseContextRecord.
-			 DSQueryBrowseRecord } includes: firstEvent class) ifFalse: [
-			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
-				add: #opening -> firstEvent ].
-
-		({
-			 DSWindowClosedRecord.
-			 DSMouseLeaveWindowRecord } includes: lastEvent class) ifFalse: [
-			(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
-				add: #closing -> lastEvent ].
-
-		w events do: [ :e |
-			(e dateTime between: firstEvent dateTime and: lastEvent dateTime)
-				ifFalse: [
-					(erroneousWindows at: w ifAbsentPut: [ OrderedCollection new ])
-						add: #timestamp -> e ] ] ]
-
-	"erroneousWindows ifNotEmpty: [
+	windows do: [ :window | "erroneousWindows ifNotEmpty: [
 		Warning signal: (String streamContents: [ :str |
 				 str << erroneousWindows size printString.
 				 str space.
 				 str
 				 <<
 				 'potential sequence problem found in windows. This is just an information, you can proceed.' ]) ]"
+			| firstEvent lastEvent |
+			firstEvent := window events first.
+			lastEvent := window events last.
+
+			({
+				 DSWindowOpenedRecord.
+				 DSWindowActivatedRecord.
+				 DSMouseEnterWindowRecord } includes: firstEvent class) ifFalse: [
+				(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) add: #opening -> firstEvent ].
+
+			({
+				 DSWindowClosedRecord.
+				 DSMouseLeaveWindowRecord } includes: lastEvent class) ifFalse: [
+				(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) add: #closing -> lastEvent ].
+
+			(erroneousWindows at: window ifAbsentPut: [ OrderedCollection new ]) addAll:
+				(window events reject: [ :event | event dateTime between: firstEvent dateTime and: lastEvent dateTime ]) ].
+
+	^ erroneousWindows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowJumps [
+
+	^ windowJumps
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowJumps: aCollectionOfPeriods [
+
+	windowJumps := aCollectionOfPeriods
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowNames [
+
+	^ windowNames 
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windowNames: aDictionary [
+
+	windowNames := aDictionary 
 ]
 
 { #category : 'accessing' }
 DSRecordHistory >> windows [
 	^ windows
+]
+
+{ #category : 'accessing' }
+DSRecordHistory >> windows: aCollectionOfWindows [
+
+	windows := aCollectionOfWindows
 ]
 
 { #category : 'accessing' }

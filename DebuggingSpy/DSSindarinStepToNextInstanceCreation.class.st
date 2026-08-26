@@ -1,21 +1,16 @@
 "
-I specialize SindarinStepToNextInstanceCreation with debugging spy record creation.
-	I am meant to replace SindarinStepToNextInstanceCreation commands in the debugger in order to provide such instrumentation.
+I am a record for the 'Step to next instance creation' command in the Sindarin debugger.
 "
 Class {
 	#name : 'DSSindarinStepToNextInstanceCreation',
-	#superclass : 'SindarinStepToNextInstanceCreation',
-	#traits : 'DSTCommandForTests',
-	#classTraits : 'DSTCommandForTests classTrait',
-	#category : 'DebuggingSpy-Commands',
+	#superclass : 'DSAbstractSindarinActionRecord',
+	#category : 'DebuggingSpy-Records',
 	#package : 'DebuggingSpy',
-	#tag : 'Commands'
+	#tag : 'Records'
 }
 
-{ #category : 'executing' }
-DSSindarinStepToNextInstanceCreation >> execute [
+{ #category : 'accessing' }
+DSSindarinStepToNextInstanceCreation >> eventName [
 
-	[DSStepActionRecord for: self] on: Error do:[:e| DSSpy log: #ERROR key: #TO_NEXT_INSTANCE_CREATION].
-	self forTests ifTrue: [ ^ self ].
-	^ super execute
+	^ 'Step to next instance creation'
 ]
