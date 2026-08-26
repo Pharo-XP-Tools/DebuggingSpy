@@ -4,11 +4,11 @@ Extension { #name : 'ClyGroupWindowMorph' }
 ClyGroupWindowMorph class >> windowColor [
 
 	<DSWindowColor>
-	^ Color fromHexString: '#996D49'
+	^ Color fromHexString: '#B88456'
 ]
 
 { #category : '*DebuggingSpy-Browser' }
 ClyGroupWindowMorph class >> windowType [
 
-	^ 'Method browser'
+	^ 'Method browser group'
 ]

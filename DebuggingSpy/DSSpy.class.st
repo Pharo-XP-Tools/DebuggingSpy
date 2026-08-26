@@ -75,12 +75,6 @@ DSSpy class >> handlingError: anObject [
 	^ HandlingError := anObject
 ]
 
-{ #category : 'logging' }
-DSSpy class >> id [
-
-	^ id ifNil: [ id := UUID new ]
-]
-
 { #category : 'events - debugpoints' }
 DSSpy class >> indexesOfHaltNodesIn: aMethod [
 

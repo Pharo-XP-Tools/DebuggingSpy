@@ -2,7 +2,8 @@ Class {
 	#name : 'DSRecordBrowserPresenterTest',
 	#superclass : 'TestCase',
 	#instVars : [
-		'browser'
+		'browser',
+		'test_folder_name'
 	],
 	#category : 'DebuggingSpy-Browser-Tests',
 	#package : 'DebuggingSpy-Browser-Tests'
@@ -33,7 +34,7 @@ DSRecordBrowserPresenterTest >> generateRecordsFile [
 DSRecordBrowserPresenterTest >> generateRecordsFileFor: someRecords [
 	"Generates a file of records and returns its file reference."
 
-	^ self writeRecords: someRecords inFile: self temporaryDirectory / ('ds-spy-test-' , UUID new asString)
+	^ self writeRecords: someRecords inFile: test_folder_name / ('ds-spy-test-' , UUID new asString)
 ]
 
 { #category : 'helpers' }
@@ -71,7 +72,10 @@ DSRecordBrowserPresenterTest >> recordsTablePresenter [
 DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
-	browser := DSRecordBrowserPresenter new
+	browser := DSRecordBrowserPresenter new.
+	test_folder_name := 'temporary_test' asFileReference.
+	test_folder_name ensureCreateDirectory
+	
 ]
 
 { #category : 'helpers' }
@@ -84,6 +88,7 @@ DSRecordBrowserPresenterTest >> statisticsPresenter [
 DSRecordBrowserPresenterTest >> tearDown [
 
 	DSRecordBrowserPresenter resetBrowser.
+	test_folder_name ensureDeleteAll.
 	super tearDown
 ]
 
@@ -93,16 +98,16 @@ DSRecordBrowserPresenterTest >> testAddFile [
 	| fileRef |
 	fileRef := self generateRecordsFile.
 
-	browser addFile: self temporaryDirectory.
+	browser addFile: test_folder_name.
 
 	self assert: browser files size equals: 1.
 	self assert: self filesPresenter roots size equals: 1.
-	self assert: self filesPresenter selectedItem equals: self temporaryDirectory.
+	self assert: self filesPresenter selectedItem equals: test_folder_name.
 
 	browser addFile: fileRef. "fileRef is in temporary directory so it should not be added again"
 	self assert: browser files size equals: 1.
 	self assert: self filesPresenter roots size equals: 1.
-	self assert: self filesPresenter selectedItem equals: self temporaryDirectory
+	self assert: self filesPresenter selectedItem equals: test_folder_name
 ]
 
 { #category : 'tests' }
@@ -142,21 +147,30 @@ DSRecordBrowserPresenterTest >> testColorAssociations [
 	| associations |
 	associations := {
 		                ((Color fromHexString: '#1f48ff') -> 'Browser').
-		                ((Color fromHexString: '#772980') -> 'Debug Point Browser').
+		                ((Color fromHexString: '#772980')
+		                 -> 'Debug Point Browser').
 		                ((Color fromHexString: '#345e54') -> 'Epicea').
 		                ((Color fromHexString: '#00e5ff') -> 'Iceberg').
-		                ((Color fromHexString: '#ff9100') -> 'Critique Browser').
+		                ((Color fromHexString: '#ff9100')
+		                 -> 'Critique Browser').
 		                ((Color fromHexString: '#ff2200') -> 'Debugger').
 		                ((Color fromHexString: '#fad314') -> 'Inspector').
 		                ((Color fromHexString: '#70B77E') -> 'Playground').
 		                (Color white -> 'Rewriter').
 		                ((Color fromHexString: '#ec45ff') -> 'Debugging Spy').
-		                ((Color fromHexString: '#996D49') -> 'Method browser').
-		                ((Color fromHexString: '#B88456') -> 'Method browser group').
-		                ((Color fromHexString: '#b3b3b3') -> 'Unknown Window') }.
+		                ((Color fromHexString: '#996D49')
+		                 -> 'Method browser').
+		                ((Color fromHexString: '#B88456')
+		                 -> 'Method browser group').
+		                ((Color fromHexString: '#b3b3b3')
+		                 -> 'Unknown Window') }.
 
-	self assert: associations size equals: DSRecordBrowserPresenter colorAssociations size.
-	associations do: [ :asso | self assert: (DSRecordBrowserPresenter colorAssociations includes: asso) ]
+	self
+		assert: associations size
+		equals: DSRecordBrowserPresenter colorAssociations size.
+	associations do: [ :asso |
+			self assert:
+				(DSRecordBrowserPresenter colorAssociations includes: asso) ]
 ]
 
 { #category : 'tests' }
@@ -171,11 +185,13 @@ DSRecordBrowserPresenterTest >> testCreatingAndOpeningBrowser [
 DSRecordBrowserPresenterTest >> testFileAdding [
 
 	| fileRef |
-	fileRef := self writeRecords: self getRecordExamples inFile: self temporaryDirectory / 'ds-spy/test'.
+	fileRef := self
+		           writeRecords: self getRecordExamples
+		           inFile: test_folder_name / 'ds-spy/test'.
 	fileRef ensureCreateFile.
-	browser addFile: self temporaryDirectory.
+	browser addFile: test_folder_name.
 
-	self assert: (browser isFileAdded: self temporaryDirectory).
+	self assert: (browser isFileAdded: test_folder_name).
 	self assert: (browser isFileAdded: fileRef).
 	self deny: (browser isFileAdded: 'notAddedFile' asFileReference)
 ]
@@ -258,7 +274,7 @@ DSRecordBrowserPresenterTest >> testGetRecordsFromFileReference [
 	self assertThat: records third equals: fileRecords third.
 	self assertThat: records fourth equals: fileRecords fourth.
 
-	fileRecords := browser getRecordsFromFileReference: self temporaryDirectory.
+	fileRecords := browser getRecordsFromFileReference: test_folder_name.
 
 	self assertThat: records first equals: fileRecords first.
 	self assertThat: records second equals: fileRecords second.
@@ -286,9 +302,11 @@ DSRecordBrowserPresenterTest >> testGetRecordsFromFolderReference [
 			                 dateTime: (DateAndTime fromSeconds: 6)) }.
 
 	self generateRecordsFileFor: records.
-	self writeRecords: otherRecords inFile: self temporaryDirectory / 'otherRecords'.
+	self
+		writeRecords: otherRecords
+		inFile: test_folder_name / 'otherRecords'.
 
-	fileRecords := browser getRecordsFromFileReference: self temporaryDirectory.
+	fileRecords := browser getRecordsFromFileReference: test_folder_name.
 	self assert: fileRecords size equals: 8.
 
 	self assertThat: fileRecords first equals: otherRecords first.

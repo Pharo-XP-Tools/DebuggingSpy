@@ -36,10 +36,11 @@ DSRecordBrowserPresenter class >> colorAssociations [
 	"Return all associations between the color and the corresponding window type."
 
 	| method methodClass |
-	^ (Pragma allNamed: #DSWindowColor) collect: [ :pragma |
-			  method := pragma method.
-			  methodClass := method methodClass.
-			  (method valueWithReceiver: methodClass) -> (methodClass >> #windowType valueWithReceiver: methodClass) ]
+	^ ((Pragma allNamed: #DSWindowColor) collect: [ :pragma |
+			   method := pragma method.
+			   methodClass := method methodClass.
+			   (method valueWithReceiver: methodClass)
+			   -> (methodClass >> #windowType valueWithReceiver: methodClass) ])
 ]
 
 { #category : 'accessing' }
