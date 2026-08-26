@@ -77,7 +77,7 @@ DSRecordDataFilterTest >> testHash [
 	filter hash: #first.
 	filteredRecord := filter applyOn: self recordExample.
 
-	self assert: (filter operations at: 'first') class equals: CleanBlockClosure.
+	self assert: (filter operations at: 'first') class equals: FullBlockClosure.
 
 	self assert: filteredRecord first class equals: SmallInteger.
 	self deny: filteredRecord first equals: 1
@@ -114,8 +114,8 @@ DSRecordDataFilterTest >> testTransformWith [
 	filter transform: #second with: [ :aString | aString asUppercase ].
 	filteredRecord := filter applyOn: self recordExample.
 
-	self assert: (filter operations at: 'first') class equals: CleanBlockClosure.
-	self assert: (filter operations at: 'second') class equals: CleanBlockClosure.
+	self assert: (filter operations at: 'first') class equals: FullBlockClosure.
+	self assert: (filter operations at: 'second') class equals: FullBlockClosure.
 
 	self assert: filteredRecord first equals: 2.
 	self assert: filteredRecord second equals: 'SECOND VALUE'
@@ -125,7 +125,7 @@ DSRecordDataFilterTest >> testTransformWith [
 DSRecordDataFilterTest >> testWith [
 
 	filter with: #first.
-	self assert: (filter operations at: 'first') class equals: CleanBlockClosure.
+	self assert: (filter operations at: 'first') class equals: FullBlockClosure.
 
 	self assert: (filter applyOn: self recordExample) first equals: 1
 ]

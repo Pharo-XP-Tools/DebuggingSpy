@@ -164,7 +164,10 @@ DSSpyInstrumenterTest >> getSindarinDebuggerForTesting [
 	| sindarinDebugger dummyActionModel |
 	sindarinDebugger := SindarinTestCommandDebugger new.
 	dummyActionModel := (StTestDebuggerProvider new debuggerWithContext:
-		                     [ SindarinTestObjectToVisit new createInstanceWithNew ] asContext) debuggerClientModel.
+		                     [
+		                     SindarinTestObjectToVisit new
+			                     createInstanceWithNew ] asContext)
+		                    debuggerActionModel.
 	sindarinDebugger session: dummyActionModel session.
 	dummyActionModel clear.
 
