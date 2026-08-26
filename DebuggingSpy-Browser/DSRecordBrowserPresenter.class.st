@@ -155,7 +155,7 @@ DSRecordBrowserPresenter >> activityPresenter [
 				   evaluated: [ :windowJump | windowJump events size ]);
 		  beResizable;
 		  actions: (SpActionGroup new
-				   add: (self commonActionsFor: presenter);
+				   add: (self commonActionsFor: presenter) beRoot;
 				   yourself)
 ]
 
@@ -287,8 +287,9 @@ DSRecordBrowserPresenter >> fileListPresenter [
 					  ifTrue: [ file children ]
 					  ifFalse: [ {  } ] ];
 		  actions: (SpActionGroup new
-				   add: (self commonActionsFor: presenter);
-				   add: (self fileActionsFor: presenter));
+				   add: (self commonActionsFor: presenter) beRoot;
+				   add: (self fileActionsFor: presenter) beRoot;
+				   yourself);
 		  hideColumnHeaders
 ]
 
@@ -449,8 +450,9 @@ DSRecordBrowserPresenter >> recordsPresenter [
 				   title: 'Time';
 				   evaluated: [ :record | record printAsFormattedTime ]);
 		  actions: (SpActionGroup new
-				   add: (self commonActionsFor: presenter);
-				   add: (self recordsActionsFor: presenter));
+				   add: (self commonActionsFor: presenter) beRoot;
+				   add: (self recordsActionsFor: presenter) beRoot;
+				   yourself);
 		  beResizable
 ]
 
