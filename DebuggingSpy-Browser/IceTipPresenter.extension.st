@@ -1,14 +1,14 @@
-Extension { #name : 'IceTipRepositoryBrowser' }
+Extension { #name : 'IceTipPresenter' }
 
 { #category : '*DebuggingSpy-Browser' }
-IceTipRepositoryBrowser class >> windowColor [
+IceTipPresenter class >> windowColor [
 
 	<DSWindowColor>
 	^ Color fromHexString: '#00e5ff'
 ]
 
 { #category : '*DebuggingSpy-Browser' }
-IceTipRepositoryBrowser class >> windowType [
+IceTipPresenter class >> windowType [
 
 	^ 'Iceberg'
 ]
