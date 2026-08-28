@@ -603,7 +603,7 @@ DSRecordBrowserPresenter >> updateRecordTypesPresenter [
 { #category : 'operations' }
 DSRecordBrowserPresenter >> updateRecordsPresenter: aRecordPresenter with: anEventsContainer [
 	"Update a record presenter using an object that defines a method returning its events."
-
+	
 	anEventsContainer
 		ifNil: [ aRecordPresenter roots: {  } ]
 		ifNotNil: [
