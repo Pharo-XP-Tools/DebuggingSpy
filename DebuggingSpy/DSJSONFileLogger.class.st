@@ -32,9 +32,8 @@ DSJSONFileLogger class >> dictToObject: anObject [
 	anObject isArray ifTrue: [ ^ anObject collect: [ :element | self dictToObject: element ] ].
 
 	anObject isDictionary ifTrue: [
-			self isJSONObject
-				ifTrue: [ self translateJSONObject: anObject ]
-				ifFalse: [ ^ anObject collect: [ :element | self dictToObject: element ] ] ].
+			(self isJSONObject: anObject) ifTrue: [ ^ self translateJSONObject: anObject ].
+			^ anObject collect: [ :element | self dictToObject: element ] ].
 
 	^ anObject
 ]
@@ -42,7 +41,7 @@ DSJSONFileLogger class >> dictToObject: anObject [
 { #category : 'utilities' }
 DSJSONFileLogger class >> isJSONObject: aDictionary [
 
-	^ aDictionary keys = { 'name'. 'attributes' }
+	^ aDictionary keys = { 'attributes'. 'name' }
 ]
 
 { #category : 'utilities' }
@@ -67,7 +66,7 @@ DSJSONFileLogger class >> objectToDict: anObject [
 DSJSONFileLogger class >> translateJSONObject: aJSONObject [
 
 	| new_object attributes |
-	new_object := Smalltalk at: (aJSONObject at: 'name') asSymbol new.
+	new_object := (Smalltalk at: (aJSONObject at: 'name') asSymbol) new.
 
 	attributes := aJSONObject at: 'attributes'.
 
@@ -75,7 +74,7 @@ DSJSONFileLogger class >> translateJSONObject: aJSONObject [
 			new_object class
 				slotNamed: instVarName asSymbol
 				ifFound: [ :slot | slot write: (self dictToObject: value) to: new_object ]
-				ifNone: [ InstanceVariableNotFound signalFor: instVarName asString ] ].
+				ifNone: [ InstanceVariableNotFound signalFor: new_object class asString , '>' , instVarName asString ] ].
 
 	^ new_object
 ]
