@@ -38,6 +38,13 @@ DSJSONFileLogger class >> dictToObject: anObject [
 	^ anObject
 ]
 
+{ #category : 'api' }
+DSJSONFileLogger class >> fromJSON: aString [
+	"Translate a JSON string into a Pharo object"
+
+	^ self dictToObject: (NeoJSONReader fromString: aString)
+]
+
 { #category : 'utilities' }
 DSJSONFileLogger class >> isJSONObject: aDictionary [
 
@@ -60,6 +67,13 @@ DSJSONFileLogger class >> objectToDict: anObject [
 			instanceVariableNames do: [ :each |
 				(dict_object at: 'attributes') at: each asString put: (self objectToDict: (anObject instVarNamed: each)) ] ].
 	^ dict_object
+]
+
+{ #category : 'api' }
+DSJSONFileLogger class >> toJSON: anObject [
+	"Translate a Pharo object into a JSON string"
+
+	^ NeoJSONWriter toString: (self objectToDict: anObject)
 ]
 
 { #category : 'utilities' }

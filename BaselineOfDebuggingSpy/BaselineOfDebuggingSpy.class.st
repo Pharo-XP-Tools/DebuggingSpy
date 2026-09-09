@@ -10,6 +10,7 @@ BaselineOfDebuggingSpy >> baseline: spec [
 
 	<baseline>
 	spec baseline: 'ExperimentModel' with: [ spec repository: 'github://Pharo-XP-Tools/ExperimentModel:main' ].
+	spec baseline: 'NeoJSON' with: [ spec repository: 'github://svenvc/NeoJSON/repository' ].
 
 	spec for: #common do: [
 			spec postLoadDoIt: #postloadAction.
