@@ -96,6 +96,12 @@ DSFileLogger class >> loggingFileReference: aFileReference [
 	loggingFileReference := aFileReference
 ]
 
+{ #category : 'logging' }
+DSFileLogger class >> materialize: aFilename [
+
+	self subclassResponsibility
+]
+
 { #category : 'class initialization' }
 DSFileLogger class >> reset [
 
@@ -160,5 +166,19 @@ DSFileLogger class >> surveyFileExtension [
 { #category : 'logging' }
 DSFileLogger class >> writeToFile: aString [
 
-	self subclassResponsibility 
+	| str strSize firstWrite writingPosition |
+	str := self stream.
+	strSize := str writeStreamSize.
+	firstWrite := strSize = 0.
+	firstWrite ifTrue: [ str nextPut: $[ ].
+	writingPosition := firstWrite
+		                   ifTrue: [ str position ]
+		                   ifFalse: [ strSize - 1 ].
+	str position: writingPosition.
+	firstWrite ifFalse: [
+			str nextPut: $,.
+			str crlf ].
+	str nextPutAll: aString.
+	str nextPut: $].
+	str close
 ]

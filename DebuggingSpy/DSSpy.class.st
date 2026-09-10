@@ -156,7 +156,7 @@ DSSpy class >> logger: aLoggerClass [
 { #category : 'serialize/materialize' }
 DSSpy class >> materialize: aFilename [
 
-	^STON fromString: aFilename asFileReference contents
+	^ self logger materialize: aFilename
 ]
 
 { #category : 'events - methods' }

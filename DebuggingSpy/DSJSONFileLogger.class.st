@@ -51,6 +51,18 @@ DSJSONFileLogger class >> isJSONObject: aDictionary [
 	^ aDictionary keys = { 'attributes'. 'name' }
 ]
 
+{ #category : 'logging' }
+DSJSONFileLogger class >> log: aDSEventRecord [
+
+	self toJSON: aDSEventRecord
+]
+
+{ #category : 'logging' }
+DSJSONFileLogger class >> materialize: aFilename [
+
+	^ self fromJSON: aFilename asFileReference contents
+]
+
 { #category : 'utilities' }
 DSJSONFileLogger class >> objectToDict: anObject [
 	"Converts a Pharo object into a JSON like object"

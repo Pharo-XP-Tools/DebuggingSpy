@@ -22,21 +22,7 @@ DSSTONFileLogger class >> log: aDSEventRecord [
 ]
 
 { #category : 'logging' }
-DSSTONFileLogger class >> writeToFile: aString [
+DSSTONFileLogger class >> materialize: aFilename [
 
-	| str strSize firstWrite writingPosition |
-	str := self stream.
-	strSize := str writeStreamSize.
-	firstWrite := strSize = 0.
-	firstWrite ifTrue: [ str nextPut: $[ ].
-	writingPosition := firstWrite
-		                   ifTrue: [ str position ]
-		                   ifFalse: [ strSize - 1 ].
-	str position: writingPosition.
-	firstWrite ifFalse: [
-			str nextPut: $,.
-			str crlf ].
-	str nextPutAll: aString.
-	str nextPut: $].
-	str close
+	^ STON fromString: aFilename asFileReference contents
 ]
