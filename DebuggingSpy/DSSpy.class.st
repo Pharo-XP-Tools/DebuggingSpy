@@ -61,7 +61,7 @@ DSSpy class >> endTask: aTask [
 
 { #category : 'task management' }
 DSSpy class >> forceRunningTask: aTask [
-	logger setupLoggerForTask: aTask.
+	self logger setupLoggerForTask: aTask.
 	taskStarted := true
 ]
 

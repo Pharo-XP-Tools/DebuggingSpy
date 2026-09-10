@@ -16,6 +16,7 @@ DSSTONFileLoggerTest >> setUp [
 
 	super setUp.
 	DSSpy testingSession: true.
+	DSSpy logger: DSSTONFileLogger.
 	logger := DSSTONFileLogger.
 	survey := DSTestSurvey new.
 	task := DSTestTask new
