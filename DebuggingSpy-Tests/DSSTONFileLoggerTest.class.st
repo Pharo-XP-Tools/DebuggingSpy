@@ -26,6 +26,7 @@ DSSTONFileLoggerTest >> tearDown [
 
 	DSSpy resetSpy.
 	DSRecordRegistry current reset.
+	logger reset.
 	
 	'tests' asFileReference ensureDeleteAll.
 	super tearDown

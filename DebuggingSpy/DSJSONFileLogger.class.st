@@ -54,7 +54,7 @@ DSJSONFileLogger class >> isJSONObject: aDictionary [
 { #category : 'logging' }
 DSJSONFileLogger class >> log: aDSEventRecord [
 
-	self toJSON: aDSEventRecord
+	self writeToFile: (self toJSON: aDSEventRecord)
 ]
 
 { #category : 'logging' }
@@ -68,7 +68,7 @@ DSJSONFileLogger class >> objectToDict: anObject [
 	"Converts a Pharo object into a JSON like object"
 
 	| instanceVariableNames dict_object |
-	(anObject isString or: [ anObject isNumber ]) ifTrue: [ ^ anObject ].
+	((anObject isString or: [ anObject isNumber ]) or: [ anObject isNil ]) ifTrue: [ ^ anObject ].
 
 	(anObject isArray or: [ anObject isDictionary ]) ifTrue: [ ^ anObject collect: [ :element | self objectToDict: element ] ].
 

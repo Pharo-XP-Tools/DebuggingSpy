@@ -48,14 +48,14 @@ DSSpy class >> critical: aBlock [
 DSSpy class >> defaultLoggerClass [
 	"Defines the default logger class to use"
 
-	^ DSSTONFileLogger
+	^ DSJSONFileLogger 
 ]
 
 { #category : 'task management' }
 DSSpy class >> endTask: aTask [
 
 	DSEndingTaskRecord for: aTask.
-	logger reset.
+	logger ifNotNil: [ logger reset ].
 	taskStarted := false
 ]
 
@@ -330,7 +330,9 @@ DSSpy class >> recordingSession: aBoolean [
 { #category : 'initialization' }
 DSSpy class >> resetSpy [
 
-	logger ifNotNil: [ logger reset ].
+	logger ifNotNil: [
+			logger reset.
+			logger := nil ].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false.
 	testingSession := false.
@@ -359,7 +361,7 @@ DSSpy class >> serialize: aDSEventRecord [
 { #category : 'task management' }
 DSSpy class >> startTask: aTask [
 
-	logger setupLoggerForTask: aTask.
+	self logger setupLoggerForTask: aTask.
 	taskStarted := true.
 	DSStartTaskRecord for: aTask
 ]
