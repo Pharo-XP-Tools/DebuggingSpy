@@ -209,6 +209,7 @@ DSSpyTest >> tearDown [
 DSSpyTest >> testCloseSurvey [
 
 	| taskLoggingFileName recordedSurvey |
+	DSSpy logger: DSSTONFileLogger.
 	DSSpy logOnlyWhenTaskStarted: true.
 	DSSpy startTask: task.
 	DSRecordRegistry autoSerialize: true.
@@ -322,8 +323,9 @@ DSSpyTest >> testDebugPointRemoved [
 
 { #category : 'tests - logging' }
 DSSpyTest >> testDefaultLogger [
+
 	DSSpy logger: nil.
-	self assert: DSSpy logger class equals: DSSpy defaultLoggerClass 
+	self assert: DSSpy logger equals: DSSpy defaultLoggerClass
 ]
 
 { #category : 'tests - task management' }
@@ -355,8 +357,18 @@ DSSpyTest >> testLog [
 
 	DSSpy logger loggingFileReference ensureDelete.
 	DSSpy logOnlyWhenTaskStarted: false.
+	DSSpy logger: DSSTONFileLogger.
 	DSSpy log: 'test'.
-	self assert: DSSpy logger loggingFileReference readStream contents equals: '[''test'']'
+
+	self assert: DSSpy logger loggingFileReference readStream contents equals: '[''test'']'.
+
+	DSSpy resetSpy.
+	DSSpy logger loggingFileReference ensureDelete.
+	DSSpy logOnlyWhenTaskStarted: false.
+	DSSpy logger: DSJSONFileLogger.
+	DSSpy log: 'test'.
+
+	self assert: DSSpy logger loggingFileReference readStream contents equals: '["test"]'
 ]
 
 { #category : 'tests - logging' }
@@ -799,11 +811,10 @@ DSSpyTest >> testScopeSourceCodeChangesRecording [
 { #category : 'tests - serialize/materialize' }
 DSSpyTest >> testSerialize [
 
+	DSSpy logger: DSSTONFileLogger.
 	record := DSLoggingErrorRecord for: #TEST.
 	DSSpy serialize: record.
-	self
-		assert: DSSpy logger loggingFileReference contents
-		equals: '[' , (STON toString: record) , ']'
+	self assert: DSSpy logger loggingFileReference contents equals: '[' , (STON toString: record) , ']'
 ]
 
 { #category : 'tests - task management' }
