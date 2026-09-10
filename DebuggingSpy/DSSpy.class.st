@@ -330,7 +330,7 @@ DSSpy class >> recordingSession: aBoolean [
 { #category : 'initialization' }
 DSSpy class >> resetSpy [
 
-	logger reset.
+	logger ifNotNil: [ logger reset ].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false.
 	testingSession := false.
