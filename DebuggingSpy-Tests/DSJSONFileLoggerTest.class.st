@@ -31,12 +31,13 @@ DSJSONFileLoggerTest >> testDictToObject [
 		                     {
 			                     ('apple' -> 3).
 			                     ('banana' -> 43).
-			                     ('cherry' -> 18) } asDictionary }.
+			                     ('cherry' -> 18) } asDictionary.
+		                     { ('class' -> 'DSTestTask') } asDictionary }.
 
 	result_object := DSJSONFileLogger dictToObject: complexObjectDict.
 
 	self assert: result_object isArray.
-	self assert: result_object size equals: 4.
+	self assert: result_object size equals: 5.
 	self assert: result_object first equals: 42.
 	self assert: result_object second equals: 'testString'.
 	self assert: result_object third class equals: DSTestRecord.
@@ -48,7 +49,8 @@ DSJSONFileLoggerTest >> testDictToObject [
 	self assert: result_object fourth equals: {
 			('apple' -> 3).
 			('banana' -> 43).
-			('cherry' -> 18) } asDictionary
+			('cherry' -> 18) } asDictionary.
+	self assert: result_object fifth equals: DSTestTask
 ]
 
 { #category : 'tests' }
@@ -64,12 +66,13 @@ DSJSONFileLoggerTest >> testObjectToDict [
 		                 {
 			                 ('apple' -> 3).
 			                 ('banana' -> 43).
-			                 ('cherry' -> 18) } asDictionary }.
+			                 ('cherry' -> 18) } asDictionary.
+		                 DSTestTask }.
 
 	result_dict := DSJSONFileLogger objectToDict: complexObject.
 
 	self assert: result_dict isArray.
-	self assert: result_dict size equals: 4.
+	self assert: result_dict size equals: 5.
 	self assert: result_dict first equals: 42.
 	self assert: result_dict second equals: 'testString'.
 	self assert: (result_dict third at: 'name') equals: 'DSTestRecord'.
@@ -78,5 +81,6 @@ DSJSONFileLoggerTest >> testObjectToDict [
 	self assert: result_dict fourth equals: {
 			('apple' -> 3).
 			('banana' -> 43).
-			('cherry' -> 18) } asDictionary
+			('cherry' -> 18) } asDictionary.
+	self assert: result_dict fifth equals: { ('class' -> 'DSTestTask') } asDictionary
 ]

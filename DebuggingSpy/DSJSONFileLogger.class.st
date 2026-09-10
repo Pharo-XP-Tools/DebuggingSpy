@@ -33,6 +33,7 @@ DSJSONFileLogger class >> dictToObject: anObject [
 
 	anObject isDictionary ifTrue: [
 			(self isJSONObject: anObject) ifTrue: [ ^ self translateJSONObject: anObject ].
+			(self isJSONClass: anObject) ifTrue: [ ^ self translateJSONClass: anObject ].
 			^ anObject collect: [ :element | self dictToObject: element ] ].
 
 	^ anObject
@@ -43,6 +44,12 @@ DSJSONFileLogger class >> fromJSON: aString [
 	"Translate a JSON string into a Pharo object"
 
 	^ self dictToObject: (NeoJSONReader fromString: aString)
+]
+
+{ #category : 'utilities' }
+DSJSONFileLogger class >> isJSONClass: aDictionary [
+
+	^ aDictionary keys = { 'class' }
 ]
 
 { #category : 'utilities' }
@@ -70,6 +77,8 @@ DSJSONFileLogger class >> objectToDict: anObject [
 	| instanceVariableNames dict_object |
 	((anObject isString or: [ anObject isNumber ]) or: [ anObject isNil ]) ifTrue: [ ^ anObject ].
 
+	anObject isClass ifTrue: [ ^ { ('class' -> anObject asString) } asDictionary ].
+
 	(anObject isArray or: [ anObject isDictionary ]) ifTrue: [ ^ anObject collect: [ :element | self objectToDict: element ] ].
 
 	dict_object := {
@@ -86,6 +95,12 @@ DSJSONFileLogger class >> toJSON: anObject [
 	"Translate a Pharo object into a JSON string"
 
 	^ NeoJSONWriter toString: (self objectToDict: anObject)
+]
+
+{ #category : 'utilities' }
+DSJSONFileLogger class >> translateJSONClass: aJSONObject [
+
+	^ Smalltalk at: (aJSONObject at: 'class') asSymbol
 ]
 
 { #category : 'utilities' }
