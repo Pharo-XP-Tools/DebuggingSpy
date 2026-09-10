@@ -322,8 +322,9 @@ DSSpyTest >> testDebugPointRemoved [
 
 { #category : 'tests - logging' }
 DSSpyTest >> testDefaultLogger [
+
 	DSSpy logger: nil.
-	self assert: DSSpy logger class equals: DSSpy defaultLoggerClass 
+	self assert: DSSpy logger equals: DSSpy defaultLoggerClass
 ]
 
 { #category : 'tests - task management' }

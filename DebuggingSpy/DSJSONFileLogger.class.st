@@ -19,7 +19,7 @@ where attributes can be strings, arrays, numbers, dictionaries or object represe
 "
 Class {
 	#name : 'DSJSONFileLogger',
-	#superclass : 'Object',
+	#superclass : 'DSFileLogger',
 	#category : 'DebuggingSpy-Loggers',
 	#package : 'DebuggingSpy',
 	#tag : 'Loggers'

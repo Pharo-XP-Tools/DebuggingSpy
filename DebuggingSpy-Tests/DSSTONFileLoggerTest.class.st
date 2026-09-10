@@ -13,9 +13,10 @@ Class {
 
 { #category : 'running' }
 DSSTONFileLoggerTest >> setUp [
+
 	super setUp.
 	DSSpy testingSession: true.
-	logger := DSSpy logger.
+	logger := DSSTONFileLogger.
 	survey := DSTestSurvey new.
 	task := DSTestTask new
 ]
