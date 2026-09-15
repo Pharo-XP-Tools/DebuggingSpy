@@ -164,27 +164,27 @@ Data are represented in JSON as follow:
 - for objects, it is a dictionary with two elements: the key 'name' with the name (string) as value and the key 'attributes' with a dictionary of couple name/value. 
 ```JSON
 {
-    'name': 'myObject';
-    'attributes':
+    "name": "myObject",
+    "attributes":
         {
-            'first_attribute': 42;
-            'second_attrbiute': 'hello';
-            'third_attribute':
+            "first_attribute": 42,
+            "second_attrbiute": "hello",
+            "third_attribute":
                 {
-                    'name': 'anotherObject';
-                    'attributes':
+                    "name": "anotherObject",
+                    "attributes":
                         {
                             ...
-                        }
-                };
-        };
+                        },
+                },
+        },
 }
 ```
 
 - for class, it is a dictionary with one element: the key 'class' with the class name (string) as value.
 ```JSON
 {
-    'class': 'MyClass';
+    "class": "MyClass",
 }
 ```
 
