@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml/badge.svg)](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml)
 
-A tool to spy on debugging actions for research experiments. Data collected are stored in JSON format by default or STON (details in the [dedicated section]())
+A tool to spy on debugging actions for research experiments. Data collected are stored in JSON format by default or STON (details in the [dedicated section](#Storing-format))
 
 In order to install this repository in a Pharo 14 image, launch the following code in a Playground:
 
