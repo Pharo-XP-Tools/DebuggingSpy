@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml/badge.svg)](https://github.com/Pharo-XP-Tools/DebuggingSpy/actions/workflows/dsspy.yaml)
 
-A tool to spy on debugging actions for research experiments.
+A tool to spy on debugging actions for research experiments. Data collected are stored in JSON format by default or STON (details in the [dedicated section]())
 
 In order to install this repository in a Pharo 14 image, launch the following code in a Playground:
 
@@ -150,6 +150,55 @@ The history object exposes an API to explore the logged execution:
 ## Log data to a remote server
 
 For now, we do not have an integrated system for logging data to a remote server. However, it must be done using https://github.com/Pharo-XP-Tools/ExperimentModel 
+
+## Storing format
+
+Debugging Spy logs data in different formats. Indeed, there is a JSON logger (used by default) and a STON logger.
+
+### JSON 
+
+The JSON allows to visualize data from other telemetry tools (spying other IDEs) and so to use the visualization provide by the UI and by the `DSRecordHistory` object. 
+
+Data are represented in JSON as follow:
+
+- for objects, it is a dictionary with two elements: the key 'name' with the name (string) as value and the key 'attributes' with a dictionary of couple name/value. 
+```JSON
+{
+    'name': 'myObject';
+    'attributes':
+        {
+            'first_attribute': 42;
+            'second_attrbiute': 'hello';
+            'third_attribute':
+                {
+                    'name': 'anotherObject';
+                    'attributes':
+                        {
+                            ...
+                        }
+                };
+        };
+}
+```
+
+- for class, it is a dictionary with one element: the key 'class' with the class name (string) as value.
+```JSON
+{
+    'class': 'MyClass';
+}
+```
+
+- for `nil`, it is replaced by the `null` from JSON.
+
+- for array, elements are tranformed and keep the array as JSON array `[]`.
+
+- for dictionary, values are tranformed.
+
+- number and string are not changed. 
+
+### STON 
+
+Refer to [STON documentation](https://github.com/svenvc/ston).
 
 # Recorded events
 
