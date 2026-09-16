@@ -23,12 +23,6 @@ Class {
 }
 
 { #category : 'instance creation' }
-DSRecordHistory class >> fromSTON: aSTONStringRecord [
-
-	^ self on: (STON fromString: aSTONStringRecord)
-]
-
-{ #category : 'instance creation' }
 DSRecordHistory class >> on: anArray [
 	^self new processRecords: anArray
 ]

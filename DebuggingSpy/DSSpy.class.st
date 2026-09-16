@@ -46,20 +46,22 @@ DSSpy class >> critical: aBlock [
 
 { #category : 'logging' }
 DSSpy class >> defaultLoggerClass [
-	^DSSTONFileLogger
+	"Defines the default logger class to use"
+
+	^ DSJSONFileLogger 
 ]
 
 { #category : 'task management' }
 DSSpy class >> endTask: aTask [
 
 	DSEndingTaskRecord for: aTask.
-	logger reset.
+	logger ifNotNil: [ logger reset ].
 	taskStarted := false
 ]
 
 { #category : 'task management' }
 DSSpy class >> forceRunningTask: aTask [
-	logger setupLoggerForTask: aTask.
+	self logger setupLoggerForTask: aTask.
 	taskStarted := true
 ]
 
@@ -73,12 +75,6 @@ DSSpy class >> getRecordFileName [
 DSSpy class >> handlingError: anObject [
 
 	^ HandlingError := anObject
-]
-
-{ #category : 'logging' }
-DSSpy class >> id [
-
-	^ id ifNil: [ id := UUID new ]
 ]
 
 { #category : 'events - debugpoints' }
@@ -148,19 +144,19 @@ DSSpy class >> logWindowOpened: anEvent [
 { #category : 'accessing' }
 DSSpy class >> logger [
 
-	^ logger ifNil: [ logger := self defaultLoggerClass new ]
+	^ logger ifNil: [ logger := self defaultLoggerClass ]
 ]
 
 { #category : 'accessing' }
-DSSpy class >> logger: anObject [
+DSSpy class >> logger: aLoggerClass [
 
-	logger := anObject
+	logger := aLoggerClass
 ]
 
 { #category : 'serialize/materialize' }
 DSSpy class >> materialize: aFilename [
 
-	^STON fromString: aFilename asFileReference contents
+	^ self logger materialize: aFilename
 ]
 
 { #category : 'events - methods' }
@@ -334,7 +330,9 @@ DSSpy class >> recordingSession: aBoolean [
 { #category : 'initialization' }
 DSSpy class >> resetSpy [
 
-	logger ifNotNil: [ :l | l reset ].
+	logger ifNotNil: [
+			logger reset.
+			logger := nil ].
 	taskStarted := false.
 	logOnlyWhenTaskStarted := false.
 	testingSession := false.
@@ -363,7 +361,7 @@ DSSpy class >> serialize: aDSEventRecord [
 { #category : 'task management' }
 DSSpy class >> startTask: aTask [
 
-	logger setupLoggerForTask: aTask.
+	self logger setupLoggerForTask: aTask.
 	taskStarted := true.
 	DSStartTaskRecord for: aTask
 ]

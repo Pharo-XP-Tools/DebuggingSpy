@@ -71,7 +71,8 @@ DSRecordBrowserPresenterTest >> recordsTablePresenter [
 DSRecordBrowserPresenterTest >> setUp [
 
 	super setUp.
-	browser := DSRecordBrowserPresenter new
+	browser := DSRecordBrowserPresenter new.
+	DSSpy logger: DSSTONFileLogger
 ]
 
 { #category : 'helpers' }
@@ -84,6 +85,7 @@ DSRecordBrowserPresenterTest >> statisticsPresenter [
 DSRecordBrowserPresenterTest >> tearDown [
 
 	DSRecordBrowserPresenter resetBrowser.
+	DSSpy resetSpy.
 	super tearDown
 ]
 

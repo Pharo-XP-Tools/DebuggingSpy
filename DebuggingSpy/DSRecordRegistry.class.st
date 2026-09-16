@@ -45,12 +45,10 @@ DSRecordRegistry class >> log: aDSRecord [
 
 { #category : 'initialization' }
 DSRecordRegistry >> addRecord: aRecord [
-	self assert: aRecord dateTime notNil.
+
 	records add: aRecord.
 	DSRecordBrowserPresenter uniqueInstance updateLastRecord: aRecord.
-	self class log: aRecord.
-	self flag: 'Add debug code here to see what is traced'.
-	"aRecord crTrace"
+	self class log: aRecord
 ]
 
 { #category : 'initialization' }

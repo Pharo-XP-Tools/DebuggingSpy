@@ -13,9 +13,11 @@ Class {
 
 { #category : 'running' }
 DSSTONFileLoggerTest >> setUp [
+
 	super setUp.
 	DSSpy testingSession: true.
-	logger := DSSpy logger.
+	DSSpy logger: DSSTONFileLogger.
+	logger := DSSTONFileLogger.
 	survey := DSTestSurvey new.
 	task := DSTestTask new
 ]
@@ -25,6 +27,7 @@ DSSTONFileLoggerTest >> tearDown [
 
 	DSSpy resetSpy.
 	DSRecordRegistry current reset.
+	logger reset.
 	
 	'tests' asFileReference ensureDeleteAll.
 	super tearDown
