@@ -11,3 +11,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+SourceViewedRecord >> eventName [ 
+
+	^ 'Source viewed'
+]
