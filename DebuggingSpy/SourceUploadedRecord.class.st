@@ -12,3 +12,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+SourceUploadedRecord >> eventName [ 
+
+	^ 'Source uploaded'
+]

@@ -88,6 +88,8 @@ DSJSONFileLogger class >> objectToDict: anObject [
 	
 	anObject class = ByteArray ifTrue: [ ^ { ('ByteArray' -> anObject asArray) } asDictionary ].
 
+	anObject class = ByteArray ifTrue: [ ^ { ('ByteArray' -> anObject asArray) } asDictionary ].
+
 	(anObject isArray or: [ anObject isDictionary ]) ifTrue: [ ^ anObject collect: [ :element | self objectToDict: element ] ].
 
 	dict_object := {
@@ -119,12 +121,14 @@ DSJSONFileLogger class >> translateByteArray: aJSONByteArray [
 
 { #category : 'utilities' }
 DSJSONFileLogger class >> translateJSONClass: aJSONObject [
+	"Transform a JSON representing a class into a Pharo class object"
 
 	^ Smalltalk at: (aJSONObject at: 'class') asSymbol
 ]
 
 { #category : 'utilities' }
 DSJSONFileLogger class >> translateJSONObject: aJSONObject [
+	"Transform a JSON representing an object instance into a Pharo object instance"
 
 	| new_object attributes |
 	new_object := (Smalltalk at: (aJSONObject at: 'name') asSymbol) new.

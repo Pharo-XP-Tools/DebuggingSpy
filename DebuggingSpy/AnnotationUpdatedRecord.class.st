@@ -14,3 +14,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+AnnotationUpdatedRecord >> eventName [ 
+
+	^ 'Annotation upadated'
+]

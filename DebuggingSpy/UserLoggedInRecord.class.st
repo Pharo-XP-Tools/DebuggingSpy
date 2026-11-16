@@ -8,3 +8,9 @@ Class {
 	#package : 'DebuggingSpy',
 	#tag : 'Records'
 }
+
+{ #category : 'accessing' }
+UserLoggedInRecord >> eventName [ 
+
+	^ 'User logged in'
+]
