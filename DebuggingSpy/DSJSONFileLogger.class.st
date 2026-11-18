@@ -32,6 +32,7 @@ DSJSONFileLogger class >> dictToObject: anObject [
 	anObject isArray ifTrue: [ ^ anObject collect: [ :element | self dictToObject: element ] ].
 
 	anObject isDictionary ifTrue: [
+			(self isByteArray: anObject) ifTrue: [ ^ self translateByteArray: anObject ].
 			(self isJSONObject: anObject) ifTrue: [ ^ self translateJSONObject: anObject ].
 			(self isJSONClass: anObject) ifTrue: [ ^ self translateJSONClass: anObject ].
 			^ anObject collect: [ :element | self dictToObject: element ] ].
@@ -44,6 +45,12 @@ DSJSONFileLogger class >> fromJSON: aString [
 	"Translate a JSON string into a Pharo object"
 
 	^ self dictToObject: (NeoJSONReader fromString: aString)
+]
+
+{ #category : 'utilities' }
+DSJSONFileLogger class >> isByteArray: aDictionary [
+
+	^ aDictionary keys = { 'ByteArray' }
 ]
 
 { #category : 'utilities' }
@@ -75,9 +82,11 @@ DSJSONFileLogger class >> objectToDict: anObject [
 	"Converts a Pharo object into a JSON like object"
 
 	| instanceVariableNames dict_object |
-	((anObject isString or: [ anObject isNumber ]) or: [ anObject isNil ]) ifTrue: [ ^ anObject ].
+	(anObject isString or: [ anObject isNumber or: [ anObject isNil ] ]) ifTrue: [ ^ anObject ].
 
 	anObject isClass ifTrue: [ ^ { ('class' -> anObject asString) } asDictionary ].
+	
+	anObject class = ByteArray ifTrue: [ ^ { ('ByteArray' -> anObject asArray) } asDictionary ].
 
 	(anObject isArray or: [ anObject isDictionary ]) ifTrue: [ ^ anObject collect: [ :element | self objectToDict: element ] ].
 
@@ -95,6 +104,17 @@ DSJSONFileLogger class >> toJSON: anObject [
 	"Translate a Pharo object into a JSON string"
 
 	^ NeoJSONWriter toString: (self objectToDict: anObject)
+]
+
+{ #category : 'utilities' }
+DSJSONFileLogger class >> translateByteArray: aJSONByteArray [
+	"Transform a JSON representing a ByteArray into a Pharo ByteArray"
+	
+	| arrayOfNumber |
+	
+	arrayOfNumber := (aJSONByteArray at: 'ByteArray').
+
+	^ arrayOfNumber asByteArray 
 ]
 
 { #category : 'utilities' }
