@@ -25,7 +25,10 @@ DSJSONFileLoggerTest >> testDictToObject [
 							                         ('attributes' -> {
 								                          ('seconds' -> 7200).
 								                          ('nanos' -> 0) } asDictionary) } asDictionary) } asDictionary) } asDictionary).
-				                      ('uuid' -> 1).
+				                      ('uuid' -> {
+					                       ('name' -> 'UUID').
+					                       ('attributes' -> { ('uuidData' -> { ('ByteArray' -> { 34. 45. 21. 67 }) } asDictionary) } asDictionary) }
+					                       asDictionary).
 				                      ('first' -> 'firstAttribute').
 				                      ('second' -> 26) } asDictionary) } asDictionary.
 		                     {
@@ -43,7 +46,8 @@ DSJSONFileLoggerTest >> testDictToObject [
 	self assert: result_object third class equals: DSTestRecord.
 	self assert: result_object third dateTime class equals: DateAndTime.
 	self assert: result_object third dateTime asString equals: '2026-05-03T23:12:34+02:00'.
-	self assert: result_object third uuid equals: 1.
+	self assert: result_object third uuid class equals: UUID.
+	self assert: result_object third uuid uuidData equals: { 34. 45. 21. 67 } asByteArray.
 	self assert: result_object third first equals: 'firstAttribute'.
 	self assert: result_object third second equals: 26.
 	self assert: result_object fourth equals: {
@@ -51,6 +55,78 @@ DSJSONFileLoggerTest >> testDictToObject [
 			('banana' -> 43).
 			('cherry' -> 18) } asDictionary.
 	self assert: result_object fifth equals: DSTestTask
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testIsByteArray [
+
+	| byteArrayDict otherDict objectDict |
+	byteArrayDict := { ('ByteArray' -> [
+		                  12.
+		                  56.
+		                  89 ]) } asDictionary.
+	otherDict := {
+		             ('firstkey' -> 'something').
+		             ('secondkey' -> 93) } asDictionary.
+	objectDict := {
+		              ('name' -> 'MyObject').
+		              ('attributes' -> {
+			               ('first' -> 42).
+			               ('second' -> 'goodOne') } asDictionary) } asDictionary.
+
+	self assert: (DSJSONFileLogger isByteArray: byteArrayDict).
+	self deny: (DSJSONFileLogger isByteArray: otherDict).
+	self deny: (DSJSONFileLogger isByteArray: objectDict)
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testIsJSONClass [
+
+	| byteArrayDict otherDict objectDict jsonClassDict |
+	byteArrayDict := { ('ByteArray' -> [
+		                  12.
+		                  56.
+		                  89 ]) } asDictionary.
+	otherDict := {
+		             ('firstkey' -> 'something').
+		             ('secondkey' -> 93) } asDictionary.
+	objectDict := {
+		              ('name' -> 'MyObject').
+		              ('attributes' -> {
+			               ('first' -> 42).
+			               ('second' -> 'goodOne') } asDictionary) } asDictionary.
+
+	jsonClassDict := { ('class' -> 'UUID') } asDictionary.
+
+	self deny: (DSJSONFileLogger isJSONClass: byteArrayDict).
+	self deny: (DSJSONFileLogger isJSONClass: otherDict).
+	self deny: (DSJSONFileLogger isJSONClass: objectDict).
+	self assert: (DSJSONFileLogger isJSONClass: jsonClassDict)
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testIsJSONObject [
+
+	| byteArrayDict otherDict objectDict jsonClassDict |
+	byteArrayDict := { ('ByteArray' -> [
+		                  12.
+		                  56.
+		                  89 ]) } asDictionary.
+	otherDict := {
+		             ('firstkey' -> 'something').
+		             ('secondkey' -> 93) } asDictionary.
+	objectDict := {
+		              ('name' -> 'MyObject').
+		              ('attributes' -> {
+			               ('first' -> 42).
+			               ('second' -> 'goodOne') } asDictionary) } asDictionary.
+
+	jsonClassDict := { ('class' -> 'UUID') } asDictionary.
+
+	self deny: (DSJSONFileLogger isJSONObject: byteArrayDict).
+	self deny: (DSJSONFileLogger isJSONObject: otherDict).
+	self assert: (DSJSONFileLogger isJSONObject: objectDict).
+	self deny: (DSJSONFileLogger isJSONObject: jsonClassDict)
 ]
 
 { #category : 'tests' }
@@ -86,4 +162,67 @@ DSJSONFileLoggerTest >> testObjectToDict [
 	self assert: result_dict fifth equals: { ('class' -> 'DSTestTask') } asDictionary.
 	self assert: (result_dict sixth at: 'name') equals: 'UUID'.
 	self assert: ((result_dict sixth at: 'attributes') at: 'uuidData') equals: { ('ByteArray' -> { 32. 46. 68. 93 }) } asDictionary
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testTranslateByteArray [
+
+	| firstByteArray secondByteArray |
+	firstByteArray := { ('ByteArray' -> { 23. 56. 89 }) } asDictionary.
+	secondByteArray := { ('ByteArray' -> { 12. 76. 43 }) } asDictionary.
+
+	self assert: (DSJSONFileLogger translateByteArray: firstByteArray) equals: { 23. 56. 89 } asByteArray.
+	self assert: (DSJSONFileLogger translateByteArray: secondByteArray) equals: { 12. 76. 43 } asByteArray
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testTranslateJSONClass [
+
+	| firstClass secondClass thirdClass |
+	firstClass := { ('class' -> 'UUID') } asDictionary.
+	secondClass := { ('class' -> 'Array') } asDictionary.
+	thirdClass := { ('class' -> 'StPresenter') } asDictionary.
+
+	self assert: (DSJSONFileLogger translateJSONClass: firstClass) equals: UUID.
+	self assert: (DSJSONFileLogger translateJSONClass: secondClass) equals: Array.
+	self assert: (DSJSONFileLogger translateJSONClass: thirdClass) equals: StPresenter
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testTranslateJSONObject [
+
+	| firstJSONObject secondJSONObject thirdJSONObject firstObject secondObject thirdObject |
+	firstJSONObject := {
+		                   ('name' -> 'UUID').
+		                   ('attributes' -> { ('uuidData' -> { ('ByteArray' -> { 12. 56. 82 }) } asDictionary) } asDictionary) }
+		                   asDictionary.
+	secondJSONObject := {
+		                    ('name' -> 'DateAndTime').
+		                    ('attributes' -> {
+			                     ('seconds' -> 76416).
+			                     ('julianDayNumber' -> 2461174).
+			                     ('offset' -> {
+				                      ('name' -> 'Duration').
+				                      ('attributes' -> {
+					                       ('seconds' -> 3600).
+					                       ('nanos' -> 0) } asDictionary) } asDictionary) } asDictionary) } asDictionary.
+	thirdJSONObject := {
+		                   ('name' -> 'DSTestObject').
+		                   ('attributes' -> {
+			                    ('first' -> 34).
+			                    ('second' -> 'anAttribute').
+			                    ('other' -> 'anOtherOne') } asDictionary) } asDictionary.
+
+	firstObject := DSJSONFileLogger translateJSONObject: firstJSONObject.
+	secondObject := DSJSONFileLogger translateJSONObject: secondJSONObject.
+	thirdObject := DSJSONFileLogger translateJSONObject: thirdJSONObject.
+
+	self assert: firstObject class equals: UUID.
+	self assert: firstObject uuidData equals: { 12. 56. 82 } asByteArray.
+	self assert: secondObject class equals: DateAndTime.
+	self assert: secondObject asString equals: '2026-05-13T22:13:36+01:00'.
+	self assert: thirdObject class equals: DSTestObject.
+	self assert: thirdObject first equals: 34.
+	self assert: thirdObject second equals: 'anAttribute'.
+	self assert: thirdObject other equals: 'anOtherOne'
 ]
