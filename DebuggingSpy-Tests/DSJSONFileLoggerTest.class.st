@@ -67,12 +67,13 @@ DSJSONFileLoggerTest >> testObjectToDict [
 			                 ('apple' -> 3).
 			                 ('banana' -> 43).
 			                 ('cherry' -> 18) } asDictionary.
-		                 DSTestTask }.
+		                 DSTestTask.
+		                 (UUID new uuidData: { 32. 46. 68. 93 } asByteArray) }.
 
 	result_dict := DSJSONFileLogger objectToDict: complexObject.
 
 	self assert: result_dict isArray.
-	self assert: result_dict size equals: 5.
+	self assert: result_dict size equals: 6.
 	self assert: result_dict first equals: 42.
 	self assert: result_dict second equals: 'testString'.
 	self assert: (result_dict third at: 'name') equals: 'DSTestRecord'.
@@ -82,5 +83,7 @@ DSJSONFileLoggerTest >> testObjectToDict [
 			('apple' -> 3).
 			('banana' -> 43).
 			('cherry' -> 18) } asDictionary.
-	self assert: result_dict fifth equals: { ('class' -> 'DSTestTask') } asDictionary
+	self assert: result_dict fifth equals: { ('class' -> 'DSTestTask') } asDictionary.
+	self assert: (result_dict sixth at: 'name') equals: 'UUID'.
+	self assert: ((result_dict sixth at: 'attributes') at: 'uuidData') equals: { ('ByteArray' -> { 32. 46. 68. 93 }) } asDictionary
 ]
