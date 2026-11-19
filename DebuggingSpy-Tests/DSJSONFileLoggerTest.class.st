@@ -165,6 +165,24 @@ DSJSONFileLoggerTest >> testObjectToDict [
 ]
 
 { #category : 'tests' }
+DSJSONFileLoggerTest >> testToJSON [
+
+	| firstObject secondObject |
+	firstObject := UUID new uuidData: { 48. 207. 102. 51. 23. 89 } asByteArray.
+	secondObject := DSTestObject new
+		                first: 'someAttribute';
+		                second: 42;
+		                other: { 'hey'. 26. 'bonjour' }.
+
+	self
+		assert: (DSJSONFileLogger toJSON: firstObject)
+		equals: '{"attributes":{"uuidData":{"ByteArray":[48,207,102,51,23,89]}},"name":"UUID"}'.
+	self
+		assert: (DSJSONFileLogger toJSON: secondObject)
+		equals: '{"attributes":{"second":42,"other":["hey",26,"bonjour"],"first":"someAttribute"},"name":"DSTestObject"}'
+]
+
+{ #category : 'tests' }
 DSJSONFileLoggerTest >> testTranslateByteArray [
 
 	| firstByteArray secondByteArray |
@@ -225,4 +243,20 @@ DSJSONFileLoggerTest >> testTranslateJSONObject [
 	self assert: thirdObject first equals: 34.
 	self assert: thirdObject second equals: 'anAttribute'.
 	self assert: thirdObject other equals: 'anOtherOne'
+]
+
+{ #category : 'tests' }
+DSJSONFileLoggerTest >> testfromJSON [
+
+	| firstJSON secondJSON secondObject |
+	firstJSON := '{"attributes":{"uuidData":{"ByteArray":[187,20,34,215,9]}},"name":"UUID"}'.
+	secondJSON := '{"attributes":{"second":870,"other":["hallo","salut",67],"first":"myAttribute"},"name":"DSTestObject"}'.
+
+	secondObject := DSJSONFileLogger fromJSON: secondJSON.
+
+	self assert: (DSJSONFileLogger fromJSON: firstJSON) equals: (UUID new uuidData: { 187. 20. 34. 215. 9 } asByteArray).
+	self assert: secondObject class equals: DSTestObject.
+	self assert: secondObject first equals: 'myAttribute'.
+	self assert: secondObject second equals: 870.
+	self assert: secondObject other equals: [ 'hallo' , 'salut' , 67 ]
 ]

@@ -21,13 +21,31 @@ DSTestObject >> first [
 ]
 
 { #category : 'accessing' }
+DSTestObject >> first: anObject [
+
+	first := anObject 
+]
+
+{ #category : 'accessing' }
 DSTestObject >> other [
 
 	^ other
 ]
 
 { #category : 'accessing' }
+DSTestObject >> other: anObject [
+
+	other := anObject
+]
+
+{ #category : 'accessing' }
 DSTestObject >> second [
 
 	^ second 
+]
+
+{ #category : 'accessing' }
+DSTestObject >> second: anObject [
+
+	second := anObject
 ]
