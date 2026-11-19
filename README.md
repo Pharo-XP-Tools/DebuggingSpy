@@ -190,6 +190,13 @@ Data are represented in JSON as follow:
 
 - for `nil`, it is replaced by the `null` from JSON.
 
+- for `ByteArray`, it is a dictionary with one element: the key 'ByteArray' with the array of numbers as value.
+```JSON
+{
+    "ByteArray": [32, 45, 68, 97],
+}
+```
+
 - for array, elements are tranformed and keep the array as JSON array `[]`.
 
 - for dictionary, values are tranformed.
