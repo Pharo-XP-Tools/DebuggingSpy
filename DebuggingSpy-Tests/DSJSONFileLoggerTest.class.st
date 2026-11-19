@@ -258,5 +258,5 @@ DSJSONFileLoggerTest >> testfromJSON [
 	self assert: secondObject class equals: DSTestObject.
 	self assert: secondObject first equals: 'myAttribute'.
 	self assert: secondObject second equals: 870.
-	self assert: secondObject other equals: [ 'hallo' , 'salut' , 67 ]
+	self assert: secondObject other equals: { 'hallo'. 'salut'. 67 }
 ]
